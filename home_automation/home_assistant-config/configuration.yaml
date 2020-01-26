@@ -380,6 +380,6 @@ zone:
     icon: mdi:map-search
 
 group: !include groups.yaml
-automation: !include automations.yaml
+automation: !include_dir_merge_list automations/
 script: !include scripts.yaml
 scene: !include scene.yaml
