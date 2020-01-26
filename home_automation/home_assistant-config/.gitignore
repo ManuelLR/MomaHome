@@ -1,0 +1,4 @@
+deps/
+*.log
+secrets.yaml
+known_devices.yaml

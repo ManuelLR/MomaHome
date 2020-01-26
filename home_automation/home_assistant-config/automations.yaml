@@ -1,0 +1,350 @@
+- alias: AUT-New device found
+  initial_state: 'on'
+  trigger:
+    - platform: event
+      event_type: device_tracker_new_device
+  action:
+    - service: notify.manolo
+      data_template:
+        title: "*ALERT: New device found !*"
+        message: 'New device called `{{ trigger.event.data.host_name }}` with MAC `{{ trigger.event.data.mac }}` found'
+
+- alias: AUT-Back in house [night]
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      to: 'Just Arrived'
+      entity_id:
+        - sensor.home_occupancy_status
+  condition:
+    - condition: sun
+      after: sunset
+      after_offset: '-00:30:00'
+    - condition: time
+      after: '13:00:00'
+      before: '03:00:00'
+
+  action:
+    - service: scene.turn_on
+      entity_id: scene.night
+    - service: notify.manolo
+      data_template:
+        title: "*Auto turned on light*"
+        message: 'Light turned on by automation `AUT-Back in house`'
+    - service: notify.monica
+      data_template:
+        title: "*Auto turned on light*"
+        message: 'Light turned on by automation `AUT-Back in house`'
+
+- alias: AUT-Sunset
+  initial_state: 'on'
+  trigger:
+    platform: sun
+    event: sunset
+    offset: '-00:30:00'
+  condition:
+    - condition: or
+      conditions:
+        - condition: state
+          state: 'home'
+          entity_id: person.manolo
+        - condition: state
+          state: 'home'
+          entity_id: person.monica
+  action:
+    - service: scene.turn_on
+      entity_id: scene.night
+    - service: notify.manolo
+      data_template:
+        title: "*Auto turned on light*"
+        message: 'Light turned on by automation `Sunset`'
+    - service: notify.monica
+      data_template:
+        title: "*Auto turned on light*"
+        message: 'Light turned on by automation `Sunset`'
+
+- alias: AUT-New Release
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: updater.updater
+  action:
+    service: notify.manolo
+    data_template:
+      title: "*New Home Assistant Release*"
+      message: "Home Assistant  {{ states('updater.updater') }}  is now available"
+
+- alias: AUT-Notify failed login attempt
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: persistent_notification.http_login
+  condition:
+    - condition: template
+      value_template: "{{ trigger.to_state.state != 'None' }}"
+  action:
+    service: notify.manolo
+    data_template:
+      title: "*{{ state_attr('persistent_notification.http_login', 'title') }} !*"
+      message: "{{ state_attr('persistent_notification.http_login', 'message') }}"
+
+# Works
+- alias: AUT-Notify Vacuum Error
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: vacuum.xiaomi_vacuum
+      to: error
+  action:
+    - service: notify.manolo
+      data_template: &message-vacuum-error
+        title: "*Something fail in the vacuum...*"
+        message: 'Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`'
+    - service: notify.monica
+      data_template: *message-vacuum-error
+
+- alias: AUT-Vacuum
+  initial_state: 'on'
+  trigger:
+    platform: time
+    # at: '14:14:00'
+    at: '11:28:00'
+  condition:
+    - condition: and
+      conditions:
+    # Not cleaning just now 
+        - condition: template
+          value_template: '{{ states("vacuum.xiaomi_vacuum") == "docked" }}'
+    # Someone in house in past 24 hours
+        - condition: template
+          value_template: '{{ states("sensor.home_occupancy_status") != "Extended Away" }}'
+  action:
+    - service: vacuum.set_fan_speed
+      entity_id: vacuum.xiaomi_vacuum
+      data:
+        fan_speed: Balanced
+    - service: vacuum.start
+      entity_id: vacuum.xiaomi_vacuum
+    - service: notify.manolo
+      data_template: &message-vacuum-started
+        title: "*Start to clean*"
+        message: 'Vacuum started by automation `AUT-Vacuum`'
+    # - service: notify.monica
+    #   data_template:
+    #     title: "*Start to clean*"
+    #     message: 'Vacuum started by automation `Vacuum`'
+
+- alias: AUT-Vacuum update statistics
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: vacuum.xiaomi_vacuum
+      to: returning
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: input_number.vacuum_xiaomi_dust_clean_left
+        value: >
+          {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (state_attr('vacuum.xiaomi_vacuum', 'cleaned_area')|int), 0] | max }}
+    - service: notify.manolo
+      data_template:
+        title: "*Update square metter*"
+        message: 'The next square metters to delete from total is: `{{state_attr("vacuum.xiaomi_vacuum", "cleaned_area")}}`'
+
+- alias: AUT-Notify Vacuum maintenance
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: vacuum.xiaomi_vacuum
+      to: returning
+    - platform: state
+      entity_id: input_number.vacuum_xiaomi_dust_clean_left
+  # This must be only send when someone come home
+  condition:
+    - condition: template
+      value_template: >
+        {%- set minimal_notify = 2 -%}
+        {{ (state_attr('vacuum.xiaomi_vacuum', 'main_brush_left')|int) < minimal_notify or
+            (state_attr('vacuum.xiaomi_vacuum', 'side_brush_left')|int) < minimal_notify or
+            (state_attr('vacuum.xiaomi_vacuum', 'filter_left')|int) < minimal_notify or
+            (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) < minimal_notify or
+            (states('input_number.vacuum_xiaomi_dust_clean_left')|int) < minimal_notify
+        }}
+  action:
+    - service: notify.manolo
+      data_template: &message-vacuum-maintenance
+        title: "*Vacuum need maintenance*"
+        message: >
+          Cepillo principal*:* `{{ (state_attr('vacuum.xiaomi_vacuum', 'main_brush_left')|int) }} h` _restantes_
+
+          Cepillo lateral: `{{ (state_attr('vacuum.xiaomi_vacuum', 'side_brush_left')|int) }} h` restantes
+
+          Filtro: `{{ (state_attr('vacuum.xiaomi_vacuum', 'filter_left')|int) }} h` restantes
+
+          Limpieza de sensores: `{{ (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) }} h` restantes
+
+          Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
+
+
+          _(Recuerda_ [resetear](http://192.168.200.7:8123/lovelace/2) _el estado del deposito tras cada vaciado)_
+    - service: notify.monica
+      data_template: *message-vacuum-maintenance
+
+# https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
+- alias: PTR-Mark person as just arrived
+  trigger:
+    - platform: state
+      # entity_id: device_tracker.phil
+      from: 'not_home'
+      to: 'home'
+      entity_id: &persons
+        - person.monica
+        - person.manolo
+    # - platform: state
+    #   entity_id: group.helen
+    #   from: 'not_home'
+    #   to: 'home'
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: >
+          {% if trigger.entity_id == 'person.manolo' %}
+            input_select.manolo_status_dropdown
+          {% else %}
+            input_select.monica_status_dropdown
+          {% endif %}
+        option: Just Arrived
+
+# https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
+- alias: PTR-Mark person as home
+  trigger:
+    - platform: state
+      entity_id: &input-select-people-status
+        - input_select.manolo_status_dropdown
+        - input_select.monica_status_dropdown
+      to: 'Just Arrived'
+      for:
+        minutes: 10
+    - platform: state
+      entity_id: *input-select-people-status
+      from: 'Just Left'
+      to: 'Just Arrived'
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: >
+          {% if trigger.entity_id == 'input_select.manolo_status_dropdown' %}
+            input_select.manolo_status_dropdown
+          {% else %}
+            input_select.monica_status_dropdown
+          {% endif %}
+        option: Home
+# https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
+- alias: PTR-Mark person as just left
+  trigger:
+    - platform: state
+      entity_id: *persons
+      from: 'home'
+      to: 'not_home'
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: >
+          {% if trigger.entity_id == 'person.manolo' %}
+            input_select.manolo_status_dropdown
+          {% else %}
+            input_select.monica_status_dropdown
+          {% endif %}
+        option: Just Left
+# https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
+- alias: PTR-Mark person as away
+  trigger:
+    - platform: state
+      entity_id: *input-select-people-status
+      to: 'Just Left'
+      for:
+        minutes: 10
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: >
+          {% if trigger.entity_id == 'input_select.manolo_status_dropdown' %}
+            input_select.manolo_status_dropdown
+          {% else %}
+            input_select.monica_status_dropdown
+          {% endif %}
+        option: Away
+# https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
+- alias: PTR-Mark person as extended away
+  trigger:
+    - platform: state
+      entity_id: *input-select-people-status
+      to: 'Away'
+      for:
+        hours: 24
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: >
+          {% if trigger.entity_id == 'input_select.manolo_status_dropdown' %}
+            input_select.manolo_status_dropdown
+          {% else %}
+            input_select.monica_status_dropdown
+          {% endif %}
+        option: Extended Away
+
+# Update home occupancy when some people state changed
+# Myself
+- alias: PTR-Update home occupancy
+  trigger:
+    - platform: state
+      # from: 'not_home'
+      # to: 'home'
+      entity_id: *input-select-people-status
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.home_occupancy_status_dropdown
+        option: >
+          {%- if states(trigger.entity_id) == states('input_select.home_occupancy_status_dropdown') -%}
+            {{ states(trigger.entity_id) }}
+          {%- else -%}
+            {# Loop over all states and get the most restrictive #}
+            {%- set status_json = {
+                "Home": 0,
+                "Just Arrived": 1,
+                "Just Left": 2,
+                "Away": 3,
+                "Extended Away": 4
+            } -%}
+            {%- set next_home_occupancy = namespace(value=status_json['Extended Away'],name='Extended Away') -%}
+            {%- for tracker in expand('group.people_status') if status_json[tracker.state] < next_home_occupancy.value -%}
+                {%- set next_home_occupancy.value = status_json[tracker.state] -%}
+                {%- set next_home_occupancy.name = tracker.state -%}
+            {%- endfor -%}
+            {{next_home_occupancy.name}}
+          {%- endif -%}
+#    - service: notify.manolo
+#      data_template:
+#        title: "*Editing home occupancy*"
+#        message: >
+#          {%- if states(trigger.entity_id) == states('input_select.home_occupancy_status_dropdown') -%}
+#            {{ states(trigger.entity_id) }}
+#            {%- set next_home_occupancy = namespace(name=states(trigger.entity_id)) -%}
+#          {%- else -%}
+#            {# Loop over all states and get the most restrictive #}
+#            {%- set status_json = {
+#                "Home": 0,
+#                "Just Arrived": 1,
+#                "Just Left": 2,
+#                "Away": 3,
+#                "Extended Away": 4
+#            } -%}
+#            {%- set next_home_occupancy = namespace(value=status_json['Extended Away'],name='Extended Away') -%}
+#            {%- for tracker in expand('group.people_status') if status_json[tracker.state] < next_home_occupancy.value -%}
+#                {%- set next_home_occupancy.value = status_json[tracker.state] -%}
+#                {%- set next_home_occupancy.name = tracker.state -%}
+#            {%- endfor -%}
+#          {%- endif -%}
+#          Home occupancy new value: `{{next_home_occupancy.name}}`, manolo input: `{{states('input_select.manolo_status_dropdown')}}`, manolo sensor: `{{states('sensor.manolo_status')}}` , monica input: `{{states('input_select.monica_status_dropdown')}}`, monica sensor: `{{states('sensor.monica_status')}}`
+#
