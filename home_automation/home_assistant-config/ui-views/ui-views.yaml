@@ -1,0 +1,3 @@
+# That file contain each view of ui
+- title: Home
+  cards: !include_dir_list Home/
