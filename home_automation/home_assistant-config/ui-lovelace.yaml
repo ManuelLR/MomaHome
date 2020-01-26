@@ -1,2 +1,2 @@
 title: MomaHome
-views: !include ui-views/ui-views.yaml
+views: !include ui-views/_ui-views.yaml

@@ -1,0 +1,13 @@
+# That file contain each view of ui
+- title: Home
+  cards: !include_dir_list Home/
+- title: Net
+  cards: !include Net.yaml
+- title: Vacuum
+  cards: !include Vacuum.yaml
+- title: Flora
+  cards: !include Flora.yaml
+
+# Work in Progress section
+- title: WIP
+  cards: !include WIP.yaml

@@ -1,5 +1,0 @@
-# title: Luces
-# type: entities
-# entities:
-#   # Didn't work from 0.104: https://www.home-assistant.io/blog/2020/01/15/release-104/
-#   - group.all_lights
