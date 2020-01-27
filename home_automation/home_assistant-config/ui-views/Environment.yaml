@@ -1,0 +1,16 @@
+- type: history-graph
+  title: 'Temperature (24h)'
+  hours_to_show: 24
+  entities:
+    - sensor.environment_001_temperature
+- type: history-graph
+  title: 'Humidity (24h)'
+  hours_to_show: 24
+  entities:
+    - sensor.environment_001_humidity
+
+- type: history-graph
+  title: 'Battery (24h)'
+  hours_to_show: 24
+  entities:
+    - sensor.environment_001_battery
