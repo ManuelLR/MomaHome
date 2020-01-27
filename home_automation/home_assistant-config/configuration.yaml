@@ -133,6 +133,12 @@ sensor:
     force_update: yes
     scan_interval: 2400
     mac: !secret sensor_miflora_mac
+  - platform: mitemp_bt
+    name: "environment-001"
+    force_update: yes
+    scan_interval: 600
+    median: 1
+    mac: !secret sensor_environment-001_mac
 
   # https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
   - platform: template
