@@ -72,7 +72,7 @@ device_tracker: !include_dir_merge_list auto_generated-config/device_tracker/
 
 input_select: !include_dir_merge_named auto_generated-config/input_select/
 
-input_number: !include_dir_merge_named auto_generated-config/input_named/
+input_number: !include_dir_merge_named auto_generated-config/input_number/
 
 
 # Text to speech
