@@ -44,14 +44,10 @@ recorder:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
 http:
   server_port: 8123
 #   base_url: example.duckdns.org:8123
 
-duckdns:
-  domain: !secret duckdns_domains
-  access_token: !secret duckdns_token
 
 # Discover some devices automatically
 discovery:
@@ -63,40 +59,20 @@ mqtt:
   # username:
   # password:
 
-pi_hole:
-  host: 192.168.200.9
-  #monitored_conditions:
-    #- ads_blocked_today
-    #- ads_percentage_today
-    #- dns_queries_today
-    #- domains_being_blocked
-    #- queries_cached
-    #- queries_forwarded
-    #- unique_clients
-    #- unique_domains
+# Server
+pi_hole: !include_dir_merge_named auto_generated-config/pi_hole/
+duckdns: !include_dir_merge_named auto_generated-config/duckdns/
+speedtestdotnet: !include_dir_merge_named auto_generated-config/speedtestdotnet/
+apcupsd: !include_dir_merge_named auto_generated-config/apcupsd/
+binary_sensor: !include_dir_merge_list auto_generated-config/binary_sensor/
 
 
-device_tracker:
-  - platform: nmap_tracker
-    interval_seconds: 180
-    hosts: 192.168.200.0/24
-    # consider_home: 600
-    consider_home: 400
-    # consider_home: 350
-    # consider_home: 30
-    new_device_defaults: &new-device-defaults
-      track_new_devices: true
-      hide_if_away: true
-  # - platform: bluetooth_tracker
-  #   new_device_defaults: *new-device-defaults
-  - platform: tile
-    username: !secret tile_username
-    password: !secret tile_password
-    show_inactive: true
 
-input_select: !include_dir_merge_named real_config/input_select/
+device_tracker: !include_dir_merge_list auto_generated-config/device_tracker/
 
-input_number: !include_dir_merge_named real_config/input_named/
+input_select: !include_dir_merge_named auto_generated-config/input_select/
+
+input_number: !include_dir_merge_named auto_generated-config/input_named/
 
 
 # Text to speech
@@ -104,12 +80,7 @@ tts:
   - platform: google_translate
     service_name: google_say
 
-telegram_bot:
-  - platform: polling
-    api_key: !secret telegram_api_key
-    allowed_chat_ids:
-      - !secret telegram_userid_manolo
-      - !secret telegram_userid_monica
+telegram_bot: !include_dir_merge_list auto_generated-config/telegram_bot/
 
 timer:
   power_socket_double_001_left:
@@ -122,43 +93,12 @@ input_datetime:
   timer_power_socket_double_001_right:
     has_time: true
 
-vacuum: !include_dir_merge_list real_config/vacuum/
+vacuum: !include_dir_merge_list auto_generated-config/vacuum/
 
-# espurna--man-001.local.
-switch:
-  - friendly_name: IR living room
-    platform: broadlink
-    host: 192.168.200.51
-    mac: !secret switch_ir_living_room_mac
-    # timeout: 60
-    # type: rm_mini
-    switches:
-      tv_samsung_on:
-        friendly_name: "TV on"
-        command_on: 'JgCwBBE5EjoSOREABW+TlxE5EjoSOBEVEhQRFBAVEhMSORI6EDoTExEVEhQQFhEUEhUQOxEUERURFREVEhQQFhE5ExITOhI4ETgSOhE5EDoRAAVtlZYSORI5EToRFRAVERUSFBAWEToQORE5ERURFRMTEBQRFhEVETkRFRIUERQRFRAWERQROhIUEDsSOhE5EjkROxE4EgAFbpaXETkSOBE6EBUSFBEWEhMRFhE5EjkROxEUERURFREUEBYQFhA5ERYQFREVEBURFBIUEjkSExE6EjgSOhI5EjgRORMABW2VlxI4EToRORIVEBURFBEVEBQSOhI4EjgSFhAVERQRFRITExQQORIUEhQRFREVEBURFRE6EBQROhI4EjkRORI5EjkSAAVvlJYSORE4FDkSExIVERQSFBIUEjgSOhE5ERURFREUEhQRFREVETkSFBEVEBYRFREUERUROhIUEToRORI5EjgSOhI5EQAFbpaVETsSOBI6ERQRFBEWEBQRFRI5EjkSORITEhYQFRAVERURFBI5EhQRFREUERURFREUEjkSFBE6ETkSOBI7EDkROhIABW2WlhI4EzkROBIVERURFRAWERUROhE6ETgRFBIVERQRFREVEhYQOREWEBUQFRIUEhMRFRI4EhYQORI5EzcROhI5EjoSAAVtlJgSORE5EjoRFBITEhMSFREWETgSOxE5ERURFBEUEhUQFhEUEjkSExIVERURFRAVERUROREVEzgROxA6EDoSOBI5EQAFbpWWEToSOBM4ERUSFREVEBUQFRM4EjkROhEVERUQFREVERYRFBE6ERUSExIUERURFBEWEToRFBI5EjkSORM3DzwROhEABW+VlhE5EToSOREVEhUQFRAVERUSORI5EToRFBEUERYQFRIUEhQROhIVERQRFBIUERURFRA7EBQSOhE5EToRORM4EToQAAVulpcRORI5EDsSExAVERQSExIUEjkTOBI5EhQRFRAVERQRFRIUEToSFBEUEhQRFRAUERUSOREVEToQORM5EToRORM4EQAFb5WXEjkQORE6EhQRFREVEhMRFhE5ETkTOhETExQRFRAVEBUTFRE4ERUSFBETExQRFhEUEToRFRE6EDoROhE5ETkROxEABXCUlhM3EjsROREVEhQRFRAWERUQOhE6EjgRFBIUEhQRFhAVERUROhITERYRFBEUEhQSFBE6EhQROxA6ETkSORI5EjkSAAVulZYROxE5EjgRFREUERQTFBAWETkSORE5EhURFBEVERUSFBEUEToTExEVERURFBEUEhYQOhEUEjgTORI4EToSORI6EgAFbJaWEjkSORE4EhQSFBEVERQSFBI4EjkSOhEVEhMRFREVERUQFRE5EhURFBIWDxUQFRIUFDcRFRI3EjoSORI5EjYVOREABXCTlhI6EjgSORIWDxUSFBAVEhQSORE6ETkSFBIUERURFBIUEhUQOhEVERUQFRIUEhQRFRE6EhQSOhE5EjkROhM4EToRAAVulZYSORI5EjkTExEVEBUTFBAVEDwQORE7EhMSFBEUEhURFREVEDoRFREVERYQFRIUEhQRORIUEjgSORI5EjoSOBM4EAANBQAAAAAAAAAA'
-        command_off: 'JgCwBBE5EjoSOREABW+TlxE5EjoSOBEVEhQRFBAVEhMSORI6EDoTExEVEhQQFhEUEhUQOxEUERURFREVEhQQFhE5ExITOhI4ETgSOhE5EDoRAAVtlZYSORI5EToRFRAVERUSFBAWEToQORE5ERURFRMTEBQRFhEVETkRFRIUERQRFRAWERQROhIUEDsSOhE5EjkROxE4EgAFbpaXETkSOBE6EBUSFBEWEhMRFhE5EjkROxEUERURFREUEBYQFhA5ERYQFREVEBURFBIUEjkSExE6EjgSOhI5EjgRORMABW2VlxI4EToRORIVEBURFBEVEBQSOhI4EjgSFhAVERQRFRITExQQORIUEhQRFREVEBURFRE6EBQROhI4EjkRORI5EjkSAAVvlJYSORE4FDkSExIVERQSFBIUEjgSOhE5ERURFREUEhQRFREVETkSFBEVEBYRFREUERUROhIUEToRORI5EjgSOhI5EQAFbpaVETsSOBI6ERQRFBEWEBQRFRI5EjkSORITEhYQFRAVERURFBI5EhQRFREUERURFREUEjkSFBE6ETkSOBI7EDkROhIABW2WlhI4EzkROBIVERURFRAWERUROhE6ETgRFBIVERQRFREVEhYQOREWEBUQFRIUEhMRFRI4EhYQORI5EzcROhI5EjoSAAVtlJgSORE5EjoRFBITEhMSFREWETgSOxE5ERURFBEUEhUQFhEUEjkSExIVERURFRAVERUROREVEzgROxA6EDoSOBI5EQAFbpWWEToSOBM4ERUSFREVEBUQFRM4EjkROhEVERUQFREVERYRFBE6ERUSExIUERURFBEWEToRFBI5EjkSORM3DzwROhEABW+VlhE5EToSOREVEhUQFRAVERUSORI5EToRFBEUERYQFRIUEhQROhIVERQRFBIUERURFRA7EBQSOhE5EToRORM4EToQAAVulpcRORI5EDsSExAVERQSExIUEjkTOBI5EhQRFRAVERQRFRIUEToSFBEUEhQRFRAUERUSOREVEToQORM5EToRORM4EQAFb5WXEjkQORE6EhQRFREVEhMRFhE5ETkTOhETExQRFRAVEBUTFRE4ERUSFBETExQRFhEUEToRFRE6EDoROhE5ETkROxEABXCUlhM3EjsROREVEhQRFRAWERUQOhE6EjgRFBIUEhQRFhAVERUROhITERYRFBEUEhQSFBE6EhQROxA6ETkSORI5EjkSAAVulZYROxE5EjgRFREUERQTFBAWETkSORE5EhURFBEVERUSFBEUEToTExEVERURFBEUEhYQOhEUEjgTORI4EToSORI6EgAFbJaWEjkSORE4EhQSFBEVERQSFBI4EjkSOhEVEhMRFREVERUQFRE5EhURFBIWDxUQFRIUFDcRFRI3EjoSORI5EjYVOREABXCTlhI6EjgSORIWDxUSFBAVEhQSORE6ETkSFBIUERURFBIUEhUQOhEVERUQFRIUEhQRFRE6EhQSOhE5EjkROhM4EToRAAVulZYSORI5EjkTExEVEBUTFBAVEDwQORE7EhMSFBEUEhURFREVEDoRFREVERYQFRIUEhQRORIUEjgSORI5EjoSOBM4EAANBQAAAAAAAAAA'
-  - name: "man-001"
-    platform: mqtt
-    state_topic: "man-001/espurna/relay/0"
-    command_topic: "man-001/espurna/relay/0/set"
-    payload_on: 1
-    payload_off: 0
-    optimistic: false
-    qos: 1
-    retain: true
-    device:
-      identifiers: man-001
-      name: Living room light socket
+switch: !include_dir_merge_list auto_generated-config/switch/
 
-apcupsd:
+light: !include_dir_merge_list auto_generated-config/light/
 
-binary_sensor:
-  - platform: apcupsd
-
-light:
-  - platform: switch
-    name: Living Room light
-    entity_id: switch.man_001
 # Power sockets
 tuya:
   username: !secret tuya_username
@@ -166,28 +106,13 @@ tuya:
   country_code: 34
   platform: smart_life
 
-speedtestdotnet:
-  scan_interval:
-    minutes: 35
-  monitored_conditions:
-    - ping
-    - download
-    - upload
-
 
 # shell_command:
 #   # https://philhawthorne.com/automating-your-shopping-list-with-home-assistant-and-grocy/
 #   grocy_consume_item: "curl -X POST https://{{server_ip}}/api/stock/products/{{product_id}}/consume -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'GROCY-API-KEY: {{grocy_key}}' -H 'cache-control: no-cache' -d '{ \"amount\": {{amount}},  \"transaction_type\": \"consume\",  \"spoiled\": false }'"
 
 
-notify:
-  # Also add in telegram bot section
-  - name: manolo
-    platform: telegram
-    chat_id: !secret telegram_userid_manolo
-  - name: monica
-    platform: telegram
-    chat_id: !secret telegram_userid_monica
+notify: !include_dir_merge_list auto_generated-config/notify/
 
 person:
   - name: Manolo
