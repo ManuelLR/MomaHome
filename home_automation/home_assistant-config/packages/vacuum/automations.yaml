@@ -1,0 +1,98 @@
+
+# automation:
+  - alias: AUT-Notify Vacuum Error
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: vacuum.xiaomi_vacuum
+        to: error
+    action:
+      - service: notify.manolo
+        data_template: &message-vacuum-error
+          title: "*Something fail in the vacuum...*"
+          message: 'Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`'
+      - service: notify.monica
+        data_template: *message-vacuum-error
+
+  - alias: AUT-Vacuum
+    initial_state: 'on'
+    trigger:
+      platform: time
+      # at: '14:14:00'
+      at: '11:28:00'
+    condition:
+      - condition: and
+        conditions:
+      # Not cleaning just now 
+          - condition: template
+            value_template: '{{ states("vacuum.xiaomi_vacuum") == "docked" }}'
+      # Someone in house in past 24 hours
+          - condition: template
+            value_template: '{{ states("sensor.home_occupancy_status") != "Extended Away" }}'
+    action:
+      - service: vacuum.set_fan_speed
+        entity_id: vacuum.xiaomi_vacuum
+        data:
+          fan_speed: Balanced
+      - service: vacuum.start
+        entity_id: vacuum.xiaomi_vacuum
+      - service: notify.manolo
+        data_template: &message-vacuum-started
+          title: "*Start to clean*"
+          message: 'Vacuum started by automation `AUT-Vacuum`'
+
+  - alias: AUT-Vacuum update statistics
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: vacuum.xiaomi_vacuum
+        to: returning
+    action:
+      - service: input_number.set_value
+        data_template:
+          entity_id: input_number.vacuum_xiaomi_dust_clean_left
+          value: >
+            {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (state_attr('vacuum.xiaomi_vacuum', 'cleaned_area')|int), 0] | max }}
+      - service: notify.manolo
+        data_template:
+          title: "*Update square metter*"
+          message: 'The next square metters to delete from total is: `{{state_attr("vacuum.xiaomi_vacuum", "cleaned_area")}}`'
+
+  - alias: AUT-Notify Vacuum maintenance
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: vacuum.xiaomi_vacuum
+        to: returning
+      - platform: state
+        entity_id: input_number.vacuum_xiaomi_dust_clean_left
+    # This must be only send when someone come home
+    condition:
+      - condition: template
+        value_template: >
+          {%- set minimal_notify = 2 -%}
+          {{ (state_attr('vacuum.xiaomi_vacuum', 'main_brush_left')|int) < minimal_notify or
+              (state_attr('vacuum.xiaomi_vacuum', 'side_brush_left')|int) < minimal_notify or
+              (state_attr('vacuum.xiaomi_vacuum', 'filter_left')|int) < minimal_notify or
+              (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) < minimal_notify or
+              (states('input_number.vacuum_xiaomi_dust_clean_left')|int) < minimal_notify
+          }}
+    action:
+      - service: notify.manolo
+        data_template: &message-vacuum-maintenance
+          title: "*Vacuum need maintenance*"
+          message: >
+            Cepillo principal*:* `{{ (state_attr('vacuum.xiaomi_vacuum', 'main_brush_left')|int) }} h` _restantes_
+
+            Cepillo lateral: `{{ (state_attr('vacuum.xiaomi_vacuum', 'side_brush_left')|int) }} h` restantes
+
+            Filtro: `{{ (state_attr('vacuum.xiaomi_vacuum', 'filter_left')|int) }} h` restantes
+
+            Limpieza de sensores: `{{ (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) }} h` restantes
+
+            Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
+
+
+            _(Recuerda_ [resetear](http://192.168.200.7:8123/lovelace/2) _el estado del deposito tras cada vaciado)_
+      - service: notify.monica
+        data_template: *message-vacuum-maintenance

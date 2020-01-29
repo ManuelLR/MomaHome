@@ -1,0 +1,6 @@
+# sensor:
+  - platform: miflora
+    name: "flora-001"
+    force_update: yes
+    scan_interval: 2400
+    mac: !secret sensor_miflora_mac

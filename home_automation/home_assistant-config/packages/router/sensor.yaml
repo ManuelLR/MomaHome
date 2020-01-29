@@ -1,0 +1,22 @@
+# sensor:
+  - platform: snmp
+    # https://community.home-assistant.io/t/monitor-dd-wrt-cpu-temp-load-and-free-ram-how-i-did-it/140470
+    name: Router CPU Load
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.4.1.2021.10.1.5.1
+    accept_errors: true
+    unit_of_measurement: '%'
+    # Dual CPU, so if value is 200, it means 100%, so divide by 2
+    value_template: '{{ (value | int) / 2 | round(1) }}'
+
+  - platform: snmp
+    # https://community.home-assistant.io/t/monitor-dd-wrt-cpu-temp-load-and-free-ram-how-i-did-it/140470
+    name: Router RAM Free
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+    baseoid: 1.3.6.1.4.1.2021.4.11.0
+    accept_errors: true
+    unit_of_measurement: 'MB'
+    value_template: '{{ value | multiply(0.001) | round(1) }}'

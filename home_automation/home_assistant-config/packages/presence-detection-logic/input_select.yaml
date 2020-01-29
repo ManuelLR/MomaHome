@@ -1,0 +1,18 @@
+
+# input_select:
+  # https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
+  home_occupancy_status_dropdown:
+    name: Home Occupancy
+    options: &person_status
+      - Home
+      - Just Arrived
+      - Just Left
+      - Away
+      - Extended Away
+    # initial: Home
+  monica_status_dropdown:
+    name: Monica
+    options: *person_status
+  manolo_status_dropdown:
+    name: Manolo
+    options: *person_status

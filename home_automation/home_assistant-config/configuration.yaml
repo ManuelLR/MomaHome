@@ -75,109 +75,6 @@ pi_hole:
     #- unique_clients
     #- unique_domains
 
-# Sensors
-sensor:
-  # Weather prediction
-  - platform: yr
-  - platform: mqtt
-    name: "man-001 Voltage"
-    state_topic: "man-001/espurna/voltage"
-    qos: "1"
-    # icon:
-    # availability_topic
-    # payload_available
-    # value_template: "{{ value_json.Voltage }}"
-    # device
-    unit_of_measurement: "V"
-    device:
-      identifiers: man-001
-      name: Living room light socket
-  - platform: mqtt
-    name: "man-001 Current A"
-    qos: "1"
-    state_topic: "man-001/espurna/current"
-    # value_template: "{{ value_json.Today }}"
-    unit_of_measurement: "A"
-    device:
-      identifiers: man-001
-      name: Living room light socket
-  - platform: mqtt
-    name: "man-001 Energy"
-    qos: "1"
-    state_topic: "man-001/espurna/energy"
-    # value_template: "{{ value_json.Today }}"
-    unit_of_measurement: "kWh"
-    device:
-      identifiers: man-001
-      name: Living room light socket
-  - platform: mqtt
-    name: "man-001 Power"
-    qos: "1"
-    state_topic: "man-001/espurna/power"
-    # value_template: "{{ value_json.Power }}"
-    unit_of_measurement: "W"
-    device:
-      identifiers: man-001
-      name: Living room light socket
-  - platform: mqtt
-    name: "man-001 Power factor"
-    qos: "1"
-    state_topic: "man-001/espurna/factor"
-    # value_template: "{{ value_json.Voltage }}"
-    unit_of_measurement: "%"
-    device:
-      identifiers: man-001
-      name: Living room light socket
-  - platform: miflora
-    name: "flora-001"
-    force_update: yes
-    scan_interval: 2400
-    mac: !secret sensor_miflora_mac
-  - platform: mitemp_bt
-    name: "environment-001"
-    force_update: yes
-    scan_interval: 600
-    median: 1
-    mac: !secret sensor_environment-001_mac
-
-  # https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
-  - platform: template
-    sensors:
-      manolo_status:
-        value_template: '{{ states.input_select.manolo_status_dropdown.state }}'
-        friendly_name: 'Manolo'
-      monica_status:
-        value_template: '{{ states.input_select.monica_status_dropdown.state }}'
-        friendly_name: 'Monica'
-      home_occupancy_status:
-        value_template: '{{ states.input_select.home_occupancy_status_dropdown.state }}'
-        friendly_name: 'Home Occupancy'
-  - platform: apcupsd
-    resources:
-       - bcharge
-         # - linev
-
-  - platform: snmp
-    # https://community.home-assistant.io/t/monitor-dd-wrt-cpu-temp-load-and-free-ram-how-i-did-it/140470
-    name: Router CPU Load
-    host: 192.168.200.1
-    community: !secret DDWRT_SNMP_RO
-      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
-    baseoid: 1.3.6.1.4.1.2021.10.1.5.1
-    accept_errors: true
-    unit_of_measurement: '%'
-    # Dual CPU, so if value is 200, it means 100%, so divide by 2
-    value_template: '{{ (value | int) / 2 | round(1) }}'
-
-  - platform: snmp
-    # https://community.home-assistant.io/t/monitor-dd-wrt-cpu-temp-load-and-free-ram-how-i-did-it/140470
-    name: Router RAM Free
-    host: 192.168.200.1
-    community: !secret DDWRT_SNMP_RO
-    baseoid: 1.3.6.1.4.1.2021.4.11.0
-    accept_errors: true
-    unit_of_measurement: 'MB'
-    value_template: '{{ value | multiply(0.001) | round(1) }}'
 
 device_tracker:
   - platform: nmap_tracker
@@ -196,70 +93,10 @@ device_tracker:
     username: !secret tile_username
     password: !secret tile_password
     show_inactive: true
-  - platform: ddwrt
-    host: 192.168.200.1
-    ssl: true
-    verify_ssl: false
-    consider_home: 400
-    wireless_only: true
-    username: !secret DDWRT_USERNAME
-    password: !secret DDWRT_PASSWORD
-    new_device_defaults: *new-device-defaults
 
-input_select:
-  # https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
-  home_occupancy_status_dropdown:
-    name: Home Occupancy
-    options: &person_status
-      - Home
-      - Just Arrived
-      - Just Left
-      - Away
-      - Extended Away
-    # initial: Home
-  monica_status_dropdown:
-    name: Monica
-    options: *person_status
-  manolo_status_dropdown:
-    name: Manolo
-    options: *person_status
-  vacuum_zone_room_selected:
-    name: Choose a room to clean
-    icon: mdi:image-size-select-small
-    options:
-      - eat area
-      - bathroom
-      - kitchen
-      - living room
-      - bedroom
-      - study room
-      - corridor
-      - hall
-  vacuum_zone_fan_speed:
-    name: Choose a fan speed to clean at
-    icon: mdi:fan
-    options:
-      - Balanced
-      - Quiet
-      - Turbo
-      - Max
+input_select: !include_dir_merge_named real_config/input_select/
 
-input_number:
-  vacuum_xiaomi_dust_clean_left:
-    min: 0
-    # max: 140
-    max: 250
-    unit_of_measurement: square meter
-    icon: mdi:basket-fill
-    mode: slider
-  vacuum_zone_repeats:
-    name: Nº repeats (vacuum zone)
-    icon: mdi:repeat
-    min: 1
-    max: 3
-    step: 1
-    initial: 1
-    mode: box
+input_number: !include_dir_merge_named real_config/input_named/
 
 
 # Text to speech
@@ -285,12 +122,7 @@ input_datetime:
   timer_power_socket_double_001_right:
     has_time: true
 
-vacuum:
-  # https://www.home-assistant.io/components/vacuum.xiaomi_miio/
-  - name: Xiaomi Vacuum
-    platform: xiaomi_miio
-    host: 192.168.200.50
-    token: !secret xiaomi_vacuum_token_0
+vacuum: !include_dir_merge_list real_config/vacuum/
 
 # espurna--man-001.local.
 switch:
@@ -385,7 +217,9 @@ zone:
     radius: 120
     icon: mdi:map-search
 
+
+sensor: !include_dir_merge_list auto_generated-config/sensor/
 group: !include groups.yaml
-automation: !include_dir_merge_list automations/
-script: !include scripts.yaml
+automation: !include_dir_merge_list auto_generated-config/automations/
+script: !include_dir_merge_named auto_generated-config/scripts/
 scene: !include scene.yaml

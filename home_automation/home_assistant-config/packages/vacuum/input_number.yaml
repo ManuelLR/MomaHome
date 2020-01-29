@@ -1,0 +1,16 @@
+# input_number:
+  vacuum_xiaomi_dust_clean_left:
+    min: 0
+    # max: 140
+    max: 250
+    unit_of_measurement: square meter
+    icon: mdi:basket-fill
+    mode: slider
+  vacuum_zone_repeats:
+    name: Nº repeats (vacuum zone)
+    icon: mdi:repeat
+    min: 1
+    max: 3
+    step: 1
+    initial: 1
+    mode: box

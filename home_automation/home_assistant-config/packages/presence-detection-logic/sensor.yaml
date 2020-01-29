@@ -1,0 +1,14 @@
+
+# sensor:
+  # https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
+  - platform: template
+    sensors:
+      manolo_status:
+        value_template: '{{ states.input_select.manolo_status_dropdown.state }}'
+        friendly_name: 'Manolo'
+      monica_status:
+        value_template: '{{ states.input_select.monica_status_dropdown.state }}'
+        friendly_name: 'Monica'
+      home_occupancy_status:
+        value_template: '{{ states.input_select.home_occupancy_status_dropdown.state }}'
+        friendly_name: 'Home Occupancy'

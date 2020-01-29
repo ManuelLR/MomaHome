@@ -1,22 +1,4 @@
 - type: history-graph
-  title: 'Battery (24h)'
-  hours_to_show: 24
-  entities:
-    # - group.home_speed
-    - sensor.flora_001_battery
-- type: history-graph
-  title: 'Light Intensity (24h)'
-  hours_to_show: 24
-  entities:
-    # - group.home_speed
-    - sensor.flora_001_light_intensity
-- type: history-graph
-  title: 'Temperature (24h)'
-  hours_to_show: 24
-  entities:
-    # - group.home_speed
-    - sensor.flora_001_temperature
-- type: history-graph
   title: 'Moisture (24h)'
   hours_to_show: 24
   entities:
@@ -28,3 +10,23 @@
   entities:
     # - group.home_speed
     - sensor.flora_001_conductivity
+- type: history-graph
+  title: 'Light Intensity (24h)'
+  hours_to_show: 24
+  entities:
+    # - group.home_speed
+    - sensor.flora_001_light_intensity
+
+- type: history-graph
+  title: 'Temperature (24h)'
+  hours_to_show: 24
+  entities:
+    # - group.home_speed
+    - sensor.flora_001_temperature
+
+- type: history-graph
+  title: 'Battery (24h)'
+  hours_to_show: 24
+  entities:
+    # - group.home_speed
+    - sensor.flora_001_battery
