@@ -1,0 +1,11 @@
+# group:
+  man-001:
+    name: Power Socket man-001 (ESURNA)
+    icon: mdi:power-socket-eu
+    entities:
+      - switch.man_001
+      - sensor.man_001_voltage
+      - sensor.man_001_current_a
+      - sensor.man_001_energy
+      - sensor.man_001_power
+      - sensor.man_001_power_factor

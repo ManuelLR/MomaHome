@@ -11,12 +11,13 @@ homeassistant:
   # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   time_zone: Europe/Madrid
   # Customization file
-  customize: !include customize.yaml
+  customize: !include_dir_merge_named __auto_generated-config/customize/
   auth_mfa_modules:
     - type: totp
       name: Authenticator app
     - type: notify
       message: 'Hey, that is your access code: `{}`'
+  # packages: !include_dir_named packages
 
 logger:
   default: info
@@ -60,19 +61,19 @@ mqtt:
   # password:
 
 # Server
-pi_hole: !include_dir_merge_named auto_generated-config/pi_hole/
-duckdns: !include_dir_merge_named auto_generated-config/duckdns/
-speedtestdotnet: !include_dir_merge_named auto_generated-config/speedtestdotnet/
-apcupsd: !include_dir_merge_named auto_generated-config/apcupsd/
-binary_sensor: !include_dir_merge_list auto_generated-config/binary_sensor/
+pi_hole: !include_dir_merge_named __auto_generated-config/pi_hole/
+duckdns: !include_dir_merge_named __auto_generated-config/duckdns/
+speedtestdotnet: !include_dir_merge_named __auto_generated-config/speedtestdotnet/
+apcupsd: !include_dir_merge_named __auto_generated-config/apcupsd/
+binary_sensor: !include_dir_merge_list __auto_generated-config/binary_sensor/
 
 
 
-device_tracker: !include_dir_merge_list auto_generated-config/device_tracker/
+device_tracker: !include_dir_merge_list __auto_generated-config/device_tracker/
 
-input_select: !include_dir_merge_named auto_generated-config/input_select/
+input_select: !include_dir_merge_named __auto_generated-config/input_select/
 
-input_number: !include_dir_merge_named auto_generated-config/input_number/
+input_number: !include_dir_merge_named __auto_generated-config/input_number/
 
 
 # Text to speech
@@ -80,7 +81,7 @@ tts:
   - platform: google_translate
     service_name: google_say
 
-telegram_bot: !include_dir_merge_list auto_generated-config/telegram_bot/
+telegram_bot: !include_dir_merge_list __auto_generated-config/telegram_bot/
 
 timer:
   power_socket_double_001_left:
@@ -93,18 +94,13 @@ input_datetime:
   timer_power_socket_double_001_right:
     has_time: true
 
-vacuum: !include_dir_merge_list auto_generated-config/vacuum/
+vacuum: !include_dir_merge_list __auto_generated-config/vacuum/
 
-switch: !include_dir_merge_list auto_generated-config/switch/
+switch: !include_dir_merge_list __auto_generated-config/switch/
 
-light: !include_dir_merge_list auto_generated-config/light/
+light: !include_dir_merge_list __auto_generated-config/light/
 
-# Power sockets
-tuya:
-  username: !secret tuya_username
-  password: !secret tuya_password
-  country_code: 34
-  platform: smart_life
+tuya: !include_dir_merge_named __auto_generated-config/tuya/
 
 
 # shell_command:
@@ -112,22 +108,9 @@ tuya:
 #   grocy_consume_item: "curl -X POST https://{{server_ip}}/api/stock/products/{{product_id}}/consume -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'GROCY-API-KEY: {{grocy_key}}' -H 'cache-control: no-cache' -d '{ \"amount\": {{amount}},  \"transaction_type\": \"consume\",  \"spoiled\": false }'"
 
 
-notify: !include_dir_merge_list auto_generated-config/notify/
+notify: !include_dir_merge_list __auto_generated-config/notify/
 
-person:
-  - name: Manolo
-    id: person_manolo
-    user_id: !secret person_user_id_manolo
-    device_trackers:
-      - device_tracker.manolo_movil
-      - device_tracker.manolo_pc7
-      - !secret tile_device_manolo_keys
-
-  - name: Monica
-    id: person_monica
-    user_id: !secret person_user_id_monica
-    device_trackers:
-      - device_tracker.moni_movil
+person: !include_dir_merge_list __auto_generated-config/person/
 
 zone:
   # This will override the default home zone
@@ -143,8 +126,8 @@ zone:
     icon: mdi:map-search
 
 
-sensor: !include_dir_merge_list auto_generated-config/sensor/
-group: !include groups.yaml
-automation: !include_dir_merge_list auto_generated-config/automations/
-script: !include_dir_merge_named auto_generated-config/scripts/
+sensor: !include_dir_merge_list __auto_generated-config/sensor/
+group: !include_dir_merge_named __auto_generated-config/group/
+automation: !include_dir_merge_list __auto_generated-config/automation/
+script: !include_dir_merge_named __auto_generated-config/script/
 scene: !include scene.yaml

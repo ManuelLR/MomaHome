@@ -1,0 +1,6 @@
+# homeassistant:
+#   customize:
+    sensor.monica_status:
+      icon: mdi:human-female
+    sensor.manolo_status:
+      icon: mdi:human-male

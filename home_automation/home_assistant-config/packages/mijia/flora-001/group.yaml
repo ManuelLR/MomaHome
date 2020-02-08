@@ -1,0 +1,8 @@
+# group:
+  flora_001:
+      entities:
+        - sensor.flora_001_battery
+        - sensor.flora_001_conductivity
+        - sensor.flora_001_light_intensity
+        - sensor.flora_001_moisture
+        - sensor.flora_001_temperature

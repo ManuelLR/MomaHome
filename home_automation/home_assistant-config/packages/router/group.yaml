@@ -1,0 +1,27 @@
+# group:
+  net_router_statistics:
+    name: Router statistics
+    entities:
+      - sensor.wireless_broadband_router_packets_received
+      - sensor.wireless_broadband_router_kbyte_sec_sent
+      - sensor.wireless_broadband_router_kbyte_sec_received
+      - sensor.wireless_broadband_router_bytes_sent
+      - sensor.wireless_broadband_router_packets_sec_received
+      - sensor.wireless_broadband_router_packets_sent
+      - sensor.wireless_broadband_router_bytes_received
+      - sensor.wireless_broadband_router_packets_sec_sent
+
+  home_net:
+    name: Home Net
+    entities:
+      - group.home_speed
+      - device_tracker.router
+      - device_tracker.ir_broadlink_salon
+      - device_tracker.home_mini_cocina
+      - device_tracker.android_tv_salon
+      - device_tracker.aspiradora
+      - device_tracker.power_socket_001
+      - device_tracker.power_socket_002
+      - device_tracker.power_socket_003
+      - group.pi_hole_statistics
+      - group.net_router_statistics

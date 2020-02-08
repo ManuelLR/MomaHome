@@ -1,0 +1,53 @@
+# automation:
+  - alias: AUT-Sunset
+    initial_state: 'on'
+    trigger:
+      platform: sun
+      event: sunset
+      offset: '-00:30:00'
+    condition:
+      - condition: or
+        conditions:
+          - condition: state
+            state: 'home'
+            entity_id: person.manolo
+          - condition: state
+            state: 'home'
+            entity_id: person.monica
+    action:
+      - service: scene.turn_on
+        entity_id: scene.night
+      - service: notify.manolo
+        data_template:
+          title: "*Auto turned on light*"
+          message: 'Light turned on by automation `Sunset`'
+      - service: notify.monica
+        data_template:
+          title: "*Auto turned on light*"
+          message: 'Light turned on by automation `Sunset`'
+
+  - alias: AUT-Back in house [night]
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        to: 'Just Arrived'
+        entity_id:
+          - sensor.home_occupancy_status
+    condition:
+      - condition: sun
+        after: sunset
+        after_offset: '-00:30:00'
+      - condition: time
+        after: '13:00:00'
+        before: '03:00:00'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.night
+      - service: notify.manolo
+        data_template:
+          title: "*Auto turned on light*"
+          message: 'Light turned on by automation `AUT-Back in house`'
+      - service: notify.monica
+        data_template:
+          title: "*Auto turned on light*"
+          message: 'Light turned on by automation `AUT-Back in house`'
