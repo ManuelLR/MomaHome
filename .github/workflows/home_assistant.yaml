@@ -1,0 +1,20 @@
+name: Home Assistant CI
+on: [push, pull_request]
+
+jobs:
+  check_syntax:
+    name: Checking syntax
+    # container:
+    #   image: homeassistant/home-assistant:0.104.3
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Prepare secrets
+        run: |
+          mv home_automation/home_assistant-config/secrets.example.yaml home_automation/home_assistant-config/secrets.yaml
+      - name: Checking syntax
+        uses: docker://homeassistant/home-assistant:0.104.3
+        id: HA-check-syntax
+        with:
+          args: |
+            hass -c home_automation/home_assistant-config/ --script check_config
