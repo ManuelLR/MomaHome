@@ -1,4 +1,3 @@
-
 # vacuum:
   # https://www.home-assistant.io/components/vacuum.xiaomi_miio/
   - name: Xiaomi Vacuum

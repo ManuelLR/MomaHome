@@ -1,4 +1,3 @@
-
 # automation:
   - alias: AUT-Notify Vacuum Error
     initial_state: 'on'

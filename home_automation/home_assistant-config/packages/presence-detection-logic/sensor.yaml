@@ -1,4 +1,3 @@
-
 # sensor:
   # https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
   - platform: template
