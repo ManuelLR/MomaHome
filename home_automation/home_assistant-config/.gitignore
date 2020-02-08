@@ -2,3 +2,4 @@ deps/
 *.log
 secrets.yaml
 known_devices.yaml
+.HA_VERSION

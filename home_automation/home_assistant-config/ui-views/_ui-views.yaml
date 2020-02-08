@@ -1,0 +1,23 @@
+# That file contain each view of ui
+- title: Home
+  icon: mdi:home
+  cards: !include_dir_list Home/
+- title: Environment
+  icon: mdi:coolant-temperature
+  cards: !include Environment.yaml
+- title: Vacuum
+  icon: mdi:robot-vacuum
+  cards: !include Vacuum.yaml
+- title: Flora
+  icon: mdi:flower
+  cards: !include Flora.yaml
+- title: Net
+  # icon: mdi:network-router
+  icon: mdi:access-point-network
+  cards: !include Net.yaml
+
+
+# Work in Progress section
+- title: WIP
+  icon: mdi:tools
+  cards: !include WIP.yaml

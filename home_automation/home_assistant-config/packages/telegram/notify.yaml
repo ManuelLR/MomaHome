@@ -1,0 +1,7 @@
+# notify:
+  - name: manolo
+    platform: telegram
+    chat_id: !secret telegram_userid_manolo
+  - name: monica
+    platform: telegram
+    chat_id: !secret telegram_userid_monica

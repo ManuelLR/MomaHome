@@ -1,0 +1,6 @@
+# group:
+  people_status:
+    name: People Status
+    entities:
+      - sensor.manolo_status
+      - sensor.monica_status

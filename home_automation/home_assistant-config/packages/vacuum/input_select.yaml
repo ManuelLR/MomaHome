@@ -1,0 +1,21 @@
+# input_select:
+  vacuum_zone_room_selected:
+    name: Choose a room to clean
+    icon: mdi:image-size-select-small
+    options:
+      - eat area
+      - bathroom
+      - kitchen
+      - living room
+      - bedroom
+      - study room
+      - corridor
+      - hall
+  vacuum_zone_fan_speed:
+    name: Choose a fan speed to clean at
+    icon: mdi:fan
+    options:
+      - Balanced
+      - Quiet
+      - Turbo
+      - Max

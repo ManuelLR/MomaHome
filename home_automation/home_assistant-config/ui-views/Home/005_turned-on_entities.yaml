@@ -1,0 +1,17 @@
+title: Cosas encendidas
+type: entity-filter
+show_header_toggle: true
+entities:
+  - entity: switch.85304541b4e62d735f80_1
+    name: Enchufe cocina doble izq.
+  - entity: switch.85304541b4e62d735f80_2
+    name: Enchufe cocina doble der.
+  - entity: switch.man_001
+    name: Enchufe luz salón
+  # - entity: switch.02007254dc4f22ff4f45
+  #   s/n: xxxx...xx 3401
+  #   name: Luz salón
+  - device_tracker.print_canon_mx920
+state_filter:
+  - "on"
+  - "home"

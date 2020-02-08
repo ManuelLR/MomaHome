@@ -1,0 +1,17 @@
+- type: glance
+  title: Enchufe Cocina Doble (Izq.)
+  entities:
+    - entity: timer.power_socket_double_001_left
+    - entity: input_datetime.timer_power_socket_double_001_left
+      # name: Bin dust left
+      # hold_action:
+      #   action: call-service
+      #   service: input_number.set_value
+      #   service_data:
+      #     entity_id: input_number.vacuum_xiaomi_dust_clean_left
+      #     value: "{{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max') }}"
+- type: glance
+  title: Enchufe Cocina Doble (Der.)
+  entities:
+    - entity: timer.power_socket_double_001_right
+    - entity: input_datetime.timer_power_socket_double_001_right

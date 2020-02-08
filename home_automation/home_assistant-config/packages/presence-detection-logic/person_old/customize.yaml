@@ -1,0 +1,6 @@
+# homeassistant:
+#   customize:
+    person.monica:
+      icon: mdi:human-female
+    person.manolo:
+      icon: mdi:human-male

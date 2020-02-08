@@ -1,0 +1,9 @@
+# group:
+  vacuum_room:
+      icon: mdi:selection-drag
+      name: Vacuum a room
+      entities:
+        - input_select.vacuum_zone_room_selected
+        - input_select.vacuum_zone_fan_speed
+        - input_number.vacuum_zone_repeats
+        - script.vacuum_room

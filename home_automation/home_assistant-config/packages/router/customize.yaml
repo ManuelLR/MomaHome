@@ -1,0 +1,7 @@
+# homeassistant:
+#   customize:
+    sensor.router_cpu_load:
+      icon: mdi:gauge-low
+
+    sensor.router_ram_free:
+      icon: mdi:memory

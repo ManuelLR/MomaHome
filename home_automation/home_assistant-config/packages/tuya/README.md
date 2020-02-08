@@ -1,0 +1,1 @@
+# Tuya platform (Smart-Life)

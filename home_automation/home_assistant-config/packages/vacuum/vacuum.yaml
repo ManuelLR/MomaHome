@@ -1,0 +1,6 @@
+# vacuum:
+  # https://www.home-assistant.io/components/vacuum.xiaomi_miio/
+  - name: Xiaomi Vacuum
+    platform: xiaomi_miio
+    host: 192.168.200.50
+    token: !secret xiaomi_vacuum_token_0

@@ -1,0 +1,4 @@
+# light:
+  - platform: switch
+    name: Living Room light
+    entity_id: switch.man_001

@@ -1,0 +1,32 @@
+- type: history-graph
+  title: 'Moisture (5d)'
+  hours_to_show: 120
+  entities:
+    # - group.home_speed
+    - sensor.flora_001_moisture
+- type: history-graph
+  title: 'Conductivity (5d)'
+  hours_to_show: 120
+  entities:
+    # - group.home_speed
+    - sensor.flora_001_conductivity
+- type: history-graph
+  title: 'Light Intensity (5d)'
+  hours_to_show: 120
+  entities:
+    # - group.home_speed
+    - sensor.flora_001_light_intensity
+
+- type: history-graph
+  title: 'Temperature (5d)'
+  hours_to_show: 120
+  entities:
+    # - group.home_speed
+    - sensor.flora_001_temperature
+
+- type: history-graph
+  title: 'Battery (5d)'
+  hours_to_show: 120
+  entities:
+    # - group.home_speed
+    - sensor.flora_001_battery
