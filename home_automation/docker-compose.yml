@@ -3,7 +3,7 @@ services:
     home-assistant:
         # container_name: home-assistant
         hostname: woody-docker_home-assistant
-        image: homeassistant/home-assistant:0.103.5
+        image: homeassistant/home-assistant:0.104.3
         depends_on:
           - postgres
         ports:
