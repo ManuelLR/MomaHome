@@ -1,0 +1,15 @@
+# input_select:
+  washing_machine_status:
+    name: Washing Machine Status
+    options:
+      # It's turned off
+      - Off
+      # Waiting the timer to start washing.
+      - Scheduled
+      # Well, that's it, cleaning up
+      - Washing
+      # ?¿
+      - Finishing
+      # Finished, waiting for someone to empty it and turn it off
+      - Clean
+    initial: Off

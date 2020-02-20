@@ -1,0 +1,11 @@
+# group:
+  man-002:
+    name: Power Socket man-002 (ESPURNA)
+    icon: mdi:power-socket-eu
+    entities:
+      - switch.man_002
+      - sensor.man_002_voltage
+      - sensor.man_002_current_a
+      - sensor.man_002_energy
+      - sensor.man_002_power
+      - sensor.man_002_power_factor
