@@ -112,7 +112,7 @@
   # When no power is detected, and the washing machine is in 
   # a state different of 'Off' state, change the status of 
   # the washing machine to 'Off'.
-  - alias: AUT-Washing machine off
+  - alias: AUT-Washing machine Off
     trigger:
       - platform: numeric_state
         entity_id: sensor.man_002_current_a
