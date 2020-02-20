@@ -138,7 +138,7 @@
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
-          option: Off
+          option: 'Off'
 
 
   # # When we open the washing machine door, reset the status back to
