@@ -12,4 +12,4 @@
       - Finishing
       # Finished, waiting for someone to empty it and turn it off
       - Clean
-    initial: 'Off'
+    # initial: 'Off'
