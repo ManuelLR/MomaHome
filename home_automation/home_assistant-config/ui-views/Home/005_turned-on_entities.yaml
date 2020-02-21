@@ -13,6 +13,7 @@ entities:
   #   name: Luz salón
   - device_tracker.print_canon_mx920
   - sensor.washing_machine_status
+  - vacuum.xiaomi_vacuum
 state_filter:
   - "on"
   - "home"
@@ -21,3 +22,9 @@ state_filter:
   - "Washing"
   - "Finishing"
   - "Clean"
+  # vacuum.xiaomi_vacuum
+  - "cleaning"
+  - "returning"
+  - "error"
+  - "idle"
+  - "paused"

@@ -93,6 +93,7 @@
         below: 0.05
         above: 0.001
         for:
+          # Time takes to open the door
           minutes: 4
     condition:
       condition: or

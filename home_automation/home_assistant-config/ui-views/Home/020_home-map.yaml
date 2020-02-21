@@ -44,8 +44,8 @@ elements:
       action: more-info
     entity: sensor.washing_machine_status
     style:
-      top: 35%
-      left: 92%
+      top: 37%
+      left: 93%
       "--paper-item-icon-color": black
   - type: conditional
     tap_action:

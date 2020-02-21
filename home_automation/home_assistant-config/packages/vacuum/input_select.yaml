@@ -16,6 +16,7 @@
     icon: mdi:fan
     options:
       - Balanced
+      - Gentle
       - Quiet
       - Turbo
       - Max
