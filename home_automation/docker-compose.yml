@@ -33,7 +33,7 @@ services:
 
     emqx:
         # name: mqtt
-        image: emqx/emqx:v3.2.1
+        image: emqx/emqx:v3.2.7
         restart: unless-stopped
         ports:
             - 1883:1883
