@@ -1,0 +1,4 @@
+# homeassistant:
+#   customize:
+    sensor.washing_machine_status:
+      icon: mdi:washing-machine

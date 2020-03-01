@@ -1,0 +1,166 @@
+# automation:
+
+  # When low power is detected, and the washing machine is in 
+  # the Off state, change the status of the washing machine
+  # to Scheduled.
+  - alias: AUT-Washing machine Scheduled
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.man_002_current_a
+        below: 0.05
+        above: 0
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: sensor.washing_machine_status
+          state: 'Off'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.washing_machine_status
+          option: Scheduled
+
+  # When power is detected, and the washing machine is not in 
+  # the Running state, change the status of the washing machine
+  # to Running. 
+  # The status check will ensure we don't try to put the state 
+  # to Running each time the power level changes, and we're already
+  # in the Running state.
+
+  - alias: AUT-Washing machine Running
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.man_002_current_a
+        above: 1
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: sensor.washing_machine_status
+          state: 'Off'
+        - condition: state
+          entity_id: sensor.washing_machine_status
+          state: 'Scheduled'
+        - condition: state
+          entity_id: sensor.washing_machine_status
+          state: 'Finishing'
+        - condition: state
+          entity_id: sensor.washing_machine_status
+          state: 'Clean'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.washing_machine_status
+          option: Washing
+
+  # # When the power drops, move the state of the washing machine to 
+  # # Finishing.
+  # - alias: AUT-Washing machine Finishing
+  #   trigger:
+  #     - platform: numeric_state
+  #       entity_id: sensor.man_002_current_a
+  #       below: 2
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: state
+  #         entity_id: input_select.washing_machine_status
+  #         state: 'Washing'
+  #   action:
+  #     - service: input_select.select_option
+  #       data:
+  #         entity_id: input_select.washing_machine_status
+  #         option: Finishing
+
+  # Wait 4 minutes for us when low power is detected before said
+  # that washing machine has finished. This way, if the 
+  # washing machine is in between cycles and the power drops, we 
+  # won't mark the washing machine cycle as finished too early.
+  - alias: AUT-Washing machine Clean
+    trigger:
+        # Wait 8 minutes for us to be in the Finishing state before we
+        # decide the washing machine has finished. This way, if the 
+        # washing machine is in between cycles and the power drops, we 
+        # won't mark the washing machine cycle as finished too early.
+      # - platform: state
+      #   entity_id: input_select.washing_machine_status
+      #   to: Finishing
+      #   for:
+      #     minutes: 8
+      - platform: numeric_state
+        entity_id: sensor.man_002_current_a
+        below: 0.05
+        above: 0.001
+        for:
+          # Time takes to open the door
+          minutes: 4
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: input_select.washing_machine_status
+          state: 'Washing'
+        - condition: state
+          entity_id: input_select.washing_machine_status
+          state: 'Finishing'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.washing_machine_status
+          option: Clean
+
+  # When no power is detected, and the washing machine is in 
+  # a state different of 'Off' state, change the status of 
+  # the washing machine to 'Off'.
+  - alias: AUT-Washing machine Off
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.man_002_current_a
+        below: 0.001
+        # for:
+        #   minutes: 5
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: input_select.washing_machine_status
+          state: 'Scheduled'
+        - condition: state
+          entity_id: input_select.washing_machine_status
+          state: 'Washing'
+        - condition: state
+          entity_id: input_select.washing_machine_status
+          state: 'Finishing'
+        - condition: state
+          entity_id: input_select.washing_machine_status
+          state: 'Clean'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.washing_machine_status
+          option: 'Off'
+
+
+  # # When we open the washing machine door, reset the status back to
+  # # idle, so we don't spam people that the washing machine has 
+  # # finished, and someone has already emptied it
+  # - alias: AUT-Washing machine dirty when door opens
+  #   trigger:
+  #     # I've setup a template sensor to change make the binary_sensor report open and closed
+  #     # instead of 1 and 0
+  #     - platform: state
+  #       entity_id: input_select.washingmachine_door_status
+  #       to: 'Open'
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: state
+  #         entity_id: input_select.washing_machine_status
+  #         state: 'Clean'
+  #   action:
+  #     - service: input_select.select_option
+  #       data:
+  #         entity_id: input_select.washing_machine_status
+  #         option: Idle
+

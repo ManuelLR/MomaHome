@@ -1,0 +1,26 @@
+# automation:
+  - alias: AUT-Notify Washing machine finished
+    trigger:
+      - platform: state
+        entity_id: sensor.washing_machine_status
+        to: Clean
+      - platform: state
+        entity_id:
+          - sensor.home_occupancy_status
+        to: 'Home'
+        for:
+          minutes: 2
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: sensor.washing_machine_status
+          state: Clean
+    action:
+      - service: homeassistant.turn_on
+        entity_id: script.notify_in_home_or_all
+        data:
+          variables:
+            title: 'Washing Machine finished'
+            message: 'Hey, the washing machine has finished and is ready to be emptied'
+

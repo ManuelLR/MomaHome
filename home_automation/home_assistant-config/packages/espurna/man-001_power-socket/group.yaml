@@ -1,6 +1,6 @@
 # group:
   man-001:
-    name: Power Socket man-001 (ESURNA)
+    name: Power Socket man-001 (ESPURNA)
     icon: mdi:power-socket-eu
     entities:
       - switch.man_001
