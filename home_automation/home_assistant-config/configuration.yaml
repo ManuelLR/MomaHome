@@ -57,8 +57,8 @@ mqtt:
   broker: 192.168.200.7
   port: 1883
   client_id: homeassistant
-  # username:
-  # password:
+  username: !secret mqtt_username
+  password: !secret mqtt_password
 
 # Server
 pi_hole: !include_dir_merge_named __auto_generated-config/pi_hole/
