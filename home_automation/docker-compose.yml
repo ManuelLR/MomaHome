@@ -3,7 +3,7 @@ services:
     home-assistant:
         # container_name: home-assistant
         hostname: woody-docker_home-assistant
-        image: homeassistant/home-assistant:0.104.3
+        image: homeassistant/home-assistant:0.106.6
         depends_on:
           - postgres
         ports:
@@ -31,25 +31,11 @@ services:
         environment:
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
-    emqx:
-        # name: mqtt
-        image: emqx/emqx:v3.2.1
+    mqtt:
+        image: eclipse-mosquitto:1.6
         restart: unless-stopped
         ports:
             - 1883:1883
-            - 8083:8083
-            - 18083:18083
-            # - 8080:8080
-        environment:
-            - EMQX_ALLOW_ANONYMOUS=true
-            # - EMQX_ALLOW_ANONYMOUS=false
-            - EMQX_NAME=woody-mqtt
-            # - EMQX_LOADED_PLUGINS=emqx_management | emqx_auth_redis | emqx_recon | emqx_retainer | emqx_dashboard
-            ## Dashboard
-            # dashboard.default_user.login
-            - EMQX_DASHBOARD__DEFAULT__USER__LOGIN=manolo
-            # dashboard.default_user.password=public
-            - EMQX_DASHBOARD__DEFAULT__USER__PASSWORD=${EMQX_DASHBOARD__DEFAULT__USER__PASSWORD}
-            ## AUTH
-            # 
+        volumes:
+            - ./mosquitto-config/:/mosquitto/config/:ro
 

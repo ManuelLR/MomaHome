@@ -1,0 +1,3 @@
+mydevice-001:pass
+mydevice-002:pass
+# Create that file in plain mode and after that exec docker run --rm -it -v $PWD/mosquitto-config/passwd:/passwd eclipse-mosquitto mosquitto_passwd -U /passwd
