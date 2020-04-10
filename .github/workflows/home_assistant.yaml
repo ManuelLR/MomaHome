@@ -13,7 +13,7 @@ jobs:
         run: |
           mv home_automation/home_assistant-config/secrets.example.yaml home_automation/home_assistant-config/secrets.yaml
       - name: Checking syntax
-        uses: docker://homeassistant/home-assistant:0.107.7
+        uses: docker://homeassistant/home-assistant:0.108.2
         id: HA-check-syntax
         with:
           args: |
