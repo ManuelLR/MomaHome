@@ -9,4 +9,5 @@
     password: !secret DDWRT_PASSWORD
     new_device_defaults:
       track_new_devices: true
-      hide_if_away: true
+      ## Deprecated in version 0.107.0
+      # hide_if_away: true

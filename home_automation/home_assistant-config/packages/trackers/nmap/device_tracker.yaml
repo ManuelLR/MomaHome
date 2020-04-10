@@ -8,6 +8,7 @@
     # consider_home: 30
     new_device_defaults: &new-device-defaults
       track_new_devices: true
-      hide_if_away: true
+      ## Deprecated in version 0.107.0
+      # hide_if_away: true
   # - platform: bluetooth_tracker
   #   new_device_defaults: *new-device-defaults

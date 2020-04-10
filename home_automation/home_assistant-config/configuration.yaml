@@ -35,7 +35,6 @@ recorder:
   exclude:
     # domains:
     #   - automation
-    #   - weblink
     #   - updater
     entities:
       - sun.sun # Don't record sun data
