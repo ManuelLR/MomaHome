@@ -63,14 +63,14 @@ vacuum_corridor:
           {{(states('input_number.vacuum_zone_repeats')|int)}}
         zone: [[26876,24122,29376,25122]]
 vacuum_eat_area:
-  alias: "Vacuum bathroom"
+  alias: "Vacuum eat area"
   sequence:
     - service: xiaomi_miio.vacuum_clean_zone
       data_template:
         entity_id: vacuum.xiaomi_vacuum
         repeats: >
           {{(states('input_number.vacuum_zone_repeats')|int)}}
-        zone: [[25849,25944,28549,28294]]
+        zone: [[25286,25553,27386,27553]]
 
 vacuum_room:
     alias: "Start cleaning"
