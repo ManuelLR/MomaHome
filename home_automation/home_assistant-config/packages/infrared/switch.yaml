@@ -4,7 +4,7 @@
     host: 192.168.200.51
     mac: !secret switch_ir_living_room_mac
     # timeout: 60
-    type: rm_mini3_newblackbean
+    type: rm_mini
     switches:
       tv_samsung_on:
         friendly_name: "TV on"
