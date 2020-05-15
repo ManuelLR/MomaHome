@@ -13,217 +13,164 @@
 
       tv_samsung_dual:
         friendly_name: "tv_samsung_DUAL"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISEhISEhISEhISEhISNxI3EjcSNxI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhISEhISEhISEjcSNxI3EjcSNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_cyclewindows:
         friendly_name: "tv_samsung_KEY_CYCLEWINDOWS"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISEhISEhISEhISEhISEhI3EjcSNxI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISEhISEhISEhISEhISNxI3EjcSNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_power:
         friendly_name: "tv_samsung_KEY_POWER"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSEhISEhISEhISEhISNxISEjcSNxI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhISEhISEhISEjcSEhI3EjcSNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_1:
         friendly_name: "tv_samsung_KEY_1"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISNxISEhISEhISEhISNxI3EhISNxI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSEhISEhISEhISEjcSNxISEjcSNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_2:
         friendly_name: "tv_samsung_KEY_2"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISNxISEhISEhISEhISEhI3EhISNxI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEhISEhISEhISNxISEjcSNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_3:
         friendly_name: "tv_samsung_KEY_3"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSNxISEhISEhISEhISNxISEhISNxI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSEhISEhISEhISEjcSEhISEjcSNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_volumeup:
         friendly_name: "tv_samsung_KEY_VOLUMEUP"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSEhISEhISEhISEhISEhISEjcSNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_4:
         friendly_name: "tv_samsung_KEY_4"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISEhI3EhISEhISEhISNxI3EjcSEhI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEhISEhISEjcSNxI3EhISNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_5:
         friendly_name: "tv_samsung_KEY_5"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISEhI3EhISEhISEhISEhI3EjcSEhI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISNxISEhISEhISEhISNxI3EhISNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_6:
         friendly_name: "tv_samsung_KEY_6"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSEhI3EhISEhISEhISNxISEjcSEhI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISNxISEhISEhISEjcSEhI3EhISNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_volumedown:
         friendly_name: "tv_samsung_KEY_VOLUMEDOWN"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSEhI3EhISEhISEhISEhISEjcSEhI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxISEhISEhISEhISEhI3EhISNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_7:
         friendly_name: "tv_samsung_KEY_7"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISNxI3EhISEhISEhISNxI3EhISEhI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEhISEhISEjcSNxISEhISNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_8:
         friendly_name: "tv_samsung_KEY_8"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISNxI3EhISEhISEhISEhI3EhISEhI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSNxISEhISEhISEhISNxISEhISNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_9:
         friendly_name: "tv_samsung_KEY_9"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSNxI3EhISEhISEhISNxISEhISEhI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxISEhISEhISEjcSEhISEhISNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_mute:
         friendly_name: "tv_samsung_KEY_MUTE"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSNxI3EhISEhISEhISEhISEhISEhI3EjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxISEhISEhISEhISEhISEhISNxI3EjcSNxIABfgNBQ=='
       tv_samsung_key_channeldown:
         friendly_name: "tv_samsung_KEY_CHANNELDOWN"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISEhISEjcSEhISEhISNxI3EjcSNxISEjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhI3EhISEhISEjcSNxI3EjcSEhI3EjcSNxIABfgNBQ=='
       tv_samsung_key_0:
         friendly_name: "tv_samsung_KEY_0"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISEhISEjcSEhISEhISEhI3EjcSNxISEjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISEhI3EhISEhISEhISNxI3EjcSEhI3EjcSNxIABfgNBQ=='
       tv_samsung_key_channelup:
         friendly_name: "tv_samsung_KEY_CHANNELUP"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSEhISEjcSEhISEhISNxISEjcSNxISEjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhI3EhISEhISEjcSEhI3EjcSEhI3EjcSNxIABfgNBQ=='
       tv_samsung_pre_ch:
         friendly_name: "tv_samsung_PRE-CH"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSEhISEjcSEhISEhISEhISEjcSNxISEjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISEhI3EhISEhISEhISEhI3EjcSEhI3EjcSNxIABfgNBQ=='
       tv_samsung_key_green:
         friendly_name: "tv_samsung_KEY_GREEN"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISNxISEjcSEhISEhISNxI3EhISNxISEjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSEhI3EhISEhISEjcSNxISEjcSEhI3EjcSNxIABfgNBQ=='
       tv_samsung_key_yellow:
         friendly_name: "tv_samsung_KEY_YELLOW"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISNxISEjcSEhISEhISEhI3EhISNxISEjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhI3EhISEhISEhISNxISEjcSEhI3EjcSNxIABfgNBQ=='
       tv_samsung_key_blue:
         friendly_name: "tv_samsung_KEY_BLUE"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSNxISEjcSEhISEhISNxISEhISNxISEjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSEhI3EhISEhISEjcSEhISEjcSEhI3EjcSNxIABfgNBQ=='
       tv_samsung_key_menu:
         friendly_name: "tv_samsung_KEY_MENU"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSEhI3EjcSEhISEhISNxISEjcSEhISEjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISNxI3EhISEhISEjcSEhI3EhISEhI3EjcSNxIABfgNBQ=='
       tv_samsung_key_info:
         friendly_name: "tv_samsung_KEY_INFO"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSNxI3EjcSEhISEhISEhISEhISEhISEjcSNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxI3EhISEhISEhISEhISEhISEhI3EjcSNxIABfgNBQ=='
       tv_samsung_pip:
         friendly_name: "tv_samsung_PIP"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISEhISEhISNxISEhISNxI3EjcSNxI3EhISNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhISEjcSEhISEjcSNxI3EjcSNxISEjcSNxIABfgNBQ=='
       tv_samsung_key_102nd:
         friendly_name: "tv_samsung_KEY_102ND"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSEhISEhISNxISEhISEhISEjcSNxI3EhISNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISEhISEjcSEhISEhISEhI3EjcSNxISEjcSNxIABfgNBQ=='
       tv_samsung_key_subtitle:
         friendly_name: "tv_samsung_KEY_SUBTITLE"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISNxISEhISNxISEhISEhI3EhISNxI3EhISNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEjcSEhISEhISNxISEjcSNxISEjcSNxIABfgNBQ=='
       tv_samsung_p_mode:
         friendly_name: "tv_samsung_P.MODE"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISEhI3EhISNxISEhISNxI3EjcSEhI3EhISNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEjcSEhISEjcSNxI3EhISNxISEjcSNxIABfgNBQ=='
       tv_samsung_s_mode:
         friendly_name: "tv_samsung_S.MODE"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSEhI3EhISNxISEhISEhISEjcSEhI3EhISNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxISEjcSEhISEhISEhI3EhISNxISEjcSNxIABfgNBQ=='
       tv_samsung_ttx_mix:
         friendly_name: "tv_samsung_TTX/MIX"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISNxI3EhISNxISEhISNxI3EhISEhI3EhISNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEjcSEhISEjcSNxISEhISNxISEjcSNxIABfgNBQ=='
       tv_samsung_key_exit:
         friendly_name: "tv_samsung_KEY_EXIT"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISNxI3EhISNxISEhISEhI3EhISEhI3EhISNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSNxISEjcSEhISEhISNxISEhISNxISEjcSNxIABfgNBQ=='
       tv_samsung_p_size:
         friendly_name: "tv_samsung_P.SIZE"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSNxI3EjcSNxISEhISNxISEhISEhISEhISNxI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxI3EjcSEhISEjcSEhISEhISEhISEjcSNxIABfgNBQ=='
       tv_samsung_still:
         friendly_name: "tv_samsung_STILL"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSEhISEhISEhI3EhISNxISEjcSNxI3EjcSEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhISEhISNxISEjcSEhI3EjcSNxI3EhISNxIABfgNBQ=='
       tv_samsung_tv_dtv:
         friendly_name: "tv_samsung_TV/DTV"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSEhISEhISEhI3EhISEhISEjcSNxI3EjcSEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISEhISEhISNxISEhISEhI3EjcSNxI3EhISNxIABfgNBQ=='
       tv_samsung_key_rewind:
         friendly_name: "tv_samsung_KEY_REWIND"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISNxISEhISEhI3EhISEhI3EhISNxI3EjcSEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEhISNxISEhISNxISEjcSNxI3EhISNxIABfgNBQ=='
       tv_samsung_key_stop:
         friendly_name: "tv_samsung_KEY_STOP"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSNxISEhISEhI3EhISNxISEhISNxI3EjcSEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSEhISEhISNxISEjcSEhISEjcSNxI3EhISNxIABfgNBQ=='
       tv_samsung_key_playpause:
         friendly_name: "tv_samsung_KEY_PLAYPAUSE"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhI3EhISEhISEhISNxI3EjcSEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSEhISEhISNxISEhISEhISEjcSNxI3EhISNxIABfgNBQ=='
       tv_samsung_key_fastforward:
         friendly_name: "tv_samsung_KEY_FASTFORWARD"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISEhI3EhISEhI3EhISNxI3EjcSEhI3EjcSEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEhISNxISEjcSNxI3EhISNxI3EhISNxIABfgNBQ=='
       tv_samsung_key_info_2:
         friendly_name: "tv_samsung_KEY_INFO_2"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSNxI3EhISEhI3EhISEhISEhISEhI3EjcSEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxISEhISNxISEhISEhISEhISNxI3EhISNxIABfgNBQ=='
       tv_samsung_uo:
         friendly_name: "tv_samsung_UO"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISEhISEhISNxI3EhISNxI3EjcSNxI3EhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhISEjcSNxISEjcSNxI3EjcSNxISEhISNxIABfgNBQ=='
       tv_samsung_key_down:
         friendly_name: "tv_samsung_KEY_DOWN"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISEhISEhISNxI3EhISEhI3EjcSNxI3EhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISEhISEjcSNxISEhISNxI3EjcSNxISEhISNxIABfgNBQ=='
       tv_samsung_key_right:
         friendly_name: "tv_samsung_KEY_RIGHT"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSEhISEhISNxI3EhISNxISEjcSNxI3EhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhISEjcSNxISEjcSEhI3EjcSNxISEhISNxIABfgNBQ=='
       tv_samsung_key_left:
         friendly_name: "tv_samsung_KEY_LEFT"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISNxISEhISNxI3EhISEhI3EhISNxI3EhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEjcSNxISEhISNxISEjcSNxISEhISNxIABfgNBQ=='
       tv_samsung_key_enter:
         friendly_name: "tv_samsung_KEY_ENTER"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISEhI3EhISNxI3EhISNxI3EjcSEhI3EhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEjcSNxISEjcSNxI3EhISNxISEhISNxIABfgNBQ=='
       tv_samsung_ch_mgr:
         friendly_name: "tv_samsung_CH_MGR"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSEhI3EhISNxI3EhISEhISEjcSEhI3EhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxISEjcSNxISEhISEhI3EhISNxISEhISNxIABfgNBQ=='
       tv_samsung_key_red:
         friendly_name: "tv_samsung_KEY_RED"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISNxI3EhISNxI3EhISNxI3EhISEhI3EhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEjcSNxISEjcSNxISEhISNxISEhISNxIABfgNBQ=='
       tv_samsung_srs:
         friendly_name: "tv_samsung_SRS"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSNxI3EhISNxI3EhISNxISEhISEhI3EhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxISEjcSNxISEjcSEhISEhISNxISEhISNxIABfgNBQ=='
       tv_samsung_key_vcr:
         friendly_name: "tv_samsung_KEY_VCR"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSEhI3EjcSNxI3EhISNxISEjcSEhISEhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISNxI3EjcSNxISEjcSEhI3EhISEhISEhISNxIABfgNBQ=='
       tv_samsung_cable:
         friendly_name: "tv_samsung_CABLE"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSEhI3EjcSNxI3EhISEhISEjcSEhISEhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxI3EjcSNxISEhISEhI3EhISEhISEhISNxIABfgNBQ=='
       tv_samsung_key_tv:
         friendly_name: "tv_samsung_KEY_TV"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EhISNxI3EjcSNxI3EhISEhI3EhISEhISEhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSNxI3EjcSNxISEhISNxISEhISEhISEhISNxIABfgNBQ=='
       tv_samsung_key_dvd:
         friendly_name: "tv_samsung_KEY_DVD"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSNxI3EjcSNxI3EhISNxISEhISEhISEhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxI3EjcSNxISEjcSEhISEhISEhISEhISNxIABfgNBQ=='
       tv_samsung_stb:
         friendly_name: "tv_samsung_STB"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhI3EjcSNxI3EjcSNxI3EhISEhISEhISEhISEhISEhI3EgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxI3EjcSNxISEhISEhISEhISEhISEhISNxIABfgNBQ=='
       tv_samsung_wiselink:
         friendly_name: "tv_samsung_WISELINK"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEhISNxI3EhISEhISEjcSNxI3EhISEhI3EjcSNxISEgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEhISEhI3EjcSNxISEhISNxI3EjcSEhIABfgNBQ=='
       tv_samsung_d_menu:
         friendly_name: "tv_samsung_D.MENU"
-        command_on: 'JgBQAAABKJMSNxI3EjcSEhISEhISEhISEjcSNxI3EhISEhISEhISEhISEjcSNxI3EhISEhISEjcSNxISEhISEhI3EjcSNxISEgAFZAABKEoSAAxWDQUAAAAAAAA='
-        
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxISEhISEhI3EjcSEhISEhISNxI3EjcSEhIABfgNBQ=='
+
