@@ -49,7 +49,6 @@ lovelace:
 recorder:
   db_url: !secret recorder_db_url
   purge_keep_days: 30
-  purge_interval: 3
   # include:
   exclude:
     # domains:
