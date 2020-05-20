@@ -22,11 +22,16 @@ elements:
       "--paper-item-icon-color": black
   - type: state-icon
     tap_action:
-      action: toggle
-    entity: switch.tv_samsung_on
+      action: more-info
+    hold_action:
+      action: call-service
+      service: switch.turn_on
+      service_data:
+        entity_id: switch.tv_samsung_key_power
+    entity: group.tv_samsung
     icon: mdi:television-classic
-    state_filter:
-      "off": --paper-item-icon-color=pink
+    # state_filter:
+    #   "off": --paper-item-icon-color=pink
     style:
       top: 54%
       left: 27%
