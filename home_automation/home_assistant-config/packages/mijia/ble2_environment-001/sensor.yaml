@@ -1,9 +1,7 @@
 # sensor:
   - platform: mitemp_bt
     name: "environment-001"
-    force_update: true
-    timeout: 15
-    retries: 4
-    scan_interval: 600
-    median: 1
-    mac: !secret sensor_environment-001_mac
+    batt_entities: true
+    whitelist: True
+    encryptors:
+      'A4:C1:38:5C:C1:2A': !secret sensor_environment-001_bindkey
