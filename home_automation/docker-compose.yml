@@ -13,7 +13,7 @@ services:
             - 0.0.0.0:8123:8123
         volumes:
             # Config files
-            - ./home_assistant-config/secrets.yaml:/config/secrets.yaml:ro
+            - ./home_assistant-config/:/config/
 
         environment:
             - TZ="Europe/Madrid"

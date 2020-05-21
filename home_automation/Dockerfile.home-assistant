@@ -6,12 +6,10 @@ RUN \
     set -ex \
     && apk add --no-cache --virtual build-dep \
       git \
-    && mkdir -p config/custom_components/ \
+    && mkdir -p /opt/HA/config/custom_components/ \
     && git clone https://github.com/custom-components/sensor.mitemp_bt.git /tmp/mitemp \
     && cd /tmp/mitemp && git checkout $CUSTOM_COMPONENT_MITEMP_VERSION \
-    && cd - && cp -r /tmp/mitemp/custom_components/* config/custom_components/ \
+    && cd - && cp -r /tmp/mitemp/custom_components/* /opt/HA/config/custom_components/ \
     && apk del build-dep
 
-COPY home_assistant-config/ config
-
-RUN ls -alh config/
+RUN ls -alh /opt/HA/config/
