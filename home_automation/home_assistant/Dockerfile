@@ -15,3 +15,5 @@ RUN \
 RUN ls -alh /opt/HA/config/
 
 COPY prepare.sh /etc/cont-init.d/
+
+# COPY config/ /config
