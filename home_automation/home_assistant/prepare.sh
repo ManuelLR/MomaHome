@@ -6,9 +6,11 @@ set -ex
 
 echo "This script initialize homeassistant to reload module before load config"
 
+CONFIG_PREFIX_PATH="${GITHUB_WORKSPACE:-}/config"
+
 # Move original config and try to load things without that config
-mv /config/configuration.yaml /config/configuration.yaml.tmp
-touch /config/configuration.yaml
+mv ${CONFIG_PREFIX_PATH}/configuration.yaml ${CONFIG_PREFIX_PATH}/configuration.yaml.tmp
+touch ${CONFIG_PREFIX_PATH}/configuration.yaml
 
 set +e
 echo "Starting fake HomeAssistant..."
@@ -23,10 +25,10 @@ echo "Starting fake HomeAssistant..."
 # echo "Finishing fake HomeAssistant..."
 # kill -s SIGTERM $process_pid
 
-/usr/local/bin/hass -c /config/ --script check_config
+/usr/local/bin/hass -c ${CONFIG_PREFIX_PATH}/ --script check_config
 
 
-mv /config/configuration.yaml.tmp /config/configuration.yaml
+mv ${CONFIG_PREFIX_PATH}/configuration.yaml.tmp ${CONFIG_PREFIX_PATH}/configuration.yaml
 
 
-/usr/local/bin/hass -c /config/ --script check_config
+/usr/local/bin/hass -c ${CONFIG_PREFIX_PATH}/ --script check_config
