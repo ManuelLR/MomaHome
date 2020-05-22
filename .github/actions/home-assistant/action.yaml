@@ -4,12 +4,12 @@ inputs:
   my_command_01:
     description: 'Command to execute 01'
     default: 'ls'
-  my_command_02:
-    description: 'Command to execute 02'
-  my_command_03:
-    description: 'Command to execute 03'
-  my_command_04:
-    description: 'Command to execute 04'
+  # my_command_02:
+  #   description: 'Command to execute 02'
+  # my_command_03:
+  #   description: 'Command to execute 03'
+  # my_command_04:
+  #   description: 'Command to execute 04'
 # outputs:
 #   time: # id of output
 #     description: 'The time we greeted you'
@@ -18,6 +18,6 @@ runs:
   image: '../../../home_automation/home_assistant/Dockerfile'
   args:
     - ${{ inputs.my_command_01 }}
-    - ${{ inputs.my_command_02 }}
-    - ${{ inputs.my_command_03 }}
-    - ${{ inputs.my_command_04 }}
+    # - ${{ inputs.my_command_02 }}
+    # - ${{ inputs.my_command_03 }}
+    # - ${{ inputs.my_command_04 }}
