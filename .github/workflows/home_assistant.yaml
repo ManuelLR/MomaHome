@@ -15,7 +15,7 @@ jobs:
       - name: Test container 2
         uses: ./.github/actions/home-assistant
         with:
-          command: 'echo $PWD'
+          my_command: 'echo $PWD'
       - name: Test container
         uses: ./.github/actions/home-assistant
         with:
