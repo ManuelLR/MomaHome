@@ -12,13 +12,10 @@ CONFIG_PREFIX_PATH="${GITHUB_WORKSPACE:-}/config"
 mv ${CONFIG_PREFIX_PATH}/configuration.yaml ${CONFIG_PREFIX_PATH}/configuration.yaml.tmp
 touch ${CONFIG_PREFIX_PATH}/configuration.yaml
 
-set +e
 echo "Starting checking HomeAssistant..."
 
 /usr/local/bin/hass -c ${CONFIG_PREFIX_PATH}/ --script check_config
 
-
 mv ${CONFIG_PREFIX_PATH}/configuration.yaml.tmp ${CONFIG_PREFIX_PATH}/configuration.yaml
-
 
 /usr/local/bin/hass -c ${CONFIG_PREFIX_PATH}/ --script check_config
