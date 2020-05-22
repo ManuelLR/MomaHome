@@ -12,6 +12,6 @@ runs:
   image: '../../../home_automation/home_assistant/Dockerfile'
   args:
     - hass
-    - -c=home_automation/home_assistant-config/
+    - -c=home_automation/home_assistant/config/
     - --script=check_config
 #  ${{ inputs.my_command }}
