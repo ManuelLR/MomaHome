@@ -16,9 +16,9 @@ jobs:
         uses: ./.github/actions/home-assistant/ # Uses an action in the root directory
         with:
           command: 'ls -alh hass -c home_automation/home_assistant-config/ --script check_config'
-      - name: Checking syntax
-        uses: docker://homeassistant/home-assistant:0.109.6
-        id: HA-check-syntax
-        with:
-          args: |
-            hass -c home_automation/home_assistant-config/ --script check_config
+      # - name: Checking syntax
+      #   uses: docker://homeassistant/home-assistant:0.109.6
+      #   id: HA-check-syntax
+      #   with:
+      #     args: |
+      #       hass -c home_automation/home_assistant-config/ --script check_config
