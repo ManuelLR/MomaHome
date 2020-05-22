@@ -1,7 +1,8 @@
 # sensor:
   - platform: mitemp_bt
-    name: "environment-001"
-    batt_entities: true
+    # name: "environment-001"
+    ## Hey ! If a error occur don't worry, HA needs disable that component and restart
+    batt_entities: True
     whitelist: True
     encryptors:
       'A4:C1:38:5C:C1:2A': !secret sensor_environment-001_bindkey
