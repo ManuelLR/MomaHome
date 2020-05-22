@@ -12,15 +12,19 @@ touch /config/configuration.yaml
 
 set +e
 echo "Starting fake HomeAssistant..."
-/usr/local/bin/python3 -m homeassistant --config=/config/ &
-process_pid=$!
+# /usr/local/bin/python3 -m homeassistant --config=/config/ &
 
-set -e
+# process_pid=$!
 
-sleep 10s
+# set -e
 
-echo "Finishing fake HomeAssistant..."
-kill -s SIGTERM $process_pid
+# sleep 10s
+
+# echo "Finishing fake HomeAssistant..."
+# kill -s SIGTERM $process_pid
+
+/usr/local/bin/hass -c /config/ --script check_config
+
 
 mv /config/configuration.yaml.tmp /config/configuration.yaml
 
