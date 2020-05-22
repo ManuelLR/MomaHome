@@ -14,8 +14,8 @@ jobs:
           mv home_automation/home_assistant/config/secrets.example.yaml home_automation/home_assistant/config/secrets.yaml
       - name: Test container 2
         uses: ./.github/actions/home-assistant
-        with:
-          my_command: '/bin/echo hi'
+        # with:
+        #   my_command: '/bin/echo hi'
       - name: Test container
         uses: ./.github/actions/home-assistant
         with:
