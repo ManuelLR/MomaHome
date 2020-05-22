@@ -4,12 +4,11 @@ inputs:
   my_command:
     description: 'Command to execute'
     required: true
-    default: 'ls -alh'
+    default: ['ls', '-alh']
 # outputs:
 #   time: # id of output
 #     description: 'The time we greeted you'
 runs:
   using: 'docker'
   image: '../../../home_automation/home_assistant/Dockerfile'
-  # args:
-  #   - ${{ inputs.my_command }}
+  args: ${{ inputs.my_command }}
