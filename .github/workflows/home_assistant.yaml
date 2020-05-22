@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Prepare secrets
         run: |
-          mv home_automation/home_assistant-config/secrets.example.yaml home_automation/home_assistant-config/secrets.yaml
+          mv home_automation/home_assistant/config/secrets.example.yaml home_automation/home_assistant/config/secrets.yaml
       - name: Test container
         uses: ./.github/actions/home-assistant # Uses an action in the root directory
         with:
