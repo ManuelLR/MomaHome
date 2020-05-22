@@ -13,7 +13,7 @@ jobs:
         run: |
           mv home_automation/home_assistant-config/secrets.example.yaml home_automation/home_assistant-config/secrets.yaml
       - name: Test container
-        uses: .github/actions/home-assistant/ # Uses an action in the root directory
+        uses: ./.github/actions/home-assistant # Uses an action in the root directory
         with:
           command: 'ls -alh hass -c home_automation/home_assistant-config/ --script check_config'
       # - name: Checking syntax
