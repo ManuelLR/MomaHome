@@ -10,6 +10,6 @@ inputs:
 #     description: 'The time we greeted you'
 runs:
   using: 'docker'
-  image: './home_automation/home_assistant/Dockerfile'
+  image: '/home_automation/home_assistant/Dockerfile'
   args:
     - ${{ inputs.command }}
