@@ -13,17 +13,7 @@ mv ${CONFIG_PREFIX_PATH}/configuration.yaml ${CONFIG_PREFIX_PATH}/configuration.
 touch ${CONFIG_PREFIX_PATH}/configuration.yaml
 
 set +e
-echo "Starting fake HomeAssistant..."
-# /usr/local/bin/python3 -m homeassistant --config=/config/ &
-
-# process_pid=$!
-
-# set -e
-
-# sleep 10s
-
-# echo "Finishing fake HomeAssistant..."
-# kill -s SIGTERM $process_pid
+echo "Starting checking HomeAssistant..."
 
 /usr/local/bin/hass -c ${CONFIG_PREFIX_PATH}/ --script check_config
 

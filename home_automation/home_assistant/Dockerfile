@@ -12,8 +12,4 @@ RUN \
     && cd - && cp -r /tmp/mitemp/custom_components/* /opt/HA/config/custom_components/ \
     && apk del build-dep
 
-RUN ls -alh /opt/HA/config/
-
 COPY prepare.sh /etc/cont-init.d/
-
-# COPY config/ /config

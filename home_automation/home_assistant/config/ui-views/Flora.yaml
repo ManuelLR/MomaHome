@@ -1,32 +1,39 @@
 - type: history-graph
+  title: 'Temperature (5d)'
+  hours_to_show: 120
+  entities:
+    # - group.home_speed
+    - sensor.mi_t_a4c1385cc12a
+    - sensor.mi_t_c47c8d6b1a91
+- type: history-graph
+  title: 'Humidity (5d)'
+  hours_to_show: 120
+  entities:
+    # - group.home_speed
+    - sensor.mi_h_a4c1385cc12a
+- type: history-graph
   title: 'Moisture (5d)'
   hours_to_show: 120
   entities:
     # - group.home_speed
-    - sensor.flora_001_moisture
+    - sensor.mi_m_c47c8d6b1a91
 - type: history-graph
   title: 'Conductivity (5d)'
   hours_to_show: 120
   entities:
     # - group.home_speed
-    - sensor.flora_001_conductivity
+    - sensor.mi_c_c47c8d6b1a91
 - type: history-graph
   title: 'Light Intensity (5d)'
   hours_to_show: 120
   entities:
     # - group.home_speed
-    - sensor.flora_001_light_intensity
-
-- type: history-graph
-  title: 'Temperature (5d)'
-  hours_to_show: 120
-  entities:
-    # - group.home_speed
-    - sensor.flora_001_temperature
+    - sensor.mi_l_c47c8d6b1a91
 
 - type: history-graph
   title: 'Battery (5d)'
   hours_to_show: 120
   entities:
     # - group.home_speed
-    - sensor.flora_001_battery
+    - sensor.mi_batt_a4c1385cc12a
+    - sensor.mi_batt_c47c8d6b1a91

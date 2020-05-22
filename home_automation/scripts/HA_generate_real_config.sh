@@ -5,7 +5,7 @@ cd $(dirname $(readlink -f $0))
 
 set -ex
 
-HA_CONFIG_PATH="${HA_CONFIG_PATH:-../home_assistant-config}"
+HA_CONFIG_PATH="${HA_CONFIG_PATH:-../home_assistant/config}"
 GENERATED_CONFIG_PATH="${GENERATED_CONFIG_PATH:-__auto_generated-config}"
 PACKAGED_CONFIG_PATH="${PACKAGED_CONFIG_PATH:-packages}"
 
