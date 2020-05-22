@@ -1,9 +1,9 @@
 name: 'Home Assistant container'
 description: 'My Home Assistant container'
 inputs:
-  my_command_01:
-    description: 'Command to execute 01'
-    default: 'ls'
+  my_command:
+    description: 'Command to execute'
+    default: 'ls -alh'
   # my_command_02:
   #   description: 'Command to execute 02'
   # my_command_03:
@@ -16,8 +16,5 @@ inputs:
 runs:
   using: 'docker'
   image: '../../../home_automation/home_assistant/Dockerfile'
-  args:
-    - ${{ inputs.my_command_01 }}
-    # - ${{ inputs.my_command_02 }}
-    # - ${{ inputs.my_command_03 }}
-    # - ${{ inputs.my_command_04 }}
+  args: |
+    ${{ inputs.my_command }}
