@@ -1,0 +1,6 @@
+# group:
+  environment_001:
+      entities:
+        - sensor.mi_h_a4c1385cc12a
+        - sensor.mi_t_a4c1385cc12a
+        - sensor.mi_batt_a4c1385cc12a
