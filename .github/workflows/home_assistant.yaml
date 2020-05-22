@@ -12,11 +12,16 @@ jobs:
       - name: Prepare secrets
         run: |
           mv home_automation/home_assistant/config/secrets.example.yaml home_automation/home_assistant/config/secrets.yaml
+      - name: Test container 2
+        uses: ./.github/actions/home-assistant
+        with:
+          command: 'echo $PWD'
       - name: Test container
         uses: ./.github/actions/home-assistant
         with:
           # command: 'hass -c home_automation/home_assistant/config/ --script check_config'
-          command: 'ls -alh home_automation/home_assistant/config/'
+          # command: 'ls -alh home_automation/home_assistant/config/'
+          command: 'ls -alh'
       # - name: Checking syntax
       #   uses: docker://homeassistant/home-assistant:0.109.6
       #   id: HA-check-syntax
