@@ -19,6 +19,13 @@ services:
         restart: unless-stopped
         # That it's useful to use bluetooth devices in server
         network_mode: "host"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.services.home-assistant.loadbalancer.server.port=8123"
+            - "traefik.http.routers.home-assistant.rule=Host(`${EXTERNAL_DOMAIN}`)"
+            - "traefik.http.routers.home-assistant.entrypoints=websecure"
+            - "traefik.http.routers.home-assistant.tls.certresolver=principal"
+            - "traefik.http.routers.home-assistant.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
 
     postgres:
