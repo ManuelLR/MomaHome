@@ -1,0 +1,14 @@
+# device_tracker:
+  - platform: nmap_tracker
+    interval_seconds: 180
+    hosts: 192.168.200.0/24
+    # consider_home: 600
+    consider_home: 400
+    # consider_home: 350
+    # consider_home: 30
+    new_device_defaults: &new-device-defaults
+      track_new_devices: true
+      ## Deprecated in version 0.107.0
+      # hide_if_away: true
+  # - platform: bluetooth_tracker
+  #   new_device_defaults: *new-device-defaults

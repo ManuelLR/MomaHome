@@ -1,0 +1,17 @@
+name: 'Home Assistant container'
+description: 'My Home Assistant container'
+# inputs:
+#   my_command:
+#     description: 'Command to execute'
+#     default: 'ls -alh'
+# outputs:
+#   time: # id of output
+#     description: 'The time we greeted you'
+runs:
+  using: 'docker'
+  image: '../../../home_automation/home_assistant/Dockerfile'
+  args:
+    - hass
+    - -c=home_automation/home_assistant/config/
+    - --script=check_config
+#  ${{ inputs.my_command }}

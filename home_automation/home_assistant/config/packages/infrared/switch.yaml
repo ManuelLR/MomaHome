@@ -1,0 +1,170 @@
+# switch:
+  - friendly_name: IR living room
+    platform: broadlink
+    host: 192.168.200.51
+    mac: !secret switch_ir_living_room_mac
+    # timeout: 60
+    type: rm_mini
+    switches:
+      tv_samsung_dual:
+        friendly_name: "TV DUAL"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhISEhISEhISEjcSNxI3EjcSNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_source:
+        friendly_name: "TV Source"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISEhISEhISEhISEhISNxI3EjcSNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_power:
+        friendly_name: "TV POWER"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhISEhISEhISEjcSEhI3EjcSNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_1:
+        friendly_name: "TV KEY_1"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSEhISEhISEhISEjcSNxISEjcSNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_2:
+        friendly_name: "TV KEY_2"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEhISEhISEhISNxISEjcSNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_3:
+        friendly_name: "TV KEY_3"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSEhISEhISEhISEjcSEhISEjcSNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_volumeup:
+        friendly_name: "TV Volume up"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSEhISEhISEhISEhISEhISEjcSNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_4:
+        friendly_name: "TV KEY_4"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEhISEhISEjcSNxI3EhISNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_5:
+        friendly_name: "TV KEY_5"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISNxISEhISEhISEhISNxI3EhISNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_6:
+        friendly_name: "TV KEY_6"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISNxISEhISEhISEjcSEhI3EhISNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_volumedown:
+        friendly_name: "TV Volume down"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxISEhISEhISEhISEhI3EhISNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_7:
+        friendly_name: "TV KEY_7"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEhISEhISEjcSNxISEhISNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_8:
+        friendly_name: "TV KEY_8"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSNxISEhISEhISEhISNxISEhISNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_9:
+        friendly_name: "TV KEY_9"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxISEhISEhISEjcSEhISEhISNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_mute:
+        friendly_name: "TV Mute"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxISEhISEhISEhISEhISEhISNxI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_channeldown:
+        friendly_name: "TV KEY_CHANNELDOWN"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhI3EhISEhISEjcSNxI3EjcSEhI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_0:
+        friendly_name: "TV KEY_0"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISEhI3EhISEhISEhISNxI3EjcSEhI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_channelup:
+        friendly_name: "TV KEY_CHANNELUP"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhI3EhISEhISEjcSEhI3EjcSEhI3EjcSNxIABfgNBQ=='
+      tv_samsung_pre_ch:
+        friendly_name: "TV PRE-CH"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISEhI3EhISEhISEhISEhI3EjcSEhI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_green:
+        friendly_name: "TV KEY_GREEN"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSEhI3EhISEhISEjcSNxISEjcSEhI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_yellow:
+        friendly_name: "TV KEY_YELLOW"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhI3EhISEhISEhISNxISEjcSEhI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_blue:
+        friendly_name: "TV KEY_BLUE"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSEhI3EhISEhISEjcSEhISEjcSEhI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_menu:
+        friendly_name: "TV KEY_MENU"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISNxI3EhISEhISEjcSEhI3EhISEhI3EjcSNxIABfgNBQ=='
+      tv_samsung_key_info:
+        friendly_name: "TV KEY_INFO"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxI3EhISEhISEhISEhISEhISEhI3EjcSNxIABfgNBQ=='
+      tv_samsung_pip:
+        friendly_name: "TV PIP"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhISEjcSEhISEjcSNxI3EjcSNxISEjcSNxIABfgNBQ=='
+      tv_samsung_key_102nd:
+        friendly_name: "TV KEY_102ND"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISEhISEjcSEhISEhISEhI3EjcSNxISEjcSNxIABfgNBQ=='
+      tv_samsung_key_subtitle:
+        friendly_name: "TV KEY_SUBTITLE"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEjcSEhISEhISNxISEjcSNxISEjcSNxIABfgNBQ=='
+      tv_samsung_p_mode:
+        friendly_name: "TV P.MODE"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEjcSEhISEjcSNxI3EhISNxISEjcSNxIABfgNBQ=='
+      tv_samsung_s_mode:
+        friendly_name: "TV S.MODE"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxISEjcSEhISEhISEhI3EhISNxISEjcSNxIABfgNBQ=='
+      tv_samsung_ttx_mix:
+        friendly_name: "TV TTX/MIX"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEjcSEhISEjcSNxISEhISNxISEjcSNxIABfgNBQ=='
+      tv_samsung_key_exit:
+        friendly_name: "TV KEY_EXIT"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSNxISEjcSEhISEhISNxISEhISNxISEjcSNxIABfgNBQ=='
+      tv_samsung_p_size:
+        friendly_name: "TV P.SIZE"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxI3EjcSEhISEjcSEhISEhISEhISEjcSNxIABfgNBQ=='
+      tv_samsung_still:
+        friendly_name: "TV STILL"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhISEhISNxISEjcSEhI3EjcSNxI3EhISNxIABfgNBQ=='
+      tv_samsung_tv_dtv:
+        friendly_name: "TV TV/DTV"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISEhISEhISNxISEhISEhI3EjcSNxI3EhISNxIABfgNBQ=='
+      tv_samsung_key_rewind:
+        friendly_name: "TV KEY_REWIND"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEhISNxISEhISNxISEjcSNxI3EhISNxIABfgNBQ=='
+      tv_samsung_key_stop:
+        friendly_name: "TV KEY_STOP"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSEhISEhISNxISEjcSEhISEjcSNxI3EhISNxIABfgNBQ=='
+      tv_samsung_key_playpause:
+        friendly_name: "TV KEY_PLAYPAUSE"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSEhISEhISNxISEhISEhISEjcSNxI3EhISNxIABfgNBQ=='
+      tv_samsung_key_fastforward:
+        friendly_name: "TV KEY_FASTFORWARD"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEhISNxISEjcSNxI3EhISNxI3EhISNxIABfgNBQ=='
+      tv_samsung_key_info_2:
+        friendly_name: "TV KEY_INFO_2"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxISEhISNxISEhISEhISEhISNxI3EhISNxIABfgNBQ=='
+      tv_samsung_key_up:
+        friendly_name: "TV Up"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhISEjcSNxISEjcSNxI3EjcSNxISEhISNxIABfgNBQ=='
+      tv_samsung_key_down:
+        friendly_name: "TV Down"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISEhISEjcSNxISEhISNxI3EjcSNxISEhISNxIABfgNBQ=='
+      tv_samsung_key_right:
+        friendly_name: "TV Right"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhISEjcSNxISEjcSEhI3EjcSNxISEhISNxIABfgNBQ=='
+      tv_samsung_key_left:
+        friendly_name: "TV Left"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEjcSNxISEhISNxISEjcSNxISEhISNxIABfgNBQ=='
+      tv_samsung_key_enter:
+        friendly_name: "TV Enter"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEjcSNxISEjcSNxI3EhISNxISEhISNxIABfgNBQ=='
+      tv_samsung_ch_mgr:
+        friendly_name: "TV CH_MGR"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxISEjcSNxISEhISEhI3EhISNxISEhISNxIABfgNBQ=='
+      tv_samsung_key_red:
+        friendly_name: "TV KEY_RED"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEjcSNxISEjcSNxISEhISNxISEhISNxIABfgNBQ=='
+      tv_samsung_srs:
+        friendly_name: "TV SRS"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxISEjcSNxISEjcSEhISEhISNxISEhISNxIABfgNBQ=='
+      tv_samsung_key_vcr:
+        friendly_name: "TV KEY_VCR"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISNxI3EjcSNxISEjcSEhI3EhISEhISEhISNxIABfgNBQ=='
+      tv_samsung_cable:
+        friendly_name: "TV CABLE"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxI3EjcSNxISEhISEhI3EhISEhISEhISNxIABfgNBQ=='
+      tv_samsung_key_tv:
+        friendly_name: "TV KEY_TV"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSNxI3EjcSNxISEhISNxISEhISEhISEhISNxIABfgNBQ=='
+      tv_samsung_key_dvd:
+        friendly_name: "TV KEY_DVD"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxI3EjcSNxISEjcSEhISEhISEhISEhISNxIABfgNBQ=='
+      tv_samsung_stb:
+        friendly_name: "TV STB"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxI3EjcSNxISEhISEhISEhISEhISEhISNxIABfgNBQ=='
+      tv_samsung_wiselink:
+        friendly_name: "TV WISELINK"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEhISEhI3EjcSNxISEhISNxI3EjcSEhIABfgNBQ=='
+      tv_samsung_d_menu:
+        friendly_name: "TV D.MENU"
+        command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxISEhISEhI3EjcSEhISEhISNxI3EjcSEhIABfgNBQ=='

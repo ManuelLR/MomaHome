@@ -3,14 +3,16 @@ services:
     home-assistant:
         # container_name: home-assistant
         hostname: woody-docker_home-assistant
-        image: homeassistant/home-assistant:0.106.6
+        # image: homeassistant/home-assistant:0.109.6
+        build:
+            context: home_assistant/
         depends_on:
           - postgres
         ports:
             - 0.0.0.0:8123:8123
         volumes:
             # Config files
-            - ./home_assistant-config:/config
+            - ./home_assistant/config/:/config/
 
         environment:
             - TZ="Europe/Madrid"
