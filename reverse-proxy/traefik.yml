@@ -4,6 +4,11 @@ global:
   checkNewVersion: True
   # sendAnonymousUsag: True
 
+# log:
+#   level: DEBUG
+
+accessLog: {}
+
 entryPoints:
   web:
     address: ":80"
@@ -16,8 +21,6 @@ entryPoints:
   websecure:
     address: ":443"
 
-# log:
-#   level: DEBUG
 
 # Docker configuration backend
 providers:
