@@ -1,0 +1,27 @@
+version: "2.4"
+services:
+  traefik:
+    image: traefik:v2.2
+    container_name: reverse-proxy_traefik
+    restart: always
+    ports:
+      - "192.168.200.7:8080:8080"
+      - "192.168.200.7:80:80"
+      - "192.168.200.7:443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
+    networks:
+      - net-reverse-proxy
+    environment: 
+      - TRAEFIK_CERTIFICATESRESOLVERS_PRINCIPAL_ACME_EMAIL=${TRAEFIK_CERTIFICATESRESOLVERS_PRINCIPAL_ACME_EMAIL:-example@abc.com}
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
+
+networks:
+  net-reverse-proxy:
+    # Aims to create a network called "reverse-proxy" to reuse in others containers to be routed by reverse-proxy
+    # This network must be created before start. `docker network create reverse-proxy`
+    name: reverse-proxy
+    external: true
