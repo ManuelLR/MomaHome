@@ -64,7 +64,8 @@ default_config:
 
 http:
   server_port: 8123
-#   base_url: example.duckdns.org:8123
+  # external_url:
+  internal_url: http://192.168.200.7:8123
 
 
 # Discover some devices automatically
