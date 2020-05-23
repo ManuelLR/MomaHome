@@ -1,0 +1,18 @@
+# google_assistant:
+  project_id: !include google_assistant_project_id
+  service_account: !include google_assistant_service_account.json
+  report_state: true
+  # expose_by_default: true
+  exposed_domains:
+    # - switch
+    - light
+    - sensor
+  # entity_config:
+  #   switch.kitchen:
+  #     name: CUSTOM_NAME_FOR_GOOGLE_ASSISTANT
+  #     aliases:
+  #       - BRIGHT_LIGHTS
+  #       - ENTRY_LIGHTS
+  #   light.living_room:
+  #     expose: false
+  #     room: LIVING_ROOM
