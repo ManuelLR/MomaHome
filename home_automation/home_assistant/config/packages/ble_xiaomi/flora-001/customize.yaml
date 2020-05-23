@@ -1,0 +1,9 @@
+# homeassistant:
+#   customize:
+    sensor.mi_c_c47c8d6b1a91: &customization-flora-001
+      friendly_name: flora-001
+
+    sensor.mi_l_c47c8d6b1a91: *customization-flora-001
+    sensor.mi_m_c47c8d6b1a91: *customization-flora-001
+    sensor.mi_t_c47c8d6b1a91: *customization-flora-001
+    sensor.mi_batt_c47c8d6b1a91: *customization-flora-001
