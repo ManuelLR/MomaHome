@@ -85,7 +85,7 @@ speedtestdotnet: !include_dir_merge_named __auto_generated-config/speedtestdotne
 apcupsd: !include_dir_merge_named __auto_generated-config/apcupsd/
 binary_sensor: !include_dir_merge_list __auto_generated-config/binary_sensor/
 
-
+google_assistant: !include_dir_merge_named __auto_generated-config/google_assistant/
 
 device_tracker: !include_dir_merge_list __auto_generated-config/device_tracker/
 
