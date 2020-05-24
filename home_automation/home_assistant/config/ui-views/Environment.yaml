@@ -1,16 +1,26 @@
 - type: horizontal-stack
   title: 'Temperature (24h)'
   cards:
-    - &temperature-card
+    ## Temperature
+    - &environment-card
       type: sensor
-      icon: mdi:thermometer
       graph: line
-      unit: ºC
       detail: 2
       hours_to_show: 24
       entity: sensor.mi_t_c47c8d6b1a91
-    - <<: *temperature-card
+    - <<: *environment-card
       entity: sensor.mi_t_a4c1385cc12a
+
+    ## Humidity
+    - <<: *environment-card
+      entity: sensor.mi_h_a4c1385cc12a
+
+    ## Battery
+    - <<: *environment-card
+      entity: sensor.mi_batt_c47c8d6b1a91
+    - <<: *environment-card
+      entity: sensor.mi_batt_a4c1385cc12a
+
 - type: history-graph
   title: 'Humidity (24h)'
   hours_to_show: 24
