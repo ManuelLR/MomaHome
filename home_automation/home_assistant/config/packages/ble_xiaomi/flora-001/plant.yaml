@@ -3,7 +3,7 @@
     sensors:
       battery: sensor.mi_batt_c47c8d6b1a91
       moisture: sensor.mi_m_c47c8d6b1a91
-      temerature: sensor.mi_t_c47c8d6b1a91
+      temperature: sensor.mi_t_c47c8d6b1a91
       conductivity: sensor.mi_c_c47c8d6b1a91
       brightness: sensor.mi_l_c47c8d6b1a91
     # min_battery: 20
