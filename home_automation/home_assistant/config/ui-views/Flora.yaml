@@ -1,3 +1,6 @@
+- type: plant-status
+  entity: plant.flora-001
+
 - type: history-graph
   title: 'Temperature (5d)'
   hours_to_show: 120
