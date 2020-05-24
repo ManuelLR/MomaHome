@@ -8,8 +8,8 @@ elements:
       action: toggle
     entity: light.living_room_light
     style:
-      top: 54%
-      left: 57%
+      top: 35%
+      left: 46%
       "--paper-item-icon-color": black
   - type: state-icon
     tap_action:
@@ -17,7 +17,7 @@ elements:
     entity: group.power_socket_double_001
     # entity: group.vacuum_room
     style:
-      top: 15%
+      top: 12%
       left: 94%
       "--paper-item-icon-color": black
   - type: state-icon
@@ -33,7 +33,7 @@ elements:
     # state_filter:
     #   "off": --paper-item-icon-color=pink
     style:
-      top: 54%
+      top: 62%
       left: 27%
       "--paper-item-icon-color": black
   - type: state-icon
@@ -41,15 +41,15 @@ elements:
       action: more-info
     entity: vacuum.xiaomi_vacuum
     style:
-      top: 57%
-      left: 23%
+      top: 63%
+      left: 20%
       "--paper-item-icon-color": black
   - type: state-icon
     tap_action:
       action: more-info
     entity: sensor.washing_machine_status
     style:
-      top: 37%
+      top: 42%
       left: 93%
       "--paper-item-icon-color": black
   - type: conditional
@@ -67,11 +67,20 @@ elements:
           top: 80%
           left: 80%
           "--paper-item-icon-color": yellow
-  - type: state-label
-    entity: sensor.outside_temperature
+  - type: state-icon
+    tap_action:
+      action: more-info
+    entity: plant.flora_001
+    # entity: group.vacuum_room
     style:
-      top: 45%
-      left: 88%
+      top: 42%
+      left: 7%
+      "--paper-item-icon-color": black
+  # - type: state-label
+  #   entity: sensor.outside_temperature
+  #   style:
+  #     top: 45%
+  #     left: 88%
   # - type: service-button
   #   title: Turn lights off
   #   style:

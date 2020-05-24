@@ -8,8 +8,8 @@
         action: more-info
       entity: vacuum.xiaomi_vacuum
       style:
-        top: 57%
-        left: 23%
+        top: 63%
+        left: 20%
         "--paper-item-icon-color": black
 - type: glance
   entities:
