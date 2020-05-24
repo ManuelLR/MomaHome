@@ -1,28 +1,32 @@
-- type: plant-status
-  entity: plant.flora_001
+- type: vertical-stack
+  cards:
+    - type: plant-status
+      entity: plant.flora_001
 
-- type: horizontal-stack
-  title: 'Light Intensity (7d)'
+- type: vertical-stack
   cards:
-    - type: sensor
-      graph: line
-      detail: 1
-      hours_to_show: 168
-      entity: sensor.mi_l_c47c8d6b1a91
-- type: horizontal-stack
-  title: 'Moisture (7d)'
-  cards:
-    - type: sensor
-      graph: line
-      detail: 1
-      hours_to_show: 168
-      entity: sensor.mi_m_c47c8d6b1a91
+    - type: horizontal-stack
+      title: 'Light Intensity (7d)'
+      cards:
+        - type: sensor
+          graph: line
+          detail: 1
+          hours_to_show: 168
+          entity: sensor.mi_l_c47c8d6b1a91
+    - type: horizontal-stack
+      title: 'Moisture (7d)'
+      cards:
+        - type: sensor
+          graph: line
+          detail: 1
+          hours_to_show: 168
+          entity: sensor.mi_m_c47c8d6b1a91
 
-- type: horizontal-stack
-  title: 'Temperature (7d)'
-  cards:
-    - type: sensor
-      graph: line
-      detail: 1
-      hours_to_show: 168
-      entity: sensor.mi_t_c47c8d6b1a91
+    - type: horizontal-stack
+      title: 'Temperature (7d)'
+      cards:
+        - type: sensor
+          graph: line
+          detail: 1
+          hours_to_show: 168
+          entity: sensor.mi_t_c47c8d6b1a91

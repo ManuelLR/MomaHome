@@ -1,3 +1,5 @@
+- type: iframe
+  url: https://www.eltiempo.es/widget/widget_loader/38ba11050dbc78b4b5f42bdb832a7fa5
 - type: vertical-stack
   title: 'Last 24h'
   cards:
