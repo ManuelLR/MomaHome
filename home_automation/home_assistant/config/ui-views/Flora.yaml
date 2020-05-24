@@ -1,5 +1,5 @@
 - type: plant-status
-  entity: plant.flora-001
+  entity: plant.flora_001
 
 - type: history-graph
   title: 'Temperature (5d)'

@@ -1,7 +1,7 @@
 # plant:
-  flora-001:
+  flora_001:
     sensors:
-      battery: sensor.mi_batt_c47c8d6b1a91
+      # battery: sensor.mi_batt_c47c8d6b1a91
       moisture: sensor.mi_m_c47c8d6b1a91
       temerature: sensor.mi_t_c47c8d6b1a91
       conductivity: sensor.mi_c_c47c8d6b1a91
