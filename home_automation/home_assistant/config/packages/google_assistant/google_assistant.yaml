@@ -1,18 +1,12 @@
 # google_assistant:
   project_id: !secret google_assistant_project_id
-  service_account: !include google_assistant_service_account.json
+  service_account: !include ../../google_assistant_service_account.json
   report_state: true
   # expose_by_default: true
   exposed_domains:
-    # - switch
+    - switch
     - light
     - sensor
-  # entity_config:
-  #   switch.kitchen:
-  #     name: CUSTOM_NAME_FOR_GOOGLE_ASSISTANT
-  #     aliases:
-  #       - BRIGHT_LIGHTS
-  #       - ENTRY_LIGHTS
-  #   light.living_room:
-  #     expose: false
-  #     room: LIVING_ROOM
+    - vacuum
+    - scene
+  entity_config: !include_dir_merge_named ../../__auto_generated-config/google_assistant_entities/

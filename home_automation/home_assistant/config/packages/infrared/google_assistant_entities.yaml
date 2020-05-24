@@ -1,0 +1,64 @@
+# google_assistant:
+  # entity_config:
+
+      ## Enabled entities
+    switch.tv_samsung_key_power: &tv-enabled
+      room: Living Room
+      expose: True
+    switch.tv_samsung_key_mute: *tv-enabled
+
+
+      ## Disabled entities
+    switch.tv_samsung_dual: &tv-disabled
+      expose: False
+    switch.tv_samsung_key_source: *tv-disabled
+    switch.tv_samsung_key_1: *tv-disabled
+    switch.tv_samsung_key_2: *tv-disabled
+    switch.tv_samsung_key_3: *tv-disabled
+    switch.tv_samsung_key_volumeup: *tv-disabled
+    switch.tv_samsung_key_4: *tv-disabled
+    switch.tv_samsung_key_5: *tv-disabled
+    switch.tv_samsung_key_6: *tv-disabled
+    switch.tv_samsung_key_volumedown: *tv-disabled
+    switch.tv_samsung_key_7: *tv-disabled
+    switch.tv_samsung_key_8: *tv-disabled
+    switch.tv_samsung_key_9: *tv-disabled
+    switch.tv_samsung_key_channeldown: *tv-disabled
+    switch.tv_samsung_key_0: *tv-disabled
+    switch.tv_samsung_key_channelup: *tv-disabled
+    switch.tv_samsung_pre_ch: *tv-disabled
+    switch.tv_samsung_key_green: *tv-disabled
+    switch.tv_samsung_key_yellow: *tv-disabled
+    switch.tv_samsung_key_blue: *tv-disabled
+    switch.tv_samsung_key_menu: *tv-disabled
+    switch.tv_samsung_key_info: *tv-disabled
+    switch.tv_samsung_pip: *tv-disabled
+    switch.tv_samsung_key_102nd: *tv-disabled
+    switch.tv_samsung_key_subtitle: *tv-disabled
+    switch.tv_samsung_p_mode: *tv-disabled
+    switch.tv_samsung_s_mode: *tv-disabled
+    switch.tv_samsung_ttx_mix: *tv-disabled
+    switch.tv_samsung_key_exit: *tv-disabled
+    switch.tv_samsung_p_size: *tv-disabled
+    switch.tv_samsung_still: *tv-disabled
+    switch.tv_samsung_tv_dtv: *tv-disabled
+    switch.tv_samsung_key_rewind: *tv-disabled
+    switch.tv_samsung_key_stop: *tv-disabled
+    switch.tv_samsung_key_playpause: *tv-disabled
+    switch.tv_samsung_key_fastforward: *tv-disabled
+    switch.tv_samsung_key_info_2: *tv-disabled
+    switch.tv_samsung_key_up: *tv-disabled
+    switch.tv_samsung_key_down: *tv-disabled
+    switch.tv_samsung_key_right: *tv-disabled
+    switch.tv_samsung_key_left: *tv-disabled
+    switch.tv_samsung_key_enter: *tv-disabled
+    switch.tv_samsung_ch_mgr: *tv-disabled
+    switch.tv_samsung_key_red: *tv-disabled
+    switch.tv_samsung_srs: *tv-disabled
+    switch.tv_samsung_key_vcr: *tv-disabled
+    switch.tv_samsung_cable: *tv-disabled
+    switch.tv_samsung_key_tv: *tv-disabled
+    switch.tv_samsung_key_dvd: *tv-disabled
+    switch.tv_samsung_stb: *tv-disabled
+    switch.tv_samsung_wiselink: *tv-disabled
+    switch.tv_samsung_d_menu: *tv-disabled
