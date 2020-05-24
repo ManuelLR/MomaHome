@@ -2,7 +2,7 @@
   title: 'Last 24h'
   cards:
     ## Temperature
-    - type: horizontal-stacl
+    - type: horizontal-stack
       cards:
         - &environment-card
           type: sensor
@@ -14,13 +14,13 @@
           entity: sensor.mi_t_a4c1385cc12a
 
     ## Humidity
-    - type: horizontal-stacl
+    - type: horizontal-stack
       cards:
         - <<: *environment-card
           entity: sensor.mi_h_a4c1385cc12a
 
     ## Battery
-    - type: horizontal-stacl
+    - type: horizontal-stack
       cards:
         - <<: *environment-card
           entity: sensor.mi_batt_c47c8d6b1a91
