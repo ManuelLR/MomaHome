@@ -118,7 +118,7 @@ switch: !include_dir_merge_list __auto_generated-config/switch/
 
 light: !include_dir_merge_list __auto_generated-config/light/
 
-plant: !include_dir_merge_list __auto_generated-config/plant/
+plant: !include_dir_merge_named __auto_generated-config/plant/
 
 tuya: !include_dir_merge_named __auto_generated-config/tuya/
 
