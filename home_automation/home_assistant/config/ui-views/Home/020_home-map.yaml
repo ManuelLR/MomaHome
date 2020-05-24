@@ -1,6 +1,6 @@
 # title: House
 type: picture-elements
-image: /local/my_config/home_map.jpg
+image: /local/my_config/home_map.png
 # image: /local/floorplan.png
 elements:
   - type: state-icon
