@@ -18,4 +18,4 @@ echo "Starting checking HomeAssistant..."
 
 mv ${CONFIG_PREFIX_PATH}/configuration.yaml.tmp ${CONFIG_PREFIX_PATH}/configuration.yaml
 
-/usr/local/bin/hass -c ${CONFIG_PREFIX_PATH}/ --script check_config
+/usr/local/bin/hass -c ${CONFIG_PREFIX_PATH}/ --script check_config --info=all
