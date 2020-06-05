@@ -8,5 +8,5 @@
     - light
     - sensor
     - vacuum
-    - scene
+    # - scene
   entity_config: !include_dir_merge_named ../../__auto_generated-config/google_assistant_entities/

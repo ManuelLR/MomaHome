@@ -1,0 +1,4 @@
+# google_assistant:
+  # entity_config:
+    switch.man_002:
+      expose: False
