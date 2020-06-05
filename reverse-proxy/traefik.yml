@@ -1,0 +1,46 @@
+## traefik.yml
+
+global:
+  checkNewVersion: True
+  # sendAnonymousUsag: True
+
+# log:
+#   level: DEBUG
+
+accessLog: {}
+
+entryPoints:
+  web:
+    address: ":80"
+    ## Redirect all http to https
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+
+
+# Docker configuration backend
+providers:
+  docker:
+    endpoint: "unix:///tmp/docker.sock"
+    exposedbydefault: False
+    # defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`)"
+
+# API and dashboard configuration
+api:
+  insecure: True
+  # Access to http://192.168.200.7:8080/dashboard/
+  dashboard: True
+
+# Enable Let's Encrypt (wildcard/dns level)
+certificatesResolvers:
+  principal:
+    acme:
+      storage: /letsencrypt/acme.json
+      ## Used as env variable
+      # email: xyz@example.con
+      dnsChallenge:
+        provider: duckdns

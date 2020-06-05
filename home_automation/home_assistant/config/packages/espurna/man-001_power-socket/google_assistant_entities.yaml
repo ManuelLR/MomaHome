@@ -1,0 +1,8 @@
+# google_assistant:
+  # entity_config:
+    light.living_room_light:
+      room: Living Room
+      expose: True
+      aliases:
+        - Luz
+        - Luz salón

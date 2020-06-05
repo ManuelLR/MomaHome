@@ -1,16 +1,58 @@
-- type: history-graph
-  title: 'Temperature (24h)'
-  hours_to_show: 24
-  entities:
-    - sensor.environment_001_temperature
-- type: history-graph
-  title: 'Humidity (24h)'
-  hours_to_show: 24
-  entities:
-    - sensor.environment_001_humidity
+- type: vertical-stack
+  title: 'Last 24h'
+  cards:
+    ## Temperature
+    - type: horizontal-stack
+      cards:
+        - &environment-24h-card
+          type: sensor
+          graph: line
+          detail: 2
+          hours_to_show: 24
+          entity: sensor.mi_t_c47c8d6b1a91
+        - <<: *environment-24h-card
+          entity: sensor.mi_t_a4c1385cc12a
 
-- type: history-graph
-  title: 'Battery (24h)'
-  hours_to_show: 24
-  entities:
-    - sensor.environment_001_battery
+    ## Humidity
+    - type: horizontal-stack
+      cards:
+        - <<: *environment-24h-card
+          entity: sensor.mi_h_a4c1385cc12a
+
+    ## Battery
+    - type: horizontal-stack
+      cards:
+        - <<: *environment-24h-card
+          entity: sensor.mi_batt_c47c8d6b1a91
+        - <<: *environment-24h-card
+          entity: sensor.mi_batt_a4c1385cc12a
+
+
+- type: vertical-stack
+  title: 'Last 7d'
+  cards:
+    ## Temperature
+    - type: horizontal-stack
+      cards:
+        - &environment-7d-card
+          type: sensor
+          graph: line
+          detail: 1
+          hours_to_show: 168
+          entity: sensor.mi_t_c47c8d6b1a91
+        - <<: *environment-7d-card
+          entity: sensor.mi_t_a4c1385cc12a
+
+    ## Humidity
+    - type: horizontal-stack
+      cards:
+        - <<: *environment-7d-card
+          entity: sensor.mi_h_a4c1385cc12a
+
+    ## Battery
+    - type: horizontal-stack
+      cards:
+        - <<: *environment-7d-card
+          entity: sensor.mi_batt_c47c8d6b1a91
+        - <<: *environment-7d-card
+          entity: sensor.mi_batt_a4c1385cc12a

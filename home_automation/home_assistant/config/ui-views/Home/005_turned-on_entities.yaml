@@ -14,6 +14,7 @@ entities:
   - device_tracker.print_canon_mx920
   - sensor.washing_machine_status
   - vacuum.xiaomi_vacuum
+  - plant.flora_001
 state_filter:
   - "on"
   - "home"
@@ -28,3 +29,5 @@ state_filter:
   - "error"
   - "idle"
   - "paused"
+  # Plant
+  - "problem"

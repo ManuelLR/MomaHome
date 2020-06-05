@@ -1,39 +1,32 @@
-- type: history-graph
-  title: 'Temperature (5d)'
-  hours_to_show: 120
-  entities:
-    # - group.home_speed
-    - sensor.mi_t_a4c1385cc12a
-    - sensor.mi_t_c47c8d6b1a91
-- type: history-graph
-  title: 'Humidity (5d)'
-  hours_to_show: 120
-  entities:
-    # - group.home_speed
-    - sensor.mi_h_a4c1385cc12a
-- type: history-graph
-  title: 'Moisture (5d)'
-  hours_to_show: 120
-  entities:
-    # - group.home_speed
-    - sensor.mi_m_c47c8d6b1a91
-- type: history-graph
-  title: 'Conductivity (5d)'
-  hours_to_show: 120
-  entities:
-    # - group.home_speed
-    - sensor.mi_c_c47c8d6b1a91
-- type: history-graph
-  title: 'Light Intensity (5d)'
-  hours_to_show: 120
-  entities:
-    # - group.home_speed
-    - sensor.mi_l_c47c8d6b1a91
+- type: vertical-stack
+  cards:
+    - type: plant-status
+      entity: plant.flora_001
 
-- type: history-graph
-  title: 'Battery (5d)'
-  hours_to_show: 120
-  entities:
-    # - group.home_speed
-    - sensor.mi_batt_a4c1385cc12a
-    - sensor.mi_batt_c47c8d6b1a91
+- type: vertical-stack
+  cards:
+    - type: horizontal-stack
+      title: 'Light Intensity (7d)'
+      cards:
+        - type: sensor
+          graph: line
+          detail: 1
+          hours_to_show: 168
+          entity: sensor.mi_l_c47c8d6b1a91
+    - type: horizontal-stack
+      title: 'Moisture (7d)'
+      cards:
+        - type: sensor
+          graph: line
+          detail: 1
+          hours_to_show: 168
+          entity: sensor.mi_m_c47c8d6b1a91
+
+    - type: horizontal-stack
+      title: 'Temperature (7d)'
+      cards:
+        - type: sensor
+          graph: line
+          detail: 1
+          hours_to_show: 168
+          entity: sensor.mi_t_c47c8d6b1a91

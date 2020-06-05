@@ -1,0 +1,8 @@
+# google_assistant:
+  # entity_config:
+    vacuum.xiaomi_vacuum:
+      room: Living Room
+      expose: True
+      aliases:
+        - Aspirador
+        - Aspiradora

@@ -9,10 +9,12 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Prepare secrets
+      - name: Prepare privates
         run: |
+          set -ex
           mv home_automation/home_assistant/config/secrets.example.yaml home_automation/home_assistant/config/secrets.yaml
-      - name: Test container
+          mv home_automation/home_assistant/config/google_assistant_service_account.example.json home_automation/home_assistant/config/google_assistant_service_account.json
+      - name: Test configuration
         uses: ./.github/actions/home-assistant
         # with:
         #   # command: 'hass -c home_automation/home_assistant/config/ --script check_config'
