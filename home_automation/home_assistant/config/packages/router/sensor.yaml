@@ -59,29 +59,35 @@
 
   ### Net Switch
   - platform: snmp
-    name: Router net-switch in
+    name: Router raw net-switch in
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
     baseoid: 1.3.6.1.2.1.2.2.1.10.4
     accept_errors: true
-    unit_of_measurement: 'Mbps'
-    # Adjust to Mbps
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+  - platform: statistics
+    name: Router net-switch in
+    entity_id: sensor.router_raw_net_switch_in
 
   - platform: snmp
-    name: Router net-switch out
+    name: Router raw net-switch out
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
     baseoid: 1.3.6.1.2.1.2.2.1.16.4
     accept_errors: true
-    unit_of_measurement: 'Mbps'
-    # Adjust to Mbps
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+  - platform: statistics
+    name: Router net-switch out
+    entity_id: sensor.router_raw_net_switch_out
 
   - platform: snmp
-    name: Router net-switch failed
+    name: Router raw net-switch failed
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
@@ -92,29 +98,35 @@
 
   ## Net WAN
   - platform: snmp
-    name: Router net-wan in
+    name: Router raw net-wan in
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
     baseoid: 1.3.6.1.2.1.2.2.1.10.5
     accept_errors: true
-    unit_of_measurement: 'Mbps'
-    # Adjust to Mbps
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+  - platform: statistics
+    name: Router net-wan in
+    entity_id: sensor.router_raw_net_wan_in
 
   - platform: snmp
-    name: Router net-wan out
+    name: Router raw net-wan out
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
     baseoid: 1.3.6.1.2.1.2.2.1.16.5
     accept_errors: true
-    unit_of_measurement: 'Mbps'
-    # Adjust to Mbps
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+  - platform: statistics
+    name: Router net-wan out
+    entity_id: sensor.router_raw_net_wan_out
 
   - platform: snmp
-    name: Router net-wan failed
+    name: Router raw net-wan failed
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
@@ -125,29 +137,29 @@
 
   ## Net WIFI 5GHz
   - platform: snmp
-    name: Router net-wifi_5ghz in
+    name: Router raw net-wifi_5ghz in
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
     baseoid: 1.3.6.1.2.1.2.2.1.10.7
     accept_errors: true
-    unit_of_measurement: 'Mbps'
-    # Adjust to Mbps
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
-    name: Router net-wifi_5ghz out
+    name: Router raw net-wifi_5ghz out
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
     baseoid: 1.3.6.1.2.1.2.2.1.16.7
     accept_errors: true
-    unit_of_measurement: 'Mbps'
-    # Adjust to Mbps
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
-    name: Router net-wifi_5ghz failed
+    name: Router raw net-wifi_5ghz failed
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
@@ -158,29 +170,29 @@
 
   ## Net WIFI 2'4GHz
   - platform: snmp
-    name: Router net-wifi_2ghz in
+    name: Router raw net-wifi_2ghz in
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
     baseoid: 1.3.6.1.2.1.2.2.1.10.6
     accept_errors: true
-    unit_of_measurement: 'Mbps'
-    # Adjust to Mbps
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
-    name: Router net-wifi_2ghz out
+    name: Router raw net-wifi_2ghz out
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
     baseoid: 1.3.6.1.2.1.2.2.1.16.6
     accept_errors: true
-    unit_of_measurement: 'Mbps'
-    # Adjust to Mbps
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
-    name: Router net-wifi_2ghz failed
+    name: Router raw net-wifi_2ghz failed
     host: 192.168.200.1
     community: !secret DDWRT_SNMP_RO
       # https://wiki.dd-wrt.com/wiki/index.php/SNMP
