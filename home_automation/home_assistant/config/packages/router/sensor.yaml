@@ -9,7 +9,7 @@
     accept_errors: true
     unit_of_measurement: '%'
     # Dual CPU, so if value is 200, it means 100%, so divide by 2
-    value_template: '{{ ((value | int) / 2 | round(1) }}'
+    value_template: '{{ (value | int) / 2 | round(1) }}'
 
   - platform: snmp
     # https://community.home-assistant.io/t/monitor-dd-wrt-cpu-temp-load-and-free-ram-how-i-did-it/140470
