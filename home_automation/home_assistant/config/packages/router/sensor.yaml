@@ -9,7 +9,7 @@
     accept_errors: true
     unit_of_measurement: '%'
     # Dual CPU, so if value is 200, it means 100%, so divide by 2
-    value_template: '{{ (value | int) / 2 | round(1) }}'
+    value_template: '{{ ((value | int) / 2 | round(1) }}'
 
   - platform: snmp
     # https://community.home-assistant.io/t/monitor-dd-wrt-cpu-temp-load-and-free-ram-how-i-did-it/140470
@@ -67,7 +67,7 @@
     accept_errors: true
     unit_of_measurement: 'Mbps'
     # Adjust to Mbps
-    value_template: '{{ (value | float ) / 1000000 ) | round(4) }}'
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
     name: Router net-switch out
@@ -78,7 +78,7 @@
     accept_errors: true
     unit_of_measurement: 'Mbps'
     # Adjust to Mbps
-    value_template: '{{ (value | float ) / 1000000 ) | round(4) }}'
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
     name: Router net-switch failed
@@ -100,7 +100,7 @@
     accept_errors: true
     unit_of_measurement: 'Mbps'
     # Adjust to Mbps
-    value_template: '{{ (value | float ) / 1000000 ) | round(4) }}'
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
     name: Router net-wan out
@@ -111,7 +111,7 @@
     accept_errors: true
     unit_of_measurement: 'Mbps'
     # Adjust to Mbps
-    value_template: '{{ (value | float ) / 1000000 ) | round(4) }}'
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
     name: Router net-wan failed
@@ -133,7 +133,7 @@
     accept_errors: true
     unit_of_measurement: 'Mbps'
     # Adjust to Mbps
-    value_template: '{{ (value | float ) / 1000000 ) | round(4) }}'
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
     name: Router net-wifi_5ghz out
@@ -144,7 +144,7 @@
     accept_errors: true
     unit_of_measurement: 'Mbps'
     # Adjust to Mbps
-    value_template: '{{ (value | float ) / 1000000 ) | round(4) }}'
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
     name: Router net-wifi_5ghz failed
@@ -166,7 +166,7 @@
     accept_errors: true
     unit_of_measurement: 'Mbps'
     # Adjust to Mbps
-    value_template: '{{ (value | float ) / 1000000 ) | round(4) }}'
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
     name: Router net-wifi_2ghz out
@@ -177,7 +177,7 @@
     accept_errors: true
     unit_of_measurement: 'Mbps'
     # Adjust to Mbps
-    value_template: '{{ (value | float ) / 1000000 ) | round(4) }}'
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
 
   - platform: snmp
     name: Router net-wifi_2ghz failed
