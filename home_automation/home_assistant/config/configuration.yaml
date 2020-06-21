@@ -67,6 +67,13 @@ default_config:
 
 http:
   server_port: 8123
+  ## Configuration to use behind a proxy
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.0.0.0/8
+  ## Auto ban IPs based in failed logins attemps
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
 
 # Discover some devices automatically
 discovery:
