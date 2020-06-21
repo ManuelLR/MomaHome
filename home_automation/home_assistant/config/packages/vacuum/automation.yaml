@@ -16,7 +16,7 @@
       conditions:
         - condition: state
           entity_id: vacuum.xiaomi_vacuum
-          to: error
+          state: error
     action:
       - service: homeassistant.turn_on
         entity_id: script.notify_in_home_or_all
