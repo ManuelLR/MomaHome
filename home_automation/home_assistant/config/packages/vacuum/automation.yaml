@@ -5,13 +5,25 @@
       - platform: state
         entity_id: vacuum.xiaomi_vacuum
         to: error
+      - platform: state
+        entity_id:
+          - sensor.home_occupancy_status
+        to: 'Home'
+        for:
+          minutes: 2
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: vacuum.xiaomi_vacuum
+          state: error
     action:
-      - service: notify.manolo
-        data_template: &message-vacuum-error
-          title: "*Something fail in the vacuum...*"
-          message: 'Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`'
-      - service: notify.monica
-        data_template: *message-vacuum-error
+      - service: homeassistant.turn_on
+        entity_id: script.notify_in_home_or_all
+        data:
+          variables:
+            title: 'Something fail in the vacuum...'
+            message: 'Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`'
 
   - alias: AUT-Vacuum
     initial_state: 'on'

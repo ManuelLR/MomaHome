@@ -20,3 +20,182 @@
     accept_errors: true
     unit_of_measurement: 'MB'
     value_template: '{{ value | multiply(0.001) | round(1) }}'
+
+## Device interface
+# 1.3.6.1.2.1.2.2.1.2.1 => lo
+# 1.3.6.1.2.1.2.2.1.2.2 => teqlo (not used)
+# 1.3.6.1.2.1.2.2.1.2.3 => eth0
+# 1.3.6.1.2.1.2.2.1.2.4 => vlan1
+# 1.3.6.1.2.1.2.2.1.2.5 => vlan2
+# 1.3.6.1.2.1.2.2.1.2.6 => eth1
+# 1.3.6.1.2.1.2.2.1.2.7 => eth2
+# 1.3.6.1.2.1.2.2.1.2.8 => vlan0 (not used)
+# 1.3.6.1.2.1.2.2.1.2.9 => br0
+
+### Table about transmissions tests
+# up => transmitted
+# down => received
+# |FIELD1   |FIELD2                              |lo |eth0|vlan1|vlan2|eth1|eth2|br0|
+# |---------|------------------------------------|---|----|-----|-----|----|----|---|
+# |speedtest|router                              |no |down|no   |down |no  |up  |up |
+# |speedtest|laptop (wifi)                       |no |down|no   |down |no  |up  |up |
+# |speedtest|server                              |no |down|up   |down |no  |no  |up |
+# |transfer |Laptop (wifi) → server              |no |up  |up   |no   |no  |down|no |
+# |transfer |Server → Laptop (wifi)              |no |down|down |no   |no  |up  |no |
+# |transfer |Laptop (wifi) → Android (wifi)      |no |no  |no   |no   |no  |down|no |
+# |transfer |Android (wifi [2’4]) → Laptop (wifi)|no |no  |no   |no   |down|up  |no |
+# |speedtest|Android (wifi [2’4])                |no |down|no   |down |up  |no  |up |
+
+### We can extract next conclusions
+# [4].vlan1 (reverse)            =>  switch (connected by cable to router)
+# [5].vlan2 / [9].br0 (reverse)  =>  WAN
+# [7].eth2 (reverse)             =>  WIFI (5Ghz)
+# [6].eth1 (reverse)             =>  WIFI (2'4Ghz)
+
+## Now we can obtain some metrics
+#  1.3.6.1.2.1.2.2.1.10.* octects in
+#  1.3.6.1.2.1.2.2.1.16.* octects out
+#  1.3.6.1.2.1.2.2.1.20.* failed packages
+
+  ### Net Switch
+  - platform: snmp
+    name: Router raw net-switch in
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.10.4
+    accept_errors: true
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+  - platform: statistics
+    name: Router net-switch in
+    entity_id: sensor.router_raw_net_switch_in
+
+  - platform: snmp
+    name: Router raw net-switch out
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.16.4
+    accept_errors: true
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+  - platform: statistics
+    name: Router net-switch out
+    entity_id: sensor.router_raw_net_switch_out
+
+  - platform: snmp
+    name: Router raw net-switch failed
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.20.4
+    accept_errors: true
+    unit_of_measurement: 'packages'
+
+
+  ## Net WAN
+  - platform: snmp
+    name: Router raw net-wan in
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.10.5
+    accept_errors: true
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+  - platform: statistics
+    name: Router net-wan in
+    entity_id: sensor.router_raw_net_wan_in
+
+  - platform: snmp
+    name: Router raw net-wan out
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.16.5
+    accept_errors: true
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+  - platform: statistics
+    name: Router net-wan out
+    entity_id: sensor.router_raw_net_wan_out
+
+  - platform: snmp
+    name: Router raw net-wan failed
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.20.5
+    accept_errors: true
+    unit_of_measurement: 'packages'
+
+
+  ## Net WIFI 5GHz
+  - platform: snmp
+    name: Router raw net-wifi_5ghz in
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.10.7
+    accept_errors: true
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+
+  - platform: snmp
+    name: Router raw net-wifi_5ghz out
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.16.7
+    accept_errors: true
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+
+  - platform: snmp
+    name: Router raw net-wifi_5ghz failed
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.20.7
+    accept_errors: true
+    unit_of_measurement: 'packages'
+
+
+  ## Net WIFI 2'4GHz
+  - platform: snmp
+    name: Router raw net-wifi_2ghz in
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.10.6
+    accept_errors: true
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+
+  - platform: snmp
+    name: Router raw net-wifi_2ghz out
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.16.6
+    accept_errors: true
+    unit_of_measurement: 'Mb'
+    # Adjust to Mb
+    value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
+
+  - platform: snmp
+    name: Router raw net-wifi_2ghz failed
+    host: 192.168.200.1
+    community: !secret DDWRT_SNMP_RO
+      # https://wiki.dd-wrt.com/wiki/index.php/SNMP
+    baseoid: 1.3.6.1.2.1.2.2.1.20.6
+    accept_errors: true
+    unit_of_measurement: 'packages'
