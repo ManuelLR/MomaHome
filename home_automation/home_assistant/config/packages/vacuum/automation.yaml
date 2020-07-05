@@ -44,7 +44,7 @@
       - service: vacuum.set_fan_speed
         entity_id: vacuum.xiaomi_vacuum
         data:
-          fan_speed: Balanced
+          fan_speed: Standard
       - service: vacuum.start
         entity_id: vacuum.xiaomi_vacuum
       - service: notify.manolo

@@ -38,16 +38,11 @@
       conditions:
         - condition: state
           entity_id: sensor.washing_machine_status
-          state: 'Off'
-        - condition: state
-          entity_id: sensor.washing_machine_status
-          state: 'Scheduled'
-        - condition: state
-          entity_id: sensor.washing_machine_status
-          state: 'Finishing'
-        - condition: state
-          entity_id: sensor.washing_machine_status
-          state: 'Clean'
+          state:
+            - 'Off'
+            - 'Scheduled'
+            - 'Finishing'
+            - 'Clean'
     action:
       - service: input_select.select_option
         data:
@@ -100,10 +95,9 @@
       conditions:
         - condition: state
           entity_id: input_select.washing_machine_status
-          state: 'Washing'
-        - condition: state
-          entity_id: input_select.washing_machine_status
-          state: 'Finishing'
+          state:
+            - 'Washing'
+            - 'Finishing'
     action:
       - service: input_select.select_option
         data:
@@ -125,16 +119,11 @@
       conditions:
         - condition: state
           entity_id: input_select.washing_machine_status
-          state: 'Scheduled'
-        - condition: state
-          entity_id: input_select.washing_machine_status
-          state: 'Washing'
-        - condition: state
-          entity_id: input_select.washing_machine_status
-          state: 'Finishing'
-        - condition: state
-          entity_id: input_select.washing_machine_status
-          state: 'Clean'
+          state:
+            - 'Scheduled'
+            - 'Washing'
+            - 'Finishing'
+            - 'Clean'
     action:
       - service: input_select.select_option
         data:
