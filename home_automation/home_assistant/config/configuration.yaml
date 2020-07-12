@@ -134,6 +134,7 @@ plant: !include_dir_merge_named __auto_generated-config/plant/
 
 tuya: !include_dir_merge_named __auto_generated-config/tuya/
 
+dyson: !include_dir_merge_named __auto_generated-config/dyson/
 
 # shell_command:
 #   # https://philhawthorne.com/automating-your-shopping-list-with-home-assistant-and-grocy/
