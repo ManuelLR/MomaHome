@@ -1,6 +1,6 @@
-FROM homeassistant/home-assistant:0.111.4
+FROM homeassistant/home-assistant:0.112.4
 
-ENV CUSTOM_COMPONENT_MITEMP_VERSION=0.6.8
+ENV CUSTOM_COMPONENT_MITEMP_VERSION=0.6.10
 
 RUN \
     set -ex \

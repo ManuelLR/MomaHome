@@ -10,10 +10,9 @@
         conditions:
           - condition: state
             state: 'home'
-            entity_id: person.manolo
-          - condition: state
-            state: 'home'
-            entity_id: person.monica
+            entity_id:
+              - person.manolo
+              - person.monica
     action:
       - service: scene.turn_on
         entity_id: scene.night
