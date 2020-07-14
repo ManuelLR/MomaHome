@@ -2,10 +2,18 @@
   - platform: template
     switches:
       ## Extract night_mode to a switch
-      dyson_01_night_mode:
+      fan_dyson_01_night_mode:
+        friendly_name: Dyson 01 Fan (Night Mode)
         entity_id: fan.dyson_01
         value_template: "{{is_state_attr('fan.dyson_01', 'night_mode', True)}}"
-        # availability_template
+        # Only available when fan is on
+        # availability_template:
+        icon_template: >-
+          {% if is_state_attr('fan.dyson_01', 'night_mode', True) %}
+            mdi:moon-waxing-crescent
+          {% else %}
+            mdi:flash-red-eye
+          {% endif %}
         turn_on:
           service: dyson.set_night_mode
           data:

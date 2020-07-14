@@ -1,0 +1,8 @@
+# group:
+  fan_dyson_01_all:
+    name: Dyson 01 Fan
+    icon: mdi:fan
+    entities:
+      - fan.dyson_01
+      - climate.dyson_01
+      - switch.fan_dyson_01_night_mode
