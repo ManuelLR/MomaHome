@@ -14,6 +14,8 @@ entities:
   - device_tracker.print_canon_mx920
   - sensor.washing_machine_status
   - vacuum.xiaomi_vacuum
+  - entity: fan.Dyson_001
+    name: Dyson 01 Fan
   - plant.flora_001
 state_filter:
   - "on"
