@@ -6,7 +6,7 @@
   icon: mdi:coolant-temperature
   cards: !include Environment.yaml
 - title: Climate
-  icon: mdi:mdi-thermostat
+  icon: mdi:thermostat
   cards: !include Climate.yaml
 - title: Vacuum
   icon: mdi:robot-vacuum
