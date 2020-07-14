@@ -1,0 +1,18 @@
+# switch:
+  - platform: template
+    switches:
+      ## Extract night_mode to a switch
+      dyson_01_night_mode:
+        entity_id: fan.dyson_01
+        value_template: "{{is_state_attr('fan.dyson_01', 'night_mode', True)}}"
+        # availability_template
+        turn_on:
+          service: dyson.set_night_mode
+          data:
+            entity_id: fan.dyson_01
+            night_mode: True
+        turn_off:
+          service: dyson.set_night_mode
+          data:
+            entity_id: fan.dyson_01
+            night_mode: False
