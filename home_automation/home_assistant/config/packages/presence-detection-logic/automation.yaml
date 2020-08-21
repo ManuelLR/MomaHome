@@ -1,6 +1,7 @@
 # automation:
   # Inspired/Copy from https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
   - alias: PTR-Mark person as just arrived
+    mode: queued
     trigger:
       - platform: state
         # entity_id: device_tracker.phil
@@ -25,6 +26,7 @@
           option: Just Arrived
 
   - alias: PTR-Mark person as home
+    mode: queued
     trigger:
       - platform: state
         entity_id: &input-select-people-status
@@ -49,6 +51,7 @@
           option: Home
 
   - alias: PTR-Mark person as just left
+    mode: queued
     trigger:
       - platform: state
         entity_id: *persons
@@ -66,6 +69,7 @@
           option: Just Left
 
   - alias: PTR-Mark person as away
+    mode: queued
     trigger:
       - platform: state
         entity_id: *input-select-people-status
@@ -84,6 +88,7 @@
           option: Away
 
   - alias: PTR-Mark person as extended away
+    mode: queued
     trigger:
       - platform: state
         entity_id: *input-select-people-status
@@ -104,6 +109,7 @@
   # Update home occupancy when some people state changed
   # Myself
   - alias: PTR-Update home occupancy
+    mode: queued
     trigger:
       - platform: state
         # from: 'not_home'
