@@ -14,16 +14,16 @@
     # - group.net_router_statistics
     - sensor.router_cpu_load
     - sensor.router_ram_free
-- type: history-graph
-  title: 'PiHole'
-  hours_to_show: 48
-  entities:
-    # - group.pi_hole_statistics
-    - sensor.pi_hole_ads_blocked_today
-    - sensor.pi_hole_ads_percentage_blocked_today
-    - sensor.pi_hole_dns_queries_cached
-    - sensor.pi_hole_dns_queries_forwarded
-    - sensor.pi_hole_dns_queries_today
-    - sensor.pi_hole_dns_unique_clients
-    - sensor.pi_hole_domains_blocked
-    - sensor.pi_hole_dns_unique_domains
+# - type: history-graph
+#   title: 'PiHole'
+#   hours_to_show: 48
+#   entities:
+#     # - group.pi_hole_statistics
+#     - sensor.pi_hole_ads_blocked_today
+#     - sensor.pi_hole_ads_percentage_blocked_today
+#     - sensor.pi_hole_dns_queries_cached
+#     - sensor.pi_hole_dns_queries_forwarded
+#     - sensor.pi_hole_dns_queries_today
+#     - sensor.pi_hole_dns_unique_clients
+#     - sensor.pi_hole_domains_blocked
+#     - sensor.pi_hole_dns_unique_domains
