@@ -1,6 +1,7 @@
 # automation:
   - alias: AUT-New device found
     initial_state: 'on'
+    mode: parallel
     trigger:
       - platform: event
         event_type: device_tracker_new_device
@@ -25,6 +26,7 @@
 
   - alias: AUT-Notify failed login attempt
     initial_state: 'on'
+    mode: parallel
     trigger:
       - platform: state
         entity_id: persistent_notification.http_login

@@ -15,7 +15,7 @@
   icon: mdi:flower
   cards: !include Flora.yaml
 - title: Net
-  # icon: mdi:network-router
+  # icon: mdi:router-network
   icon: mdi:access-point-network
   cards: !include Net.yaml
 
