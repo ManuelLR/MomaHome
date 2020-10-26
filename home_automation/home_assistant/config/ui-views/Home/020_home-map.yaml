@@ -9,7 +9,7 @@ elements:
     entity: light.living_room_light
     style:
       top: 35%
-      left: 46%
+      left: 50%
       "--paper-item-icon-color": black
   - type: state-icon
     tap_action:
@@ -41,8 +41,8 @@ elements:
       action: more-info
     entity: vacuum.xiaomi_vacuum
     style:
-      top: 63%
-      left: 20%
+      top: 35%
+      left: 46%
       "--paper-item-icon-color": black
   - type: state-icon
     tap_action:
