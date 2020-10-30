@@ -13,6 +13,8 @@ services:
             - "${ServerIP}:853:853/tcp"
             ## Only for first run!
             # - "${ServerIP}:3000:3000/tcp"
+        networks:
+            - net-reverse-proxy
         volumes:
             # Config files
             - ./config/work/:/opt/adguardhome/work
@@ -34,13 +36,9 @@ services:
             - "traefik.tcp.routers.adguardhome-tls.tls.certresolver=principal"
             - "traefik.tcp.routers.adguardhome-tls.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
-        networks:
-            - net-reverse-proxy
+
 
 networks:
-          net-reverse-proxy:
-                  # Aims to create a network called "reverse-proxy" to reuse in others containers to be routed by reverse-proxy
-                  #     # This network must be created before start. `docker network create reverse-proxy`
-                  name: reverse-proxy
-                  external: true
-                  #
+    net-reverse-proxy:
+        name: reverse-proxy
+        external: true
