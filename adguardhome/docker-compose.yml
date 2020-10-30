@@ -27,8 +27,20 @@ services:
             - "traefik.http.routers.adguardhome-https.tls.certresolver=principal"
             - "traefik.http.routers.adguardhome-https.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
                 # DNS over TLS
-            - "traefik.tcp.services.adguardhome-tls.loadbalancer.server.port=853"
+            - "traefik.tcp.services.adguardhome-tls.loadbalancer.server.port=53"
             - "traefik.tcp.routers.adguardhome-tls.rule=HostSNI(`${EXTERNAL_DOMAIN}`)"
             - "traefik.tcp.routers.adguardhome-tls.entrypoints=dns-tls"
-            - "traefik.http.routers.adguardhome-tls.tls.certresolver=principal"
-            - "traefik.http.routers.adguardhome-tls.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+            - "traefik.tcp.routers.adguardhome-tls.tls=true"
+            - "traefik.tcp.routers.adguardhome-tls.tls.certresolver=principal"
+            - "traefik.tcp.routers.adguardhome-tls.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+
+        networks:
+            - net-reverse-proxy
+
+networks:
+          net-reverse-proxy:
+                  # Aims to create a network called "reverse-proxy" to reuse in others containers to be routed by reverse-proxy
+                  #     # This network must be created before start. `docker network create reverse-proxy`
+                  name: reverse-proxy
+                  external: true
+                  #
