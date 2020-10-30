@@ -1,0 +1,16 @@
+- type: vertical-stack
+  title: 'Dyson Fan 01'
+  cards:
+    - type: horizontal-stack
+      cards:
+        - type: entities
+          entities:
+            - name: Fan
+              entity: fan.dyson_01
+        - type: entities
+          entities:
+            - name: Night Mode
+              entity: switch.fan_dyson_01_night_mode
+    - type: thermostat
+      name: Hot control
+      entity: climate.dyson_01

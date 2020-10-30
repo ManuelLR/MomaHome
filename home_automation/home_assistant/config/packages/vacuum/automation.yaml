@@ -53,6 +53,7 @@
           message: 'Vacuum started by automation `AUT-Vacuum`'
 
   - alias: AUT-Vacuum update statistics
+    mode: restart
     initial_state: 'on'
     trigger:
       - platform: state
@@ -70,6 +71,7 @@
           message: 'The next square metters to delete from total is: `{{state_attr("vacuum.xiaomi_vacuum", "cleaned_area")}}`'
 
   - alias: AUT-Notify Vacuum maintenance
+    mode: restart
     initial_state: 'on'
     trigger:
       - platform: state
@@ -82,10 +84,7 @@
       - condition: template
         value_template: >
           {%- set minimal_notify = 2 -%}
-          {{ (state_attr('vacuum.xiaomi_vacuum', 'main_brush_left')|int) < minimal_notify or
-              (state_attr('vacuum.xiaomi_vacuum', 'side_brush_left')|int) < minimal_notify or
-              (state_attr('vacuum.xiaomi_vacuum', 'filter_left')|int) < minimal_notify or
-              (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) < minimal_notify or
+          {{ 
               (states('input_number.vacuum_xiaomi_dust_clean_left')|int) < minimal_notify
           }}
     action:

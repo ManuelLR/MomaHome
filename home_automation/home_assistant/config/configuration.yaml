@@ -91,7 +91,7 @@ mqtt:
   password: !secret mqtt_password
 
 # Server
-pi_hole: !include_dir_merge_named __auto_generated-config/pi_hole/
+# pi_hole: !include_dir_merge_named __auto_generated-config/pi_hole/
 duckdns: !include_dir_merge_named __auto_generated-config/duckdns/
 speedtestdotnet: !include_dir_merge_named __auto_generated-config/speedtestdotnet/
 apcupsd: !include_dir_merge_named __auto_generated-config/apcupsd/
@@ -134,6 +134,7 @@ plant: !include_dir_merge_named __auto_generated-config/plant/
 
 tuya: !include_dir_merge_named __auto_generated-config/tuya/
 
+dyson: !include_dir_merge_named __auto_generated-config/dyson/
 
 # shell_command:
 #   # https://philhawthorne.com/automating-your-shopping-list-with-home-assistant-and-grocy/

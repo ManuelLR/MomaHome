@@ -12,6 +12,9 @@
             state: 'home'
             entity_id:
               - person.manolo
+          - condition: state
+            state: 'home'
+            entity_id:
               - person.monica
     action:
       - service: scene.turn_on

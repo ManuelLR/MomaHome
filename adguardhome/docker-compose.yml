@@ -1,0 +1,20 @@
+version: "2.4"
+services:
+    adguardhome:
+        image: adguard/adguardhome:v0.103.3
+        ports:
+            - "${ServerIP}:53:53/tcp"
+            - "${ServerIP}:53:53/udp"
+            - "${ServerIP}:67:67/udp"
+            - "${ServerIP}:68:68/udp"
+            - "${ServerIP}:68:68/tcp"
+            - "${ServerIP}:80:80/tcp"
+            - "${ServerIP}:443:443/tcp"
+            - "${ServerIP}:853:853/tcp"
+            ## Only for first run!
+            # - "${ServerIP}:3000:3000/tcp"
+        volumes:
+            # Config files
+            - ./config/work/:/opt/adguardhome/work
+            - ./config/conf/:/opt/adguardhome/conf
+        restart: unless-stopped

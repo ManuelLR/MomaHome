@@ -1,0 +1,8 @@
+# google_assistant:
+  # entity_config:
+    fan.dyson_01:
+      room: Bedroom
+      expose: True
+      aliases:
+        - Ventilador
+        - Dyson
