@@ -20,6 +20,8 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
+  dns-tls:
+    address: ":853"
 
 
 # Docker configuration backend

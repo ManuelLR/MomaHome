@@ -8,6 +8,7 @@ services:
       - "192.168.200.7:8080:8080"
       - "192.168.200.7:80:80"
       - "192.168.200.7:443:443"
+      - "192.168.200.7:853:853"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./letsencrypt/:/letsencrypt/
