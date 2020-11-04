@@ -3,17 +3,17 @@
     name: TV
     icon: mdi:remote-tv
     entities:
-      - switch.tv_samsung_key_power
-      - switch.tv_samsung_key_mute
-      - switch.tv_samsung_key_volumeup
-      - switch.tv_samsung_key_volumedown
-      - switch.tv_samsung_key_source
-      - switch.tv_samsung_key_up
-      - switch.tv_samsung_key_down
-      - switch.tv_samsung_key_right
-      - switch.tv_samsung_key_left
+      - switch.tv_samsung_power
+      - switch.tv_samsung_mute
+      - switch.tv_samsung_volume_up
+      - switch.tv_samsung_volume_down
+      - switch.tv_samsung_source
+      - switch.tv_samsung_up
+      - switch.tv_samsung_down
+      - switch.tv_samsung_right
+      - switch.tv_samsung_left
       - switch.tv_samsung_key_exit
-      - switch.tv_samsung_key_enter
+      - switch.tv_samsung_enter
       - switch.tv_samsung_dual
       - switch.tv_samsung_key_0
       - switch.tv_samsung_key_1

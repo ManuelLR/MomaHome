@@ -5,111 +5,111 @@
     mac: !secret switch_ir_living_room_mac
     #type: rm_mini
     switches:
-      - name: "TV DUAL"
+      - name: "TV SAMSUNG DUAL"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhISEhISEhISEjcSNxI3EjcSNxI3EjcSNxIABfgNBQ=='
-      - name: "TV Source"
+      - name: "TV SAMSUNG Source"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISEhISEhISEhISEhISNxI3EjcSNxI3EjcSNxIABfgNBQ=='
-      - name: "TV POWER"
+      - name: "TV SAMSUNG POWER"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhISEhISEhISEjcSEhI3EjcSNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_1"
+      - name: "TV SAMSUNG KEY_1"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSEhISEhISEhISEjcSNxISEjcSNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_2"
+      - name: "TV SAMSUNG KEY_2"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEhISEhISEhISNxISEjcSNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_3"
+      - name: "TV SAMSUNG KEY_3"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSEhISEhISEhISEjcSEhISEjcSNxI3EjcSNxIABfgNBQ=='
-      - name: "TV Volume up"
+      - name: "TV SAMSUNG Volume up"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSEhISEhISEhISEhISEhISEjcSNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_4"
+      - name: "TV SAMSUNG KEY_4"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEhISEhISEjcSNxI3EhISNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_5"
+      - name: "TV SAMSUNG KEY_5"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISNxISEhISEhISEhISNxI3EhISNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_6"
+      - name: "TV SAMSUNG KEY_6"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISNxISEhISEhISEjcSEhI3EhISNxI3EjcSNxIABfgNBQ=='
-      - name: "TV Volume down"
+      - name: "TV SAMSUNG Volume down"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxISEhISEhISEhISEhI3EhISNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_7"
+      - name: "TV SAMSUNG KEY_7"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEhISEhISEjcSNxISEhISNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_8"
+      - name: "TV SAMSUNG KEY_8"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSNxISEhISEhISEhISNxISEhISNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_9"
+      - name: "TV SAMSUNG KEY_9"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxISEhISEhISEjcSEhISEhISNxI3EjcSNxIABfgNBQ=='
-      - name: "TV Mute"
+      - name: "TV SAMSUNG Mute"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxISEhISEhISEhISEhISEhISNxI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_CHANNELDOWN"
+      - name: "TV SAMSUNG KEY_CHANNELDOWN"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhI3EhISEhISEjcSNxI3EjcSEhI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_0"
+      - name: "TV SAMSUNG KEY_0"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISEhI3EhISEhISEhISNxI3EjcSEhI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_CHANNELUP"
+      - name: "TV SAMSUNG KEY_CHANNELUP"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhI3EhISEhISEjcSEhI3EjcSEhI3EjcSNxIABfgNBQ=='
-      - name: "TV PRE-CH"
+      - name: "TV SAMSUNG PRE-CH"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISEhI3EhISEhISEhISEhI3EjcSEhI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_GREEN"
+      - name: "TV SAMSUNG KEY_GREEN"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSEhI3EhISEhISEjcSNxISEjcSEhI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_YELLOW"
+      - name: "TV SAMSUNG KEY_YELLOW"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhI3EhISEhISEhISNxISEjcSEhI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_BLUE"
+      - name: "TV SAMSUNG KEY_BLUE"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSEhI3EhISEhISEjcSEhISEjcSEhI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_MENU"
+      - name: "TV SAMSUNG KEY_MENU"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISNxI3EhISEhISEjcSEhI3EhISEhI3EjcSNxIABfgNBQ=='
-      - name: "TV KEY_INFO"
+      - name: "TV SAMSUNG KEY_INFO"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxI3EhISEhISEhISEhISEhISEhI3EjcSNxIABfgNBQ=='
-      - name: "TV PIP"
+      - name: "TV SAMSUNG PIP"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhISEjcSEhISEjcSNxI3EjcSNxISEjcSNxIABfgNBQ=='
-      - name: "TV KEY_102ND"
+      - name: "TV SAMSUNG KEY_102ND"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISEhISEjcSEhISEhISEhI3EjcSNxISEjcSNxIABfgNBQ=='
-      - name: "TV KEY_SUBTITLE"
+      - name: "TV SAMSUNG KEY_SUBTITLE"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEjcSEhISEhISNxISEjcSNxISEjcSNxIABfgNBQ=='
-      - name: "TV P.MODE"
+      - name: "TV SAMSUNG P.MODE"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEjcSEhISEjcSNxI3EhISNxISEjcSNxIABfgNBQ=='
-      - name: "TV S.MODE"
+      - name: "TV SAMSUNG S.MODE"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxISEjcSEhISEhISEhI3EhISNxISEjcSNxIABfgNBQ=='
-      - name: "TV TTX/MIX"
+      - name: "TV SAMSUNG TTX/MIX"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEjcSEhISEjcSNxISEhISNxISEjcSNxIABfgNBQ=='
-      - name: "TV KEY_EXIT"
+      - name: "TV SAMSUNG KEY_EXIT"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSNxISEjcSEhISEhISNxISEhISNxISEjcSNxIABfgNBQ=='
-      - name: "TV P.SIZE"
+      - name: "TV SAMSUNG P.SIZE"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxI3EjcSEhISEjcSEhISEhISEhISEjcSNxIABfgNBQ=='
-      - name: "TV STILL"
+      - name: "TV SAMSUNG STILL"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhISEhISNxISEjcSEhI3EjcSNxI3EhISNxIABfgNBQ=='
-      - name: "TV TV/DTV"
+      - name: "TV SAMSUNG TV/DTV"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISEhISEhISNxISEhISEhI3EjcSNxI3EhISNxIABfgNBQ=='
-      - name: "TV KEY_REWIND"
+      - name: "TV SAMSUNG KEY_REWIND"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEhISNxISEhISNxISEjcSNxI3EhISNxIABfgNBQ=='
-      - name: "TV KEY_STOP"
+      - name: "TV SAMSUNG KEY_STOP"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSEhISEhISNxISEjcSEhISEjcSNxI3EhISNxIABfgNBQ=='
-      - name: "TV KEY_PLAYPAUSE"
+      - name: "TV SAMSUNG KEY_PLAYPAUSE"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSEhISEhISNxISEhISEhISEjcSNxI3EhISNxIABfgNBQ=='
-      - name: "TV KEY_FASTFORWARD"
+      - name: "TV SAMSUNG KEY_FASTFORWARD"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEhISNxISEjcSNxI3EhISNxI3EhISNxIABfgNBQ=='
-      - name: "TV KEY_INFO_2"
+      - name: "TV SAMSUNG KEY_INFO_2"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxISEhISNxISEhISEhISEhISNxI3EhISNxIABfgNBQ=='
-      - name: "TV Up"
+      - name: "TV SAMSUNG Up"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISEhISEjcSNxISEjcSNxI3EjcSNxISEhISNxIABfgNBQ=='
-      - name: "TV Down"
+      - name: "TV SAMSUNG Down"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEhISEhISEjcSNxISEhISNxI3EjcSNxISEhISNxIABfgNBQ=='
-      - name: "TV Right"
+      - name: "TV SAMSUNG Right"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISEhISEjcSNxISEjcSEhI3EjcSNxISEhISNxIABfgNBQ=='
-      - name: "TV Left"
+      - name: "TV SAMSUNG Left"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSEhISEjcSNxISEhISNxISEjcSNxISEhISNxIABfgNBQ=='
-      - name: "TV Enter"
+      - name: "TV SAMSUNG Enter"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEhISNxISEjcSNxISEjcSNxI3EhISNxISEhISNxIABfgNBQ=='
-      - name: "TV CH_MGR"
+      - name: "TV SAMSUNG CH_MGR"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxISEjcSNxISEhISEhI3EhISNxISEhISNxIABfgNBQ=='
-      - name: "TV KEY_RED"
+      - name: "TV SAMSUNG KEY_RED"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEjcSNxISEjcSNxISEhISNxISEhISNxIABfgNBQ=='
-      - name: "TV SRS"
+      - name: "TV SAMSUNG SRS"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxISEjcSNxISEjcSEhISEhISNxISEhISNxIABfgNBQ=='
-      - name: "TV KEY_VCR"
+      - name: "TV SAMSUNG KEY_VCR"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EhISNxI3EjcSNxISEjcSEhI3EhISEhISEhISNxIABfgNBQ=='
-      - name: "TV CABLE"
+      - name: "TV SAMSUNG CABLE"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EhISNxI3EjcSNxISEhISEhI3EhISEhISEhISNxIABfgNBQ=='
-      - name: "TV KEY_TV"
+      - name: "TV SAMSUNG KEY_TV"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxISEjcSNxI3EjcSNxISEhISNxISEhISEhISEhISNxIABfgNBQ=='
-      - name: "TV KEY_DVD"
+      - name: "TV SAMSUNG KEY_DVD"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxI3EjcSNxISEjcSEhISEhISEhISEhISNxIABfgNBQ=='
-      - name: "TV STB"
+      - name: "TV SAMSUNG STB"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISNxI3EjcSNxI3EjcSNxISEhISEhISEhISEhISEhISNxIABfgNBQ=='
-      - name: "TV WISELINK"
+      - name: "TV SAMSUNG WISELINK"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhISEjcSNxISEhISEhI3EjcSNxISEhISNxI3EjcSEhIABfgNBQ=='
-      - name: "TV D.MENU"
+      - name: "TV SAMSUNG D.MENU"
         command_on: 'JgBGAJOTEjcSNxI3EhISEhISEhISEhI3EjcSNxISEhISEhISEhISEhI3EjcSNxISEhISEhI3EjcSEhISEhISNxI3EjcSEhIABfgNBQ=='
