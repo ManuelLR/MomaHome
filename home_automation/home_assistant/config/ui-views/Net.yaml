@@ -1,4 +1,12 @@
 - type: entities
+  title: 'AdGuard DNS'
+  entities:
+    - switch.adguard_protection
+    - sensor.adguard_average_processing_speed
+    - sensor.adguard_dns_queries_blocked_ratio
+    - sensor.adguard_dns_queries
+
+- type: entities
   title: 'Router stats'
   entities:
     - sensor.router_uptime
