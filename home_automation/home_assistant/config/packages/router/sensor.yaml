@@ -36,6 +36,8 @@
     community: !secret DDWRT_SNMP_RO
     baseoid: 1.3.6.1.4.1.2021.100.4.0
     accept_errors: true
+    #unit_of_measurement: 'ISO8601'
+    #value_template: "{{ strptime(value, '%a %b %-d %H:%M:%S %y') |timestamp_custom('%Y-%m-%dT%H:%M:%S.%f%z') }}"
     value_template: "{{ strptime(value, '%a %b %-d %H:%M:%S %y') }}"
 
 ## Device interface
