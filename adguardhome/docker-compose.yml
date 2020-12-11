@@ -13,8 +13,32 @@ services:
             - "${ServerIP}:853:853/tcp"
             ## Only for first run!
             # - "${ServerIP}:3000:3000/tcp"
+        networks:
+            - net-reverse-proxy
         volumes:
             # Config files
             - ./config/work/:/opt/adguardhome/work
             - ./config/conf/:/opt/adguardhome/conf
         restart: unless-stopped
+        labels:
+            - "traefik.enable=true"
+                # DNS over https
+            - "traefik.http.services.adguardhome-https.loadbalancer.server.port=80"
+            - "traefik.http.routers.adguardhome-https.rule=Host(`${EXTERNAL_DOMAIN}`)"
+            - "traefik.http.routers.adguardhome-https.entrypoints=websecure"
+            - "traefik.http.routers.adguardhome-https.tls.certresolver=principal"
+            - "traefik.http.routers.adguardhome-https.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+                # DNS over TLS
+            - "traefik.tcp.services.adguardhome-tls.loadbalancer.server.port=53"
+            - "traefik.tcp.routers.adguardhome-tls.rule=HostSNI(`${EXTERNAL_DOMAIN}`)"
+            - "traefik.tcp.routers.adguardhome-tls.entrypoints=dns-tls"
+            - "traefik.tcp.routers.adguardhome-tls.tls=true"
+            - "traefik.tcp.routers.adguardhome-tls.tls.certresolver=principal"
+            - "traefik.tcp.routers.adguardhome-tls.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+
+
+
+networks:
+    net-reverse-proxy:
+        name: reverse-proxy
+        external: true

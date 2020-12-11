@@ -1,3 +1,9 @@
+- type: entities
+  title: 'Router stats'
+  entities:
+    - sensor.router_uptime
+    - sensor.router_timestamp
+
 - type: history-graph
   title: 'Net Speed'
   hours_to_show: 48

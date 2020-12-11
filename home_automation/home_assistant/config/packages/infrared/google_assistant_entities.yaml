@@ -2,11 +2,11 @@
   # entity_config:
 
       ## Enabled entities
-    switch.tv_samsung_key_mute: &tv-enabled
+    switch.tv_samsung_mute: &tv-enabled
       room: Living Room
       expose: True
 
-    switch.tv_samsung_key_power:
+    switch.tv_samsung_power:
       <<: *tv-enabled
       aliases:
         - Tele

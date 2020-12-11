@@ -1,13 +1,14 @@
 version: "2.4"
 services:
   traefik:
-    image: traefik:v2.2
+    image: traefik:v2.3
     container_name: reverse-proxy_traefik
     restart: always
     ports:
       - "192.168.200.7:8080:8080"
       - "192.168.200.7:80:80"
       - "192.168.200.7:443:443"
+      - "192.168.200.7:853:853"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./letsencrypt/:/letsencrypt/

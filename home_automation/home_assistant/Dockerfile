@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:0.114.4
+FROM homeassistant/home-assistant:0.116.4
 
 ENV CUSTOM_COMPONENT_MITEMP_VERSION=0.6.10
 
