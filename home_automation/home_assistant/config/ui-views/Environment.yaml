@@ -11,13 +11,13 @@
           hours_to_show: 24
           entity: sensor.mi_t_c47c8d6b1a91
         - <<: *environment-24h-card
-          entity: sensor.mi_t_a4c1385cc12a
+          entity: sensor.ble_temperature_environment_001
 
     ## Humidity
     - type: horizontal-stack
       cards:
         - <<: *environment-24h-card
-          entity: sensor.mi_h_a4c1385cc12a
+          entity: sensor.ble_humidity_environment_001
 
     ## Battery
     - type: horizontal-stack
@@ -25,7 +25,7 @@
         - <<: *environment-24h-card
           entity: sensor.mi_batt_c47c8d6b1a91
         - <<: *environment-24h-card
-          entity: sensor.mi_batt_a4c1385cc12a
+          entity: sensor.ble_battery_environment_001
 
 
 - type: vertical-stack
@@ -41,13 +41,13 @@
           hours_to_show: 168
           entity: sensor.mi_t_c47c8d6b1a91
         - <<: *environment-7d-card
-          entity: sensor.mi_t_a4c1385cc12a
+          entity: sensor.ble_temperature_environment_001
 
     ## Humidity
     - type: horizontal-stack
       cards:
         - <<: *environment-7d-card
-          entity: sensor.mi_h_a4c1385cc12a
+          entity: sensor.ble_humidity_environment_001
 
     ## Battery
     - type: horizontal-stack
@@ -55,4 +55,4 @@
         - <<: *environment-7d-card
           entity: sensor.mi_batt_c47c8d6b1a91
         - <<: *environment-7d-card
-          entity: sensor.mi_batt_a4c1385cc12a
+          entity: sensor.ble_battery_environment_001

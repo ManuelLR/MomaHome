@@ -1,7 +1,7 @@
 # homeassistant:
 #   customize:
-    sensor.mi_h_a4c1385cc12a: &customization-sensor-001
+    sensor.ble_humidity_environment_001: &customization-sensor-001
       friendly_name: sensor-001
 
-    sensor.mi_t_a4c1385cc12a: *customization-sensor-001
-    sensor.mi_batt_a4c1385cc12a: *customization-sensor-001
+    sensor.ble_temperature_environment_001: *customization-sensor-001
+    sensor.ble_battery_environment_001: *customization-sensor-001
