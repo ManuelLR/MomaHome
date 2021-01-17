@@ -1,0 +1,5 @@
+# ble_monitor:
+#   devices:
+      - name: 'flora-001'
+        mac: !secret sensor_miflora_mac
+

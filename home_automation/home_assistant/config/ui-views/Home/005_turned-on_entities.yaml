@@ -17,6 +17,10 @@ entities:
   - entity: fan.dyson_01
     name: Dyson 01 Fan
   - plant.flora_001
+  - entity: switch.adguard_protection
+    name: AdGuard - Bloqueo de anuncios
+    state_filter:
+      - "off"
 state_filter:
   - "on"
   - "home"
