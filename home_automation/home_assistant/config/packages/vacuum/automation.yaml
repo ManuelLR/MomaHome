@@ -28,18 +28,51 @@
   - alias: AUT-Vacuum
     initial_state: 'on'
     trigger:
-      platform: time
-      # at: '14:14:00'
-      at: '11:28:00'
+      - platform: time
+        at: '11:28:00'
+      # Check if we can start before
+      - platform: time
+        at: '10:20:00'
+      # Try to exec vacuum if Away from 5 minutes
+      - platform: state
+        entity_id:
+          - sensor.home_occupancy_status
+        to: "Away"
+        for: "00:05:00"
     condition:
       - condition: and
         conditions:
-      # Not cleaning just now 
+      # Check if decent hours
+          - condition: time
+            after: "10:00:00"
+            before: "22:30:00"
+            # after: input_datetime.house_silent_hours_start
+            # before: input_datetime.house_silent_hours_end
+      # Not cleaning just now
           - condition: template
             value_template: '{{ states("vacuum.xiaomi_vacuum") == "docked" }}'
       # Someone in house in past 24 hours
           - condition: template
             value_template: '{{ states("sensor.home_occupancy_status") != "Extended Away" }}'
+      # Check frequency of cleaning
+          - condition: or
+            conditions:
+            # Not executed in last 23 hours and someone in house
+              - condition: and
+                conditions:
+                  - condition: template
+                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(state_attr("automation.aut_vacuum", "last_triggered")) |int(0) ) /60/60 > 23 }}'
+            # Not executed in last 13 hours and empty house
+              - condition: and
+                conditions:
+                  - condition: template
+                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(state_attr("automation.aut_vacuum", "last_triggered")) |int(0) ) /60/60 > 13 }}'
+                  - condition: state
+                    entity_id: sensor.home_occupancy_status
+                    state:
+                      - "Extended Away"
+                      - "Away"
+
     action:
       - service: vacuum.set_fan_speed
         entity_id: vacuum.xiaomi_vacuum
