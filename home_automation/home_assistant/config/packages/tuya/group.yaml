@@ -4,11 +4,4 @@
     icon: mdi:power-socket-eu
     entities:
       - switch.85304541b4e62d735f80_1
-      - timer.power_socket_double_001_left
-      # # Not already working
-      # - input_datetime.timer_ejemplo_1
       - switch.85304541b4e62d735f80_2
-      - timer.power_socket_double_001_right
-      # # Not already working
-      # - timer.ejemplo_2
-      # - input_datetime.timer_ejemplo_2
