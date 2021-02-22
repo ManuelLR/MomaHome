@@ -61,12 +61,12 @@
               - condition: and
                 conditions:
                   - condition: template
-                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(state_attr("automation.aut_vacuum", "last_triggered")) |int(0) ) /60/60 > 23 }}'
+                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(states("input_datetime.vacuum_last_full_clean")) |int(0) ) /60/60 > 23 }}'
             # Not executed in last 13 hours and empty house
               - condition: and
                 conditions:
                   - condition: template
-                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(state_attr("automation.aut_vacuum", "last_triggered")) |int(0) ) /60/60 > 13 }}'
+                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(state_attr("input_datetime.vacuum_last_full_clean")) |int(0) ) /60/60 > 13 }}'
                   - condition: state
                     entity_id: sensor.home_occupancy_status
                     state:
@@ -98,6 +98,16 @@
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
           value: >
             {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (state_attr('vacuum.xiaomi_vacuum', 'cleaned_area')|int), 0] | max }}
+    # We considered a full cleaning if we clean more than 17 m2
+      - condition: numeric_state
+        entity_id: vacuum.xiaomi_vacuum
+        attribute: cleaned_area
+        above: 17
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.vacuum_last_full_clean
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
       - service: notify.manolo
         data_template:
           title: "*Update square metter*"

@@ -1,0 +1,4 @@
+# input_datetime:
+  vacuum_last_full_clean:
+    has_date: true
+    has_time: true
