@@ -16,7 +16,7 @@
           message: '{{ message }}'
           data:
               inline_keyboard: >
-                {% if (length(keyboard) > 1) %}
+                {% if keyboard is defined %}
                   {{keyboard}}
                 {% else %}
                   []
