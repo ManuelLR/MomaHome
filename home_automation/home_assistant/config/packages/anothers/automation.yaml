@@ -38,10 +38,13 @@
     mode: restart
     initial_state: 'on'
     trigger:
-      platform: event
-      event_type: telegram_command
-      event_data:
-        command: "/turn_off_scene_night"
+      - platform: event
+        event_type: telegram_command
+        event_data: &telegram_turn_off_scene_light
+          command: "/turn_off_scene_night"
+      - platform: event
+        event_type: telegram_callback
+        event_data: *telegram_turn_off_scene_light
     action:
       - service: scene.turn_off
         entity_id: scene.night
