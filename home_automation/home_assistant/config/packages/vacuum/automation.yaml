@@ -144,4 +144,19 @@
               Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
 
 
-              _(Recuerda_ [resetear](http://192.168.200.7:8123/lovelace/2) _el estado del deposito tras cada vaciado)_
+              _(Recuerda resetear el estado del deposito tras cada vaciado /vacuum_cleaned )_
+
+  - alias: AUT-Telegram reset Vacuum meters
+    mode: restart
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: telegram_command
+      event_data:
+        command: "/vacuum_cleaned"
+    action:
+      - service: input_number.set_value
+        data_template:
+          entity_id: input_number.vacuum_xiaomi_dust_clean_left
+          value: >
+            {{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max')|int }}
