@@ -80,10 +80,6 @@
           fan_speed: Standard
       - service: vacuum.start
         entity_id: vacuum.xiaomi_vacuum
-      - service: notify.manolo
-        data_template: &message-vacuum-started
-          title: "*Start to clean*"
-          message: 'Vacuum started by automation `AUT-Vacuum`'
 
   - alias: AUT-Vacuum update statistics
     mode: restart
@@ -131,21 +127,21 @@
               (states('input_number.vacuum_xiaomi_dust_clean_left')|int) < minimal_notify
           }}
     action:
-      - service: notify.manolo
-        data_template: &message-vacuum-maintenance
-          title: "*Vacuum need maintenance*"
-          message: >
-            Cepillo principal*:* `{{ (state_attr('vacuum.xiaomi_vacuum', 'main_brush_left')|int) }} h` _restantes_
+      - service: homeassistant.turn_on
+        entity_id: script.notify_in_home_or_all
+        data:
+          variables:
+            title: 'Vacuum need maintenance'
+            message: >
+              Cepillo principal*:* `{{ (state_attr('vacuum.xiaomi_vacuum', 'main_brush_left')|int) }} h` _restantes_
 
-            Cepillo lateral: `{{ (state_attr('vacuum.xiaomi_vacuum', 'side_brush_left')|int) }} h` restantes
+              Cepillo lateral: `{{ (state_attr('vacuum.xiaomi_vacuum', 'side_brush_left')|int) }} h` restantes
 
-            Filtro: `{{ (state_attr('vacuum.xiaomi_vacuum', 'filter_left')|int) }} h` restantes
+              Filtro: `{{ (state_attr('vacuum.xiaomi_vacuum', 'filter_left')|int) }} h` restantes
 
-            Limpieza de sensores: `{{ (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) }} h` restantes
+              Limpieza de sensores: `{{ (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) }} h` restantes
 
-            Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
+              Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
 
 
-            _(Recuerda_ [resetear](http://192.168.200.7:8123/lovelace/2) _el estado del deposito tras cada vaciado)_
-      - service: notify.monica
-        data_template: *message-vacuum-maintenance
+              _(Recuerda_ [resetear](http://192.168.200.7:8123/lovelace/2) _el estado del deposito tras cada vaciado)_
