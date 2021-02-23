@@ -17,7 +17,9 @@
         after: '13:00:00'
         before: '03:00:00'
       - condition: state
-        state: 'Just Arrived'
+        state:
+          - 'Just Arrived'
+          - 'Home'
         entity_id:
           - sensor.home_occupancy_status
     action:
@@ -29,3 +31,17 @@
           variables:
             title: 'Auto turned on light'
             message: 'Light turned on by automation `AUT-Sunset`'
+            keyboard:
+              - 'Turn off:/turn_off_scene_night'
+
+  - alias: AUT-Telegram turn off scene night
+    mode: restart
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: telegram_command
+      event_data:
+        command: "/turn_off_scene_night"
+    action:
+      - service: scene.turn_off
+        entity_id: scene.night

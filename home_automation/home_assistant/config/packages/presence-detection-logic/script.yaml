@@ -14,6 +14,8 @@
         data_template: &notify-telegram-message
           title: '*{{ title }}*'
           message: '{{ message }}'
+          data:
+            inline_keyboard: '{{keyboard || []}}'
       # Check if both in the same state to continue notifying
       - condition: or
         conditions:
