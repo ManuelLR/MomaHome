@@ -34,7 +34,7 @@
             keyboard:
               - 'Turn off:/turn_off_scene_night'
 
-  - alias: AUT-Telegram turn off scene night
+  - alias: AUT-Turn off scene night
     mode: restart
     initial_state: 'on'
     trigger:
@@ -46,5 +46,6 @@
         event_type: telegram_callback
         event_data: *telegram_turn_off_scene_light
     action:
-      - service: scene.turn_off
-        entity_id: scene.night
+      - service: switch.turn_off
+        entity_id:
+          - switch.man_001

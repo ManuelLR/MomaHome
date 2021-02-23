@@ -1,4 +1,5 @@
 # scene:
   - name: Night
     entities:
+      # If we add more entities here, probably we would like to add into 'AUT-Turn off scene night'
       switch.man_001: true
