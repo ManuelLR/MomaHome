@@ -6,6 +6,16 @@ vacuum_zone:
     n_repeats:
     approach_steps:
   sequence:
+      - service: system_log.write
+        data:
+          logger: mlr.script.tests
+          message: >
+            Ey, this is the value in 1:
+            {{ zone_to_clean }}
+            ,
+            {{ n_repeats }}
+            ,
+            {{ approach_steps }}
     # # Loop over approach_steps
     # - while: >
     #     {{ (approach_steps is defined) and (repeat.index <= approach_steps|length) }}
@@ -63,7 +73,15 @@ vacuum_room:
       - variables:
           selected_zone: >
             {% set selected_zone_name = (states("input_select.vacuum_zone_room_selected")|regex_replace(find=' ', replace='_', ignorecase=False)) %}
-            {{ defined_zones[selected_zone] }}
+            {{ defined_zones[selected_zone_name] }}
+      - service: system_log.write
+        data:
+          logger: mlr.script.tests
+          message: >
+            Ey, this is the value in 0:
+            {{ selected_zone }}
+            but seletected_zone_name must be:
+            {{ (states("input_select.vacuum_zone_room_selected")|regex_replace(find=' ', replace='_', ignorecase=False)) }}
       - service: script.turn_on
         data:
           entity_id: script.vacuum_zone
