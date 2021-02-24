@@ -82,13 +82,11 @@ vacuum_room:
             {{ selected_zone | default('the string was empty') }}
             but seletected_zone_name must be:
             {{ (states("input_select.vacuum_zone_room_selected")|regex_replace(find=' ', replace='_', ignorecase=False)) }}
-      - service: script.turn_on
+      - service: script.vacuum_zone
         data:
-          entity_id: script.vacuum_zone
-          variables:
-            zone_to_clean: >
-              {{ selected_zone.coordinates }}
-            n_repeats: >
-              {{(states('input_number.vacuum_zone_repeats')|int)}}
-            approch_steps: >
-              {{ selected_zone.approach_steps }}
+          zone_to_clean: >
+            {{ selected_zone.coordinates }}
+          n_repeats: >
+            {{(states('input_number.vacuum_zone_repeats')|int)}}
+          approch_steps: >
+            {{ selected_zone.approach_steps }}
