@@ -11,11 +11,11 @@ vacuum_zone:
         logger: mlr.script.tests
         message: >
           Ey, this is the value in 1:
-          {{ zone_to_clean }}
+          {{ zone_to_clean | default('the string was empty') }}
           ,
-          {{ n_repeats }}
+          {{ n_repeats | default('the string was empty') }}
           ,
-          {{ approach_steps }}
+          {{ approach_steps | default('the string was empty') }}
     # # Loop over approach_steps
     # - while: >
     #     {{ (approach_steps is defined) and (repeat.index <= approach_steps|length) }}
@@ -79,7 +79,7 @@ vacuum_room:
           logger: mlr.script.tests
           message: >
             Ey, this is the value in 0:
-            {{ selected_zone }}
+            {{ selected_zone | default('the string was empty') }}
             but seletected_zone_name must be:
             {{ (states("input_select.vacuum_zone_room_selected")|regex_replace(find=' ', replace='_', ignorecase=False)) }}
       - service: script.turn_on
