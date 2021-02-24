@@ -3,7 +3,7 @@
     alias: "Notify person in home or all"
     sequence:
       # Notify to person in home or by default, Manolo
-      - service_template: >
+      - service: >
           {% if (is_state('sensor.manolo_status', 'Home') or is_state('sensor.manolo_status', 'Just Arrived')) %}
             notify.manolo
           {% elif (is_state('sensor.monica_status', 'Home') or is_state('sensor.monica_status', 'Just Arrived')) %}
@@ -11,9 +11,16 @@
           {% else %}
             notify.manolo
           {% endif %}
-        data_template: &notify-telegram-message
+        data: &notify-telegram-message
           title: '*{{ title }}*'
           message: '{{ message }}'
+          data:
+              inline_keyboard: >
+                {% if keyboard is defined %}
+                  {{keyboard}}
+                {% else %}
+                  []
+                {% endif %}
       # Check if both in the same state to continue notifying
       - condition: or
         conditions:

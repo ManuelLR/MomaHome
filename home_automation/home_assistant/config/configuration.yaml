@@ -28,6 +28,7 @@ logger:
     homeassistant.components.nmap_tracker.device_tracker: warn
     homeassistant.components.ddwrt.device_tracker: warn
     homeassistant.components.discovery: warn
+    homeassistant.components.upnp: warn
 
 lovelace:
   mode: yaml
@@ -110,6 +111,7 @@ ble_monitor:
   ## Hey ! If a error occur don't worry, HA needs disable that component and restart
   batt_entities: True
   discovery: False
+  restore_state: True
   devices: !include_dir_merge_list __auto_generated-config/ble_monitor_device/
 
 # Text to speech
@@ -124,11 +126,7 @@ timer:
   power_socket_double_001_right:
 
 
-input_datetime:
-  timer_power_socket_double_001_left:
-    has_time: true
-  timer_power_socket_double_001_right:
-    has_time: true
+input_datetime: !include_dir_merge_named __auto_generated-config/input_datetime/
 
 vacuum: !include_dir_merge_list __auto_generated-config/vacuum/
 

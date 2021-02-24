@@ -12,3 +12,4 @@
     user_id: !secret person_user_id_monica
     device_trackers:
       - device_tracker.moni_movil
+      - device_tracker.iphone_2

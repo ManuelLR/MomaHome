@@ -16,7 +16,9 @@ entities:
   - vacuum.xiaomi_vacuum
   - entity: fan.dyson_01
     name: Dyson 01 Fan
-  - plant.flora_001
+  - entity: media_player.sony_bravia_tv
+    name: Tele salón
+  # - plant.flora_001
   - entity: switch.adguard_protection
     name: AdGuard - Bloqueo de anuncios
     state_filter:

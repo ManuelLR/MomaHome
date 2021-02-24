@@ -1,9 +1,9 @@
 FROM homeassistant/home-assistant:2021.1.5
 
 ENV \
-    CUSTOM_COMPONENT_MITEMP_VERSION=0.9.4 \
+    CUSTOM_COMPONENT_MITEMP_VERSION=1.1.0 \
     # syncthing => https://github.com/home-assistant/core/pull/38331
-    CUSTOM_COMPONENT_SYNCTHING_VERSION=6e9aeabba8e25f65abb8526f462dec2933fe0c1f
+    CUSTOM_COMPONENT_SYNCTHING_VERSION=13b00d55914bb81c7be45af16b1328edd0ef9bb9
 
 RUN \
     set -ex \
