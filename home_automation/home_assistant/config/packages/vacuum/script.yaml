@@ -3,8 +3,14 @@ vacuum_zone:
   alias: "Vacuum a zone with coordinates"
   fields:
     zone_to_clean:
+      description: "Coordinates of the zones to clean"
+      example: "[[x1,y1,x2,y2]]"
     n_repeats:
+      description: "Number of passes"
+      example: "1"
     approach_steps:
+      description: "Locations to go before start the cleaning"
+      example: "[[x1,y1],[x2,y2]]"
   sequence:
     - service: system_log.write
       data:
