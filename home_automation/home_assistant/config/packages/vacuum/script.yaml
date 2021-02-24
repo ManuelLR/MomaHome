@@ -6,16 +6,16 @@ vacuum_zone:
     n_repeats:
     approach_steps:
   sequence:
-      - service: system_log.write
-        data:
-          logger: mlr.script.tests
-          message: >
-            Ey, this is the value in 1:
-            {{ zone_to_clean }}
-            ,
-            {{ n_repeats }}
-            ,
-            {{ approach_steps }}
+    - service: system_log.write
+      data:
+        logger: mlr.script.tests
+        message: >
+          Ey, this is the value in 1:
+          {{ zone_to_clean }}
+          ,
+          {{ n_repeats }}
+          ,
+          {{ approach_steps }}
     # # Loop over approach_steps
     # - while: >
     #     {{ (approach_steps is defined) and (repeat.index <= approach_steps|length) }}
