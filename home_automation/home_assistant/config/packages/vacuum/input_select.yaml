@@ -14,9 +14,4 @@
   vacuum_zone_fan_speed:
     name: Choose a fan speed to clean at
     icon: mdi:fan
-    options:
-      - Balanced
-      - Gentle
-      - Quiet
-      - Turbo
-      - Max
+    options: ['Silent', 'Standard', 'Medium', 'Turbo', 'Gentle']
