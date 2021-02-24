@@ -49,3 +49,10 @@
       - service: switch.turn_off
         entity_id:
           - switch.man_001
+      # Answer to the telegram callback if needed
+      - condition: template
+        value_template: "{{  trigger.event.event_type == 'telegram_callback' }}"
+      - service: telegram_bot.answer_callback_query
+        data:
+          callback_query_id: "{{ trigger.event.data.id }}"
+          message: "Done!"

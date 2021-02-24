@@ -145,18 +145,30 @@
 
 
               _(Recuerda resetear el estado del deposito tras cada vaciado /vacuum_cleaned )_
+            keyboard:
+              - 'Vacuum already cleaned:/vacuum_cleaned'
 
   - alias: AUT-Telegram reset Vacuum meters
     mode: restart
     initial_state: 'on'
     trigger:
-      platform: event
-      event_type: telegram_command
-      event_data:
-        command: "/vacuum_cleaned"
+      - platform: event
+        event_type: telegram_command
+        event_data: &telegram_vacuum_cleaned
+          command: "/vacuum_cleaned"
+      - platform: event
+        event_type: telegram_callback
+        event_data: *telegram_vacuum_cleaned
     action:
       - service: input_number.set_value
         data_template:
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
           value: >
             {{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max')|int }}
+      # Answer to the telegram callback if needed
+      - condition: template
+        value_template: "{{  trigger.event.event_type == 'telegram_callback' }}"
+      - service: telegram_bot.answer_callback_query
+        data:
+          callback_query_id: "{{ trigger.event.data.id }}"
+          message: "Done!"
