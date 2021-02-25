@@ -2,9 +2,9 @@ title: Cosas encendidas
 type: entity-filter
 show_header_toggle: true
 entities:
-  - entity: switch.85304541b4e62d735f80_1
+  - entity: switch.man_003_left
     name: Enchufe cocina doble izq.
-  - entity: switch.85304541b4e62d735f80_2
+  - entity: switch.man_003_right
     name: Enchufe cocina doble der.
   - entity: switch.man_001
     name: Enchufe luz salón

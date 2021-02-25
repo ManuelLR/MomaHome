@@ -14,7 +14,7 @@ elements:
   - type: state-icon
     tap_action:
       action: more-info
-    entity: group.power_socket_double_001
+    entity: group.man_003
     # entity: group.vacuum_room
     style:
       top: 12%

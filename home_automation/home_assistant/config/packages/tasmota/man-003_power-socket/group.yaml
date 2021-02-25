@@ -1,0 +1,7 @@
+# group:
+  man_003:
+    name: Power Socket double man-003 (TASMOTA)
+    icon: mdi:power-socket-eu
+    entities:
+      - switch.man_003_left
+      - switch.man_003_right
