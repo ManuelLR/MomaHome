@@ -66,7 +66,7 @@
               - condition: and
                 conditions:
                   - condition: template
-                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(state_attr("input_datetime.vacuum_last_full_clean")) |int(0) ) /60/60 > 13 }}'
+                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(states("input_datetime.vacuum_last_full_clean")) |int(0) ) /60/60 > 13 }}'
                   - condition: state
                     entity_id: sensor.home_occupancy_status
                     state:

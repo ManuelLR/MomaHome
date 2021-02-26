@@ -40,14 +40,6 @@ vacuum_room:
         entity_id: vacuum.xiaomi_vacuum
         fan_speed: >
           {{states('input_select.vacuum_zone_fan_speed')}}
-    - service: script.vacuum_zone
-      data:
-        zone_to_clean: >
-          {{ selected_zone.coordinates }}
-        n_repeats: >
-          {{(states('input_number.vacuum_zone_repeats')|int)}}
-        approch_steps: >
-          {{ selected_zone.approach_steps }}
     # - service: system_log.write
     #   data:
     #     logger: mlr.script.tests

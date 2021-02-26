@@ -30,4 +30,5 @@
   entities:
     # - group.pi_hole_statistics
     - vacuum.xiaomi_vacuum
+    - input_datetime.vacuum_last_full_clean
     - input_number.vacuum_xiaomi_dust_clean_left
