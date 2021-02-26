@@ -5,9 +5,21 @@
     trigger:
       - platform: numeric_state
         entity_id: sensor.man_003_energy_current
-        below: 0.05
+        below: 0.08
         for:
           minutes: 10
+    condition:
+      - condition: state
+        entity_id: input_boolean.man_003_auto_poweroff_disabled
+        state: "off"
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: switch.man_003_left
+            state: 'on'
+          - condition: state
+            entity_id: switch.man_003_right
+            state: 'on'
     action:
       - service: switch.turn_off
         entity_id:
@@ -20,4 +32,4 @@
             title: 'Kitchen power plug turned off'
             message: 'Ey, I (`AUT-Turn off man-003`) detected low power consumption in the kitchen power plug so I turned off *both*'
             keyboard:
-              - 'Turn on *Left*:/turn_on switch.man_003_left, Turn on *Right*:/turn_on switch.man_003_right'
+              - 'Turn on Left:/turn_on switch.man_003_left, Turn on Right:/turn_on switch.man_003_right'
