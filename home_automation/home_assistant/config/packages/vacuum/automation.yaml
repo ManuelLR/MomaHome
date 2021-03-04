@@ -142,9 +142,6 @@
               Limpieza de sensores: `{{ (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) }} h` restantes
 
               Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
-
-
-              _(Recuerda resetear el estado del deposito tras cada vaciado /vacuum_cleaned )_
             keyboard:
               - 'Vacuum already cleaned:/vacuum_cleaned'
 
