@@ -1,5 +1,5 @@
 # group:
-  man-001:
+  man_001:
     name: Power Socket man-001 (ESPURNA)
     icon: mdi:power-socket-eu
     entities:

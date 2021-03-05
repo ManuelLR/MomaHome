@@ -1,13 +1,13 @@
 # google_assistant:
   # entity_config:
-    switch.85304541b4e62d735f80_1:
+    switch.man_003_left:
       room: Kitchen
       expose: True
       aliases:
         - Enchufe izquierdo
         - Enchufe cocina izquierdo
 
-    switch.85304541b4e62d735f80_2:
+    switch.man_003_right:
       room: Kitchen
       expose: True
       aliases:

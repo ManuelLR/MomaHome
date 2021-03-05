@@ -1,7 +1,0 @@
-# group:
-  power_socket_double_001:
-    name: Power Socket double
-    icon: mdi:power-socket-eu
-    entities:
-      - switch.85304541b4e62d735f80_1
-      - switch.85304541b4e62d735f80_2

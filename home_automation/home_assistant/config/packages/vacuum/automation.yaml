@@ -66,7 +66,7 @@
               - condition: and
                 conditions:
                   - condition: template
-                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(state_attr("input_datetime.vacuum_last_full_clean")) |int(0) ) /60/60 > 13 }}'
+                    value_template: '{{ ( as_timestamp(now()) - as_timestamp(states("input_datetime.vacuum_last_full_clean")) |int(0) ) /60/60 > 13 }}'
                   - condition: state
                     entity_id: sensor.home_occupancy_status
                     state:
@@ -94,6 +94,10 @@
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
           value: >
             {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (state_attr('vacuum.xiaomi_vacuum', 'cleaned_area')|int), 0] | max }}
+      - service: notify.manolo
+        data_template:
+          title: "*Update square metter*"
+          message: 'The next square metters to delete from total is: `{{state_attr("vacuum.xiaomi_vacuum", "cleaned_area")}}`'
     # We considered a full cleaning if we clean more than 17 m2
       - condition: numeric_state
         entity_id: vacuum.xiaomi_vacuum
@@ -104,10 +108,6 @@
           entity_id: input_datetime.vacuum_last_full_clean
         data:
           datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
-      - service: notify.manolo
-        data_template:
-          title: "*Update square metter*"
-          message: 'The next square metters to delete from total is: `{{state_attr("vacuum.xiaomi_vacuum", "cleaned_area")}}`'
 
   - alias: AUT-Notify Vacuum maintenance
     mode: restart
@@ -142,9 +142,6 @@
               Limpieza de sensores: `{{ (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) }} h` restantes
 
               Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
-
-
-              _(Recuerda resetear el estado del deposito tras cada vaciado /vacuum_cleaned )_
             keyboard:
               - 'Vacuum already cleaned:/vacuum_cleaned'
 

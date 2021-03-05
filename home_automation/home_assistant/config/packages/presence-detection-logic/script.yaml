@@ -27,4 +27,4 @@
           - condition: template
             value_template: "{{ (is_state('sensor.manolo_status', 'Home') or is_state('sensor.manolo_status', 'Just Arrived')) == (is_state('sensor.monica_status', 'Home') or is_state('sensor.monica_status', 'Just Arrived')) }}"
       - service: notify.monica
-        data_template: *notify-telegram-message
+        data: *notify-telegram-message

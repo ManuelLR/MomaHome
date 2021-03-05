@@ -1,103 +1,74 @@
 
-vacuum_living_room:
-  alias: "Vacuum living_room"
-  sequence:
-    - service: xiaomi_miio.vacuum_clean_zone
-      data_template:
-        entity_id: vacuum.xiaomi_vacuum
-        repeats: >
-          {{(states('input_number.vacuum_zone_repeats')|int)}}
-        zone: [[24507,25175,31207,28525]]
-vacuum_kitchen:
-  alias: "Vacuum Kitchen"
-  sequence:
-    - service: xiaomi_miio.vacuum_clean_zone
-      data_template:
-        entity_id: vacuum.xiaomi_vacuum
-        repeats: >
-          {{(states('input_number.vacuum_zone_repeats')|int)}}
-        zone: [[31439,27363,33939,30413]]
-vacuum_hall:
-  alias: "Vacuum hall"
-  sequence:
-    - service: xiaomi_miio.vacuum_clean_zone
-      data_template:
-        entity_id: vacuum.xiaomi_vacuum
-        repeats: >
-          {{(states('input_number.vacuum_zone_repeats')|int)}}
-        zone: [[29854,28330,31404,30980]]
-vacuum_bedroom:
-  alias: "Vacuum bedRoom"
-  sequence:
-    - service: xiaomi_miio.vacuum_clean_zone
-      data_template:
-        entity_id: vacuum.xiaomi_vacuum
-        repeats: >
-          {{(states('input_number.vacuum_zone_repeats')|int)}}
-        zone: [[23302,21376,26952,25076]]
-vacuum_bathroom:
-  alias: "Vacuum bathroom"
-  sequence:
-    - service: xiaomi_miio.vacuum_clean_zone
-      data_template:
-        entity_id: vacuum.xiaomi_vacuum
-        repeats: >
-          {{(states('input_number.vacuum_zone_repeats')|int)}}
-        zone: [[26861,21740,28961,24190]]
-vacuum_studyroom:
-  alias: "Vacuum study room"
-  sequence:
-    - service: xiaomi_miio.vacuum_clean_zone
-      data_template:
-        entity_id: vacuum.xiaomi_vacuum
-        repeats: >
-          {{(states('input_number.vacuum_zone_repeats')|int)}}
-        zone: [[29477,21816,31677,25216]]
-vacuum_corridor:
-  alias: "Vacuum corridor"
-  sequence:
-    - service: xiaomi_miio.vacuum_clean_zone
-      data_template:
-        entity_id: vacuum.xiaomi_vacuum
-        repeats: >
-          {{(states('input_number.vacuum_zone_repeats')|int)}}
-        zone: [[26876,24122,29376,25122]]
-vacuum_eat_area:
-  alias: "Vacuum eat area"
-  sequence:
-    - service: xiaomi_miio.vacuum_clean_zone
-      data_template:
-        entity_id: vacuum.xiaomi_vacuum
-        repeats: >
-          {{(states('input_number.vacuum_zone_repeats')|int)}}
-        zone: [[25286,25553,27386,27553]]
-
 vacuum_room:
-    alias: "Start cleaning"
-    sequence:
-      - service: vacuum.set_fan_speed
+  alias: "Vacuum start cleaning a zone"
+  variables:
+    defined_zones:
+      # That values must be the same than 'input_select.vacuum_zone_room_selected' but changing " " with "_"
+      corridor:
+        coordinates: [[26876,24122,29376,25122]]
+        # approach_steps: []
+      eat_area:
+        coordinates: [[25286,25553,27386,27553]]
+      study_room:
+        coordinates: [[29477,21816,31677,25216]]
+      bathroom:
+        coordinates: [[26861,21740,28961,24190]]
+      bedroom:
+        coordinates: [[23302,21376,26952,25076]]
+      hall:
+        coordinates: [[29854,28330,31404,30980]]
+      kitchen:
+        coordinates: [[31439,27363,33939,30413]]
+      living_room:
+        coordinates: [[24507,25175,31207,28525]]
+  sequence:
+    - variables:
+        selected_zone: >
+          {% set selected_zone_name = (states("input_select.vacuum_zone_room_selected")|regex_replace(find=' ', replace='_', ignorecase=False)) %}
+          {{ defined_zones[selected_zone_name] }}
+
+    - variables:
+        zone_to_clean: >
+          {{ selected_zone.coordinates }}
+        n_repeats: >
+          {{(states('input_number.vacuum_zone_repeats')|int)}}
+        # approch_steps: >
+        #   {{ selected_zone.approach_steps }}
+    - service: vacuum.set_fan_speed
+      entity_id: vacuum.xiaomi_vacuum
+      data:
         entity_id: vacuum.xiaomi_vacuum
-        data_template:
-          entity_id: vacuum.xiaomi_vacuum
-          fan_speed: >
-            {{states('input_select.vacuum_zone_fan_speed')}}
-      - service: script.turn_on
-        data_template:
-          entity_id: >
-            {% if is_state("input_select.vacuum_zone_room_selected", "eat area") %}
-              script.vacuum_eat_area
-            {% elif is_state("input_select.vacuum_zone_room_selected", "bathroom") %}
-              script.vacuum_bathroom
-            {% elif is_state("input_select.vacuum_zone_room_selected", "kitchen") %}
-              script.vacuum_kitchen
-            {% elif is_state("input_select.vacuum_zone_room_selected", "living room") %}
-              script.vacuum_living_room
-            {% elif is_state("input_select.vacuum_zone_room_selected", "bedroom") %}
-              script.vacuum_bedroom
-            {% elif is_state("input_select.vacuum_zone_room_selected", "study room") %}
-              script.vacuum_studyroom
-            {% elif is_state("input_select.vacuum_zone_room_selected", "corridor") %}
-              script.vacuum_corridor
-            {% elif is_state("input_select.vacuum_zone_room_selected", "hall") %}
-              script.vacuum_hall
-            {% endif %}
+        fan_speed: >
+          {{states('input_select.vacuum_zone_fan_speed')}}
+    # - service: system_log.write
+    #   data:
+    #     logger: mlr.script.tests
+    #     message: >
+    #       Ey, this is the value in 1:
+    #       {{ selected_zone | default('the string was empty') }}
+    #       ,
+    #       {{ (states("input_select.vacuum_zone_room_selected")|regex_replace(find=' ', replace='_', ignorecase=False)) }}
+    #       ,
+    #       {{ zone_to_clean | default('the string was empty') }}
+    #       ,
+    #       {{ n_repeats | default('the string was empty') }}
+    #       ,
+    #       {{ approach_steps | default('the string was empty') }}
+    # # Loop over approach_steps
+    # - while: >
+    #     {{ (approach_steps is defined) and (repeat.index <= approach_steps|length) }}
+    #   sequence:
+    #     - service: xiaomi_miio.vacuum_goto
+    #       data:
+    #         entity_id: vacuum.xiaomi_vacuum
+    #         x_coord: >
+    #           {{ approach_steps[repeat.index - 1][0] }}
+    #         y_coord: >
+    #           {{ approach_steps[repeat.index - 1][1] }}
+    #     ## Probably we need to wait until goto finish and also add manual steps to enter in the unknown zone
+
+    - service: xiaomi_miio.vacuum_clean_zone
+      data:
+        entity_id: vacuum.xiaomi_vacuum
+        repeats: "{{ n_repeats }}"
+        zone: "{{ zone_to_clean }}"
