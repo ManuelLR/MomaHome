@@ -4,7 +4,7 @@ ENV \
     CUSTOM_COMPONENT_MITEMP_VERSION=1.2.0 \
     # syncthing => https://github.com/home-assistant/core/pull/38331
     CUSTOM_COMPONENT_SYNCTHING_VERSION=13b00d55914bb81c7be45af16b1328edd0ef9bb9 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.0.0
+    CUSTOM_COMPONENT_GOOGLE_HOME=b51afaff56722c5b276000067bc8ea6e7941d651
 
 RUN \
     set -ex \
