@@ -1,10 +1,10 @@
-FROM homeassistant/home-assistant:2021.3.3
+FROM homeassistant/home-assistant:2021.3.4
 
 ENV \
-    CUSTOM_COMPONENT_MITEMP_VERSION=1.2.0 \
+    CUSTOM_COMPONENT_MITEMP_VERSION=1.3.1 \
     # syncthing => https://github.com/home-assistant/core/pull/38331
     CUSTOM_COMPONENT_SYNCTHING_VERSION=13b00d55914bb81c7be45af16b1328edd0ef9bb9 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=b51afaff56722c5b276000067bc8ea6e7941d651
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.1.0
 
 RUN \
     set -ex \
