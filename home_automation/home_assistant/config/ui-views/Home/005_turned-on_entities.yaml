@@ -16,6 +16,14 @@ entities:
   - vacuum.xiaomi_vacuum
   - entity: fan.dyson_01
     name: Dyson 01 Fan
+  - entity: sensor.mini_timers
+    name: Kitchen timer
+    state_filter: &google_home_enabled
+      - operator: '!='
+        value: unavailable
+  - entity: sensor.mini_alarms
+    name: Kitchen alarm
+    state_filter: *google_home_enabled
   - entity: media_player.sony_bravia_tv
     name: Tele salón
   # - plant.flora_001
