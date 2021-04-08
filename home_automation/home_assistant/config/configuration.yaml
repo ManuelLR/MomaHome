@@ -21,7 +21,7 @@ homeassistant:
     - type: notify
       message: 'Hey, that is your access code: `{}`'
   # packages: !include_dir_named packages
-
+# https://www.home-assistant.io/integrations/aemet/
 logger:
   default: info
   logs:
