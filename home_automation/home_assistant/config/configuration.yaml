@@ -49,6 +49,11 @@ lovelace:
       icon: mdi:arrow-all
       show_in_sidebar: true
       require_admin: true
+  resources:
+    - type: module
+      url: /local/external-cards/uptime-card.js
+    - type: module
+      url: /local/external-cards/googletimers-card.js
 
 recorder:
   db_url: !secret recorder_db_url
