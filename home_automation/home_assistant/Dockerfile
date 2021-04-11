@@ -28,7 +28,7 @@ RUN \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Uptime Card
-    && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/${CUSTOM_CARD_UPTIME}/uptime-card.js" -o /HA-custom-www/uptime-card.js \
+    && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/${CUSTOM_CARD_UPTIME}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Google Home Card
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
     && cd /tmp/google_home_timers_card && git checkout $CUSTOM_CARD_GOOGLE_HOME_TIMERS \
