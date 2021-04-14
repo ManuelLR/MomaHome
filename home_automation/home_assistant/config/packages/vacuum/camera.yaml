@@ -6,6 +6,15 @@
     token: !secret xiaomi_vacuum_token_0
     username: !secret xiaomi_cloud_username
     password: !secret xiaomi_cloud_password
+    scan_interval:
+      seconds: 10
+    map_transformation:
+      scale: 2
+      trim:
+        top: 10
+        bottom: 20
+        left: 30
+        right: 40
     draw: ['all']
     attributes:
       - calibration_points
