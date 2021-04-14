@@ -1,0 +1,11 @@
+# camera:
+  # https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
+  - name: Xiaomi Vacuum map
+    platform: xiaomi_cloud_map_extractor
+    host: 192.168.200.50
+    token: !secret xiaomi_vacuum_token_0
+    username: !secret xiaomi_cloud_username
+    password: !secret xiaomi_cloud_password
+    draw: ['all']
+    attributes:
+      - calibration_points
