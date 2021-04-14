@@ -1,10 +1,10 @@
-FROM homeassistant/home-assistant:2021.4.3
+FROM homeassistant/home-assistant:2021.4.4
 
 ENV \
     CUSTOM_COMPONENT_MITEMP_VERSION=1.6.0 \
     # syncthing => https://github.com/home-assistant/core/pull/38331
     CUSTOM_COMPONENT_SYNCTHING_VERSION=13b00d55914bb81c7be45af16b1328edd0ef9bb9 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.4.0 \
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.4.2 \
     CUSTOM_CARD_UPTIME=v0.2.0 \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS=v0.2.0
 
