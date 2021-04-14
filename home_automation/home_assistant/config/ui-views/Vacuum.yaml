@@ -1,6 +1,6 @@
 - type: picture-elements
   image: /local/my_config/home_map.png
-  # image: /local/floorplan.png
+  camera_image: camera.xiaomi_vacuum_map
   elements:
 
     - type: state-icon

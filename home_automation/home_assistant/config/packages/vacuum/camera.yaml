@@ -11,10 +11,16 @@
     map_transformation:
       scale: 2
       trim:
-        top: 10
-        bottom: 20
-        left: 30
-        right: 40
+        top: 23
+        bottom: 25
+        left: 23
+        right: 24
+    colors:
+      color_map_outside: [0, 0, 0, 0]
+      color_map_wall: [51, 52, 56]
+      color_map_wall_v2: [51, 52, 56]
+      color_map_inside: [207, 204, 219]
+      color_path: [235, 255, 255]
     draw: ['all']
     attributes:
       - calibration_points
