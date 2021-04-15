@@ -1,18 +1,6 @@
-- type: picture-elements
-  image: /local/my_config/home_map.png
-  camera_image: camera.xiaomi_vacuum_map
-  elements:
-
-    - type: state-icon
-      tap_action:
-        action: more-info
-      entity: vacuum.xiaomi_vacuum
-      style:
-        top: 63%
-        left: 20%
-        "--paper-item-icon-color": black
 - type: glance
   entities:
+    - entity: vacuum.xiaomi_vacuum
     - entity: input_number.vacuum_xiaomi_dust_clean_left
       name: Bin dust left
       hold_action:
@@ -23,7 +11,10 @@
           value: "{{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max') }}"
     - entity: group.vacuum_room
       name: Vacuum room
-
+- type: 'custom:xiaomi-vacuum-map-card'
+  entity: vacuum.xiaomi_vacuum
+  map_camera: camera.xiaomi_vacuum_map
+  camera_calibration: true
 - type: history-graph
   title: 'Aspiradora'
   hours_to_show: 48

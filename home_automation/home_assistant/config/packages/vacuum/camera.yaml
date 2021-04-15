@@ -8,19 +8,32 @@
     password: !secret xiaomi_cloud_password
     scan_interval:
       seconds: 10
-    map_transformation:
+    map_transformation:  &vacuum_map_transformation
       scale: 2
       trim:
         top: 23
         bottom: 25
         left: 23
         right: 24
-    colors:
+    colors: &vacuum_map_colors
       color_map_outside: [0, 0, 0, 0]
       color_map_wall: [51, 52, 56]
       color_map_wall_v2: [51, 52, 56]
       color_map_inside: [207, 204, 219]
       color_path: [235, 255, 255]
     draw: ['all']
+    attributes:
+      - calibration_points
+  - name: Home map
+    platform: xiaomi_cloud_map_extractor
+    host: 192.168.200.50
+    token: !secret xiaomi_vacuum_token_0
+    username: !secret xiaomi_cloud_username
+    password: !secret xiaomi_cloud_password
+    scan_interval:
+      minutes: 10
+    map_transformation: *vacuum_map_transformation
+    colors: *vacuum_map_colors
+    draw: ['virtual_walls','zones']
     attributes:
       - calibration_points
