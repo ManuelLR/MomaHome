@@ -15,6 +15,15 @@
   entity: vacuum.xiaomi_vacuum
   map_camera: camera.xiaomi_vacuum_map
   camera_calibration: true
+  zones:
+    - [[26876,24122,29376,25122]]
+    - [[25286,25553,27386,27553]]
+    - [[29477,21816,31677,25216]]
+    - [[26861,21740,28961,24190]]
+    - [[23302,21376,26952,25076]]
+    - [[29854,28330,31404,30980]]
+    - [[31439,27363,33939,30413]]
+    - [[24507,25175,31207,28525]]
 - type: history-graph
   title: 'Aspiradora'
   hours_to_show: 48
