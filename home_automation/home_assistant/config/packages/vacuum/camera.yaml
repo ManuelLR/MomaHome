@@ -34,6 +34,6 @@
       minutes: 10
     map_transformation: *vacuum_map_transformation
     colors: *vacuum_map_colors
-    draw: ['virtual_walls','zones']
+    draw: ['virtual_walls']
     attributes:
       - calibration_points
