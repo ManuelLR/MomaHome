@@ -26,6 +26,8 @@ entities:
     state_filter: *google_home_enabled
   - entity: media_player.sony_bravia_tv
     name: Tele salón
+  - entity: media_player.mini
+    name: Mini (cocina)
   # - plant.flora_001
   - entity: switch.adguard_protection
     name: AdGuard - Bloqueo de anuncios
