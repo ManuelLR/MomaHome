@@ -5,4 +5,4 @@
     entities:
       - switch.man_003_left
       - switch.man_003_right
-      - input_boolean.man_003_auto_poweroff_disabled
+      - input_boolean.man_003_auto_poweroff

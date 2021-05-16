@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2021.5.3
+FROM homeassistant/home-assistant:2021.5.4
 
 ENV \
     CUSTOM_COMPONENT_MITEMP_VERSION=1.9.2 \
