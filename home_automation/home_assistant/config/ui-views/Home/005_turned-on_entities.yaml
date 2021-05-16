@@ -36,6 +36,7 @@ entities:
 state_filter:
   - "on"
   - "home"
+  - "playing"
   # sensor.washing_machine_status
   - "Scheduled"
   - "Washing"
