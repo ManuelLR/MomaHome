@@ -4,7 +4,7 @@
       ## Extract night_mode to a switch
       fan_dyson_01_night_mode:
         friendly_name: Dyson 01 Fan (Night Mode)
-        entity_id: fan.dyson_01
+        # entity_id: fan.dyson_01
         value_template: "{{is_state_attr('fan.dyson_01', 'night_mode', True)}}"
         # Only available when fan is on
         availability_template: "{{is_state('fan.dyson_01', 'on')}}"
