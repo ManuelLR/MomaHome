@@ -1,13 +1,11 @@
-FROM homeassistant/home-assistant:2021.5.5
+FROM homeassistant/home-assistant:2021.6.5
 
 ENV \
-    CUSTOM_COMPONENT_MITEMP_VERSION=2.1.3 \
-    # syncthing => https://github.com/home-assistant/core/pull/38331
-    CUSTOM_COMPONENT_SYNCTHING_VERSION=13b00d55914bb81c7be45af16b1328edd0ef9bb9 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.4.3 \
-    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v1.1.1 \
+    CUSTOM_COMPONENT_MITEMP_VERSION=3.2.1 \
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.5.0 \
+    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.0.2 \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=1.2.3 \
-    CUSTOM_CARD_UPTIME=0.5.0 \
+    CUSTOM_CARD_UPTIME=0.6.0 \
     CUSTOM_CARD_MINI_GRAPH=0.10.0 \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS=0.2.0
 
@@ -20,10 +18,6 @@ RUN \
     && git clone https://github.com/custom-components/ble_monitor.git /tmp/mitemp \
     && cd /tmp/mitemp && git checkout $CUSTOM_COMPONENT_MITEMP_VERSION \
     && cd - && cp -r /tmp/mitemp/custom_components/* /opt/HA/config/custom_components/ \
-    # # syncthing
-    # && git clone https://github.com/zhulik/core.git /tmp/syncthing \
-    # && cd /tmp/syncthing && git checkout $CUSTOM_COMPONENT_SYNCTHING_VERSION \
-    # && cd - && cp -r /tmp/syncthing/homeassistant/components/syncthing /opt/HA/config/custom_components/ \
     # ha-google-home
     && git clone https://github.com/leikoilja/ha-google-home.git /tmp/ha-google-home \
     && cd /tmp/ha-google-home && git checkout $CUSTOM_COMPONENT_GOOGLE_HOME \
