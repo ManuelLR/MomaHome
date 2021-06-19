@@ -89,6 +89,9 @@
         entity_id: vacuum.xiaomi_vacuum
         to: returning
     action:
+        # If we have the same start time than before obviously we are trying to update the same values
+      - condition: template
+        value_template: "{{ (state_attr('vacuum.xiaomi_vacuum', 'clean_start')|as_local()) != states('input_datetime.vacuum_last_full_clean') }}"
       - service: input_number.set_value
         data_template:
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
@@ -107,7 +110,7 @@
         target:
           entity_id: input_datetime.vacuum_last_full_clean
         data:
-          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+          datetime: "{{ state_attr('vacuum.xiaomi_vacuum', 'clean_start')|as_local() }}"
 
   - alias: AUT-Notify Vacuum maintenance
     mode: restart

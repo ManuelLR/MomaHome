@@ -21,7 +21,7 @@ homeassistant:
     - type: notify
       message: 'Hey, that is your access code: `{}`'
   # packages: !include_dir_named packages
-
+# https://www.home-assistant.io/integrations/aemet/
 logger:
   default: info
   logs:
@@ -49,6 +49,15 @@ lovelace:
       icon: mdi:arrow-all
       show_in_sidebar: true
       require_admin: true
+  resources:
+    - type: module
+      url: /local/external-cards/xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js
+    - type: module
+      url: /local/external-cards/uptime-card.js
+    - type: module
+      url: /local/external-cards/mini-graph-card-bundle.js
+    - type: module
+      url: /local/external-cards/googletimers-card.js
 
 recorder:
   db_url: !secret recorder_db_url
@@ -131,6 +140,8 @@ timer:
 input_datetime: !include_dir_merge_named __auto_generated-config/input_datetime/
 
 vacuum: !include_dir_merge_list __auto_generated-config/vacuum/
+
+camera: !include_dir_merge_list __auto_generated-config/camera/
 
 switch: !include_dir_merge_list __auto_generated-config/switch/
 

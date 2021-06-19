@@ -16,8 +16,18 @@ entities:
   - vacuum.xiaomi_vacuum
   - entity: fan.dyson_01
     name: Dyson 01 Fan
+  - entity: sensor.mini_timers
+    name: Kitchen timer
+    state_filter: &google_home_enabled
+      - operator: '!='
+        value: unavailable
+  - entity: sensor.mini_alarms
+    name: Kitchen alarm
+    state_filter: *google_home_enabled
   - entity: media_player.sony_bravia_tv
     name: Tele salón
+  - entity: media_player.mini
+    name: Mini (cocina)
   # - plant.flora_001
   - entity: switch.adguard_protection
     name: AdGuard - Bloqueo de anuncios
@@ -26,6 +36,7 @@ entities:
 state_filter:
   - "on"
   - "home"
+  - "playing"
   # sensor.washing_machine_status
   - "Scheduled"
   - "Washing"

@@ -1,4 +1,4 @@
 # input_boolean:
-  man_003_auto_poweroff_disabled:
-    name: Disable auto poweroff for man-003 (both)
+  man_003_auto_poweroff:
+    name: Auto poweroff for man-003 (both)
     icon: mdi:power-settings

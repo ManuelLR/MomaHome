@@ -1,0 +1,12 @@
+
+google_home_delete_timer:
+  alias: "Google Home delete timer"
+  fields:
+    entity_id:
+      description: entity_id to delete
+  sequence:
+    - service: google_home.delete_timer
+      data:
+        entity_id: "{{entity_id}}"
+        timer_id: >
+          {{state_attr(entity_id, 'timers')[0].timer_id}}

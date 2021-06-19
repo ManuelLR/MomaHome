@@ -2,22 +2,23 @@
 - title: Home
   icon: mdi:home
   cards: !include_dir_list Home/
-- title: Environment
-  icon: mdi:coolant-temperature
-  cards: !include Environment.yaml
-- title: Climate
-  icon: mdi:thermostat
-  cards: !include Climate.yaml
 - title: Vacuum
   icon: mdi:robot-vacuum
   cards: !include Vacuum.yaml
-- title: Flora
-  icon: mdi:flower
-  cards: !include Flora.yaml
+- title: Climate
+  icon: mdi:thermostat
+  cards: !include Climate.yaml
 - title: Net
   # icon: mdi:router-network
   icon: mdi:access-point-network
   cards: !include Net.yaml
+- title: Environment
+  icon: mdi:coolant-temperature
+  cards: !include Environment.yaml
+- title: Flora
+  icon: mdi:flower
+  cards: !include Flora.yaml
+
 
 
 # Work in Progress section
