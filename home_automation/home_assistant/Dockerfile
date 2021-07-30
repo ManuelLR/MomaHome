@@ -1,9 +1,18 @@
-FROM homeassistant/home-assistant:2021.6.5
+FROM homeassistant/home-assistant:2021.7.4
+# Add dyson and export 
+# export dyson to google hom
+
+# Add remote controller for TV in the UI
+
+# Add id to triggers to easily filter in the future
+
+# Check dates & templates & vacuum and, if not working as expected, test the new as_datetime
 
 ENV \
     CUSTOM_COMPONENT_MITEMP_VERSION=3.2.1 \
     CUSTOM_COMPONENT_GOOGLE_HOME=v1.5.0 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.0.2 \
+    CUSTOM_COMPONENT_DYSON_LOCAL=0.15.0 \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=1.2.3 \
     CUSTOM_CARD_UPTIME=0.6.0 \
     CUSTOM_CARD_MINI_GRAPH=0.10.0 \
@@ -26,6 +35,10 @@ RUN \
     && git clone https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor.git /tmp/xiaomi-cloud-map-extractor \
     && cd /tmp/xiaomi-cloud-map-extractor && git checkout $CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR \
     && cd - && cp -r /tmp/xiaomi-cloud-map-extractor/custom_components/xiaomi_cloud_map_extractor /opt/HA/config/custom_components/ \
+    # dyson-local
+    && git clone https://github.com/shenxn/ha-dyson.git /tmp/ha-dyson-local \
+    && cd /tmp/ha-dyson-local && git checkout $CUSTOM_CUSTOM_COMPONENT_DYSON_LOCAL \
+    && cd - && cp -r /tmp/ha-dyson-local/custom_components/dyson_local /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
