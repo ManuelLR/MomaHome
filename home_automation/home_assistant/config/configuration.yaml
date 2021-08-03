@@ -151,7 +151,7 @@ plant: !include_dir_merge_named __auto_generated-config/plant/
 # Now forced to be managed from UI. Release 2021.6
 # tuya: !include_dir_merge_named __auto_generated-config/tuya/
 
-dyson: !include_dir_merge_named __auto_generated-config/dyson/
+# dyson: !include_dir_merge_named __auto_generated-config/dyson/
 
 # shell_command:
 #   # https://philhawthorne.com/automating-your-shopping-list-with-home-assistant-and-grocy/
