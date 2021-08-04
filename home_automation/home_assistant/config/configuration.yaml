@@ -138,7 +138,7 @@ timer:
 
 input_datetime: !include_dir_merge_named __auto_generated-config/input_datetime/
 
-vacuum: !include_dir_merge_list __auto_generated-config/vacuum/
+# vacuum: !include_dir_merge_list __auto_generated-config/vacuum/
 
 camera: !include_dir_merge_list __auto_generated-config/camera/
 
