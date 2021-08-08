@@ -1,13 +1,13 @@
-FROM homeassistant/home-assistant:2021.7.4
+FROM homeassistant/home-assistant:2021.8.4
 
 ##### Pending tasks
 # - Add remote controller for TV in the UI
 # - Add id to triggers to easily filter in the future
 
 ENV \
-    CUSTOM_COMPONENT_MITEMP_VERSION=3.2.1 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=4.3.1 \
     CUSTOM_COMPONENT_GOOGLE_HOME=v1.5.0 \
-    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.0.2 \
+    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.1 \
     CUSTOM_COMPONENT_DYSON_LOCAL=0.15.0 \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=1.2.3 \
     CUSTOM_CARD_UPTIME=0.6.0 \
@@ -21,9 +21,9 @@ RUN \
       git \
     && mkdir -p /opt/HA/config/custom_components/ \
     # ble_monitor
-    && git clone https://github.com/custom-components/ble_monitor.git /tmp/mitemp \
-    && cd /tmp/mitemp && git checkout $CUSTOM_COMPONENT_MITEMP_VERSION \
-    && cd - && cp -r /tmp/mitemp/custom_components/* /opt/HA/config/custom_components/ \
+    && git clone https://github.com/custom-components/ble_monitor.git /tmp/ble_monitor \
+    && cd /tmp/ble_monitor && git checkout $CUSTOM_COMPONENT_BLE_MONITOR_VERSION \
+    && cd - && cp -r /tmp/ble_monitor/custom_components/* /opt/HA/config/custom_components/ \
     # ha-google-home
     && git clone https://github.com/leikoilja/ha-google-home.git /tmp/ha-google-home \
     && cd /tmp/ha-google-home && git checkout $CUSTOM_COMPONENT_GOOGLE_HOME \
