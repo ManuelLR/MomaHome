@@ -57,6 +57,8 @@ lovelace:
     - type: module
       url: /local/external-cards/mini-graph-card-bundle.js
     - type: module
+      url: /local/external-cards/tv-card.js
+    - type: module
       url: /local/external-cards/googletimers-card.js
 
 recorder:
@@ -138,7 +140,7 @@ timer:
 
 input_datetime: !include_dir_merge_named __auto_generated-config/input_datetime/
 
-vacuum: !include_dir_merge_list __auto_generated-config/vacuum/
+# vacuum: !include_dir_merge_list __auto_generated-config/vacuum/
 
 camera: !include_dir_merge_list __auto_generated-config/camera/
 
@@ -151,7 +153,7 @@ plant: !include_dir_merge_named __auto_generated-config/plant/
 # Now forced to be managed from UI. Release 2021.6
 # tuya: !include_dir_merge_named __auto_generated-config/tuya/
 
-dyson: !include_dir_merge_named __auto_generated-config/dyson/
+# dyson: !include_dir_merge_named __auto_generated-config/dyson/
 
 # shell_command:
 #   # https://philhawthorne.com/automating-your-shopping-list-with-home-assistant-and-grocy/

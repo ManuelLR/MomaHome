@@ -1,12 +1,18 @@
-FROM homeassistant/home-assistant:2021.6.5
+FROM homeassistant/home-assistant:2021.7.4
+
+##### Pending tasks
+# - Add remote controller for TV in the UI
+# - Add id to triggers to easily filter in the future
 
 ENV \
     CUSTOM_COMPONENT_MITEMP_VERSION=3.2.1 \
     CUSTOM_COMPONENT_GOOGLE_HOME=v1.5.0 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.0.2 \
+    CUSTOM_COMPONENT_DYSON_LOCAL=0.15.0 \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=1.2.3 \
     CUSTOM_CARD_UPTIME=0.6.0 \
     CUSTOM_CARD_MINI_GRAPH=0.10.0 \
+    CUSTOM_CARD_TV_REMOTE=0.1.4 \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS=0.2.0
 
 RUN \
@@ -26,6 +32,10 @@ RUN \
     && git clone https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor.git /tmp/xiaomi-cloud-map-extractor \
     && cd /tmp/xiaomi-cloud-map-extractor && git checkout $CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR \
     && cd - && cp -r /tmp/xiaomi-cloud-map-extractor/custom_components/xiaomi_cloud_map_extractor /opt/HA/config/custom_components/ \
+    # dyson-local
+    && git clone https://github.com/shenxn/ha-dyson.git /tmp/ha-dyson-local \
+    && cd /tmp/ha-dyson-local && git checkout $CUSTOM_CUSTOM_COMPONENT_DYSON_LOCAL \
+    && cd - && cp -r /tmp/ha-dyson-local/custom_components/dyson_local /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
@@ -37,6 +47,10 @@ RUN \
     && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/v${CUSTOM_CARD_UPTIME}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Mini Graph Card
     && curl -fsSL "https://github.com/kalkih/mini-graph-card/releases/download/v${CUSTOM_CARD_MINI_GRAPH}/mini-graph-card-bundle.js" -o /HA-custom-www/external-cards/mini-graph-card-bundle.js \
+    # TV remote Card
+    && git clone https://github.com/marrobHD/tv-card.git /tmp/tv_remote_card \
+    && cd /tmp/tv_remote_card && git checkout v$CUSTOM_CARD_TV_REMOTE \
+    && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
     # Google Home Card
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
     && cd /tmp/google_home_timers_card && git checkout v$CUSTOM_CARD_GOOGLE_HOME_TIMERS \

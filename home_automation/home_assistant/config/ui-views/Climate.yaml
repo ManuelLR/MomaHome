@@ -10,7 +10,9 @@
         - type: entities
           entities:
             - name: Night Mode
-              entity: switch.fan_dyson_01_night_mode
+              entity: switch.dyson_01_night_mode
+            - name: Advanced
+              entity: group.dyson_01_all
     - type: thermostat
       name: Hot control
       entity: climate.dyson_01

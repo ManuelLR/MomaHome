@@ -17,6 +17,8 @@ services:
 
         environment:
             - TZ="Europe/Madrid"
+                # Reduce logging verbosity caused by ddwrt recurrent requests
+            - PYTHONWARNINGS=ignore:Unverified HTTPS request is being made to host '192.168.200.1'
         restart: unless-stopped
         # That it's useful to use bluetooth devices in server
         network_mode: "host"

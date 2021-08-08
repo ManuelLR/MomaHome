@@ -1,8 +1,14 @@
 # group:
-  fan_dyson_01_all:
+  dyson_01_all:
     name: Dyson 01 Fan
     icon: mdi:fan
     entities:
       - fan.dyson_01
       - climate.dyson_01
-      - switch.fan_dyson_01_night_mode
+      - switch.dyson_01_night_mode
+      - switch.dyson_01_auto_mode
+      - air_quality.dyson_01_air_quality
+      - switch.dyson_01_continuous_monitoring
+      - sensor.dyson_01_filter_life
+      - sensor.dyson_01_humidity
+      - sensor.dyson_01_temperature
