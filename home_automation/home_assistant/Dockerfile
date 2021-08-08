@@ -6,8 +6,6 @@ FROM homeassistant/home-assistant:2021.7.4
 
 # Add id to triggers to easily filter in the future
 
-# Check dates & templates & vacuum and, if not working as expected, test the new as_datetime
-
 ENV \
     CUSTOM_COMPONENT_MITEMP_VERSION=3.2.1 \
     CUSTOM_COMPONENT_GOOGLE_HOME=v1.5.0 \
@@ -16,6 +14,7 @@ ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=1.2.3 \
     CUSTOM_CARD_UPTIME=0.6.0 \
     CUSTOM_CARD_MINI_GRAPH=0.10.0 \
+    CUSTOM_CARD_TV_REMOTE=0.1.4 \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS=0.2.0
 
 RUN \
@@ -50,6 +49,10 @@ RUN \
     && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/v${CUSTOM_CARD_UPTIME}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Mini Graph Card
     && curl -fsSL "https://github.com/kalkih/mini-graph-card/releases/download/v${CUSTOM_CARD_MINI_GRAPH}/mini-graph-card-bundle.js" -o /HA-custom-www/external-cards/mini-graph-card-bundle.js \
+    # TV remote Card
+    && git clone https://github.com/marrobHD/tv-card.git /tmp/tv_remote_card \
+    && cd /tmp/tv_remote_card && git checkout v$CUSTOM_CARD_TV_REMOTE \
+    && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
     # Google Home Card
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
     && cd /tmp/google_home_timers_card && git checkout v$CUSTOM_CARD_GOOGLE_HOME_TIMERS \
