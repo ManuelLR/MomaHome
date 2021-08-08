@@ -1,10 +1,8 @@
 FROM homeassistant/home-assistant:2021.7.4
-# Add dyson and export 
-# export dyson to google hom
 
-# Add remote controller for TV in the UI
-
-# Add id to triggers to easily filter in the future
+##### Pending tasks
+# - Add remote controller for TV in the UI
+# - Add id to triggers to easily filter in the future
 
 ENV \
     CUSTOM_COMPONENT_MITEMP_VERSION=3.2.1 \
