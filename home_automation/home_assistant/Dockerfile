@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2021.8.4
+FROM homeassistant/home-assistant:2021.8.6
 
 ##### Pending tasks
 # - Add remote controller for TV in the UI
@@ -6,7 +6,7 @@ FROM homeassistant/home-assistant:2021.8.4
 
 ENV \
     CUSTOM_COMPONENT_BLE_MONITOR_VERSION=4.3.1 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.5.0 \
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.6.1 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.1 \
     CUSTOM_COMPONENT_DYSON_LOCAL=0.15.0 \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=1.2.3 \
