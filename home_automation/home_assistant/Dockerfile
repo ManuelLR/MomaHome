@@ -5,7 +5,9 @@ FROM homeassistant/home-assistant:2021.9.6
 # - Add id to triggers to easily filter in the future
 
 ENV \
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.2.1 \
+    # We can't upgrade because some errors in CI
+    # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.1.3 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.0.0 \
     CUSTOM_COMPONENT_GOOGLE_HOME=v1.7.0 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.1 \
     CUSTOM_COMPONENT_DYSON_LOCAL=0.15.0 \

@@ -6,14 +6,46 @@ jobs:
     name: Checking syntax
     # container:
     #   image: homeassistant/home-assistant:0.104.3
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      # - name: Prepare Bluetooth device
+      #   run: |
+      #     set -ex
+      #     sudo bash -cex 'echo "deb http://mirrors.kernel.org/ubuntu impish main universe" >> /etc/apt/sources.list'
+      #     sudo apt-get update
+      #       # We should install at least 5.59: https://bugs.launchpad.net/ubuntu/+source/bluez/+bug/1932022
+      #     sudo apt-get install bluez-tests # bluez
+      #     btvirt -h
+      #     # sudo systemctl start bluetooth
+      #     # sudo systemctl status bluetooth
+
+      #     # THat doesn't work and aparently is required to check the syntax test of home assistant
+      #     # Maybe I should rethink that tests
+      #     sudo btvirt -d -s -S &
+      #     # sudo btvirt -d -l2 &
+      #     sleep 5s
+      #     # sudo bluetoothctl list   ## That also requires to install bluez
       - name: Prepare privates
         run: |
           set -ex
           mv home_automation/home_assistant/config/secrets.example.yaml home_automation/home_assistant/config/secrets.yaml
           mv home_automation/home_assistant/config/google_assistant_service_account.example.json home_automation/home_assistant/config/google_assistant_service_account.json
+      # - name: quick-test
+      #   run: |
+      #     set -ex
+      #     cd home_automation/home_assistant/
+      #     sudo docker build \
+      #       -t example \
+      #       .
+
+      #     sudo docker run --rm -i \
+      #       --privileged \
+      #       -v ${PWD}/config/:/config/ \
+      #       -v ${PWD}/HA-custom-www/my-config/:/HA-custom-www/my-config/ \
+      #       example \
+      #       /usr/local/bin/hass -c=/config/ --script check_config --info=all
+
       - name: Test configuration
         uses: ./.github/actions/home-assistant
         # with:
