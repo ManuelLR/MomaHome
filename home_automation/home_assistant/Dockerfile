@@ -1,16 +1,16 @@
-FROM homeassistant/home-assistant:2021.8.7
+FROM homeassistant/home-assistant:2021.9.6
 
 ##### Pending tasks
 # - Add remote controller for TV in the UI
 # - Add id to triggers to easily filter in the future
 
 ENV \
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=4.5.1 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.7.0 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.2.1 \
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.8.1 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.1 \
     CUSTOM_COMPONENT_DYSON_LOCAL=0.15.0 \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=1.2.3 \
-    CUSTOM_CARD_UPTIME=0.6.0 \
+    CUSTOM_CARD_UPTIME=0.7.0 \
     CUSTOM_CARD_MINI_GRAPH=0.10.0 \
     CUSTOM_CARD_TV_REMOTE=0.1.4 \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS=0.2.0
