@@ -1,0 +1,15 @@
+# switch:
+  - name: "man-004"
+    platform: mqtt
+    state_topic: "man-004/espurna/relay/0"
+    command_topic: "man-004/espurna/relay/0/set"
+    payload_on: 1
+    payload_off: 0
+    optimistic: false
+    qos: 1
+    retain: true
+    icon: mdi:ceiling-lamp
+    # icon: mdi:ceiling-light-outline
+    device:
+      identifiers: man-004
+      name: Hall light
