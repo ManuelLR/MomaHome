@@ -8,6 +8,7 @@ ENV \
     # We can't upgrade because some errors in CI
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.1.3 \
     CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.0.0 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.0 \
     CUSTOM_COMPONENT_GOOGLE_HOME=v1.7.0 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.1 \
     CUSTOM_COMPONENT_DYSON_LOCAL=0.15.0 \
@@ -26,6 +27,10 @@ RUN \
     && git clone https://github.com/custom-components/ble_monitor.git /tmp/ble_monitor \
     && cd /tmp/ble_monitor && git checkout $CUSTOM_COMPONENT_BLE_MONITOR_VERSION \
     && cd - && cp -r /tmp/ble_monitor/custom_components/* /opt/HA/config/custom_components/ \
+    # browser_mod
+    && git clone https://github.com/thomasloven/hass-browser_mod.git /tmp/browser_mod \
+    && cd /tmp/browser_mod && git checkout $CUSTOM_COMPONENT_BROWSER_MOD_VERSION \
+    && cd - && cp -r /tmp/browser_mod/custom_components/* /opt/HA/config/custom_components/ \
     # ha-google-home
     && git clone https://github.com/leikoilja/ha-google-home.git /tmp/ha-google-home \
     && cd /tmp/ha-google-home && git checkout $CUSTOM_COMPONENT_GOOGLE_HOME \

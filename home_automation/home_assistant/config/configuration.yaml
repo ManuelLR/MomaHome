@@ -126,6 +126,9 @@ ble_monitor:
   restore_state: True
   devices: !include_dir_merge_list __auto_generated-config/ble_monitor_device/
 
+browser_mod:
+  # https://github.com/thomasloven/hass-browser_mod
+
 # Text to speech
 tts:
   - platform: google_translate
