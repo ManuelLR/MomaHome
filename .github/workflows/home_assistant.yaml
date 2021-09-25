@@ -14,6 +14,21 @@ jobs:
           set -ex
           mv home_automation/home_assistant/config/secrets.example.yaml home_automation/home_assistant/config/secrets.yaml
           mv home_automation/home_assistant/config/google_assistant_service_account.example.json home_automation/home_assistant/config/google_assistant_service_account.json
+      # - name: quick-test
+      #   run: |
+      #     set -ex
+      #     cd home_automation/home_assistant/
+      #     sudo docker build \
+      #       -t example \
+      #       .
+
+      #     sudo docker run --rm -i \
+      #       --privileged \
+      #       -v ${PWD}/config/:/config/ \
+      #       -v ${PWD}/HA-custom-www/my-config/:/HA-custom-www/my-config/ \
+      #       example \
+      #       /usr/local/bin/hass -c=/config/ --script check_config --info=all
+
       - name: Test configuration
         uses: ./.github/actions/home-assistant
         # with:
