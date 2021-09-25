@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2021.9.6
+FROM homeassistant/home-assistant:2021.9.7
 
 ##### Pending tasks
 # - Add remote controller for TV in the UI
