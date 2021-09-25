@@ -1,13 +1,10 @@
 FROM homeassistant/home-assistant:2021.9.7
 
 ##### Pending tasks
-# - Add remote controller for TV in the UI
 # - Add id to triggers to easily filter in the future
 
 ENV \
-    # We can't upgrade because some errors in CI
-    # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.1.3 \
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.0.0 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.3.3 \
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.0 \
     CUSTOM_COMPONENT_GOOGLE_HOME=v1.7.0 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.1 \
