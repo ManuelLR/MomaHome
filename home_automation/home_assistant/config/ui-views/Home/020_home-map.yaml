@@ -29,7 +29,7 @@ elements:
       left: 70%
       "--paper-item-icon-color": blue
   - type: state-icon
-    tap_action: !include utils/tv-card.yaml
+    tap_action: !include ../utils/tv-card.yaml
     hold_action:
       action: call-service
       service: media_player.toggle

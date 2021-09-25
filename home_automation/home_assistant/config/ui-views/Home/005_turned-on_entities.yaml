@@ -28,7 +28,7 @@ entities:
     state_filter: *google_home_enabled
   - entity: media_player.sony_bravia_tv
     name: Tele salón
-    tap_action: !include utils/tv-card.yaml
+    tap_action: !include ../utils/tv-card.yaml
   - entity: media_player.mini
     name: Mini (cocina)
   # - plant.flora_001
