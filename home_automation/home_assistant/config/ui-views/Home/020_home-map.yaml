@@ -9,8 +9,8 @@ elements:
     entity: light.living_room_light
     style:
       top: 35%
-      left: 50%
-      "--paper-item-icon-color": black
+      left: 18%
+      "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info
@@ -19,7 +19,15 @@ elements:
     style:
       top: 12%
       left: 94%
-      "--paper-item-icon-color": black
+      "--paper-item-icon-color": blue
+  - type: state-icon
+    tap_action:
+      action: toggle
+    entity: switch.man_004
+    style:
+      top: 15%
+      left: 70%
+      "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info
@@ -33,17 +41,17 @@ elements:
     # state_filter:
     #   "off": --paper-item-icon-color=pink
     style:
-      top: 62%
-      left: 27%
-      "--paper-item-icon-color": black
+      top: 60%
+      left: 23%
+      "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info
     entity: vacuum.xiaomi_vacuum
     style:
-      top: 35%
-      left: 46%
-      "--paper-item-icon-color": black
+      top: 33%
+      left: 44%
+      "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info
@@ -51,7 +59,7 @@ elements:
     style:
       top: 42%
       left: 93%
-      "--paper-item-icon-color": black
+      "--paper-item-icon-color": blue
   - type: conditional
     tap_action:
       action: none
@@ -75,7 +83,7 @@ elements:
     style:
       top: 42%
       left: 7%
-      "--paper-item-icon-color": black
+      "--paper-item-icon-color": blue
   # - type: state-label
   #   entity: sensor.outside_temperature
   #   style:

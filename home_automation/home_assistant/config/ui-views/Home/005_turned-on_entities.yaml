@@ -6,6 +6,8 @@ entities:
     name: Enchufe cocina doble izq.
   - entity: switch.man_003_right
     name: Enchufe cocina doble der.
+  - entity: switch.man_004
+    name: Luz entrada
   - entity: switch.man_001
     name: Enchufe luz salón
   # - entity: switch.02007254dc4f22ff4f45
