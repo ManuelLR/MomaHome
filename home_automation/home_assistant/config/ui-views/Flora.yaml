@@ -12,7 +12,7 @@
           graph: line
           detail: 1
           hours_to_show: 168
-          entity: sensor.mi_l_c47c8d6b1a91
+          entity: sensor.ble_illuminance_flora_001
     - type: horizontal-stack
       title: 'Moisture (7d)'
       cards:
@@ -20,7 +20,7 @@
           graph: line
           detail: 1
           hours_to_show: 168
-          entity: sensor.mi_m_c47c8d6b1a91
+          entity: sensor.ble_moisture_flora_001
 
     - type: horizontal-stack
       title: 'Temperature (7d)'
@@ -29,4 +29,4 @@
           graph: line
           detail: 1
           hours_to_show: 168
-          entity: sensor.mi_t_c47c8d6b1a91
+          entity: sensor.ble_temperature_flora_001

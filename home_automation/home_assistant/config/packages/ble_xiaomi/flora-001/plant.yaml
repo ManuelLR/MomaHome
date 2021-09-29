@@ -1,11 +1,11 @@
 # plant:
   flora_001:
     sensors:
-      battery: sensor.mi_batt_c47c8d6b1a91
-      moisture: sensor.mi_m_c47c8d6b1a91
-      temperature: sensor.mi_t_c47c8d6b1a91
-      conductivity: sensor.mi_c_c47c8d6b1a91
-      brightness: sensor.mi_l_c47c8d6b1a91
+      battery: sensor.ble_battery_flora_001
+      moisture: sensor.ble_moisture_flora_001
+      temperature: sensor.ble_temperature_flora_001
+      conductivity: sensor.ble_conductivity_flora_001
+      brightness: sensor.ble_illuminance_flora_001
     # min_battery: 20
     # min_moisture:
     # max_moisture:

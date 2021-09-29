@@ -9,7 +9,7 @@
           graph: line
           detail: 2
           hours_to_show: 24
-          entity: sensor.mi_t_c47c8d6b1a91
+          entity: sensor.ble_temperature_flora_001
         - <<: *environment-24h-card
           entity: sensor.ble_temperature_environment_001
 
@@ -23,7 +23,7 @@
     - type: horizontal-stack
       cards:
         - <<: *environment-24h-card
-          entity: sensor.mi_batt_c47c8d6b1a91
+          entity: sensor.ble_battery_flora_001
         - <<: *environment-24h-card
           entity: sensor.ble_battery_environment_001
 
@@ -39,7 +39,7 @@
           graph: line
           detail: 1
           hours_to_show: 168
-          entity: sensor.mi_t_c47c8d6b1a91
+          entity: sensor.ble_temperature_flora_001
         - <<: *environment-7d-card
           entity: sensor.ble_temperature_environment_001
 
@@ -53,6 +53,6 @@
     - type: horizontal-stack
       cards:
         - <<: *environment-7d-card
-          entity: sensor.mi_batt_c47c8d6b1a91
+          entity: sensor.ble_battery_flora_001
         - <<: *environment-7d-card
           entity: sensor.ble_battery_environment_001
