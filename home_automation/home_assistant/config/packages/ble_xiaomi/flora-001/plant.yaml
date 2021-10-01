@@ -6,10 +6,13 @@
       temperature: sensor.ble_temperature_flora_001
       conductivity: sensor.ble_conductivity_flora_001
       brightness: sensor.ble_illuminance_flora_001
-    # min_battery: 20
-    # min_moisture:
-    # max_moisture:
-    # min_temperature:
-    # max_temperature:
-    # min_brightness:
-    # max_brightness:
+    min_battery: 20
+    min_moisture: 15
+    max_moisture: 60
+    min_conductivity: 350
+    max_conductivity: 2000
+    min_temperature: 10
+    max_temperature: 35
+    min_brightness: 500
+    max_brightness: 45000
+    # check_days:
