@@ -33,6 +33,7 @@ services:
             - "traefik.tcp.routers.adguardhome-tls.rule=HostSNI(`${EXTERNAL_DOMAIN}`)"
             - "traefik.tcp.routers.adguardhome-tls.entrypoints=dns-tls"
             - "traefik.tcp.routers.adguardhome-tls.tls=true"
+            - "traefik.tcp.routers.adguardhome-tls.tls.options=dns-over-tls@file"
             - "traefik.tcp.routers.adguardhome-tls.tls.certresolver=principal"
             - "traefik.tcp.routers.adguardhome-tls.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
