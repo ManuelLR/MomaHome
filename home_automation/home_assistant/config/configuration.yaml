@@ -124,7 +124,11 @@ ble_monitor:
   ## Hey ! If a error occur don't worry, HA needs disable that component and restart
   discovery: False
   restore_state: True
+  active_scan: False
   devices: !include_dir_merge_list __auto_generated-config/ble_monitor_device/
+
+browser_mod:
+  # https://github.com/thomasloven/hass-browser_mod
 
 # Text to speech
 tts:

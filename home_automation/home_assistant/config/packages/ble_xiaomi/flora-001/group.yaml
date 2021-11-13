@@ -1,8 +1,8 @@
 # group:
   flora_001:
       entities:
-        - sensor.mi_c_c47c8d6b1a91
-        - sensor.mi_l_c47c8d6b1a91
-        - sensor.mi_m_c47c8d6b1a91
-        - sensor.mi_t_c47c8d6b1a91
-        - sensor.mi_batt_c47c8d6b1a91
+        - sensor.ble_conductivity_flora_001
+        - sensor.ble_illuminance_flora_001
+        - sensor.ble_moisture_flora_001
+        - sensor.ble_temperature_flora_001
+        - sensor.ble_battery_flora_001

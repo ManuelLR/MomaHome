@@ -1,0 +1,22 @@
+version: "2.4"
+services:
+  ocrmypdf:
+    build: ./ocrmypdf/
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.miscellaneous-ocrmypdf.loadbalancer.server.port=5000"
+      - "traefik.http.routers.miscellaneous-ocrmypdf.middlewares=miscellaneous-ocrmypdf-auth@docker"
+      - "traefik.http.routers.miscellaneous-ocrmypdf.rule=Host(`${EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.miscellaneous-ocrmypdf.entrypoints=websecure"
+      - "traefik.http.routers.miscellaneous-ocrmypdf.tls.certresolver=principal"
+      - "traefik.http.routers.miscellaneous-ocrmypdf.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      - "traefik.http.middlewares.miscellaneous-ocrmypdf-auth.basicauth.users=${EXTERNAL_CREDENTIALS}"
+    networks:
+      - net-reverse-proxy
+networks:
+  net-reverse-proxy:
+    # Aims to create a network called "reverse-proxy" to reuse in others containers to be routed by reverse-proxy
+    # This network must be created before start. `docker network create reverse-proxy`
+    name: reverse-proxy
+    external: true
