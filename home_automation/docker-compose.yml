@@ -19,6 +19,7 @@ services:
                 # Reduce logging verbosity caused by ddwrt recurrent requests
             - PYTHONWARNINGS=ignore:Unverified HTTPS request is being made to host '192.168.200.1'
         restart: unless-stopped
+        stop_grace_period: 2m
         # That it's useful to use bluetooth devices in server
         network_mode: "host"
         labels:
@@ -36,6 +37,7 @@ services:
         ports:
             - 127.0.0.1:5432:5432
             # - 0.0.0.0:5432:5432
+        stop_grace_period: 5m
         volumes:
           # Must be declared as external volume
             - ./postgres-data:/var/lib/postgresql/data
