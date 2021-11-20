@@ -16,6 +16,7 @@ entities:
   - device_tracker.print_canon_mx920
   - sensor.washing_machine_status
   - vacuum.xiaomi_vacuum
+  - light.midesklamp1s_01
   - entity: fan.dyson_01
     name: Dyson 01 Fan
   - entity: sensor.mini_timers

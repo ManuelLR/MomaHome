@@ -51,7 +51,7 @@ lovelace:
       require_admin: true
   resources:
     - type: module
-      url: /local/external-cards/xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js
+      url: /local/external-cards/xiaomi-vacuum-map-card.js
     - type: module
       url: /local/external-cards/uptime-card.js
     - type: module

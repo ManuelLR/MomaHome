@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2021.11.4
+FROM homeassistant/home-assistant:2021.11.5
 
 ##### Pending tasks
 # - Add id to triggers to easily filter in the future
@@ -9,7 +9,7 @@ ENV \
     CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.1 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.1 \
     CUSTOM_COMPONENT_DYSON_LOCAL=0.15.0 \
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP=1.2.3 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP=2.0.2 \
     CUSTOM_CARD_UPTIME=0.7.2 \
     CUSTOM_CARD_MINI_GRAPH=0.10.0 \
     CUSTOM_CARD_TV_REMOTE=0.1.4 \
@@ -43,10 +43,7 @@ RUN \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
-    && git clone https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card.git /tmp/xiaomi-vacuum-map-card \
-      && cd /tmp/xiaomi-vacuum-map-card && git checkout v$CUSTOM_CARD_XIAOMI_VACUUM_MAP \
-      && mkdir -p /HA-custom-www/external-cards/xiaomi-vacuum-map-card \
-      && cd - && cp -r /tmp/xiaomi-vacuum-map-card/dist/* /HA-custom-www/external-cards/xiaomi-vacuum-map-card/ \
+    && curl -fsSL "https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card/releases/download/v${CUSTOM_CARD_XIAOMI_VACUUM_MAP}/xiaomi-vacuum-map-card.js" -o /HA-custom-www/external-cards/xiaomi-vacuum-map-card.js \
     # Uptime Card
     && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/v${CUSTOM_CARD_UPTIME}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Mini Graph Card
