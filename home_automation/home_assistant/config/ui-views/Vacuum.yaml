@@ -1,22 +1,23 @@
-- type: glance
-  entities:
-    - entity: vacuum.xiaomi_vacuum
-    - entity: input_number.vacuum_xiaomi_dust_clean_left
-      name: Bin dust left
-      hold_action:
-        action: call-service
-        service: input_number.set_value
-        service_data:
-          entity_id: input_number.vacuum_xiaomi_dust_clean_left
-          value: "{{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max') }}"
-    - entity: group.vacuum_room
-      name: Vacuum room
+# - type: glance
+#   entities:
+#     - entity: vacuum.xiaomi_vacuum
+#     - entity: input_number.vacuum_xiaomi_dust_clean_left
+#       name: Bin dust left
+#       hold_action:
+#         action: call-service
+#         service: input_number.set_value
+#         service_data:
+#           entity_id: input_number.vacuum_xiaomi_dust_clean_left
+#           value: "{{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max') }}"
+#     - entity: group.vacuum_room
+#       name: Vacuum room
 - type: 'custom:xiaomi-vacuum-map-card'
   entity: vacuum.xiaomi_vacuum
   map_source:
     camera: camera.xiaomi_vacuum_map
   calibration_source:
     camera: true
+  map_locked: true
   map_modes:
     - template: vacuum_clean_zone
     - template: vacuum_goto
@@ -32,6 +33,18 @@
         - zones: [[24507,25175,31207,28525]]
     - template: vacuum_clean_segment
     - template: vacuum_follow_path
+  append_tiles: true
+  tiles:
+    - label: Bin dust left
+      entity: input_number.vacuum_xiaomi_dust_clean_left
+      # icon:
+      # unit:
+      hold_action:
+        action: call-service
+        service: input_number.set_value
+        service_data:
+          entity_id: input_number.vacuum_xiaomi_dust_clean_left
+          value: "{{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max') }}"
 - type: history-graph
   title: 'Aspiradora'
   hours_to_show: 48
