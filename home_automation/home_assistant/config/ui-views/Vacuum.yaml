@@ -37,14 +37,16 @@
   tiles:
     - label: Bin dust left
       entity: input_number.vacuum_xiaomi_dust_clean_left
-      # icon:
-      # unit:
       hold_action:
         action: call-service
         service: input_number.set_value
         service_data:
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
           value: "{{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max') }}"
+      ## Not autodetected so I should force it
+      icon: mdi:basket-fill
+      unit: m²
+
 - type: history-graph
   title: 'Aspiradora'
   hours_to_show: 48
