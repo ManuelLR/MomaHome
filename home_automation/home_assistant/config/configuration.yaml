@@ -51,7 +51,7 @@ lovelace:
       require_admin: true
   resources:
     - type: module
-      url: /local/external-cards/xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js
+      url: /local/external-cards/xiaomi-vacuum-map-card.js
     - type: module
       url: /local/external-cards/uptime-card.js
     - type: module
@@ -90,7 +90,7 @@ http:
     - 172.0.0.0/8
   ## Auto ban IPs based in failed logins attemps
   ip_ban_enabled: true
-  login_attempts_threshold: 5
+  login_attempts_threshold: 10
 
 # Discover some devices automatically
 discovery:

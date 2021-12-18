@@ -1,29 +1,52 @@
-- type: glance
-  entities:
-    - entity: vacuum.xiaomi_vacuum
-    - entity: input_number.vacuum_xiaomi_dust_clean_left
-      name: Bin dust left
+# - type: glance
+#   entities:
+#     - entity: vacuum.xiaomi_vacuum
+#     - entity: input_number.vacuum_xiaomi_dust_clean_left
+#       name: Bin dust left
+#       hold_action:
+#         action: call-service
+#         service: input_number.set_value
+#         service_data:
+#           entity_id: input_number.vacuum_xiaomi_dust_clean_left
+#           value: "{{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max') }}"
+#     - entity: group.vacuum_room
+#       name: Vacuum room
+- type: 'custom:xiaomi-vacuum-map-card'
+  entity: vacuum.xiaomi_vacuum
+  map_source:
+    camera: camera.xiaomi_vacuum_map
+  calibration_source:
+    camera: true
+  map_locked: true
+  map_modes:
+    - template: vacuum_clean_zone
+    - template: vacuum_goto
+    - template: vacuum_clean_zone_predefined
+      predefined_selections:
+        - zones: [[26876,24122,29376,25122]]
+        - zones: [[25286,25553,27386,27553]]
+        - zones: [[29477,21816,31677,25216]]
+        - zones: [[26861,21740,28961,24190]]
+        - zones: [[23302,21376,26952,25076]]
+        - zones: [[29854,28330,31404,30980]]
+        - zones: [[31439,27363,33939,30413]]
+        - zones: [[24507,25175,31207,28525]]
+    - template: vacuum_clean_segment
+    - template: vacuum_follow_path
+  append_tiles: true
+  tiles:
+    - label: Bin dust left
+      entity: input_number.vacuum_xiaomi_dust_clean_left
       hold_action:
         action: call-service
         service: input_number.set_value
         service_data:
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
           value: "{{ state_attr('input_number.vacuum_xiaomi_dust_clean_left', 'max') }}"
-    - entity: group.vacuum_room
-      name: Vacuum room
-- type: 'custom:xiaomi-vacuum-map-card'
-  entity: vacuum.xiaomi_vacuum
-  map_camera: camera.xiaomi_vacuum_map
-  camera_calibration: true
-  zones:
-    - [[26876,24122,29376,25122]]
-    - [[25286,25553,27386,27553]]
-    - [[29477,21816,31677,25216]]
-    - [[26861,21740,28961,24190]]
-    - [[23302,21376,26952,25076]]
-    - [[29854,28330,31404,30980]]
-    - [[31439,27363,33939,30413]]
-    - [[24507,25175,31207,28525]]
+      ## Not autodetected so I should force it
+      icon: mdi:basket-fill
+      unit: m²
+
 - type: history-graph
   title: 'Aspiradora'
   hours_to_show: 48

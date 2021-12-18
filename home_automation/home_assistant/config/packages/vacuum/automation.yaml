@@ -29,6 +29,8 @@
     initial_state: 'on'
     trigger:
       - platform: time
+        at: '12:32:00'
+      - platform: time
         at: '11:28:00'
       # Check if we can start before
       - platform: time
@@ -43,11 +45,28 @@
       - condition: and
         conditions:
       # Check if decent hours
-          - condition: time
-            after: "10:00:00"
-            before: "22:30:00"
-            # after: input_datetime.house_silent_hours_start
-            # before: input_datetime.house_silent_hours_end
+          - condition: or
+            conditions:
+            # Check if decent hours in working days
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id: binary_sensor.workday_sensor
+                    state: "on"
+                  - condition: time
+                    after: "10:00:00"
+                    before: "22:30:00"
+                    # after: input_datetime.house_silent_hours_start
+                    # before: input_datetime.house_silent_hours_end
+            # Check if decent hours in not working days
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id: binary_sensor.workday_sensor
+                    state: "off"
+                  - condition: time
+                    after: "11:30:00"
+                    before: "22:30:00"
       # Not cleaning just now
           - condition: template
             value_template: '{{ states("vacuum.xiaomi_vacuum") == "docked" }}'
@@ -91,26 +110,25 @@
     action:
         # If we have the same start time than before obviously we are trying to update the same values
       - condition: template
-        value_template: "{{ (state_attr('vacuum.xiaomi_vacuum', 'clean_start')|as_local()) != states('input_datetime.vacuum_last_full_clean') }}"
+        value_template: "{{ as_timestamp(states('sensor.xiaomi_vacuum_last_clean_start')) != as_timestamp(states('input_datetime.vacuum_last_full_clean')) }}"
       - service: input_number.set_value
         data_template:
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
           value: >
-            {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (state_attr('vacuum.xiaomi_vacuum', 'cleaned_area')|int), 0] | max }}
+            {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (states('sensor.xiaomi_vacuum_last_clean_area')|int), 0] | max }}
       - service: notify.manolo
         data_template:
           title: "*Update square metter*"
-          message: 'The next square metters to delete from total is: `{{state_attr("vacuum.xiaomi_vacuum", "cleaned_area")}}`'
+          message: 'The next square metters to delete from total is: `{{states("sensor.xiaomi_vacuum_last_clean_area")}}`'
     # We considered a full cleaning if we clean more than 17 m2
       - condition: numeric_state
-        entity_id: vacuum.xiaomi_vacuum
-        attribute: cleaned_area
+        entity_id: sensor.xiaomi_vacuum_last_clean_area
         above: 17
       - service: input_datetime.set_datetime
         target:
           entity_id: input_datetime.vacuum_last_full_clean
         data:
-          datetime: "{{ state_attr('vacuum.xiaomi_vacuum', 'clean_start')|as_local() }}"
+          datetime: "{{ states('sensor.xiaomi_vacuum_last_clean_start') }}"
 
   - alias: AUT-Notify Vacuum maintenance
     mode: restart
@@ -136,13 +154,13 @@
           variables:
             title: 'Vacuum need maintenance'
             message: >
-              Cepillo principal*:* `{{ (state_attr('vacuum.xiaomi_vacuum', 'main_brush_left')|int) }} h` _restantes_
+              Cepillo principal*:* `{{ (states('sensor.xiaomi_vacuum_main_brush_left')|int) }} h` _restantes_
 
-              Cepillo lateral: `{{ (state_attr('vacuum.xiaomi_vacuum', 'side_brush_left')|int) }} h` restantes
+              Cepillo lateral: `{{ (states('sensor.xiaomi_vacuum_side_brush_left')|int) }} h` restantes
 
-              Filtro: `{{ (state_attr('vacuum.xiaomi_vacuum', 'filter_left')|int) }} h` restantes
+              Filtro: `{{ (states('sensor.xiaomi_vacuum_filter_left')|int) }} h` restantes
 
-              Limpieza de sensores: `{{ (state_attr('vacuum.xiaomi_vacuum', 'sensor_dirty_left')|int) }} h` restantes
+              Limpieza de sensores: `{{ (states('sensor.xiaomi_vacuum_sensor_dirty_left')|int) }} h` restantes
 
               Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
             keyboard:

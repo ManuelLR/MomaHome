@@ -54,6 +54,14 @@ elements:
   - type: state-icon
     tap_action:
       action: more-info
+    entity: light.midesklamp1s_01
+    style:
+      top: 58%
+      left: 53%
+      "--paper-item-icon-color": blue
+  - type: state-icon
+    tap_action:
+      action: more-info
     entity: sensor.washing_machine_status
     style:
       top: 42%

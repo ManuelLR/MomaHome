@@ -1,0 +1,13 @@
+# binary_sensor:
+  - platform: workday
+    country: "ES"
+    province: "AN"
+    add_holidays:
+      # 2021
+      - "2021-12-24"
+      - "2021-12-31"
+      # 2022
+      - "2022-05-04"
+      - "2022-06-16"
+      - "2022-12-24"
+      - "2022-12-31"

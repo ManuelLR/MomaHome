@@ -1,18 +1,18 @@
-FROM homeassistant/home-assistant:2021.10.5
+FROM homeassistant/home-assistant:2021.11.5
 
 ##### Pending tasks
 # - Add id to triggers to easily filter in the future
 
 ENV \
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.4.1 \
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.0 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.8.2 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.9.1 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.1 \
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.2 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.1 \
-    CUSTOM_COMPONENT_DYSON_LOCAL=0.15.0 \
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP=1.2.3 \
-    CUSTOM_CARD_UPTIME=0.7.1 \
+    CUSTOM_COMPONENT_DYSON_LOCAL=0.16.1 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP=2.0.8 \
+    CUSTOM_CARD_UPTIME=0.7.2 \
     CUSTOM_CARD_MINI_GRAPH=0.10.0 \
-    CUSTOM_CARD_TV_REMOTE=0.1.4 \
+    CUSTOM_CARD_TV_REMOTE=0.2.0 \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS=0.2.0
 
 RUN \
@@ -43,10 +43,7 @@ RUN \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
-    && git clone https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card.git /tmp/xiaomi-vacuum-map-card \
-      && cd /tmp/xiaomi-vacuum-map-card && git checkout v$CUSTOM_CARD_XIAOMI_VACUUM_MAP \
-      && mkdir -p /HA-custom-www/external-cards/xiaomi-vacuum-map-card \
-      && cd - && cp -r /tmp/xiaomi-vacuum-map-card/dist/* /HA-custom-www/external-cards/xiaomi-vacuum-map-card/ \
+    && curl -fsSL "https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card/releases/download/v${CUSTOM_CARD_XIAOMI_VACUUM_MAP}/xiaomi-vacuum-map-card.js" -o /HA-custom-www/external-cards/xiaomi-vacuum-map-card.js \
     # Uptime Card
     && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/v${CUSTOM_CARD_UPTIME}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Mini Graph Card
@@ -54,7 +51,10 @@ RUN \
     # TV remote Card
     && git clone https://github.com/marrobHD/tv-card.git /tmp/tv_remote_card \
     && cd /tmp/tv_remote_card && git checkout v$CUSTOM_CARD_TV_REMOTE \
-    && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
+    ### Temporal patch until: https://github.com/marrobHD/tv-card/pull/22
+    # && git clone https://github.com/ZephireNZ/tv-card.git /tmp/tv_remote_card \
+    # && cd /tmp/tv_remote_card && git checkout fix/2021.11 \
+    # && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
     # Google Home Card
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
     && cd /tmp/google_home_timers_card && git checkout v$CUSTOM_CARD_GOOGLE_HOME_TIMERS \

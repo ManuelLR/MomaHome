@@ -24,7 +24,7 @@ services:
             - "traefik.enable=true"
                 # DNS over https
             - "traefik.http.services.adguardhome-https.loadbalancer.server.port=80"
-            - "traefik.http.routers.adguardhome-https.rule=Host(`${EXTERNAL_DOMAIN}`)"
+            - "traefik.http.routers.adguardhome-https.rule=Host(`${EXTERNAL_DOMAIN}`) && Path(`/dns-query`)"
             - "traefik.http.routers.adguardhome-https.entrypoints=websecure"
             - "traefik.http.routers.adguardhome-https.tls.certresolver=principal"
             - "traefik.http.routers.adguardhome-https.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
