@@ -12,7 +12,7 @@ ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=2.0.8 \
     CUSTOM_CARD_UPTIME=0.7.2 \
     CUSTOM_CARD_MINI_GRAPH=0.10.0 \
-    CUSTOM_CARD_TV_REMOTE=0.1.4 \
+    CUSTOM_CARD_TV_REMOTE=0.2.0 \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS=0.2.0
 
 RUN \
@@ -49,12 +49,12 @@ RUN \
     # Mini Graph Card
     && curl -fsSL "https://github.com/kalkih/mini-graph-card/releases/download/v${CUSTOM_CARD_MINI_GRAPH}/mini-graph-card-bundle.js" -o /HA-custom-www/external-cards/mini-graph-card-bundle.js \
     # TV remote Card
-    # && git clone https://github.com/marrobHD/tv-card.git /tmp/tv_remote_card \
-    # && cd /tmp/tv_remote_card && git checkout v$CUSTOM_CARD_TV_REMOTE \
+    && git clone https://github.com/marrobHD/tv-card.git /tmp/tv_remote_card \
+    && cd /tmp/tv_remote_card && git checkout v$CUSTOM_CARD_TV_REMOTE \
     ### Temporal patch until: https://github.com/marrobHD/tv-card/pull/22
-    && git clone https://github.com/ZephireNZ/tv-card.git /tmp/tv_remote_card \
-    && cd /tmp/tv_remote_card && git checkout fix/2021.11 \
-    && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
+    # && git clone https://github.com/ZephireNZ/tv-card.git /tmp/tv_remote_card \
+    # && cd /tmp/tv_remote_card && git checkout fix/2021.11 \
+    # && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
     # Google Home Card
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
     && cd /tmp/google_home_timers_card && git checkout v$CUSTOM_CARD_GOOGLE_HOME_TIMERS \
