@@ -29,6 +29,8 @@
     initial_state: 'on'
     trigger:
       - platform: time
+        at: '12:32:00'
+      - platform: time
         at: '11:28:00'
       # Check if we can start before
       - platform: time
@@ -43,11 +45,28 @@
       - condition: and
         conditions:
       # Check if decent hours
-          - condition: time
-            after: "10:00:00"
-            before: "22:30:00"
-            # after: input_datetime.house_silent_hours_start
-            # before: input_datetime.house_silent_hours_end
+          - condition: or
+            conditions:
+            # Check if decent hours in working days
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id: binary_sensor.workday_sensor
+                    state: "on"
+                  - condition: time
+                    after: "10:00:00"
+                    before: "22:30:00"
+                    # after: input_datetime.house_silent_hours_start
+                    # before: input_datetime.house_silent_hours_end
+            # Check if decent hours in not working days
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id: binary_sensor.workday_sensor
+                    state: "off"
+                  - condition: time
+                    after: "11:30:00"
+                    before: "22:30:00"
       # Not cleaning just now
           - condition: template
             value_template: '{{ states("vacuum.xiaomi_vacuum") == "docked" }}'
@@ -91,7 +110,7 @@
     action:
         # If we have the same start time than before obviously we are trying to update the same values
       - condition: template
-        value_template: "{{ (states('sensor.xiaomi_vacuum_last_clean_start')) != states('input_datetime.vacuum_last_full_clean') }}"
+        value_template: "{{ as_timestamp(states('sensor.xiaomi_vacuum_last_clean_start')) != as_timestamp(states('input_datetime.vacuum_last_full_clean')) }}"
       - service: input_number.set_value
         data_template:
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
