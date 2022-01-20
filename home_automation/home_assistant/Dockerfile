@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2021.12.8
+FROM homeassistant/home-assistant:2021.12.10
 
 ##### Pending tasks
 # - Add id to triggers to easily filter in the future
