@@ -1,0 +1,22 @@
+version: "2.4"
+services:
+    syncthing:
+        container_name: syncthing
+        hostname: woody-docker_syncthing
+        image: syncthing/syncthing:1.12.1
+        ports:
+            - 0.0.0.0:8384:8384
+            - 0.0.0.0:22000:22000
+            - 0.0.0.0:21027:21027/udp
+        volumes:
+            # Config files
+            - ./config:/var/syncthing/config
+            # All data together
+            - /data/syncthing-data:/var/syncthing
+        environment:
+            - TZ="Europe/Madrid"
+            # id $USER
+            - PUID=1000
+            - PGID=1000
+        restart: unless-stopped
+        network_mode: "host"
