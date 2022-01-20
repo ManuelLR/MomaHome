@@ -1,14 +1,14 @@
-FROM homeassistant/home-assistant:2021.11.5
+FROM homeassistant/home-assistant:2021.12.10
 
 ##### Pending tasks
 # - Add id to triggers to easily filter in the future
 
 ENV \
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=5.9.1 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=6.2.0 \
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.1 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.2 \
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.4 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.1 \
-    CUSTOM_COMPONENT_DYSON_LOCAL=0.16.1 \
+    CUSTOM_COMPONENT_DYSON_LOCAL=0.16.2 \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=2.0.8 \
     CUSTOM_CARD_UPTIME=0.7.2 \
     CUSTOM_CARD_MINI_GRAPH=0.10.0 \
@@ -54,7 +54,7 @@ RUN \
     ### Temporal patch until: https://github.com/marrobHD/tv-card/pull/22
     # && git clone https://github.com/ZephireNZ/tv-card.git /tmp/tv_remote_card \
     # && cd /tmp/tv_remote_card && git checkout fix/2021.11 \
-    # && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
+    && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
     # Google Home Card
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
     && cd /tmp/google_home_timers_card && git checkout v$CUSTOM_CARD_GOOGLE_HOME_TIMERS \
