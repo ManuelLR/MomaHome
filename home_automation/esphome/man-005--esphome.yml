@@ -33,11 +33,20 @@ esp32_ble_tracker:
 
 binary_sensor:
   - platform: ble_presence
+    id: man_005__tile_manolo_keys
+    device_class: presence
+    icon: "mdi:key-chain"
     mac_address: !secret ble_mac_tile_manolo_keys
     name: "Tile llaves Manolo"
   - platform: ble_presence
+    id: man_005__tile_monica_keys
+    device_class: presence
+    icon: "mdi:key-chain"
     mac_address: !secret ble_mac_tile_monica_keys
     name: "Tile llaves Monica"
   - platform: ble_presence
+    id: man_005__miband_monica
+    device_class: presence
+    icon: "mdi:watch"
     mac_address: !secret ble_mac_miband_monica
     name: "MiBand Monica"
