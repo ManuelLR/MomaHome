@@ -30,6 +30,21 @@ services:
             - "traefik.http.routers.home-assistant.tls.certresolver=principal"
             - "traefik.http.routers.home-assistant.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
+    esphome:
+        image: esphome/esphome:2022.1.2
+        restart: unless-stopped
+        ports:
+            - 0.0.0.0:6052:6052
+        ## Required to be able to auto-discover devices in the network
+        network_mode: "host"
+        volumes:
+            - ./esphome/:/config:rw
+            # Use local time for logging timestamps
+            - /etc/localtime:/etc/localtime:ro
+        environment:
+            - USERNAME=${ESPHOME_DASHBOARD_USERNAME}
+            - PASSWORD=${ESPHOME_DASHBOARD_PASSWORD}
+
 
     postgres:
         image: postgres:13-alpine

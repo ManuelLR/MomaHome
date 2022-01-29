@@ -1,0 +1,52 @@
+esphome:
+  name: man-005--esphome
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# # Enable logging
+# logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "man-005--esphome"
+    password: !secret wifi_captive_password
+
+captive_portal:
+
+# Enable ble tracket to detect ble devices
+esp32_ble_tracker:
+  scan_parameters:
+    active: false
+
+binary_sensor:
+  - platform: ble_presence
+    id: man_005__tile_manolo_keys
+    device_class: presence
+    icon: "mdi:key-chain"
+    mac_address: !secret ble_mac_tile_manolo_keys
+    name: "man_005 Tile llaves Manolo"
+  - platform: ble_presence
+    id: man_005__tile_monica_keys
+    device_class: presence
+    icon: "mdi:key-chain"
+    mac_address: !secret ble_mac_tile_monica_keys
+    name: "man_005 Tile llaves Monica"
+  - platform: ble_presence
+    id: man_005__miband_monica
+    device_class: presence
+    icon: "mdi:watch"
+    mac_address: !secret ble_mac_miband_monica
+    name: "man_005 MiBand Monica"
