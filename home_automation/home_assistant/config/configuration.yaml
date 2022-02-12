@@ -186,3 +186,4 @@ group: !include_dir_merge_named __auto_generated-config/group/
 automation: !include_dir_merge_list __auto_generated-config/automation/
 script: !include_dir_merge_named __auto_generated-config/script/
 scene: !include_dir_merge_list __auto_generated-config/scene/
+timer: !include_dir_merge_list __auto_generated-config/timer/

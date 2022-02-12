@@ -93,6 +93,37 @@
                       - "Away"
 
     action:
+      # If someone in house, we should send a notification and create a timer and start after the notification isn't answered or timer cancelled
+      - service: timer.start
+        entity_id: timer.vacuum_start_in
+        data:
+          duration: "00:05:00"
+      - service: homeassistant.turn_on
+        entity_id: script.notify_in_home_or_all
+        data:
+          variables:
+            title: 'Vacuum is going to start'
+            message: >
+              Vacuum is going to start in 5 minutes.
+            keyboard:
+              - '🚫 Stop it 🚫:/vacuum_stop'
+              - '✅ Start now:/vacuum_start'
+
+  - alias: AUT-Vacuum start
+    initial_state: 'on'
+    trigger:
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.vacuum_start_in
+      - platform: event
+        event_type: telegram_command
+        event_data: &telegram_vacuum_start
+          command: "/vacuum_start"
+      - platform: event
+        event_type: telegram_callback
+        event_data: *telegram_vacuum_start
+    action:
       - service: vacuum.set_fan_speed
         entity_id: vacuum.xiaomi_vacuum
         data:
@@ -190,3 +221,24 @@
         data:
           callback_query_id: "{{ trigger.event.data.id }}"
           message: "Done!"
+
+  - alias: AUT-Telegram stop Vacuum
+    mode: restart
+    initial_state: 'on'
+    trigger:
+      - platform: event
+        event_type: telegram_command
+        event_data: &telegram_vacuum_stop
+          command: "/vacuum_stop"
+      - platform: event
+        event_type: telegram_callback
+        event_data: *telegram_vacuum_stop
+    action:
+      - service: timer.cancel
+        target:
+          entity_id: timer.vacuum_start_in
+      - service: vacuum.stop
+        entity_id: vacuum.xiaomi_vacuum
+      - delay: '00:00:30'
+      - service: vacuum.return_to_base
+        entity_id: vacuum.xiaomi_vacuum
