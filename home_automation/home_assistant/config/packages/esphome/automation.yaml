@@ -24,6 +24,10 @@
           title: 'It works!'
           message: |
             Aparently it is working with `{{ trigger.event.data.entity_id }}`
+            old_state: `{{ trigger.event.data.old_state }}`
+            new_state: `{{ trigger.event.data.new_state }}`
+
+            Raw:
             ```
             {{ trigger.event.data }}
             ```
