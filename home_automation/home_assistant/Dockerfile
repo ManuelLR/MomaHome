@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2022.2.6
+FROM homeassistant/home-assistant:2022.2.9
 
 ##### Pending tasks
 # - Add id to triggers to easily filter in the future

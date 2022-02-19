@@ -106,8 +106,7 @@
             message: >
               Vacuum is going to start in 5 minutes.
             keyboard:
-              - '🚫 Stop it 🚫:/vacuum_stop'
-              - '✅ Start now:/vacuum_start'
+              - '🚫 Stop it 🚫:/vacuum_stop, ✅ Start now:/vacuum_start'
 
   - alias: AUT-Vacuum start
     initial_state: 'on'

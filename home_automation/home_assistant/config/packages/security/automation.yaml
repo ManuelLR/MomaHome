@@ -28,7 +28,7 @@
       service: notify.manolo
       data_template:
         title: "*New Home Assistant Release*"
-        message: "Home Assistant  {{ state_attr('binary_sensor.updater', 'newest_version') }}  is now available"
+        message: "[Home Assistant `{{ state_attr('binary_sensor.updater', 'newest_version') }}`](https://github.com/home-assistant/core/releases/tag/{{ state_attr('binary_sensor.updater', 'newest_version') }}) is now available"
 
   - alias: AUT-Notify failed login attempt
     initial_state: 'on'
