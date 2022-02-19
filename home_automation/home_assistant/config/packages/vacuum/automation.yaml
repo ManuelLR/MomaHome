@@ -18,8 +18,7 @@
           entity_id: vacuum.xiaomi_vacuum
           state: error
     action:
-      - service: homeassistant.turn_on
-        entity_id: script.notify_in_home_or_all
+      - service: script.notify_in_home_or_all
         data:
           title: 'Something fail in the vacuum...'
           message: 'Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`'
@@ -97,8 +96,7 @@
         entity_id: timer.vacuum_start_in
         data:
           duration: "00:05:00"
-      - service: homeassistant.turn_on
-        entity_id: script.notify_in_home_or_all
+      - service: script.notify_in_home_or_all
         data:
           title: 'Vacuum is going to start'
           message: >
@@ -182,8 +180,7 @@
               (states('input_number.vacuum_xiaomi_dust_clean_left')|int) < minimal_notify
           }}
     action:
-      - service: homeassistant.turn_on
-        entity_id: script.notify_in_home_or_all
+      - service: script.notify_in_home_or_all
         data:
           title: 'Vacuum need maintenance'
           message: >

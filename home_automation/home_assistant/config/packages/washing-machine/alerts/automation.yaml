@@ -17,8 +17,7 @@
           entity_id: sensor.washing_machine_status
           state: Clean
     action:
-      - service: homeassistant.turn_on
-        entity_id: script.notify_in_home_or_all
+      - service: script.notify_in_home_or_all
         data:
           title: 'Washing Machine finished'
           message: 'Hey, the washing machine has finished and is ready to be emptied'

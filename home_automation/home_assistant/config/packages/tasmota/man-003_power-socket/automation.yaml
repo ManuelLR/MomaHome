@@ -28,8 +28,7 @@
       - service: input_boolean.turn_off
         target:
           entity_id: input_boolean.man_003_auto_poweroff
-      - service: homeassistant.turn_on
-        entity_id: script.notify_in_home_or_all
+      - service: script.notify_in_home_or_all
         data:
           title: 'Kitchen power plug turned off'
           message: |

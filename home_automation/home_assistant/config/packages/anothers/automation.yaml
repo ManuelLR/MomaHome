@@ -25,8 +25,7 @@
     action:
       - service: scene.turn_on
         entity_id: scene.night
-      - service: homeassistant.turn_on
-        entity_id: script.notify_in_home_or_all
+      - service: script.notify_in_home_or_all
         data:
           title: 'Auto turned on light'
           message: 'Light turned on by automation `AUT-Sunset`'
