@@ -38,9 +38,9 @@
           dev_id: "{{ triggered_entity_id | regex_replace('binary_sensor.', '')}}"
           host_name: "{{ device_attr(device_id(triggered_entity_id), 'name') }}.{{ triggered_entity_id }}"
           location_name: >
-            {% if trigger.to_state.state == 'on' %}
+            {% if trigger.event.data.new_state.state == 'on' %}
               home
-            {% elif trigger.to_state.state == 'off' %}
+            {% elif trigger.event.data.new_state.state == 'off' %}
               not_home
             {% else %}
               unknown
