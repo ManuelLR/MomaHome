@@ -1,0 +1,21 @@
+# automation:
+  - alias: AUT-Update presence of man-005 devices
+    trigger:
+      - platform: event
+        ## We trigger that on any state changed
+        event_type: state_changed
+      # - platform: state
+      #   entity_id: >
+      #      {{ integration_entities('esphome') | default([]) }}
+      # - platform: template
+      #   value_template: "{{ is_state('device_tracker.paulus', 'home') }}"
+    # condition:
+    #   - alias: "Filter by device"
+    #     condition: template
+    #     value_template: >
+    #       {{ trigger.entity_id ~ '^binary_sensor\.man_005.*' }}
+    action:
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'It works!'
+          message: 'Aparently it is working with {{ trigger.entity_id }}'
