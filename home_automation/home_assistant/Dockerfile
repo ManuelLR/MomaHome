@@ -1,12 +1,13 @@
-FROM homeassistant/home-assistant:2021.12.10
+FROM homeassistant/home-assistant:2022.2.9
 
 ##### Pending tasks
 # - Add id to triggers to easily filter in the future
+# - Input_button could be really helpful
 
 ENV \
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=7.2.0 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=7.5.2 \
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.1 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.4 \
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.7 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.5 \
     CUSTOM_COMPONENT_DYSON_LOCAL=0.16.2 \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP=2.0.10 \

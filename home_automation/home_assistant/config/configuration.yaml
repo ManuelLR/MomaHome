@@ -136,9 +136,7 @@ tts:
 
 telegram_bot: !include_dir_merge_list __auto_generated-config/telegram_bot/
 
-timer:
-  power_socket_double_001_left:
-  power_socket_double_001_right:
+timer: !include_dir_merge_named __auto_generated-config/timer/
 
 
 input_datetime: !include_dir_merge_named __auto_generated-config/input_datetime/

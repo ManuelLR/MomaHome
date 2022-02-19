@@ -89,6 +89,7 @@
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
   - platform: statistics
     name: Router net-switch in
+    state_characteristic: mean
     entity_id: sensor.router_raw_net_switch_in
 
   - platform: snmp
@@ -103,6 +104,7 @@
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
   - platform: statistics
     name: Router net-switch out
+    state_characteristic: mean
     entity_id: sensor.router_raw_net_switch_out
 
   - platform: snmp
@@ -128,6 +130,7 @@
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
   - platform: statistics
     name: Router net-wan in
+    state_characteristic: mean
     entity_id: sensor.router_raw_net_wan_in
 
   - platform: snmp
@@ -142,6 +145,7 @@
     value_template: '{{ ((value | float ) / 1000000 ) | round(4) }}'
   - platform: statistics
     name: Router net-wan out
+    state_characteristic: mean
     entity_id: sensor.router_raw_net_wan_out
 
   - platform: snmp
