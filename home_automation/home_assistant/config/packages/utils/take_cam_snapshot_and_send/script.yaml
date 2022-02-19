@@ -6,6 +6,9 @@
     fields:
       camera_entity:
         required: true
+      notify_to:
+        required: true
+        description: Service to call. Could be `script.notify_in_home_or_all` or `notify.<person>`
     variables:
       tmp_path_to_use: "/tmp/homeassistant/snapshots/"
     sequence:
@@ -17,9 +20,19 @@
           entity_id: "{{ camera_entity }}"
         data:
           filename: '{{ file_path }}'
+      - service: '{{ notify_to }}'
+        data_template:
+          # title: "*Update square metter*"
+          # message: 'The next square metters to delete from total is: `{{states("sensor.xiaomi_vacuum_last_clean_area")}}`'
+          photo:
+            - file: '{{ file_path }}'
+              caption: |
+                *Clean finished !*
+                Today (`{{ now().strftime("%Y-%m-%d %H:%M") }}`), `{{states("sensor.xiaomi_vacuum_last_clean_area")}}` square meters have been cleaned
       - delay:
-          minutes: 3
+          seconds: 15
       - service: delete.file
+          # This is a cutom integration !
         data:
           file: '{{ file_path }}'
 

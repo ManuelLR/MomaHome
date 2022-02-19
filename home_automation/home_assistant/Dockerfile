@@ -67,4 +67,10 @@ RUN \
     && cd - && cp -r /tmp/google_home_timers_card/googletimers-card.js /HA-custom-www/external-cards/ \
     && apk del build-dep
 
+RUN \
+    set -ex; \
+    ## Create folder to save snapshots
+    mkdir -p /tmp/homeassistant/snapshots
+
+
 COPY prepare.sh /etc/cont-init.d/

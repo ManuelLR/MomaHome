@@ -1,6 +1,12 @@
 # script:
   notify_in_home_or_all:
     alias: "Notify person in home or all"
+    fields:
+      title: &fields_conf
+        required: false
+      message: *fields_conf
+      keyboard: *fields_conf
+      photo: *fields_conf
     sequence:
       # Notify to person in home or by default, Manolo
       - service: >
@@ -18,6 +24,12 @@
               inline_keyboard: >
                 {% if keyboard is defined %}
                   {{keyboard}}
+                {% else %}
+                  []
+                {% endif %}
+              photo: >
+                {% if photo is defined %}
+                  {{photo}}
                 {% else %}
                   []
                 {% endif %}
