@@ -129,6 +129,9 @@ ble_monitor:
 browser_mod:
   # https://github.com/thomasloven/hass-browser_mod
 
+delete:
+  # https://github.com/chomupashchuk/delete-file-home-assistant
+
 # Text to speech
 tts:
   - platform: google_translate

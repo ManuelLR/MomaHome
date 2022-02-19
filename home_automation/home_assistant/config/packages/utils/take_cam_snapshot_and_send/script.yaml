@@ -1,0 +1,25 @@
+# script:
+  ## To make it works, you must add the folder to `allowlist_external_dirs` in `homeassistant:` config section
+  take_camera_snapshot_and_send_telegram:
+    description: "Take an snapshot of a camera entity and send to telegram"
+    mode: parallel
+    fields:
+      camera_entity:
+        required: true
+    variables:
+      tmp_path_to_use: "/tmp/homeassistant/snapshots/"
+    sequence:
+      - alias: "Set variables"
+        variables:
+          file_path: '{{ tmp_path_to_use }}/{{ camera_entity }}_{{ now().strftime("%Y%m%d-%H%M%S%f") }}.png'
+      - service: camera.snapshot
+        target:
+          entity_id: "{{ camera_entity }}"
+        data:
+          filename: '{{ file_path }}'
+      - delay:
+          minutes: 3
+      - service: delete.file
+        data:
+          file: '{{ file_path }}'
+
