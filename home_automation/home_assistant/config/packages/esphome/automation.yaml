@@ -1,5 +1,7 @@
 # automation:
   - alias: AUT-Update presence of man-005 devices
+    mode: parallel
+    max: 1000
     trigger:
       - platform: event
         ## We trigger that on any state changed
