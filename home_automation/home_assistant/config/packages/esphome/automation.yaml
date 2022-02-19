@@ -18,9 +18,9 @@
       #   condition: template
       #   value_template: >
       #     {{ trigger.event.data.entity_id is not match('automation.') }}
-    trigger_variables:
-      triggered_entity_id: '{{ trigger.event.data.entity_id }}'
     action:
+      - variables:
+          triggered_entity_id: '{{ trigger.event.data.entity_id }}'
       # - service: script.notify_in_home_or_all
       #   data:
       #     title: 'It works!'
