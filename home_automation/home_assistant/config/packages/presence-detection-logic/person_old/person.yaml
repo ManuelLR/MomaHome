@@ -5,6 +5,7 @@
     device_trackers:
       - device_tracker.manolo_movil
       - device_tracker.manolo_pc7
+      - binary_sensor.man_005_tile_llaves_manolo
       - !secret tile_device_manolo_keys
 
   - name: Monica
@@ -13,3 +14,4 @@
     device_trackers:
       - device_tracker.moni_movil
       - device_tracker.iphone_2
+      - binary_sensor.man_005_tile_llaves_monica
