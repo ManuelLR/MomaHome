@@ -18,16 +18,31 @@
       #   condition: template
       #   value_template: >
       #     {{ trigger.event.data.entity_id is not match('automation.') }}
+    trigger_variable:
+      triggered_entity_id: '{{ trigger.event.data.entity_id }}'
     action:
-      - service: script.notify_in_home_or_all
-        data:
-          title: 'It works!'
-          message: |
-            Aparently it is working with `{{ trigger.event.data.entity_id }}`
-            old_state: `{{ trigger.event.data.old_state }}`
-            new_state: `{{ trigger.event.data.new_state }}`
+      # - service: script.notify_in_home_or_all
+      #   data:
+      #     title: 'It works!'
+      #     message: |
+      #       Aparently it is working with `{{ trigger.event.data.entity_id }}`
+      #       oldState: `{{ trigger.event.data.old_state }}`
+      #       newState: `{{ trigger.event.data.new_state }}`
 
-            Raw:
-            ```
-            {{ trigger.event.data }}
-            ```
+      #       Raw:
+      #       ```
+      #       {{ trigger.event.data }}
+      #       ```
+      - service: device_tracker.see
+        data:
+          dev_id: '{{ triggered_entity_id | regex_replace('binary_sensor.', '')}}'
+          host_name: '{{ device_attr(device_id(triggered_entity_id), 'name') }}.{{ triggered_entity_id }}'
+          location_name: >
+            {% if trigger.to_state.state == 'on' %}
+              home
+            {% elif trigger.to_state.state == 'off' %}
+              not_home
+            {% else %}
+              unknown
+            {% endif %}
+          # source_type: 
