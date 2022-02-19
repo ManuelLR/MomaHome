@@ -18,10 +18,15 @@
           entity_id: vacuum.xiaomi_vacuum
           state: error
     action:
-      - service: script.notify_in_home_or_all
+      ## Wait until map fully updated
+      - delay: '00:00:21'
+      - service: script.take_camera_snapshot_and_send_telegram
         data:
-          title: 'Something fail in the vacuum...'
-          message: 'Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`'
+          camera_entity: camera.xiaomi_vacuum_map
+          notify_to: script.notify_in_home_or_all
+          message: |
+            *Something fail in the vacuum...*
+            Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`
 
   - alias: AUT-Vacuum
     initial_state: 'on'
