@@ -146,16 +146,6 @@
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
           value: >
             {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (states('sensor.xiaomi_vacuum_last_clean_area')|int), 0] | max }}
-      ## Wait until map fully updated
-      - delay: '00:00:21'
-      - service: script.take_camera_snapshot_and_send_telegram
-        data_template:
-          camera_entity: camera.xiaomi_vacuum_map
-          notify_to: script.notify_in_home_or_all
-          message: |
-            *Clean finished !*
-            Today (`{{ now().strftime("%Y-%m-%d %H:%M") }}`), `{{states("sensor.xiaomi_vacuum_last_clean_area")}}` square meters have been cleaned
-
     # We considered a full cleaning if we clean more than 17 m2
       - condition: numeric_state
         entity_id: sensor.xiaomi_vacuum_last_clean_area
@@ -165,6 +155,15 @@
           entity_id: input_datetime.vacuum_last_full_clean
         data:
           datetime: "{{ states('sensor.xiaomi_vacuum_last_clean_start') }}"
+      ## Wait until map fully updated
+      - delay: '00:00:21'
+      - service: script.take_camera_snapshot_and_send_telegram
+        data_template:
+          camera_entity: camera.xiaomi_vacuum_map
+          notify_to: script.notify_in_home_or_all
+          message: |
+            *Clean finished !*
+            Today (`{{ now().strftime("%Y-%m-%d %H:%M") }}`), `{{states("sensor.xiaomi_vacuum_last_clean_area")}}` square meters have been cleaned
 
   - alias: AUT-Notify Vacuum maintenance
     mode: restart
