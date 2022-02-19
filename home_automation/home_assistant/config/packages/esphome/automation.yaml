@@ -45,4 +45,4 @@
             {% else %}
               unknown
             {% endif %}
-          # source_type: 
+          source_type: "AUT-Update presence of man-005 devices"
