@@ -13,7 +13,7 @@
       - alias: "Filter by device"
         condition: template
         value_template: >
-          {{ trigger.entity_id is match ('binary_sensor.man_005') }}
+          {{ trigger.event.data.entity_id is match ('binary_sensor.man_005') }}
       # - alias: "Not ourself"
       #   condition: template
       #   value_template: >
