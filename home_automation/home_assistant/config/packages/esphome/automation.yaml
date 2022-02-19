@@ -35,8 +35,8 @@
       #       ```
       - service: device_tracker.see
         data:
-          dev_id: '{{ triggered_entity_id | regex_replace('binary_sensor.', '')}}'
-          host_name: '{{ device_attr(device_id(triggered_entity_id), 'name') }}.{{ triggered_entity_id }}'
+          dev_id: "{{ triggered_entity_id | regex_replace('binary_sensor.', '')}}"
+          host_name: "{{ device_attr(device_id(triggered_entity_id), 'name') }}.{{ triggered_entity_id }}"
           location_name: >
             {% if trigger.to_state.state == 'on' %}
               home
