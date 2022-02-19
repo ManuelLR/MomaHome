@@ -21,9 +21,8 @@
       - service: homeassistant.turn_on
         entity_id: script.notify_in_home_or_all
         data:
-          variables:
-            title: 'Something fail in the vacuum...'
-            message: 'Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`'
+          title: 'Something fail in the vacuum...'
+          message: 'Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`'
 
   - alias: AUT-Vacuum
     initial_state: 'on'
@@ -101,11 +100,11 @@
       - service: homeassistant.turn_on
         entity_id: script.notify_in_home_or_all
         data:
-          variables:
-            title: 'Vacuum is going to start'
-            message: >
-              Vacuum is going to start in 5 minutes.
-            keyboard:
+          title: 'Vacuum is going to start'
+          message: >
+            Vacuum is going to start in 5 minutes.
+          data:
+            inline_keyboard:
               - '🚫 Stop it 🚫:/vacuum_stop, ✅ Start now:/vacuum_start'
 
   - alias: AUT-Vacuum start
@@ -158,7 +157,7 @@
       ## Wait until map fully updated
       - delay: '00:00:21'
       - service: script.take_camera_snapshot_and_send_telegram
-        data_template:
+        data:
           camera_entity: camera.xiaomi_vacuum_map
           notify_to: script.notify_in_home_or_all
           message: |
@@ -186,19 +185,19 @@
       - service: homeassistant.turn_on
         entity_id: script.notify_in_home_or_all
         data:
-          variables:
-            title: 'Vacuum need maintenance'
-            message: >
-              Cepillo principal*:* `{{ (states('sensor.xiaomi_vacuum_main_brush_left')|int) }} h` _restantes_
+          title: 'Vacuum need maintenance'
+          message: >
+            Cepillo principal*:* `{{ (states('sensor.xiaomi_vacuum_main_brush_left')|int) }} h` _restantes_
 
-              Cepillo lateral: `{{ (states('sensor.xiaomi_vacuum_side_brush_left')|int) }} h` restantes
+            Cepillo lateral: `{{ (states('sensor.xiaomi_vacuum_side_brush_left')|int) }} h` restantes
 
-              Filtro: `{{ (states('sensor.xiaomi_vacuum_filter_left')|int) }} h` restantes
+            Filtro: `{{ (states('sensor.xiaomi_vacuum_filter_left')|int) }} h` restantes
 
-              Limpieza de sensores: `{{ (states('sensor.xiaomi_vacuum_sensor_dirty_left')|int) }} h` restantes
+            Limpieza de sensores: `{{ (states('sensor.xiaomi_vacuum_sensor_dirty_left')|int) }} h` restantes
 
-              Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
-            keyboard:
+            Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
+          data:
+            inline_keyboard:
               - 'Vacuum already cleaned:/vacuum_cleaned'
 
   - alias: AUT-Telegram reset Vacuum meters

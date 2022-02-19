@@ -9,11 +9,10 @@
       - service: homeassistant.turn_on
         entity_id: script.notify_in_home_or_all
         data:
-          variables:
-            title: 'ALERT: New device found !'
-            message: 'New device called `{{ trigger.event.data.host_name }}` with MAC `{{ trigger.event.data.mac }}` found'
+          title: 'ALERT: New device found !'
+          message: 'New device called `{{ trigger.event.data.host_name }}` with MAC `{{ trigger.event.data.mac }}` found'
       - service: notify.manolo
-        data_template:
+        data:
           title: "*ALERT: New device found !*"
           message: 'New device called `{{ trigger.event.data.host_name }}` with MAC `{{ trigger.event.data.mac }}` found'
 

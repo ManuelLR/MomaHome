@@ -31,10 +31,10 @@
       - service: homeassistant.turn_on
         entity_id: script.notify_in_home_or_all
         data:
-          variables:
-            title: 'Kitchen power plug turned off'
-            message: |
-              Ey, I (`AUT-Turn off man-003`) detected low power consumption in the kitchen power plug so I turned off *both*.\n
-              Additionally, I disabled auto turn off kitchen power plug
-            keyboard:
+          title: 'Kitchen power plug turned off'
+          message: |
+            Ey, I (`AUT-Turn off man-003`) detected low power consumption in the kitchen power plug so I turned off *both*.\n
+            Additionally, I disabled auto turn off kitchen power plug
+          data:
+            inline_keyboard:
               - 'Turn on Left:/turn_on switch.man_003_left, Turn on Right:/turn_on switch.man_003_right'

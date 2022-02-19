@@ -28,10 +28,10 @@
       - service: homeassistant.turn_on
         entity_id: script.notify_in_home_or_all
         data:
-          variables:
-            title: 'Auto turned on light'
-            message: 'Light turned on by automation `AUT-Sunset`'
-            keyboard:
+          title: 'Auto turned on light'
+          message: 'Light turned on by automation `AUT-Sunset`'
+          data:
+            inline_keyboard:
               - 'Turn off:/turn_off_scene_night'
 
   - alias: AUT-Turn off scene night

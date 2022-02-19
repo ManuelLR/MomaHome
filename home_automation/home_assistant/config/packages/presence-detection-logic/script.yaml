@@ -5,10 +5,9 @@
       title: &fields_conf
         required: false
       message: *fields_conf
-      keyboard: *fields_conf
-      photo: *fields_conf
+      data: *fields_conf
     sequence:
-      # Notify to person in home or by default, Manolo
+      # Notify to person in home or by default, Manolo (then we notify to Monica)
       - service: >
           {% if (is_state('sensor.manolo_status', 'Home') or is_state('sensor.manolo_status', 'Just Arrived')) %}
             notify.manolo
@@ -20,19 +19,12 @@
         data: &notify-telegram-message
           title: '*{{ title }}*'
           message: '{{ message }}'
-          data:
-              inline_keyboard: >
-                {% if keyboard is defined %}
-                  {{keyboard}}
-                {% else %}
-                  []
-                {% endif %}
-              photo: >
-                {% if photo is defined %}
-                  {{photo}}
-                {% else %}
-                  []
-                {% endif %}
+          data: >
+            {% if data is defined %}
+              {{data}}
+            {% else %}
+              {}
+            {% endif %}
       # Check if both in the same state to continue notifying
       - condition: or
         conditions:

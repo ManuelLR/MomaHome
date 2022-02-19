@@ -23,10 +23,11 @@
         data:
           filename: '{{ file_path }}'
       - service: '{{ notify_to }}'
-        data_template:
-          photo:
-            - file: '{{ file_path }}'
-              caption: '{{ message }}'
+        data:
+          data:
+            photo:
+              - file: '{{ file_path }}'
+                caption: '{{ message }}'
       - delay:
           seconds: 15
       - service: delete.file
