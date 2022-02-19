@@ -1,4 +1,6 @@
 # automation:
+
+  # Esphome couldn't report things as device_tracker so we need to manually create & update them
   - alias: AUT-Update presence of man-005 devices
     mode: parallel
     max: 1000
@@ -6,16 +8,12 @@
       - platform: event
         ## We trigger that on any state changed
         event_type: state_changed
-      # - platform: state
-      #   entity_id: >
-      #      {{ integration_entities('esphome') | default([]) }}
-      # - platform: template
-      #   value_template: "{{ is_state('device_tracker.paulus', 'home') }}"
     condition:
       - alias: "Filter by device"
         condition: template
         value_template: >
           {{ trigger.event.data.entity_id is match ('binary_sensor.man_005') }}
+      ### ------- For Debugging -----------
       # - alias: "Not ourself"
       #   condition: template
       #   value_template: >
@@ -23,6 +21,7 @@
     action:
       - variables:
           triggered_entity_id: '{{ trigger.event.data.entity_id }}'
+      ### ------- For Debugging -----------
       # - service: script.notify_in_home_or_all
       #   data:
       #     title: 'It works!'
@@ -30,7 +29,6 @@
       #       Aparently it is working with `{{ trigger.event.data.entity_id }}`
       #       oldState: `{{ trigger.event.data.old_state }}`
       #       newState: `{{ trigger.event.data.new_state }}`
-
       #       Raw:
       #       ```
       #       {{ trigger.event.data }}
