@@ -20,6 +20,8 @@ homeassistant:
       name: Authenticator app
     - type: notify
       message: 'Hey, that is your access code: `{}`'
+  allowlist_external_dirs:
+    - "/tmp/homeassistant"
   # packages: !include_dir_named packages
 # https://www.home-assistant.io/integrations/aemet/
 logger:
@@ -128,6 +130,9 @@ ble_monitor:
 
 browser_mod:
   # https://github.com/thomasloven/hass-browser_mod
+
+delete:
+  # https://github.com/chomupashchuk/delete-file-home-assistant
 
 # Text to speech
 tts:
