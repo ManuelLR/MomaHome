@@ -163,6 +163,8 @@
         data:
           camera_entity: camera.xiaomi_vacuum_map
           notify_to: script.notify_in_home_or_all
+          data:
+            disable_notification: True
           message: |
             *Clean finished !*
             Today (`{{ now().strftime("%Y-%m-%d %H:%M") }}`), `{{states("sensor.xiaomi_vacuum_last_clean_area")}}` square meters have been cleaned
