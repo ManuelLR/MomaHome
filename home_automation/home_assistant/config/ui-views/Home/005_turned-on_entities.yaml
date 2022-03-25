@@ -20,8 +20,8 @@ entities:
   - entity: input_number.vacuum_xiaomi_dust_clean_left
     name: "[Vacuum] Bin dust left"
     state_filter:
-      - operator: '=='
-        value: 0
+      - operator: '<'
+        value: 10
   - entity: fan.dyson_01
     name: Dyson 01 Fan
   - entity: sensor.mini_timers
