@@ -4,7 +4,6 @@
     user_id: !secret person_user_id_manolo
     device_trackers:
       - device_tracker.manolo_movil
-      - device_tracker.manolo_pc7
       - device_tracker.man_005_tile_llaves_manolo
       - !secret tile_device_manolo_keys
 
@@ -12,6 +11,5 @@
     id: person_monica
     user_id: !secret person_user_id_monica
     device_trackers:
-      - device_tracker.moni_movil
       - device_tracker.iphone_2
       - device_tracker.man_005_tile_llaves_monica
