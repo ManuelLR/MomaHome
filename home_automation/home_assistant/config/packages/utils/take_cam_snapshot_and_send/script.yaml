@@ -9,14 +9,17 @@
       notify_to:
         required: true
         description: Service to call. Could be `script.notify_in_home_or_all` or `notify.<person>`
-      message:
+      message: &fields_conf
         required: false
+      data: *fields_conf
     variables:
       tmp_path_to_use: "/tmp/homeassistant/snapshots/"
     sequence:
       - alias: "Set variables"
         variables:
           file_path: '{{ tmp_path_to_use }}/{{ camera_entity }}_{{ now().strftime("%Y%m%d-%H%M%S%f") }}.png'
+          data_photo: >
+            {{ [{'file': file_path, 'caption': message}] }}
       - service: camera.snapshot
         target:
           entity_id: "{{ camera_entity }}"
@@ -24,10 +27,17 @@
           filename: '{{ file_path }}'
       - service: '{{ notify_to }}'
         data:
-          data:
-            photo:
-              - file: '{{ file_path }}'
-                caption: '{{ message }}'
+          # data:
+          #   photo:
+          #     - file: '{{ file_path }}'
+          #       caption: '{{ message }}'
+          data: >
+            {% set data_new = {} %}
+            {% if data is defined %}
+              {% data_new = data %}
+            {% endif %}
+            {% data_new.photo = data_photo %}
+            {{ data_new }}
       - delay:
           seconds: 15
       - service: delete.file
