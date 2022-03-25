@@ -19,6 +19,7 @@ entities:
   - vacuum.xiaomi_vacuum
   - entity: input_number.vacuum_xiaomi_dust_clean_left
     name: "[Vacuum] Bin dust left"
+    type: button
     state_filter:
       - operator: '<'
         value: 10
