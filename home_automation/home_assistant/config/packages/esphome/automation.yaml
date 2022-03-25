@@ -1,0 +1,48 @@
+# automation:
+
+  # Esphome couldn't report things as device_tracker so we need to manually create & update them
+  - alias: AUT-Update presence of man-005 devices
+    mode: parallel
+    max: 1000
+    trigger:
+      - platform: event
+        ## We trigger that on any state changed
+        event_type: state_changed
+    condition:
+      - alias: "Filter by device"
+        condition: template
+        value_template: >
+          {{ trigger.event.data.entity_id is match ('binary_sensor.man_005') }}
+      ### ------- For Debugging -----------
+      # - alias: "Not ourself"
+      #   condition: template
+      #   value_template: >
+      #     {{ trigger.event.data.entity_id is not match('automation.') }}
+    action:
+      - variables:
+          triggered_entity_id: '{{ trigger.event.data.entity_id }}'
+      ### ------- For Debugging -----------
+      # - service: script.notify_in_home_or_all
+      #   data:
+      #     title: 'It works!'
+      #     message: |
+      #       Aparently it is working with `{{ trigger.event.data.entity_id }}`
+      #       oldState: `{{ trigger.event.data.old_state }}`
+      #       newState: `{{ trigger.event.data.new_state }}`
+      #       Raw:
+      #       ```
+      #       {{ trigger.event.data }}
+      #       ```
+      - service: device_tracker.see
+        data:
+          dev_id: "{{ triggered_entity_id | regex_replace('binary_sensor.', '')}}"
+          host_name: "{{ device_attr(device_id(triggered_entity_id), 'name') }}.{{ triggered_entity_id }}"
+          location_name: >
+            {% if trigger.event.data.new_state.state == 'on' %}
+              home
+            {% elif trigger.event.data.new_state.state == 'off' %}
+              not_home
+            {% else %}
+              unknown
+            {% endif %}
+          source_type: "bluetooth_le"
