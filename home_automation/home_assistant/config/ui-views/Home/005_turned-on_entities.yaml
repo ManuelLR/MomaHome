@@ -15,8 +15,13 @@ entities:
   #   name: Luz salón
   - device_tracker.print_canon_mx920
   - sensor.washing_machine_status
-  - vacuum.xiaomi_vacuum
   - light.midesklamp1s_01
+  - vacuum.xiaomi_vacuum
+  - entity: input_number.vacuum_xiaomi_dust_clean_left
+    name: [Vacuum] Bin dust left
+    state_filter:
+      - operator: '=='
+        value: 0
   - entity: fan.dyson_01
     name: Dyson 01 Fan
   - entity: sensor.mini_timers
