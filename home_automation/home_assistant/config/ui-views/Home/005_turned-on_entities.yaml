@@ -18,7 +18,7 @@ entities:
   - light.midesklamp1s_01
   - vacuum.xiaomi_vacuum
   - entity: input_number.vacuum_xiaomi_dust_clean_left
-    name: [Vacuum] Bin dust left
+    name: "[Vacuum] Bin dust left"
     state_filter:
       - operator: '=='
         value: 0
