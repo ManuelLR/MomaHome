@@ -34,9 +34,9 @@
           data: >
             {% set data_new = {} %}
             {% if data is defined %}
-              {% data_new = data %}
+              {% set data_new = data %}
             {% endif %}
-            {% data_new.photo = data_photo %}
+            {% set data_new.photo = data_photo %}
             {{ data_new }}
       - delay:
           seconds: 15
@@ -44,4 +44,3 @@
           # This is a cutom integration !
         data:
           file: '{{ file_path }}'
-
