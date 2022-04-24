@@ -53,15 +53,15 @@ lovelace:
       require_admin: true
   resources:
     - type: module
-      url: /local/external-cards/xiaomi-vacuum-map-card.js
+      url: !env_var CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH
     - type: module
-      url: /local/external-cards/uptime-card.js
+      url: !env_var CUSTOM_CARD_UPTIME_PATH
     - type: module
-      url: /local/external-cards/mini-graph-card-bundle.js
+      url: !env_var CUSTOM_CARD_MINI_GRAPH_PATH
     - type: module
-      url: /local/external-cards/tv-card.js
+      url: !env_var CUSTOM_CARD_TV_REMOTE_PATH
     - type: module
-      url: /local/external-cards/googletimers-card.js
+      url: !env_var CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH
 
 recorder:
   db_url: !secret recorder_db_url
