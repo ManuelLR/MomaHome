@@ -18,11 +18,11 @@ ENV \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=0.2.0
 
 ENV \
-    export CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
-    export CUSTOM_CARD_UPTIME_PATH=/local/external-cards/uptime-card.js?version=${CUSTOM_CARD_UPTIME_VERSION} \
-    export CUSTOM_CARD_MINI_GRAPH_PATH=/local/external-cards/mini-graph-card-bundle.js?version=${CUSTOM_CARD_MINI_GRAPH_VERSION} \
-    export CUSTOM_CARD_TV_REMOTE_PATH=/local/external-cards/tv-card.js?version=${CUSTOM_CARD_TV_REMOTE_VERSION} \
-    export CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION}
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
+    CUSTOM_CARD_UPTIME_PATH=/local/external-cards/uptime-card.js?version=${CUSTOM_CARD_UPTIME_VERSION} \
+    CUSTOM_CARD_MINI_GRAPH_PATH=/local/external-cards/mini-graph-card-bundle.js?version=${CUSTOM_CARD_MINI_GRAPH_VERSION} \
+    CUSTOM_CARD_TV_REMOTE_PATH=/local/external-cards/tv-card.js?version=${CUSTOM_CARD_TV_REMOTE_VERSION} \
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION}
 
 RUN \
     set -ex \
