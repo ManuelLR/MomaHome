@@ -31,7 +31,7 @@ services:
             - "traefik.http.routers.home-assistant.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
     esphome:
-        image: esphome/esphome:2022.2.3
+        image: esphome/esphome:2022.3.1
         restart: unless-stopped
         ports:
             - 0.0.0.0:6052:6052
@@ -66,4 +66,3 @@ services:
             - 1883:1883
         volumes:
             - ./mosquitto-config/:/mosquitto/config/:ro
-

@@ -1,13 +1,15 @@
 FROM homeassistant/home-assistant:2022.3.7
 
 ##### Pending tasks
+# - Add backup and auto-exec it: https://www.home-assistant.io/integrations/backup/
 # - Add id to triggers to easily filter in the future
 # - Input_button could be really helpful
+# - Add the update option to espurna/tasmota/esphome: https://www.home-assistant.io/blog/2022/04/06/release-20224/#introducing-update-entities
 
 ENV \
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.3.0 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.1 \
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.1 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.9 \
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.10 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.5 \
     CUSTOM_COMPONENT_DYSON_LOCAL=0.16.2 \
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.8 \
