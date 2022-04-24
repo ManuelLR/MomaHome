@@ -36,8 +36,8 @@
             {% if data is defined %}
               {% set data_new = data %}
             {% endif %}
-            {% set data_new.photo = data_photo %}
-            {{ data_new }}
+            {% set result = data_new.update({'photo': data_photo}) %}
+            {{ result }}
       - delay:
           seconds: 15
       - service: delete.file
