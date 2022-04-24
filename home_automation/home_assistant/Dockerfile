@@ -1,21 +1,30 @@
-FROM homeassistant/home-assistant:2022.2.9
+FROM homeassistant/home-assistant:2022.3.7
 
 ##### Pending tasks
+# - Add backup and auto-exec it: https://www.home-assistant.io/integrations/backup/
 # - Add id to triggers to easily filter in the future
 # - Input_button could be really helpful
+# - Add the update option to espurna/tasmota/esphome: https://www.home-assistant.io/blog/2022/04/06/release-20224/#introducing-update-entities
 
 ENV \
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=7.5.2 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.1 \
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.1 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.7 \
+    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.10 \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.5 \
     CUSTOM_COMPONENT_DYSON_LOCAL=0.16.2 \
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.8 \
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP=2.0.10 \
-    CUSTOM_CARD_UPTIME=0.7.2 \
-    CUSTOM_CARD_MINI_GRAPH=0.10.0 \
-    CUSTOM_CARD_TV_REMOTE=0.2.0 \
-    CUSTOM_CARD_GOOGLE_HOME_TIMERS=0.2.0
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=2.0.10 \
+    CUSTOM_CARD_UPTIME_VERSION=0.7.2 \
+    CUSTOM_CARD_MINI_GRAPH_VERSION=0.10.0 \
+    CUSTOM_CARD_TV_REMOTE_VERSION=0.2.0 \
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=0.2.0
+
+ENV \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
+    CUSTOM_CARD_UPTIME_PATH=/local/external-cards/uptime-card.js?version=${CUSTOM_CARD_UPTIME_VERSION} \
+    CUSTOM_CARD_MINI_GRAPH_PATH=/local/external-cards/mini-graph-card-bundle.js?version=${CUSTOM_CARD_MINI_GRAPH_VERSION} \
+    CUSTOM_CARD_TV_REMOTE_PATH=/local/external-cards/tv-card.js?version=${CUSTOM_CARD_TV_REMOTE_VERSION} \
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION}
 
 RUN \
     set -ex \
@@ -49,21 +58,21 @@ RUN \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
-    && curl -fsSL "https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card/releases/download/v${CUSTOM_CARD_XIAOMI_VACUUM_MAP}/xiaomi-vacuum-map-card.js" -o /HA-custom-www/external-cards/xiaomi-vacuum-map-card.js \
+    && curl -fsSL "https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card/releases/download/v${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION}/xiaomi-vacuum-map-card.js" -o /HA-custom-www/external-cards/xiaomi-vacuum-map-card.js \
     # Uptime Card
-    && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/v${CUSTOM_CARD_UPTIME}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
+    && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/v${CUSTOM_CARD_UPTIME_VERSION}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Mini Graph Card
-    && curl -fsSL "https://github.com/kalkih/mini-graph-card/releases/download/v${CUSTOM_CARD_MINI_GRAPH}/mini-graph-card-bundle.js" -o /HA-custom-www/external-cards/mini-graph-card-bundle.js \
+    && curl -fsSL "https://github.com/kalkih/mini-graph-card/releases/download/v${CUSTOM_CARD_MINI_GRAPH_VERSION}/mini-graph-card-bundle.js" -o /HA-custom-www/external-cards/mini-graph-card-bundle.js \
     # TV remote Card
     && git clone https://github.com/marrobHD/tv-card.git /tmp/tv_remote_card \
-    && cd /tmp/tv_remote_card && git checkout v$CUSTOM_CARD_TV_REMOTE \
+    && cd /tmp/tv_remote_card && git checkout v$CUSTOM_CARD_TV_REMOTE_VERSION \
     ### Temporal patch until: https://github.com/marrobHD/tv-card/pull/22
     # && git clone https://github.com/ZephireNZ/tv-card.git /tmp/tv_remote_card \
     # && cd /tmp/tv_remote_card && git checkout fix/2021.11 \
     && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
     # Google Home Card
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
-    && cd /tmp/google_home_timers_card && git checkout v$CUSTOM_CARD_GOOGLE_HOME_TIMERS \
+    && cd /tmp/google_home_timers_card && git checkout v$CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION \
     && cd - && cp -r /tmp/google_home_timers_card/googletimers-card.js /HA-custom-www/external-cards/ \
     && apk del build-dep
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 #
 ## This script initialize homeassistant to reload module before load config
 #

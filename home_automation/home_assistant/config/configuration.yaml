@@ -53,15 +53,15 @@ lovelace:
       require_admin: true
   resources:
     - type: module
-      url: /local/external-cards/xiaomi-vacuum-map-card.js
+      url: !env_var CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH
     - type: module
-      url: /local/external-cards/uptime-card.js
+      url: !env_var CUSTOM_CARD_UPTIME_PATH
     - type: module
-      url: /local/external-cards/mini-graph-card-bundle.js
+      url: !env_var CUSTOM_CARD_MINI_GRAPH_PATH
     - type: module
-      url: /local/external-cards/tv-card.js
+      url: !env_var CUSTOM_CARD_TV_REMOTE_PATH
     - type: module
-      url: /local/external-cards/googletimers-card.js
+      url: !env_var CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH
 
 recorder:
   db_url: !secret recorder_db_url
@@ -79,9 +79,9 @@ recorder:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-# Info about updates
-updater:
-  include_used_components: true
+# # Info about updates: Deprecated in > 2022.03
+# updater:
+#   include_used_components: true
 
 http:
   server_port: 8123
@@ -97,9 +97,10 @@ http:
 discovery:
 
 mqtt:
+  client_id: homeassistant
+  ## Deprecated in 2022.3.xx
   broker: 192.168.200.7
   port: 1883
-  client_id: homeassistant
   username: !secret mqtt_username
   password: !secret mqtt_password
 
