@@ -79,9 +79,9 @@ recorder:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-# Info about updates
-updater:
-  include_used_components: true
+# # Info about updates: Deprecated in > 2022.03
+# updater:
+#   include_used_components: true
 
 http:
   server_port: 8123
