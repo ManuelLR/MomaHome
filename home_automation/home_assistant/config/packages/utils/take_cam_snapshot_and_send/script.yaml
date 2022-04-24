@@ -32,12 +32,18 @@
           #     - file: '{{ file_path }}'
           #       caption: '{{ message }}'
           data: >
-            {% set data_new = {} %}
+            {% set data_old = {} %}
             {% if data is defined %}
-              {% set data_new = data %}
+              {% set data_old = data %}
             {% endif %}
-            {% set result = data_new.update({'photo': data_photo}) %}
-            {{ result }}
+            {% set data_new = {'photo': data_photo} %}
+            {# make current a list of tuples #}
+            {% set current = data_old.items() | list %}
+            {# make update a list of tuples #}
+            {% set update = data_new.items() | list %}
+            {# remove keys from current that are in update #}
+            {% set current = current | rejectattr('0', 'eq', update | map(attribute='0') | list) | list %}
+            {{ dict.from_keys(current + update) }}
       - delay:
           seconds: 15
       - service: delete.file
