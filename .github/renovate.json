@@ -1,0 +1,10 @@
+{
+    "baseBranches": ["next"],
+    "platform": "github",
+    "includeForks": false,
+    "repositories": [
+        "ManuelLR/MomaHome"
+    ],
+    "assignees": ["ManuelLR"],
+    "reviewers": ["ManuelLR"]
+}
