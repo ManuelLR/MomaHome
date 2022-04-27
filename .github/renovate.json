@@ -1,5 +1,5 @@
 {
-    "baseBranches": ["auto-update"],
+    "baseBranches": ["next"],
     "platform": "github",
     "includeForks": false,
     "repositories": [
