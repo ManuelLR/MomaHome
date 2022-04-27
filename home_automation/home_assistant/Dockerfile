@@ -7,28 +7,28 @@ FROM homeassistant/home-assistant:2022.4.7
 # - Add the update option to espurna/tasmota/esphome: https://www.home-assistant.io/blog/2022/04/06/release-20224/#introducing-update-entities
 
 ENV \
-    ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
-      # renovate: datasource=github-releases depName=custom-components/ble_monitor
+    ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
+      # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.1 \
-      # renovate: datasource=github-releases depName=thomasloven/hass-browser_mod
+      # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.1 \
-      # renovate: datasource=github-releases depName=leikoilja/ha-google-home
+      # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.9.10 \
-      # renovate: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
+      # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.1.5 \
-      # renovate: datasource=github-releases depName=shenxn/ha-dyson
+      # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
     CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.2 \
-      # renovate: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant
+      # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.8 \
-      # renovate: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
+      # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.0.10 \
-      # renovate: datasource=github-releases depName=dylandoamaral/uptime-card
+      # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
     CUSTOM_CARD_UPTIME_VERSION=v0.7.2 \
-      # renovate: datasource=github-releases depName=kalkih/mini-graph-card
+      # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.10.0 \
-      # renovate: datasource=github-releases depName=marrobHD/tv-card
+      # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.0 \
-      # renovate: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
+      # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
     CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0
 
 ENV \

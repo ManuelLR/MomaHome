@@ -1,5 +1,5 @@
 {
-    "baseBranches": ["next"],
+    "baseBranches": ["auto-update"],
     "platform": "github",
     "includeForks": false,
     "repositories": [
@@ -9,9 +9,12 @@
     "reviewers": ["ManuelLR"],
     "regexManagers": [
         {
-          "fileMatch": ["^Dockerfile$"],
+          "fileMatch": [
+            "(^|/|\\.)Dockerfile$",
+            "(^|/)Dockerfile\\.[^/]*$"
+          ],
           "matchStrings": [
-            "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s *?CUSTOM_.*?_VERSION=(?<currentValue>.*)\\s"
+            "datasource=(?<datasource>.*?) depName=(?<depName>.*?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?( versioning=(?<versioning>.*?))?(\\s|\\n).*?_VERSION=(?<currentValue>[^ ]*)( \\\\|\\s|\\n)"
           ],
           "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
         }
