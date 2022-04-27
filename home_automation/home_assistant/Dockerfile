@@ -17,7 +17,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.1.5 \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
-    CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4 \
+    CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4-4 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.8 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
