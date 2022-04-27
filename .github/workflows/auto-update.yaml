@@ -5,6 +5,7 @@ on:
       # At 6:28 & 18 spanish time
     - cron: '2 16 * * *'
     - cron: '28 4 * * *'
+  workflow_dispatch:
   # push:
 jobs:
   renovate:
@@ -17,5 +18,5 @@ jobs:
         with:
           configurationFile: .github/renovate.json
           token: ${{ secrets.RENOVATE_TOKEN }}
-        # env:
-        #   LOG_LEVEL: 'debug'
+        env:
+          LOG_LEVEL: 'debug'

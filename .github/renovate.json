@@ -7,6 +7,10 @@
     ],
     "assignees": ["ManuelLR"],
     "reviewers": ["ManuelLR"],
+    "onboardingConfig": { "extends": [
+      "config:base",
+      "github>whitesource/merge-confidence:beta"
+    ] },
     "regexManagers": [
         {
           "fileMatch": [
