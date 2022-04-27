@@ -2,9 +2,10 @@ name: Auto Update components
 on:
   schedule:
     # This is in UTC time
-      # At 7 & 18 spanish time
-    - cron: '2 5,16 * * *'
-  # push:
+      # At 6:28 & 18 spanish time
+    - cron: '2 16 * * *'
+    - cron: '28 4 * * *'
+  push:
 jobs:
   renovate:
     runs-on: ubuntu-latest
