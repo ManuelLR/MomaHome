@@ -11,7 +11,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.1 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.1 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.3 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.9.10 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
