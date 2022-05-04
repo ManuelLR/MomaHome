@@ -9,3 +9,5 @@
       - statflag
       - xoffbatt
       - starttime
+      - tonbatt
+      - cumonbatt

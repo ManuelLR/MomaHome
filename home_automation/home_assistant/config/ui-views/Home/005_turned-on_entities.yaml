@@ -43,6 +43,12 @@ entities:
     name: AdGuard - Bloqueo de anuncios
     state_filter:
       - "off"
+  - entity: sensor.ups_battery
+    name: "[UPS] Battery status"
+    icon: mdi:home-battery-outline
+    state_filter:
+      - operator: '!='
+        value: 100
 state_filter:
   - "on"
   - "home"

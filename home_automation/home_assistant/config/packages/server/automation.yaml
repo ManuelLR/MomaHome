@@ -29,5 +29,33 @@
           title: 'Debug UPS'
           message: |
             STATUS: `{{ states('sensor.ups_status') }}`
-            STATFLAG: `{{ states('sensor.ups_statflag') }}`
-            XOFFBATT: `{{ states('sensor.ups_xoffbatt') }}`
+            STATFLAG: `{{ states('sensor.ups_status_flag') }}`
+            XOFFBATT: `{{ states('sensor.ups_transfer_from_battery') }}`
+
+  - alias: AUT-Energy back in house
+    mode: queued
+    trigger:
+      # - platform: state
+      #   entity_id: sensor.ups_battery
+      #   to: '100'
+      - platform: state
+        entity_id: sensor.ups_battery
+        from: 'ONBATTERY'
+    action:
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'Energy back in home !'
+          message: >
+            Ey, the UPS has power again.
+            The current battery is `{{ states('sensor.ups_battery') }}%`.
+          data:
+            disable_notification: True
+      - service: notify.manolo
+        data:
+          title: 'Debug UPS'
+          message: |
+            STATUS: `{{ states('sensor.ups_status') }}`
+            STATFLAG: `{{ states('sensor.ups_status_flag') }}`
+            XOFFBATT: `{{ states('sensor.ups_transfer_from_battery') }}`
+            TONBATT: ``
+            CUMONBATT: ``
