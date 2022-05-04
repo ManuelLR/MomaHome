@@ -1,0 +1,33 @@
+# automation:
+  - alias: AUT-No energy in house
+    mode: queued
+    trigger:
+      # - platform: state
+      #   entity_id: sensor.ups_battery
+      #   from: '100'
+      - platform: state
+        entity_id: sensor.ups_battery
+        from: 'ONLINE'
+    action:
+      - service: remote.send_command
+        data:
+          entity_id: remote.sony_bravia_tv
+          command: PowerOff
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'ALERT: No energy in home !'
+          message: >
+            Ey, we detected that the remaining UPS battery is `{{ states('sensor.ups_battery') }}%`
+            so probably the power has gone out.
+
+            With this load (`{{ states('sensor.ups_load') }}%`) the expected time of battery 
+            is `{{ states('sensor.ups_time_left') }} minutes`.
+
+            Any way, I powered off the tv to save energy.
+      - service: notify.manolo
+        data:
+          title: 'Debug UPS'
+          message: |
+            STATUS: `{{ states('sensor.ups_status') }}`
+            STATFLAG: `{{ states('sensor.ups_statflag') }}`
+            XOFFBATT: `{{ states('sensor.ups_xoffbatt') }}`
