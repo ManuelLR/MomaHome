@@ -38,7 +38,7 @@ entities:
     tap_action: !include ../utils/tv-card.yaml
   - entity: media_player.mini
     name: Mini (cocina)
-  - plant.flora_001
+  # - plant.flora_001
   - entity: switch.adguard_protection
     name: AdGuard - Bloqueo de anuncios
     state_filter:
@@ -47,8 +47,8 @@ entities:
     name: "[UPS] Battery status"
     icon: mdi:home-battery-outline
     state_filter:
-      - operator: '!='
-        value: 100
+      - operator: '<'
+        value: 99
 state_filter:
   - "on"
   - "home"
