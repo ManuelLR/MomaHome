@@ -31,7 +31,7 @@ services:
             - "traefik.http.routers.home-assistant.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
     esphome:
-        image: esphome/esphome:2022.3.1
+        image: esphome/esphome:2022.4.0
         restart: unless-stopped
         ports:
             - 0.0.0.0:6052:6052
@@ -60,7 +60,7 @@ services:
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
     mqtt:
-        image: eclipse-mosquitto:2.0
+        image: eclipse-mosquitto:2.0.14
         restart: unless-stopped
         ports:
             - 1883:1883

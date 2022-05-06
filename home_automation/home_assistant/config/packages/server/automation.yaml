@@ -1,0 +1,56 @@
+# automation:
+  - alias: AUT-No energy in house
+    mode: queued
+    trigger:
+      - platform: template
+        value_template: "{% if 'ONBATT' in state('sensor.ups_status') %}true{% endif %}"
+    action:
+      - service: remote.send_command
+        data:
+          entity_id: remote.sony_bravia_tv
+          command: PowerOff
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'ALERT: No energy in home !'
+          message: >
+            Ey, we detected that the UPS status is `{{ states('sensor.ups_status') }}`
+            and the remaining battery is `{{ states('sensor.ups_battery') }}%`
+            so probably the power has gone out.
+
+            With this load (`{{ states('sensor.ups_load') }}%`) the expected time of battery 
+            is `{{ states('sensor.ups_time_left') }} minutes`.
+
+            Any way, I powered off the tv to save energy.
+      - service: notify.manolo
+        data:
+          title: 'Debug UPS'
+          message: |
+            STATUS: `{{ states('sensor.ups_status') }}`
+            STATFLAG: `{{ states('sensor.ups_status_flag') }}`
+            XOFFBATT: `{{ states('sensor.ups_transfer_from_battery') }}`
+            TONBATT: `{{ states('sensor.ups_time_on_battery') }}`
+            CUMONBATT: `{{ states('sensor.ups_total_time_on_battery') }}`
+
+  - alias: AUT-Energy back in house
+    mode: queued
+    trigger:
+      - platform: template
+        value_template: "{% if 'ONLINE' in state('sensor.ups_status') %}true{% endif %}"
+    action:
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'Energy back in home !'
+          message: >
+            Ey, the UPS status now is `{{ states('sensor.ups_status') }}` so probably the power is back.
+            The current battery is `{{ states('sensor.ups_battery') }}%`.
+          data:
+            disable_notification: True
+      - service: notify.manolo
+        data:
+          title: 'Debug UPS'
+          message: |
+            STATUS: `{{ states('sensor.ups_status') }}`
+            STATFLAG: `{{ states('sensor.ups_status_flag') }}`
+            XOFFBATT: `{{ states('sensor.ups_transfer_from_battery') }}`
+            TONBATT: `{{ states('sensor.ups_time_on_battery') }}`
+            CUMONBATT: `{{ states('sensor.ups_total_time_on_battery') }}`

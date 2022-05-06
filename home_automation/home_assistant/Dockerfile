@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2022.4.6
+FROM homeassistant/home-assistant:2022.4.7
 
 ##### Pending tasks
 # - Add backup and auto-exec it: https://www.home-assistant.io/integrations/backup/
@@ -7,17 +7,29 @@ FROM homeassistant/home-assistant:2022.4.6
 # - Add the update option to espurna/tasmota/esphome: https://www.home-assistant.io/blog/2022/04/06/release-20224/#introducing-update-entities
 
 ENV \
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.1 \
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.1 \
-    CUSTOM_COMPONENT_GOOGLE_HOME=v1.9.10 \
-    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR=v2.1.5 \
-    CUSTOM_COMPONENT_DYSON_LOCAL=0.16.2 \
+    ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
+      # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.4 \
+      # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.3 \
+      # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
+    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.9.10 \
+      # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
+    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.1.5 \
+      # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
+    CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4-4 \
+      # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.8 \
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=2.0.10 \
-    CUSTOM_CARD_UPTIME_VERSION=0.7.2 \
-    CUSTOM_CARD_MINI_GRAPH_VERSION=0.10.0 \
-    CUSTOM_CARD_TV_REMOTE_VERSION=0.2.0 \
-    CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=0.2.0
+      # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.0.10 \
+      # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
+    CUSTOM_CARD_UPTIME_VERSION=v0.10.0 \
+      # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
+    CUSTOM_CARD_MINI_GRAPH_VERSION=v0.10.0 \
+      # renovatebot: datasource=github-releases depName=marrobHD/tv-card
+    CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.0 \
+      # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0
 
 ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
@@ -41,15 +53,15 @@ RUN \
     && cd - && cp -r /tmp/browser_mod/custom_components/* /opt/HA/config/custom_components/ \
     # ha-google-home
     && git clone https://github.com/leikoilja/ha-google-home.git /tmp/ha-google-home \
-    && cd /tmp/ha-google-home && git checkout $CUSTOM_COMPONENT_GOOGLE_HOME \
+    && cd /tmp/ha-google-home && git checkout $CUSTOM_COMPONENT_GOOGLE_HOME_VERSION \
     && cd - && cp -r /tmp/ha-google-home/custom_components/google_home /opt/HA/config/custom_components/ \
     # xiaomi-cloud-map-extractor
     && git clone https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor.git /tmp/xiaomi-cloud-map-extractor \
-    && cd /tmp/xiaomi-cloud-map-extractor && git checkout $CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR \
+    && cd /tmp/xiaomi-cloud-map-extractor && git checkout $CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION \
     && cd - && cp -r /tmp/xiaomi-cloud-map-extractor/custom_components/xiaomi_cloud_map_extractor /opt/HA/config/custom_components/ \
     # dyson-local
     && git clone https://github.com/shenxn/ha-dyson.git /tmp/ha-dyson-local \
-    && cd /tmp/ha-dyson-local && git checkout $CUSTOM_CUSTOM_COMPONENT_DYSON_LOCAL \
+    && cd /tmp/ha-dyson-local && git checkout $CUSTOM_COMPONENT_DYSON_LOCAL_VERSION \
     && cd - && cp -r /tmp/ha-dyson-local/custom_components/dyson_local /opt/HA/config/custom_components/ \
     # delete-file
     && git clone https://github.com/chomupashchuk/delete-file-home-assistant.git /tmp/delete-file-home-assistant \
@@ -58,21 +70,21 @@ RUN \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
-    && curl -fsSL "https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card/releases/download/v${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION}/xiaomi-vacuum-map-card.js" -o /HA-custom-www/external-cards/xiaomi-vacuum-map-card.js \
+    && curl -fsSL "https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card/releases/download/${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION}/xiaomi-vacuum-map-card.js" -o /HA-custom-www/external-cards/xiaomi-vacuum-map-card.js \
     # Uptime Card
-    && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/v${CUSTOM_CARD_UPTIME_VERSION}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
+    && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/${CUSTOM_CARD_UPTIME_VERSION}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Mini Graph Card
-    && curl -fsSL "https://github.com/kalkih/mini-graph-card/releases/download/v${CUSTOM_CARD_MINI_GRAPH_VERSION}/mini-graph-card-bundle.js" -o /HA-custom-www/external-cards/mini-graph-card-bundle.js \
+    && curl -fsSL "https://github.com/kalkih/mini-graph-card/releases/download/${CUSTOM_CARD_MINI_GRAPH_VERSION}/mini-graph-card-bundle.js" -o /HA-custom-www/external-cards/mini-graph-card-bundle.js \
     # TV remote Card
     && git clone https://github.com/marrobHD/tv-card.git /tmp/tv_remote_card \
-    && cd /tmp/tv_remote_card && git checkout v$CUSTOM_CARD_TV_REMOTE_VERSION \
+    && cd /tmp/tv_remote_card && git checkout $CUSTOM_CARD_TV_REMOTE_VERSION \
     ### Temporal patch until: https://github.com/marrobHD/tv-card/pull/22
     # && git clone https://github.com/ZephireNZ/tv-card.git /tmp/tv_remote_card \
     # && cd /tmp/tv_remote_card && git checkout fix/2021.11 \
     && cd - && cp -r /tmp/tv_remote_card/tv-card*.js /HA-custom-www/external-cards/ \
     # Google Home Card
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
-    && cd /tmp/google_home_timers_card && git checkout v$CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION \
+    && cd /tmp/google_home_timers_card && git checkout $CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION \
     && cd - && cp -r /tmp/google_home_timers_card/googletimers-card.js /HA-custom-www/external-cards/ \
     && apk del build-dep
 

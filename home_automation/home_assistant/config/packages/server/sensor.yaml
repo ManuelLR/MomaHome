@@ -1,8 +1,13 @@
 # sensor:
   - platform: apcupsd
     resources:
-       - bcharge
-       - status
-       - loadpct
-       - timeleft
-         # - linev
+      - bcharge
+      - status
+      - loadpct
+      - timeleft
+        # - linev
+      - statflag
+      - xoffbatt
+      - starttime
+      - tonbatt
+      - cumonbatt
