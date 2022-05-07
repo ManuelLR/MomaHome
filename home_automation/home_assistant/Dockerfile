@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2022.4.7
+FROM homeassistant/home-assistant:2022.5.2
 
 ##### Pending tasks
 # - Add backup and auto-exec it: https://www.home-assistant.io/integrations/backup/
