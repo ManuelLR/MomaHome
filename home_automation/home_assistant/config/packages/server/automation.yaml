@@ -3,7 +3,7 @@
     mode: queued
     trigger:
       - platform: template
-        value_template: "{% if 'ONBATT' in state('sensor.ups_status') %}true{% endif %}"
+        value_template: "{% if 'ONBATT' in states('sensor.ups_status') %}true{% endif %}"
     action:
       - service: remote.send_command
         data:
@@ -35,7 +35,7 @@
     mode: queued
     trigger:
       - platform: template
-        value_template: "{% if 'ONLINE' in state('sensor.ups_status') %}true{% endif %}"
+        value_template: "{% if 'ONLINE' in states('sensor.ups_status') %}true{% endif %}"
     action:
       - service: script.notify_in_home_or_all
         data:
