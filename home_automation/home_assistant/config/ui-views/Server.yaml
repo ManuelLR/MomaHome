@@ -1,0 +1,13 @@
+- type: entities
+  title: 'UPS'
+  entities:
+    - sensor.ups_battery
+    - sensor.ups_load
+    - binary_sensor.ups_online_status
+    - sensor.ups_startup_time
+    - sensor.ups_status
+    - sensor.ups_status_flag
+    - sensor.ups_time_left
+    - sensor.ups_time_on_battery
+    - sensor.ups_total_time_on_battery
+    - sensor.ups_transfer_from_battery

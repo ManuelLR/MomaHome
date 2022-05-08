@@ -9,21 +9,21 @@ FROM homeassistant/home-assistant:2022.4.7
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
       # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.1 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.4 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.1 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.3 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.9.10 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.1.5 \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
-    CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.2 \
+    CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4-4 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.8 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.0.10 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
-    CUSTOM_CARD_UPTIME_VERSION=v0.7.2 \
+    CUSTOM_CARD_UPTIME_VERSION=v0.10.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.10.0 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
@@ -57,7 +57,7 @@ RUN \
     && cd - && cp -r /tmp/ha-google-home/custom_components/google_home /opt/HA/config/custom_components/ \
     # xiaomi-cloud-map-extractor
     && git clone https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor.git /tmp/xiaomi-cloud-map-extractor \
-    && cd /tmp/xiaomi-cloud-map-extractor && git checkout $CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR \
+    && cd /tmp/xiaomi-cloud-map-extractor && git checkout $CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION \
     && cd - && cp -r /tmp/xiaomi-cloud-map-extractor/custom_components/xiaomi_cloud_map_extractor /opt/HA/config/custom_components/ \
     # dyson-local
     && git clone https://github.com/shenxn/ha-dyson.git /tmp/ha-dyson-local \

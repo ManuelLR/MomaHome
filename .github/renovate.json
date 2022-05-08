@@ -1,4 +1,8 @@
 {
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "onboarding": false,
+    "printConfig": true,
+    "branchPrefix": "renovate_cron/",
     "baseBranches": ["next"],
     "platform": "github",
     "includeForks": false,
@@ -7,10 +11,11 @@
     ],
     "assignees": ["ManuelLR"],
     "reviewers": ["ManuelLR"],
-    "onboardingConfig": { "extends": [
+    "allowPlugins": true,
+    "globalExtends": [
       "config:base",
       "github>whitesource/merge-confidence:beta"
-    ] },
+    ],
     "regexManagers": [
         {
           "fileMatch": [
