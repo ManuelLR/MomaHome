@@ -7,13 +7,16 @@
     "platform": "github",
     "includeForks": false,
     "repositories": [
-        "ManuelLR/MomaHome"
+      "ManuelLR/MomaHome"
     ],
     "assignees": ["ManuelLR"],
     "reviewers": ["ManuelLR"],
+    "labels": ["dependency-update"],
     "allowPlugins": true,
+    "prHourlyLimit": 0,
     "globalExtends": [
       "config:base",
+      ":rebaseStalePrs",
       "github>whitesource/merge-confidence:beta"
     ],
     "regexManagers": [
