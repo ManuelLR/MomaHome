@@ -9,7 +9,7 @@ FROM homeassistant/home-assistant:2022.4.7
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
       # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.4 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.5 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.3 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
