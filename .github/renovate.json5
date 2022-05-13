@@ -44,11 +44,11 @@
           "reverse-proxy/docker-compose.yml"
         ],
         "matchStrings": [
-          "image: traefik:(?<currentValue>[^ ]*)"
+          "image: traefik:(?<currentValue>[^ ]*)\\n"
         ],
         "depNameTemplate": "traefik/traefik",
         "datasourceTemplate": "github-releases",
-        "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+        "versioningTemplate": "docker"
       }
     ]
 }
