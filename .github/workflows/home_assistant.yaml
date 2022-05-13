@@ -1,5 +1,11 @@
 name: Home Assistant CI
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - 'home_automation/**'
+  pull_request:
+    paths:
+      - 'home_automation/**'
 
 jobs:
   check_syntax:

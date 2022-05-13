@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2022.4.7
+FROM homeassistant/home-assistant:2022.5.4
 
 ##### Pending tasks
 # - Add backup and auto-exec it: https://www.home-assistant.io/integrations/backup/
@@ -9,7 +9,7 @@ FROM homeassistant/home-assistant:2022.4.7
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
       # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.4 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.5 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.3 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
@@ -18,14 +18,14 @@ ENV \
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.1.5 \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
     CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4-4 \
-      # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant
+      # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.8 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.0.10 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.0.11 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
     CUSTOM_CARD_UPTIME_VERSION=v0.10.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
-    CUSTOM_CARD_MINI_GRAPH_VERSION=v0.10.0 \
+    CUSTOM_CARD_MINI_GRAPH_VERSION=v0.11.0 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.0 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card

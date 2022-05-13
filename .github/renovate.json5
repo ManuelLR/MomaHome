@@ -1,0 +1,54 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "onboarding": false,
+    "printConfig": true,
+    "branchPrefix": "renovate_cron/",
+    "baseBranches": ["next"],
+    "platform": "github",
+    "includeForks": false,
+    "repositories": [
+      "ManuelLR/MomaHome"
+    ],
+    "assignees": ["ManuelLR"],
+    "reviewers": ["ManuelLR"],
+    "labels": ["dependency-update"],
+    "allowPlugins": true,
+    "prHourlyLimit": 0,
+    "globalExtends": [
+      "config:base",
+      ":rebaseStalePrs",
+      "github>whitesource/merge-confidence:beta"
+    ],
+    "packageRules": [
+      {
+        // We should disable the autodetected traefik because they publish the container previous the stable version
+        "matchPackageNames": ["traefik"],
+        "matchDatasources": ["docker"],
+        "enabled": false
+      }
+    ],
+    "regexManagers": [
+      {
+        "fileMatch": [
+          "(^|/|\\.)Dockerfile$",
+          "(^|/)Dockerfile\\.[^/]*$"
+        ],
+        "matchStrings": [
+          "datasource=(?<datasource>.*?) depName=(?<depName>.*?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?( versioning=(?<versioning>.*?))?(\\s|\\n).*?_VERSION=(?<currentValue>[^ ]*)( \\\\|\\s|\\n)"
+        ],
+        "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+      },
+      {
+        // We should create our custom regex for traefik because they publish the container previous the stable version
+        "fileMatch": [
+          "reverse-proxy/docker-compose.yml"
+        ],
+        "matchStrings": [
+          "image: traefik:(?<currentValue>[^ ]*)\\n"
+        ],
+        "depNameTemplate": "traefik/traefik",
+        "datasourceTemplate": "github-releases",
+        "versioningTemplate": "docker"
+      }
+    ]
+}
