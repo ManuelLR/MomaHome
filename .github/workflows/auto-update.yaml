@@ -6,7 +6,7 @@ on:
     - cron: '2 16 * * *'
     - cron: '28 4 * * *'
   workflow_dispatch:
-  push:
+  # push:
 jobs:
   renovate:
     runs-on: ubuntu-latest
