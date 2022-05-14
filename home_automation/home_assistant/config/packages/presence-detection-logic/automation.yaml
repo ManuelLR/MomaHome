@@ -4,16 +4,11 @@
     mode: queued
     trigger:
       - platform: state
-        # entity_id: device_tracker.phil
         from: 'not_home'
         to: 'home'
         entity_id: &persons
           - person.monica
           - person.manolo
-      # - platform: state
-      #   entity_id: group.helen
-      #   from: 'not_home'
-      #   to: 'home'
     action:
       - service: input_select.select_option
         data_template:

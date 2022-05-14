@@ -1,0 +1,30 @@
+# automation:
+  - alias: AUT-New Release
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.docker_hub_update_available
+        from: 'off'
+        to: 'on'
+    action:
+      service: notify.manolo
+      data:
+        title: "*New Home Assistant Release*"
+        message: "[Home Assistant {{ states('sensor.docker_hub') }}](https://github.com/home-assistant/core/releases/tag/{{ state_attr('binary_sensor.updater', 'newest_version') }}) is now available"
+
+  - alias: "AUT-Backup Home Assistant"
+    trigger:
+      - platform: time
+        at: "05:00:00"
+      - platform: homeassistant
+        event: shutdown
+    action:
+      - alias: "Create backup now"
+        service: backup.create
+
+  - alias: "AUT-Clean old backups Home Assistant"
+    trigger:
+      - platform: time
+        at: "05:10:00"
+    action:
+      - service: shell_command.delete_old_ha_backups

@@ -1,4 +1,9 @@
 deps/
+backups/
+.storage*
+core
+.cloud/
 *.log
+home-assistant.log*
 secrets.yaml
 .HA_VERSION
