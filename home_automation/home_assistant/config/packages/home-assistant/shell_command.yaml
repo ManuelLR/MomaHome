@@ -1,8 +1,10 @@
 # shell_command:
-  delete_old_ha_backups: |
+  delete_old_ha_backups: >-
+    bash -c '
     # We should delete backups older than 30 days but only if there are recent backups
     RECENT_FILES=$(find ./backups -name "*.tar" -type f -mtime -20)
-    if [[ ! -z "${RECENT_FILES}"]}; then
+    if [[ ! -z "${RECENT_FILES}" ]]; then
       # There are backup of the last 20 days so we can proceed cleanning backups older than 30 days
       find ./backups -name "*.tar" -type f -mtime +30 -delete 
     fi
+    '
