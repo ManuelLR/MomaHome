@@ -41,7 +41,7 @@
       - alias: "Set variables"
         variables:
               # Extracted from a message like: Too many login attemps from xxx.xxx.xxx.xxx
-          banned_ip: '{{ state_attr('persistent_notification.ip_ban', 'message').split(' ') | last}}'
+          banned_ip: "{{ state_attr('persistent_notification.ip_ban', 'message').split(' ') | last}}"
       - service: notify.manolo
         data:
           title: "*{{ state_attr('persistent_notification.ip_ban', 'title') }} !*"
