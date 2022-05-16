@@ -68,7 +68,7 @@
         variables:
           ip_to_unban: "{{ trigger.event.data['data'].split(' ')[1] }}"
     action:
-      - service: shell_command.delete_old_ha_backups
+      - service: shell_command.unban_ip
         data:
           IP_TO_UNBAN: "{{ ip_to_unban }}"
       - if: "{{ trigger.id == 'event_telegram_callback' }}"
