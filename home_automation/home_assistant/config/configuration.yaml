@@ -31,6 +31,7 @@ logger:
     homeassistant.components.ddwrt.device_tracker: warn
     homeassistant.components.discovery: warn
     homeassistant.components.upnp: warn
+    homeassistant.components.shell_command: debug
 
 lovelace:
   mode: yaml

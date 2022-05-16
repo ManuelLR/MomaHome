@@ -70,7 +70,7 @@
     action:
       - service: shell_command.unban_ip
         data:
-          IP_TO_UNBAN: "{{ ip_to_unban }}"
+          ip_to_unban: "{{ ip_to_unban }}"
       - if: "{{ trigger.id == 'event_telegram_callback' }}"
         then:
           - service: telegram_bot.answer_callback_query
