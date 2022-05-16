@@ -40,10 +40,11 @@ ENV \
 
 RUN \
     set -ex \
-    && apk add --no-cache --virtual build-dep \
-      git \
+    && apk add --no-cache --virtual run-dep \
         # Used for some shell_command
       yq \
+    && apk add --no-cache --virtual build-dep \
+      git \
     && mkdir -p /opt/HA/config/custom_components/ \
     # ble_monitor
     && git clone https://github.com/custom-components/ble_monitor.git /tmp/ble_monitor \
