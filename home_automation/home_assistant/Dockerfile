@@ -1,7 +1,6 @@
 FROM homeassistant/home-assistant:2022.5.4
 
 ##### Pending tasks
-# - Add backup and auto-exec it: https://www.home-assistant.io/integrations/backup/
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
 # - Add id to triggers to easily filter in the future
 # - Input_button could be really helpful
@@ -43,6 +42,8 @@ RUN \
     set -ex \
     && apk add --no-cache --virtual build-dep \
       git \
+        # Used for some shell_command
+      yq \
     && mkdir -p /opt/HA/config/custom_components/ \
     # ble_monitor
     && git clone https://github.com/custom-components/ble_monitor.git /tmp/ble_monitor \

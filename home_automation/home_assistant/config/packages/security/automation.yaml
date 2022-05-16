@@ -40,7 +40,7 @@
     action:
       - alias: "Set variables"
         variables:
-              # Extracted from a message like: Too many login attemps from xxx.xxx.xxx.xxx
+            # Extracted from a message like: Too many login attemps from xxx.xxx.xxx.xxx
           banned_ip: "{{ state_attr('persistent_notification.ip_ban', 'message').split(' ') | last }}"
       - service: notify.manolo
         data:
@@ -48,4 +48,33 @@
           message: "{{ state_attr('persistent_notification.ip_ban', 'message') }}"
           data:
             inline_keyboard:
-              - 'Unban {{ banned_ip }}:/unban_ip {{ banned_ip }}'
+              - 'Unban {{ banned_ip }} and restart Home Assistant:/unban_ip {{ banned_ip }}'
+
+  - alias: AUT-Unban IP
+    mode: restart
+    initial_state: 'on'
+    trigger:
+      - platform: event
+        id: event_telegram_command
+        event_type: telegram_command
+        event_data: &telegram_unban_ip_device
+          command: "/unban_ip"
+        variables:
+          ip_to_unban: "{{ trigger.event.data['args'][0] }}"
+      - platform: event
+        id: event_telegram_callback
+        event_type: telegram_callback
+        event_data: *telegram_unban_ip_device
+        variables:
+          ip_to_unban: "{{ trigger.event.data['data'].split(' ')[1] }}"
+    action:
+      - service: shell_command.delete_old_ha_backups
+        data:
+          IP_TO_UNBAN: "{{ ip_to_unban }}"
+      - if: "{{ trigger.id == 'event_telegram_callback' }}"
+        then:
+          - service: telegram_bot.answer_callback_query
+            data:
+              callback_query_id: "{{ trigger.event.data.id }}"
+              message: "Unbanned and restarting HomeAssistant"
+      - service: homeassistant.restart

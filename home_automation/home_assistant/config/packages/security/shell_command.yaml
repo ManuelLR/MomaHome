@@ -1,0 +1,5 @@
+# shell_command:
+  unban_ip: |-
+    bash -exc '
+    yq eval 'del( .[strenv(IP_TO_UNBAN)] )' -i ip_bans.yaml
+    '
