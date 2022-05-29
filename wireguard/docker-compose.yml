@@ -1,0 +1,31 @@
+version: "2.4"
+services:
+  ## Please, be sure that the wireguard kernel module is enabled:
+  ##   - Check if the module exist: sudo modinfo wireguard
+  ##   - Check if the module loaded: lsmod | grep wireguard
+  ##   - Load the module on startup (require reboot): echo "wireguard" > /etc/modules-load.d/wireguard.conf
+  wireguard:
+    image: linuxserver/wireguard:latest  # <-- change me
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+      - SERVERURL=${WIREGUARD_DOMAIN}
+      - SERVERPORT=51820
+      - PEERS=${WIREGUARD_CLIENTS}
+      - PEERDNS=auto
+      # - INTERNAL_SUBNET=10.13.13.0 #optional
+      # - ALLOWEDIPS=0.0.0.0/0 #optional
+      - LOG_CONFS=false
+    volumes:
+      - ./config:/config
+      - /lib/modules:/lib/modules:ro
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
