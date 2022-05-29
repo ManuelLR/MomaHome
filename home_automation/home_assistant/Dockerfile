@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2022.5.4
+FROM homeassistant/home-assistant:2022.5.5
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
