@@ -1,5 +1,10 @@
 deps/
+backups/
+.storage*
+core
+.cloud/
 *.log
+home-assistant.log*
 secrets.yaml
 known_devices.yaml
 google_assistant_service_account.json

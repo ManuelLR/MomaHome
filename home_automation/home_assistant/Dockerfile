@@ -1,7 +1,7 @@
-FROM homeassistant/home-assistant:2022.5.4
+FROM homeassistant/home-assistant:2022.5.5
 
 ##### Pending tasks
-# - Add backup and auto-exec it: https://www.home-assistant.io/integrations/backup/
+# - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
 # - Add id to triggers to easily filter in the future
 # - Input_button could be really helpful
 # - Add the update option to espurna/tasmota/esphome: https://www.home-assistant.io/blog/2022/04/06/release-20224/#introducing-update-entities
@@ -9,13 +9,13 @@ FROM homeassistant/home-assistant:2022.5.4
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
       # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.6.5 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.7.1 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.3 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.9.10 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
-    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.1.5 \
+    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.0 \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
     CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4-4 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
@@ -40,6 +40,9 @@ ENV \
 
 RUN \
     set -ex \
+    && apk add --no-cache --virtual run-dep \
+        # Used for some shell_command
+      yq \
     && apk add --no-cache --virtual build-dep \
       git \
     && mkdir -p /opt/HA/config/custom_components/ \

@@ -31,6 +31,7 @@ logger:
     homeassistant.components.ddwrt.device_tracker: warn
     homeassistant.components.discovery: warn
     homeassistant.components.upnp: warn
+    homeassistant.components.shell_command: debug
 
 lovelace:
   mode: yaml
@@ -162,7 +163,7 @@ plant: !include_dir_merge_named __auto_generated-config/plant/
 
 # dyson: !include_dir_merge_named __auto_generated-config/dyson/
 
-# shell_command:
+shell_command: !include_dir_merge_named __auto_generated-config/shell_command/
 #   # https://philhawthorne.com/automating-your-shopping-list-with-home-assistant-and-grocy/
 #   grocy_consume_item: "curl -X POST https://{{server_ip}}/api/stock/products/{{product_id}}/consume -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'GROCY-API-KEY: {{grocy_key}}' -H 'cache-control: no-cache' -d '{ \"amount\": {{amount}},  \"transaction_type\": \"consume\",  \"spoiled\": false }'"
 
