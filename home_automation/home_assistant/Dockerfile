@@ -23,7 +23,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.0.11 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
-    CUSTOM_CARD_UPTIME_VERSION=v0.10.0 \
+    CUSTOM_CARD_UPTIME_VERSION=v0.11.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.11.0 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
