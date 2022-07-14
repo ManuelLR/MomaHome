@@ -19,7 +19,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
     CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4-4 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
-    CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.8 \
+    CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.0.11 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
