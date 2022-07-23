@@ -1,0 +1,4 @@
+# homeassistant:
+#   customize:
+    input_select.windows_preferred_status:
+      icon: mdi:window-closed-variant
