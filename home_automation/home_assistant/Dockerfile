@@ -21,7 +21,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.0.11 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.1.2 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
     CUSTOM_CARD_UPTIME_VERSION=v0.11.1 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
