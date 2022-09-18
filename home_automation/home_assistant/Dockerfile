@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2022.7.5
+FROM homeassistant/home-assistant:2022.7.6
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -9,11 +9,11 @@ FROM homeassistant/home-assistant:2022.7.5
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
       # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
-    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=8.9.8 \
+    CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.0.5 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=1.5.3 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
-    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.9.13 \
+    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.9.14 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.0 \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
