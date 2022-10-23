@@ -12,3 +12,5 @@
       - sensor.dyson_01_filter_life
       - sensor.dyson_01_humidity
       - sensor.dyson_01_temperature
+      - sensor.dyson_01_temperature_rising
+      - sensor.dyson_01_temperature_falling
