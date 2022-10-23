@@ -1,0 +1,17 @@
+# binary_sensor:
+  - platform: trend
+    sensors:
+      'dyson_01_temperature_falling':
+        entity_id: sensor.dyson_01_temperature
+        sample_duration: 7200
+        max_samples: 400
+        invert: true
+        # min_gradient: -0.0008
+        device_class: cold
+
+      'dyson_01_temperature_rising':
+        entity_id: sensor.dyson_01_temperature
+        sample_duration: 7200
+        max_samples: 400
+        # min_gradient: 0.0008
+        device_class: heat

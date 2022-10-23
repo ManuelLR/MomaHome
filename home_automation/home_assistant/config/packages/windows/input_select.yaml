@@ -1,0 +1,6 @@
+# input_select:
+  windows_preferred_status:
+    name: Windows preferred status
+    options:
+      - Open
+      - Close
