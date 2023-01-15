@@ -124,6 +124,7 @@ input_number: !include_dir_merge_named __auto_generated-config/input_number/
 
 input_boolean: !include_dir_merge_named __auto_generated-config/input_boolean/
 
+bluetooth:
 # ble_monitor:
 #   # https://github.com/custom-components/ble_monitor
 #   ## Hey ! If a error occur don't worry, HA needs disable that component and restart

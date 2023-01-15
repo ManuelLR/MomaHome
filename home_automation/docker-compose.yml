@@ -13,6 +13,7 @@ services:
             # Config files
             - ./home_assistant/config/:/config/
             - ./home_assistant/HA-custom-www/my-config/:/HA-custom-www/my-config/
+            - /run/dbus:/run/dbus:ro
 
         environment:
             - TZ="Europe/Madrid"
