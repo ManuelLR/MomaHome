@@ -1,0 +1,13 @@
+# mqtt:
+#   switch:
+    - name: "man-001"
+      state_topic: "man-001/espurna/relay/0"
+      command_topic: "man-001/espurna/relay/0/set"
+      payload_on: 1
+      payload_off: 0
+      optimistic: false
+      qos: 1
+      retain: true
+      device:
+        identifiers: man-001
+        name: Living room light socket
