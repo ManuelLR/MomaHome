@@ -98,12 +98,12 @@ http:
 discovery:
 
 mqtt:
-  client_id: homeassistant
   ## Deprecated in 2022.3.xx
-  broker: 192.168.200.7
-  port: 1883
-  username: !secret mqtt_username
-  password: !secret mqtt_password
+  # client_id: homeassistant
+  # broker: 192.168.200.7
+  # port: 1883
+  # username: !secret mqtt_username
+  # password: !secret mqtt_password
   sensor: !include_dir_merge_list __auto_generated-config/mqtt_sensor/
   switch: !include_dir_merge_list __auto_generated-config/mqtt_switch/
 
