@@ -1,5 +1,5 @@
-# ble_monitor:
-#   devices:
-      - name: 'environment-001'
-        mac: 'A4:C1:38:5C:C1:2A'
-        encryption_key: !secret sensor_environment-001_bindkey
+# # ble_monitor:
+# #   devices:
+#       - name: 'environment-001'
+#         mac: 'A4:C1:38:5C:C1:2A'
+#         encryption_key: !secret sensor_environment-001_bindkey

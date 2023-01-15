@@ -122,13 +122,13 @@ input_number: !include_dir_merge_named __auto_generated-config/input_number/
 
 input_boolean: !include_dir_merge_named __auto_generated-config/input_boolean/
 
-ble_monitor:
-  # https://github.com/custom-components/ble_monitor
-  ## Hey ! If a error occur don't worry, HA needs disable that component and restart
-  discovery: False
-  restore_state: True
-  active_scan: False
-  devices: !include_dir_merge_list __auto_generated-config/ble_monitor_device/
+# ble_monitor:
+#   # https://github.com/custom-components/ble_monitor
+#   ## Hey ! If a error occur don't worry, HA needs disable that component and restart
+#   discovery: False
+#   restore_state: True
+#   active_scan: False
+#   devices: !include_dir_merge_list __auto_generated-config/ble_monitor_device/
 
 browser_mod:
   # https://github.com/thomasloven/hass-browser_mod
