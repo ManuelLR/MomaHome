@@ -27,7 +27,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.11.0 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
-    CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.0 \
+    CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.1 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
     CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0
 

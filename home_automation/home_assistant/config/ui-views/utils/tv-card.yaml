@@ -100,8 +100,16 @@
               service_data:
                 entity_id: remote.sony_bravia_tv
                 command: TvInput
-            netflix:
-              service: remote.send_command
-              service_data:
-                entity_id: remote.sony_bravia_tv
-                command: Netflix
+            applications:
+              netflix:
+                icon: mdi:netflix
+                service: remote.send_command
+                service_data:
+                  entity_id: remote.sony_bravia_tv
+                  command: Netflix
+              options:
+                icon: mdi:cog
+                service: remote.send_command
+                service_data:
+                  entity_id: remote.sony_bravia_tv
+                  command: Options
