@@ -2,7 +2,9 @@
   title: 'Last 24h'
   cards:
     ## Temperature
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - &environment-24h-card
           type: sensor
@@ -22,7 +24,9 @@
           entity: sensor.xiaomi_004_3c9a_temperature
 
     ## Humidity
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - <<: *environment-24h-card
           entity: sensor.dyson_01_humidity
@@ -39,7 +43,9 @@
   title: 'Last 7d'
   cards:
     ## Temperature
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - &environment-7d-card
           type: sensor
@@ -59,7 +65,9 @@
           entity: sensor.xiaomi_004_3c9a_temperature
 
     ## Humidity
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - <<: *environment-7d-card
           entity: sensor.dyson_01_humidity
@@ -73,7 +81,9 @@
           entity: sensor.xiaomi_004_3c9a_humidity
 
     ## Battery
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - <<: *environment-7d-card
           entity: sensor.ble_battery_flora_001
