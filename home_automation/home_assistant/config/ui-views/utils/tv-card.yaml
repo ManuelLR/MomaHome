@@ -5,102 +5,111 @@
 #     tap_action:
       action: fire-dom-event
       browser_mod:
-        command: popup
-        title: TV remote
+        service: browser_mod.popup
         # style:
         #   border-radius: 20px
         #   '--ha-card-border-radius': 0px
-        card:
-          type: custom:tv-card
-          entity: sun.sun
-          tv: true
-          back:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Return
-          backs:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Back
-          volume_down:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: VolumeDown
-          volume_mute:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Mute
-          volume_up:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: VolumeUp
-          down:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Down
-          forward:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Forward
-          home:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Home
-          info:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Info
-          up:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Up
-          left:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Left
-          play:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Play
-          power:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: TvPower
-          reverse:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Rewind
-          right:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Right
-          select:
-            service: Remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Confirm
-          source:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: TvInput
-          netflix:
-            service: remote.send_command
-            service_data:
-              entity_id: remote.sony_bravia_tv
-              command: Netflix
+        data:
+          title: TV remote
+          content:
+            type: custom:tv-card
+            entity: sun.sun
+            tv: true
+            back:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Return
+            backs:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Back
+            volume_down:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: VolumeDown
+            volume_mute:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Mute
+            volume_up:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: VolumeUp
+            down:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Down
+            forward:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Forward
+            home:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Home
+            info:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Info
+            up:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Up
+            left:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Left
+            play:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Play
+            power:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: TvPower
+            reverse:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Rewind
+            right:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Right
+            select:
+              service: Remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: Confirm
+            source:
+              service: remote.send_command
+              service_data:
+                entity_id: remote.sony_bravia_tv
+                command: TvInput
+            applications:
+              netflix:
+                icon: mdi:netflix
+                service: remote.send_command
+                service_data:
+                  entity_id: remote.sony_bravia_tv
+                  command: Netflix
+              options:
+                icon: mdi:cog
+                service: remote.send_command
+                service_data:
+                  entity_id: remote.sony_bravia_tv
+                  command: Options

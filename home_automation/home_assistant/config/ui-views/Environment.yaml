@@ -2,7 +2,9 @@
   title: 'Last 24h'
   cards:
     ## Temperature
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - &environment-24h-card
           type: sensor
@@ -11,28 +13,39 @@
           hours_to_show: 24
           entity: sensor.ble_temperature_flora_001
         - <<: *environment-24h-card
-          entity: sensor.ble_temperature_environment_001
+          entity: sensor.dyson_01_temperature
+        - <<: *environment-24h-card
+          entity: sensor.xiaomi_001_c12a_temperature
+        - <<: *environment-24h-card
+          entity: sensor.xiaomi_002_c421_temperature
+        - <<: *environment-24h-card
+          entity: sensor.xiaomi_003_5e2f_temperature
+        - <<: *environment-24h-card
+          entity: sensor.xiaomi_004_3c9a_temperature
 
     ## Humidity
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - <<: *environment-24h-card
-          entity: sensor.ble_humidity_environment_001
-
-    ## Battery
-    - type: horizontal-stack
-      cards:
+          entity: sensor.dyson_01_humidity
         - <<: *environment-24h-card
-          entity: sensor.ble_battery_flora_001
+          entity: sensor.xiaomi_001_c12a_humidity
         - <<: *environment-24h-card
-          entity: sensor.ble_battery_environment_001
-
+          entity: sensor.xiaomi_002_c421_humidity
+        - <<: *environment-24h-card
+          entity: sensor.xiaomi_003_5e2f_humidity
+        - <<: *environment-24h-card
+          entity: sensor.xiaomi_004_3c9a_humidity
 
 - type: vertical-stack
   title: 'Last 7d'
   cards:
     ## Temperature
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - &environment-7d-card
           type: sensor
@@ -41,18 +54,44 @@
           hours_to_show: 168
           entity: sensor.ble_temperature_flora_001
         - <<: *environment-7d-card
-          entity: sensor.ble_temperature_environment_001
+          entity: sensor.dyson_01_temperature
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_001_c12a_temperature
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_002_c421_temperature
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_003_5e2f_temperature
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_004_3c9a_temperature
 
     ## Humidity
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - <<: *environment-7d-card
-          entity: sensor.ble_humidity_environment_001
+          entity: sensor.dyson_01_humidity
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_001_c12a_humidity
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_002_c421_humidity
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_003_5e2f_humidity
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_004_3c9a_humidity
 
     ## Battery
-    - type: horizontal-stack
+    - type: grid
+      square: false
+      columns: 2
       cards:
         - <<: *environment-7d-card
           entity: sensor.ble_battery_flora_001
         - <<: *environment-7d-card
-          entity: sensor.ble_battery_environment_001
+          entity: sensor.xiaomi_001_c12a_battery
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_002_c421_battery
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_003_5e2f_battery
+        - <<: *environment-7d-card
+          entity: sensor.xiaomi_004_3c9a_battery

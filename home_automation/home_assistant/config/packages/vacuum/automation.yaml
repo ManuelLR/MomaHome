@@ -35,9 +35,9 @@
         at: '12:32:00'
       - platform: time
         at: '11:28:00'
-      # Check if we can start before
-      - platform: time
-        at: '10:20:00'
+      # # Check if we can start before
+      # - platform: time
+      #   at: '10:20:00'
       # Try to exec vacuum if Away from 5 minutes
       - platform: state
         entity_id:

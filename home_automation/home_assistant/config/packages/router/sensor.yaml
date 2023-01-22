@@ -90,6 +90,7 @@
   - platform: statistics
     name: Router net-switch in
     state_characteristic: mean
+    max_age: '8784:00'
     entity_id: sensor.router_raw_net_switch_in
 
   - platform: snmp
@@ -105,6 +106,7 @@
   - platform: statistics
     name: Router net-switch out
     state_characteristic: mean
+    max_age: '8784:00'
     entity_id: sensor.router_raw_net_switch_out
 
   - platform: snmp
@@ -131,6 +133,7 @@
   - platform: statistics
     name: Router net-wan in
     state_characteristic: mean
+    max_age: '8784:00'
     entity_id: sensor.router_raw_net_wan_in
 
   - platform: snmp
@@ -146,6 +149,7 @@
   - platform: statistics
     name: Router net-wan out
     state_characteristic: mean
+    max_age: '8784:00'
     entity_id: sensor.router_raw_net_wan_out
 
   - platform: snmp

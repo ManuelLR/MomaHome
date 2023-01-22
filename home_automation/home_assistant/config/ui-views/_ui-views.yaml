@@ -18,9 +18,9 @@
 - title: Environment
   icon: mdi:coolant-temperature
   cards: !include Environment.yaml
-- title: Flora
-  icon: mdi:flower
-  cards: !include Flora.yaml
+# - title: Flora
+#   icon: mdi:flower
+#   cards: !include Flora.yaml
 
 
 

@@ -1,6 +1,7 @@
 homeassistant:
   # Name of the location where Home Assistant is running
   name: MomaHome
+  country: ES
   # Location required to calculate the time the sun rises and sets
   latitude: !secret momahome_latitude
   longitude: !secret momahome_longitude
@@ -98,18 +99,19 @@ http:
 discovery:
 
 mqtt:
-  client_id: homeassistant
   ## Deprecated in 2022.3.xx
-  broker: 192.168.200.7
-  port: 1883
-  username: !secret mqtt_username
-  password: !secret mqtt_password
+  # client_id: homeassistant
+  # broker: 192.168.200.7
+  # port: 1883
+  # username: !secret mqtt_username
+  # password: !secret mqtt_password
+  sensor: !include_dir_merge_list __auto_generated-config/mqtt_sensor/
+  switch: !include_dir_merge_list __auto_generated-config/mqtt_switch/
 
 # Server
 # pi_hole: !include_dir_merge_named __auto_generated-config/pi_hole/
 duckdns: !include_dir_merge_named __auto_generated-config/duckdns/
 speedtestdotnet: !include_dir_merge_named __auto_generated-config/speedtestdotnet/
-apcupsd: !include_dir_merge_named __auto_generated-config/apcupsd/
 binary_sensor: !include_dir_merge_list __auto_generated-config/binary_sensor/
 
 google_assistant: !include_dir_merge_named __auto_generated-config/google_assistant/
@@ -122,13 +124,14 @@ input_number: !include_dir_merge_named __auto_generated-config/input_number/
 
 input_boolean: !include_dir_merge_named __auto_generated-config/input_boolean/
 
-ble_monitor:
-  # https://github.com/custom-components/ble_monitor
-  ## Hey ! If a error occur don't worry, HA needs disable that component and restart
-  discovery: False
-  restore_state: True
-  active_scan: False
-  devices: !include_dir_merge_list __auto_generated-config/ble_monitor_device/
+bluetooth:
+# ble_monitor:
+#   # https://github.com/custom-components/ble_monitor
+#   ## Hey ! If a error occur don't worry, HA needs disable that component and restart
+#   discovery: False
+#   restore_state: True
+#   active_scan: False
+#   devices: !include_dir_merge_list __auto_generated-config/ble_monitor_device/
 
 browser_mod:
   # https://github.com/thomasloven/hass-browser_mod

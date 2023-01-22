@@ -13,6 +13,7 @@ services:
             # Config files
             - ./home_assistant/config/:/config/
             - ./home_assistant/HA-custom-www/my-config/:/HA-custom-www/my-config/
+            - /run/dbus:/run/dbus:ro
 
         environment:
             - TZ="Europe/Madrid"
@@ -31,7 +32,7 @@ services:
             - "traefik.http.routers.home-assistant.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
     esphome:
-        image: esphome/esphome:2022.6.2
+        image: esphome/esphome:2022.11.5
         restart: unless-stopped
         ports:
             - 0.0.0.0:6052:6052
