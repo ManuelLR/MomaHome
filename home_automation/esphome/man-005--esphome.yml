@@ -4,7 +4,13 @@ esphome:
 esp32:
   board: esp32dev
   framework:
-    type: arduino
+    # type: arduino
+    type: esp-idf
+    version: recommended
+    # Custom sdkconfig options
+    sdkconfig_options:
+      CONFIG_COMPILER_OPTIMIZATION_SIZE: y
+
 
 # # Enable logging
 # logger:
@@ -24,7 +30,7 @@ wifi:
     ssid: "man-005--esphome"
     password: !secret wifi_captive_password
 
-captive_portal:
+# captive_portal:
 
 # Enable ble tracket to detect ble devices
 esp32_ble_tracker:
