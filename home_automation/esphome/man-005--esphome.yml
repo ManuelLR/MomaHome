@@ -38,6 +38,10 @@ esp32_ble_tracker:
     active: false
     duration: 9min
 
+# Enable bluetooth proxy to use directly on Home Assistant
+bluetooth_proxy:
+  active: true
+
 binary_sensor:
   - platform: ble_presence
     id: man_005__tile_manolo_keys
