@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2023.4.6
+FROM homeassistant/home-assistant:2023.6.3
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -11,9 +11,9 @@ ENV \
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=2.2.2 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=2.3.0 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
-    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.9.17 \
+    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.10.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.0 \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
@@ -21,7 +21,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.1.2 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.2 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
     CUSTOM_CARD_UPTIME_VERSION=v0.14.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
