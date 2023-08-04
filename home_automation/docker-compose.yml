@@ -14,7 +14,9 @@ services:
             - ./home_assistant/config/:/config/
             - ./home_assistant/HA-custom-www/my-config/:/HA-custom-www/my-config/
             - /run/dbus:/run/dbus:ro
-
+        devices:
+            # Zigbee dongle
+            - /dev/ttyUSB0:/dev/ttyUSB0
         environment:
             - TZ="Europe/Madrid"
                 # Reduce logging verbosity caused by ddwrt recurrent requests
@@ -32,7 +34,7 @@ services:
             - "traefik.http.routers.home-assistant.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
     esphome:
-        image: esphome/esphome:2022.12.7
+        image: esphome/esphome:2023.2.4
         restart: unless-stopped
         ports:
             - 0.0.0.0:6052:6052
