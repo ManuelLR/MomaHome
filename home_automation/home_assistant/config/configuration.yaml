@@ -96,9 +96,6 @@ http:
   ip_ban_enabled: true
   login_attempts_threshold: 10
 
-# Discover some devices automatically
-discovery:
-
 mqtt:
   ## Deprecated in 2022.3.xx
   # client_id: homeassistant
