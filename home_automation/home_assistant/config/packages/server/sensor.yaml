@@ -1,13 +1,14 @@
 # sensor:
-  - platform: apcupsd
-    resources:
-      - bcharge
-      - status
-      - loadpct
-      - timeleft
-        # - linev
-      - statflag
-      - xoffbatt
-      - starttime
-      - tonbatt
-      - cumonbatt
+  # Now forced to be managed from UI. Release 2023.6
+  # - platform: apcupsd
+  #   resources:
+  #     - bcharge
+  #     - status
+  #     - loadpct
+  #     - timeleft
+  #       # - linev
+  #     - statflag
+  #     - xoffbatt
+  #     - starttime
+  #     - tonbatt
+  #     - cumonbatt

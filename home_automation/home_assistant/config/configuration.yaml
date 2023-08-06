@@ -112,7 +112,9 @@ mqtt:
 # Server
 # pi_hole: !include_dir_merge_named __auto_generated-config/pi_hole/
 duckdns: !include_dir_merge_named __auto_generated-config/duckdns/
-speedtestdotnet: !include_dir_merge_named __auto_generated-config/speedtestdotnet/
+
+# Now forced to be managed from UI. Release 2023.6
+# speedtestdotnet: !include_dir_merge_named __auto_generated-config/speedtestdotnet/
 binary_sensor: !include_dir_merge_list __auto_generated-config/binary_sensor/
 
 google_assistant: !include_dir_merge_named __auto_generated-config/google_assistant/
