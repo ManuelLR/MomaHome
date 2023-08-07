@@ -20,6 +20,8 @@ ENV \
     CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4-4 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
+      # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
+    CUSTOM_COMPONENT_EDATA_VERSION=2023.06.3 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.2 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
@@ -70,6 +72,10 @@ RUN \
     && git clone https://github.com/chomupashchuk/delete-file-home-assistant.git /tmp/delete-file-home-assistant \
     && cd /tmp/delete-file-home-assistant && git checkout $CUSTOM_COMPONENT_DELETE_FILE_VERSION \
     && cd - && cp -r /tmp/delete-file-home-assistant/custom_components/* /opt/HA/config/custom_components/ \
+    # edata
+    && git clone https://github.com/uvejota/homeassistant-edata.git /tmp/homeassistant-edata \
+    && cd /tmp/homeassistant-edata && git checkout $CUSTOM_COMPONENT_EDATA_VERSION \
+    && cd - && cp -r /tmp/homeassistant-edata/custom_components/* /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
