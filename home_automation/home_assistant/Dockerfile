@@ -28,6 +28,8 @@ ENV \
     CUSTOM_CARD_UPTIME_VERSION=v0.14.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.11.0 \
+      # renovatebot: datasource=github-releases depName=RomRider/apexcharts-card
+    CUSTOM_CARD_APEXCHARTS_VERSION=v2.0.4 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.1 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
@@ -37,6 +39,7 @@ ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
     CUSTOM_CARD_UPTIME_PATH=/local/external-cards/uptime-card.js?version=${CUSTOM_CARD_UPTIME_VERSION} \
     CUSTOM_CARD_MINI_GRAPH_PATH=/local/external-cards/mini-graph-card-bundle.js?version=${CUSTOM_CARD_MINI_GRAPH_VERSION} \
+    CUSTOM_CARD_APEXCHARTS_PATH=/local/external-cards/apexcharts-card.js?version=${CUSTOM_CARD_APEXCHARTS_VERSION} \
     CUSTOM_CARD_TV_REMOTE_PATH=/local/external-cards/tv-card.js?version=${CUSTOM_CARD_TV_REMOTE_VERSION} \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION}
 
@@ -84,6 +87,8 @@ RUN \
     && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/${CUSTOM_CARD_UPTIME_VERSION}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Mini Graph Card
     && curl -fsSL "https://github.com/kalkih/mini-graph-card/releases/download/${CUSTOM_CARD_MINI_GRAPH_VERSION}/mini-graph-card-bundle.js" -o /HA-custom-www/external-cards/mini-graph-card-bundle.js \
+    # Apexcharts Card
+    && curl -fsSL "https://github.com/RomRider/apexcharts-card/releases/download/${CUSTOM_CARD_APEXCHARTS_VERSION}/apexcharts-card.js" -o /HA-custom-www/external-cards/apexcharts-card.js \
     # TV remote Card
     && git clone https://github.com/marrobHD/tv-card.git /tmp/tv_remote_card \
     && cd /tmp/tv_remote_card && git checkout $CUSTOM_CARD_TV_REMOTE_VERSION \

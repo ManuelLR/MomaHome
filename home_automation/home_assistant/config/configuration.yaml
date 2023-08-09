@@ -61,6 +61,8 @@ lovelace:
     - type: module
       url: !env_var CUSTOM_CARD_MINI_GRAPH_PATH
     - type: module
+      url: !env_var CUSTOM_CARD_APEXCHARTS_PATH
+    - type: module
       url: !env_var CUSTOM_CARD_TV_REMOTE_PATH
     - type: module
       url: !env_var CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH
