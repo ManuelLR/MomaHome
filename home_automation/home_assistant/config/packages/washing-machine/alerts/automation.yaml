@@ -21,3 +21,6 @@
         data:
           title: 'Washing Machine finished'
           message: 'Hey, the washing machine has finished and is ready to be emptied'
+          data:
+            inline_keyboard:
+              - 'Already empty:/washing_machine_already_empty'

@@ -61,6 +61,8 @@ lovelace:
     - type: module
       url: !env_var CUSTOM_CARD_MINI_GRAPH_PATH
     - type: module
+      url: !env_var CUSTOM_CARD_APEXCHARTS_PATH
+    - type: module
       url: !env_var CUSTOM_CARD_TV_REMOTE_PATH
     - type: module
       url: !env_var CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH
@@ -96,9 +98,6 @@ http:
   ip_ban_enabled: true
   login_attempts_threshold: 10
 
-# Discover some devices automatically
-discovery:
-
 mqtt:
   ## Deprecated in 2022.3.xx
   # client_id: homeassistant
@@ -112,7 +111,9 @@ mqtt:
 # Server
 # pi_hole: !include_dir_merge_named __auto_generated-config/pi_hole/
 duckdns: !include_dir_merge_named __auto_generated-config/duckdns/
-speedtestdotnet: !include_dir_merge_named __auto_generated-config/speedtestdotnet/
+
+# Now forced to be managed from UI. Release 2023.6
+# speedtestdotnet: !include_dir_merge_named __auto_generated-config/speedtestdotnet/
 binary_sensor: !include_dir_merge_list __auto_generated-config/binary_sensor/
 
 google_assistant: !include_dir_merge_named __auto_generated-config/google_assistant/

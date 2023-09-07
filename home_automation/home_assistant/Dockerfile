@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2023.2.5
+FROM ghcr.io/home-assistant/home-assistant:2023.8.1
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -11,21 +11,25 @@ ENV \
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=2.2.0 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=2.3.0 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
-    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.9.17 \
+    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.10.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
-    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.0 \
+    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.1 \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
     CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4-4 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
+      # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
+    CUSTOM_COMPONENT_EDATA_VERSION=2023.06.3 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.1.2 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.2 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
     CUSTOM_CARD_UPTIME_VERSION=v0.14.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.11.0 \
+      # renovatebot: datasource=github-releases depName=RomRider/apexcharts-card
+    CUSTOM_CARD_APEXCHARTS_VERSION=v2.0.4 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.1 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
@@ -35,6 +39,7 @@ ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
     CUSTOM_CARD_UPTIME_PATH=/local/external-cards/uptime-card.js?version=${CUSTOM_CARD_UPTIME_VERSION} \
     CUSTOM_CARD_MINI_GRAPH_PATH=/local/external-cards/mini-graph-card-bundle.js?version=${CUSTOM_CARD_MINI_GRAPH_VERSION} \
+    CUSTOM_CARD_APEXCHARTS_PATH=/local/external-cards/apexcharts-card.js?version=${CUSTOM_CARD_APEXCHARTS_VERSION} \
     CUSTOM_CARD_TV_REMOTE_PATH=/local/external-cards/tv-card.js?version=${CUSTOM_CARD_TV_REMOTE_VERSION} \
     CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION}
 
@@ -70,6 +75,10 @@ RUN \
     && git clone https://github.com/chomupashchuk/delete-file-home-assistant.git /tmp/delete-file-home-assistant \
     && cd /tmp/delete-file-home-assistant && git checkout $CUSTOM_COMPONENT_DELETE_FILE_VERSION \
     && cd - && cp -r /tmp/delete-file-home-assistant/custom_components/* /opt/HA/config/custom_components/ \
+    # edata
+    && git clone https://github.com/uvejota/homeassistant-edata.git /tmp/homeassistant-edata \
+    && cd /tmp/homeassistant-edata && git checkout $CUSTOM_COMPONENT_EDATA_VERSION \
+    && cd - && cp -r /tmp/homeassistant-edata/custom_components/* /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
@@ -78,6 +87,8 @@ RUN \
     && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/${CUSTOM_CARD_UPTIME_VERSION}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Mini Graph Card
     && curl -fsSL "https://github.com/kalkih/mini-graph-card/releases/download/${CUSTOM_CARD_MINI_GRAPH_VERSION}/mini-graph-card-bundle.js" -o /HA-custom-www/external-cards/mini-graph-card-bundle.js \
+    # Apexcharts Card
+    && curl -fsSL "https://github.com/RomRider/apexcharts-card/releases/download/${CUSTOM_CARD_APEXCHARTS_VERSION}/apexcharts-card.js" -o /HA-custom-www/external-cards/apexcharts-card.js \
     # TV remote Card
     && git clone https://github.com/marrobHD/tv-card.git /tmp/tv_remote_card \
     && cd /tmp/tv_remote_card && git checkout $CUSTOM_CARD_TV_REMOTE_VERSION \
