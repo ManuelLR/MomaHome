@@ -62,6 +62,7 @@ state_filter:
   - "Washing"
   - "Finishing"
   - "Clean"
+  - "Emptying"
   # vacuum.valetudo_roborocks5
   - "cleaning"
   - "returning"
