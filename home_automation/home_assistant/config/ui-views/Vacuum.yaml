@@ -12,7 +12,7 @@
 #     - entity: group.vacuum_room
 #       name: Vacuum room
 - type: 'custom:xiaomi-vacuum-map-card'
-  entity: vacuum.xiaomi_vacuum
+  entity: vacuum.valetudo_roborocks5
   map_source:
     camera: camera.xiaomi_vacuum_map
   calibration_source:
@@ -52,6 +52,6 @@
   hours_to_show: 48
   entities:
     # - group.pi_hole_statistics
-    - vacuum.xiaomi_vacuum
+    - vacuum.valetudo_roborocks5
     - input_datetime.vacuum_last_full_clean
     - input_number.vacuum_xiaomi_dust_clean_left

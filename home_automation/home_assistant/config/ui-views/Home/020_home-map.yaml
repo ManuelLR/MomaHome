@@ -46,7 +46,7 @@ elements:
   - type: state-icon
     tap_action:
       action: more-info
-    entity: vacuum.xiaomi_vacuum
+    entity: vacuum.valetudo_roborocks5
     style:
       top: 33%
       left: 44%

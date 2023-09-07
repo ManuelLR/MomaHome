@@ -16,7 +16,7 @@ entities:
   - device_tracker.print_canon_mx920
   - sensor.washing_machine_status
   - light.midesklamp1s_01
-  - vacuum.xiaomi_vacuum
+  - vacuum.valetudo_roborocks5
   - entity: input_number.vacuum_xiaomi_dust_clean_left
     name: "[Vacuum] Bin dust left"
     type: button
@@ -62,7 +62,7 @@ state_filter:
   - "Washing"
   - "Finishing"
   - "Clean"
-  # vacuum.xiaomi_vacuum
+  # vacuum.valetudo_roborocks5
   - "cleaning"
   - "returning"
   - "error"
