@@ -24,6 +24,8 @@ ENV \
     CUSTOM_COMPONENT_EDATA_VERSION=2023.06.3 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.2 \
+      # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
+    CUSTOM_CARD_VALETUDO_VACUUM_MAP_VERSION=v2023.04.0 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
     CUSTOM_CARD_UPTIME_VERSION=v0.14.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
@@ -37,6 +39,7 @@ ENV \
 
 ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
+    CUSTOM_CARD_VALETUDO_VACUUM_MAP_PATH=/local/external-cards/valetudo-map-card.js?version=${CUSTOM_CARD_VALETUDO_VACUUM_MAP_VERSION} \
     CUSTOM_CARD_UPTIME_PATH=/local/external-cards/uptime-card.js?version=${CUSTOM_CARD_UPTIME_VERSION} \
     CUSTOM_CARD_MINI_GRAPH_PATH=/local/external-cards/mini-graph-card-bundle.js?version=${CUSTOM_CARD_MINI_GRAPH_VERSION} \
     CUSTOM_CARD_APEXCHARTS_PATH=/local/external-cards/apexcharts-card.js?version=${CUSTOM_CARD_APEXCHARTS_VERSION} \
@@ -83,6 +86,10 @@ RUN \
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
     && curl -fsSL "https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card/releases/download/${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION}/xiaomi-vacuum-map-card.js" -o /HA-custom-www/external-cards/xiaomi-vacuum-map-card.js \
+    # Valetudo vacuum map card
+    && git clone https://github.com/Hypfer/lovelace-valetudo-map-card.git /tmp/valetudo_vacuum_map_card \
+    && cd /tmp/valetudo_vacuum_map_card && git checkout $CUSTOM_CARD_VALETUDO_VACUUM_MAP_VERSION \
+    && cd - && cp -r /tmp/valetudo_vacuum_map_card/dist/valetudo-map-card.js /HA-custom-www/external-cards/ \
     # Uptime Card
     && curl -fsSL "https://github.com/dylandoamaral/uptime-card/releases/download/${CUSTOM_CARD_UPTIME_VERSION}/uptime-card.js" -o /HA-custom-www/external-cards/uptime-card.js \
     # Mini Graph Card
