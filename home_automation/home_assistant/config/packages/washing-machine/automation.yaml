@@ -90,13 +90,6 @@
         below: 0.001
         for:
           minutes: 15
-      - platform: event
-        event_type: telegram_command
-        event_data: &telegram_washine_machine_empty
-          command: "/washing_machine_already_empty"
-      - platform: event
-        event_type: telegram_callback
-        event_data: *telegram_washine_machine_empty
     condition:
       condition: or
       conditions:
@@ -104,9 +97,24 @@
           entity_id: input_select.washing_machine_status
           state:
             # - 'Scheduled'
-            - 'Washing'
+            # - 'Washing'
             # - 'Clean'
             - 'Emptying'
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.washing_machine_status
+          option: 'Off'
+
+  - alias: AUT-Washing machine Force Off
+    trigger:
+      - platform: event
+        event_type: telegram_command
+        event_data: &telegram_washine_machine_empty
+          command: "/washing_machine_already_empty"
+      - platform: event
+        event_type: telegram_callback
+        event_data: *telegram_washine_machine_empty
     action:
       - service: input_select.select_option
         data:

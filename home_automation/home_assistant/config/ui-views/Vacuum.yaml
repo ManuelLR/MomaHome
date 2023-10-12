@@ -12,27 +12,29 @@
 #     - entity: group.vacuum_room
 #       name: Vacuum room
 - type: 'custom:xiaomi-vacuum-map-card'
-  entity: vacuum.xiaomi_vacuum
+  entity: vacuum.valetudo_roborocks5
+  vacuum_platform: Hypfer/Valetudo
   map_source:
-    camera: camera.xiaomi_vacuum_map
+    camera: camera.roborocks5_map
   calibration_source:
-    camera: true
+    identity: sensor.roborocks5_calibration
+  internal_variables:
+    topic: valetudo/roborocks5
   map_locked: true
   map_modes:
     - template: vacuum_clean_zone
     - template: vacuum_goto
-    - template: vacuum_clean_zone_predefined
-      predefined_selections:
-        - zones: [[26876,24122,29376,25122]]
-        - zones: [[25286,25553,27386,27553]]
-        - zones: [[29477,21816,31677,25216]]
-        - zones: [[26861,21740,28961,24190]]
-        - zones: [[23302,21376,26952,25076]]
-        - zones: [[29854,28330,31404,30980]]
-        - zones: [[31439,27363,33939,30413]]
-        - zones: [[24507,25175,31207,28525]]
+    # - template: vacuum_clean_zone_predefined
+    #   predefined_selections:
+    #     - zones: [[26876,24122,29376,25122]]
+    #     - zones: [[25286,25553,27386,27553]]
+    #     - zones: [[29477,21816,31677,25216]]
+    #     - zones: [[26861,21740,28961,24190]]
+    #     - zones: [[23302,21376,26952,25076]]
+    #     - zones: [[29854,28330,31404,30980]]
+    #     - zones: [[31439,27363,33939,30413]]
+    #     - zones: [[24507,25175,31207,28525]]
     - template: vacuum_clean_segment
-    - template: vacuum_follow_path
   append_tiles: true
   tiles:
     - label: Bin dust left
@@ -52,6 +54,6 @@
   hours_to_show: 48
   entities:
     # - group.pi_hole_statistics
-    - vacuum.xiaomi_vacuum
+    - vacuum.valetudo_roborocks5
     - input_datetime.vacuum_last_full_clean
     - input_number.vacuum_xiaomi_dust_clean_left

@@ -57,6 +57,8 @@ lovelace:
     - type: module
       url: !env_var CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH
     - type: module
+      url: !env_var CUSTOM_CARD_VALETUDO_VACUUM_MAP_PATH
+    - type: module
       url: !env_var CUSTOM_CARD_UPTIME_PATH
     - type: module
       url: !env_var CUSTOM_CARD_MINI_GRAPH_PATH

@@ -1,4 +1,11 @@
 # input_number:
+  vacuum_xiaomi_historic_cleaning_time:
+    # Used to control if we already sync with the vacuum some metadata
+    min: 0
+    max: 999999999999999999
+    unit_of_measurement: seconds
+    icon: mdi:equalizer
+    mode: box
   vacuum_xiaomi_dust_clean_left:
     min: 0
     # max: 140

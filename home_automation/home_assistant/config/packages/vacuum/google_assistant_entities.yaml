@@ -1,6 +1,6 @@
 # google_assistant:
   # entity_config:
-    vacuum.xiaomi_vacuum:
+    vacuum.valetudo_roborocks5:
       room: Living Room
       expose: True
       aliases:

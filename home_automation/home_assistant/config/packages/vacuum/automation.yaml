@@ -3,7 +3,7 @@
     initial_state: 'on'
     trigger:
       - platform: state
-        entity_id: vacuum.xiaomi_vacuum
+        entity_id: vacuum.valetudo_roborocks5
         to: error
       - platform: state
         entity_id:
@@ -15,18 +15,21 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: vacuum.xiaomi_vacuum
+          entity_id: vacuum.valetudo_roborocks5
           state: error
     action:
       ## Wait until map fully updated
       - delay: '00:00:21'
       - service: script.take_camera_snapshot_and_send_telegram
         data:
-          camera_entity: camera.xiaomi_vacuum_map
+          camera_entity: camera.roborocks5_map
           notify_to: script.notify_in_home_or_all
           message: |
             *Something fail in the vacuum...*
-            Error was: `{{state_attr("vacuum.xiaomi_vacuum", "error")}}`
+            Error was: `{{state_attr("sensor.valetudo_roborocks5_error", "severity")}}`
+            Error was: `{{state_attr("sensor.valetudo_roborocks5_error", "subsystem")}}`
+            Error was: `{{state_attr("sensor.valetudo_roborocks5_error", "message")}}`
+            Error was: `{{states("sensor.valetudo_roborocks5_error")}}`
 
   - alias: AUT-Vacuum
     initial_state: 'on'
@@ -72,7 +75,7 @@
                     before: "22:30:00"
       # Not cleaning just now
           - condition: template
-            value_template: '{{ states("vacuum.xiaomi_vacuum") == "docked" }}'
+            value_template: '{{ states("vacuum.valetudo_roborocks5") == "docked" }}'
       # Someone in house in past 24 hours
           - condition: template
             value_template: '{{ states("sensor.home_occupancy_status") != "Extended Away" }}'
@@ -126,42 +129,47 @@
         event_data: *telegram_vacuum_start
     action:
       - service: vacuum.set_fan_speed
-        entity_id: vacuum.xiaomi_vacuum
+        entity_id: vacuum.valetudo_roborocks5
         data:
           fan_speed: Standard
       - service: vacuum.start
-        entity_id: vacuum.xiaomi_vacuum
+        entity_id: vacuum.valetudo_roborocks5
 
   - alias: AUT-Vacuum update statistics
-    mode: restart
+    mode: queued
     initial_state: 'on'
     trigger:
       - platform: state
-        entity_id: vacuum.xiaomi_vacuum
+        entity_id: vacuum.valetudo_roborocks5
         to: returning
     action:
-        # If we have the same start time than before obviously we are trying to update the same values
+        # If we have the same total historic time than before obviously we are trying to update the same values
       - condition: template
-        value_template: "{{ as_timestamp(states('sensor.xiaomi_vacuum_last_clean_start')) != as_timestamp(states('input_datetime.vacuum_last_full_clean')) }}"
+        value_template: "{{ states('input_number.vacuum_xiaomi_historic_cleaning_time') != states('sensor.valetudo_roborocks5_total_statistics_time') }}"
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.vacuum_xiaomi_historic_cleaning_time
+        data:
+          value: "{{ states('sensor.valetudo_roborocks5_total_statistics_time') }}"
       - service: input_number.set_value
         data_template:
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
           value: >
-            {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (states('sensor.xiaomi_vacuum_last_clean_area')|int), 0] | max }}
-    # We considered a full cleaning if we clean more than 17 m2
+            {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (states('sensor.valetudo_roborocks5_current_statistics_area')|int // 10000), 0] | max }}
+    # We considered a full cleaning if we clean more than 34 m2
       - condition: numeric_state
         entity_id: sensor.xiaomi_vacuum_last_clean_area
-        above: 17
+        above: 34
       - service: input_datetime.set_datetime
         target:
           entity_id: input_datetime.vacuum_last_full_clean
         data:
-          datetime: "{{ states('sensor.xiaomi_vacuum_last_clean_start') }}"
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
       ## Wait until map fully updated
       - delay: '00:00:21'
       - service: script.take_camera_snapshot_and_send_telegram
         data:
-          camera_entity: camera.xiaomi_vacuum_map
+          camera_entity: camera.roborocks5_map
           notify_to: script.notify_in_home_or_all
           data:
             disable_notification: True
@@ -174,7 +182,7 @@
     initial_state: 'on'
     trigger:
       - platform: state
-        entity_id: vacuum.xiaomi_vacuum
+        entity_id: vacuum.valetudo_roborocks5
         to: returning
       - platform: state
         entity_id: input_number.vacuum_xiaomi_dust_clean_left
@@ -191,13 +199,13 @@
         data:
           title: 'Vacuum need maintenance'
           message: >
-            Cepillo principal*:* `{{ (states('sensor.xiaomi_vacuum_main_brush_left')|int) }} h` _restantes_
+            Cepillo principal*:* `{{ (states('sensor.valetudo_roborocks5_main_brush')|int) }} h` _restantes_
 
-            Cepillo lateral: `{{ (states('sensor.xiaomi_vacuum_side_brush_left')|int) }} h` restantes
+            Cepillo lateral: `{{ (states('sensor.valetudo_roborocks5_right_brush')|int) }} h` restantes
 
-            Filtro: `{{ (states('sensor.xiaomi_vacuum_filter_left')|int) }} h` restantes
+            Filtro: `{{ (states('sensor.valetudo_roborocks5_main_filter')|int) }} h` restantes
 
-            Limpieza de sensores: `{{ (states('sensor.xiaomi_vacuum_sensor_dirty_left')|int) }} h` restantes
+            Limpieza de sensores: `{{ (states('sensor.valetudo_roborocks5_sensor_cleaning')|int) }} h` restantes
 
             Vaciado del deposito: `{{ (states('input_number.vacuum_xiaomi_dust_clean_left')|int) }} m²` restantes
           data:
@@ -245,7 +253,7 @@
         target:
           entity_id: timer.vacuum_start_in
       - service: vacuum.stop
-        entity_id: vacuum.xiaomi_vacuum
+        entity_id: vacuum.valetudo_roborocks5
       - delay: '00:00:30'
       - service: vacuum.return_to_base
-        entity_id: vacuum.xiaomi_vacuum
+        entity_id: vacuum.valetudo_roborocks5
