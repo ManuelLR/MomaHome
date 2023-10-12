@@ -22,7 +22,7 @@
       - delay: '00:00:21'
       - service: script.take_camera_snapshot_and_send_telegram
         data:
-          camera_entity: camera.xiaomi_vacuum_map
+          camera_entity: camera.roborocks5_map
           notify_to: script.notify_in_home_or_all
           message: |
             *Something fail in the vacuum...*
@@ -136,35 +136,40 @@
         entity_id: vacuum.valetudo_roborocks5
 
   - alias: AUT-Vacuum update statistics
-    mode: restart
+    mode: queued
     initial_state: 'on'
     trigger:
       - platform: state
         entity_id: vacuum.valetudo_roborocks5
         to: returning
     action:
-        # If we have the same start time than before obviously we are trying to update the same values
+        # If we have the same total historic time than before obviously we are trying to update the same values
       - condition: template
-        value_template: "{{ as_timestamp(states('sensor.xiaomi_vacuum_last_clean_start')) != as_timestamp(states('input_datetime.vacuum_last_full_clean')) }}"
+        value_template: "{{ states('input_number.vacuum_xiaomi_historic_cleaning_time') != states('sensor.valetudo_roborocks5_total_statistics_time') }}"
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.vacuum_xiaomi_historic_cleaning_time
+        data:
+          value: "{{ states('sensor.valetudo_roborocks5_total_statistics_time') }}"
       - service: input_number.set_value
         data_template:
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
           value: >
-            {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (states('sensor.xiaomi_vacuum_last_clean_area')|int), 0] | max }}
-    # We considered a full cleaning if we clean more than 17 m2
+            {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (states('sensor.valetudo_roborocks5_current_statistics_area')|int // 10000), 0] | max }}
+    # We considered a full cleaning if we clean more than 34 m2
       - condition: numeric_state
         entity_id: sensor.xiaomi_vacuum_last_clean_area
-        above: 38
+        above: 34
       - service: input_datetime.set_datetime
         target:
           entity_id: input_datetime.vacuum_last_full_clean
         data:
-          datetime: "{{ states('sensor.xiaomi_vacuum_last_clean_start') }}"
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
       ## Wait until map fully updated
       - delay: '00:00:21'
       - service: script.take_camera_snapshot_and_send_telegram
         data:
-          camera_entity: camera.xiaomi_vacuum_map
+          camera_entity: camera.roborocks5_map
           notify_to: script.notify_in_home_or_all
           data:
             disable_notification: True

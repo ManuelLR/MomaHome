@@ -69,3 +69,11 @@ services:
             - 1883:1883
         volumes:
             - ./mosquitto-config/:/mosquitto/config/:ro
+
+    vacuum_map:
+        # Valetudo PNG (to transforma vacuum map to PNG)
+        # https://github.com/erkexzcx/valetudopng
+        image: ghcr.io/erkexzcx/valetudopng:v1.0.12
+        restart: unless-stopped
+        volumes:
+            - ./vacuum_map/config_01.yml:/config.yml:ro
