@@ -1,0 +1,5 @@
+#home_connect_alt:
+### https://github.com/ekutner/home-connect-hass
+  client_id: !secret home_connect_alt_client_id
+  client_secret: !secret home_connect_alt_client_secret
+  name_template: $name [$appliance]

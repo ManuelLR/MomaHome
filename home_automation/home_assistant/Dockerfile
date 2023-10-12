@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2023.10.1
+FROM ghcr.io/home-assistant/home-assistant:2023.10.2
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -22,6 +22,8 @@ ENV \
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
     CUSTOM_COMPONENT_EDATA_VERSION=2023.06.3 \
+      # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
+    CUSTOM_COMPONENT_HOME_CONNECT=0.6.8 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.2 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
@@ -82,6 +84,10 @@ RUN \
     && git clone https://github.com/uvejota/homeassistant-edata.git /tmp/homeassistant-edata \
     && cd /tmp/homeassistant-edata && git checkout $CUSTOM_COMPONENT_EDATA_VERSION \
     && cd - && cp -r /tmp/homeassistant-edata/custom_components/* /opt/HA/config/custom_components/ \
+    # HomeConnect (Bosh/Balay/Siemens)
+    && git clone https://github.com/ekutner/home-connect-hass /tmp/home-connect-hass \
+    && cd /tmp/home-connect-hass && git checkout $CUSTOM_COMPONENT_HOME_CONNECT \
+    && cd - && cp -r /tmp/home-connect-hass/custom_components/* /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
