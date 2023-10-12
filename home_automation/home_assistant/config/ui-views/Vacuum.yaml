@@ -24,16 +24,16 @@
   map_modes:
     - template: vacuum_clean_zone
     - template: vacuum_goto
-    - template: vacuum_clean_zone_predefined
-      predefined_selections:
-        - zones: [[26876,24122,29376,25122]]
-        - zones: [[25286,25553,27386,27553]]
-        - zones: [[29477,21816,31677,25216]]
-        - zones: [[26861,21740,28961,24190]]
-        - zones: [[23302,21376,26952,25076]]
-        - zones: [[29854,28330,31404,30980]]
-        - zones: [[31439,27363,33939,30413]]
-        - zones: [[24507,25175,31207,28525]]
+    # - template: vacuum_clean_zone_predefined
+    #   predefined_selections:
+    #     - zones: [[26876,24122,29376,25122]]
+    #     - zones: [[25286,25553,27386,27553]]
+    #     - zones: [[29477,21816,31677,25216]]
+    #     - zones: [[26861,21740,28961,24190]]
+    #     - zones: [[23302,21376,26952,25076]]
+    #     - zones: [[29854,28330,31404,30980]]
+    #     - zones: [[31439,27363,33939,30413]]
+    #     - zones: [[24507,25175,31207,28525]]
     - template: vacuum_clean_segment
   append_tiles: true
   tiles:
