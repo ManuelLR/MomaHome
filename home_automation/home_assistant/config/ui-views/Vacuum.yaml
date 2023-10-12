@@ -35,7 +35,6 @@
         - zones: [[31439,27363,33939,30413]]
         - zones: [[24507,25175,31207,28525]]
     - template: vacuum_clean_segment
-    - template: vacuum_follow_path
   append_tiles: true
   tiles:
     - label: Bin dust left
