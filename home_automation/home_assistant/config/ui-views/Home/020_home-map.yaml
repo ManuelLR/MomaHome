@@ -1,7 +1,8 @@
 # title: House
 type: picture-elements
 image: /local/my_config/home_map.png
-camera_image: camera.home_map
+# camera_image: camera.home_map
+camera_image: camera.roborocks5_map
 elements:
   - type: state-icon
     tap_action:

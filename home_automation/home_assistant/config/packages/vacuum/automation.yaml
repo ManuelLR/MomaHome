@@ -22,7 +22,7 @@
       - delay: '00:00:21'
       - service: script.take_camera_snapshot_and_send_telegram
         data:
-          camera_entity: camera.xiaomi_vacuum_map
+          camera_entity: camera.roborocks5_map
           notify_to: script.notify_in_home_or_all
           message: |
             *Something fail in the vacuum...*
@@ -169,7 +169,7 @@
       - delay: '00:00:21'
       - service: script.take_camera_snapshot_and_send_telegram
         data:
-          camera_entity: camera.xiaomi_vacuum_map
+          camera_entity: camera.roborocks5_map
           notify_to: script.notify_in_home_or_all
           data:
             disable_notification: True

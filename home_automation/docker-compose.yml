@@ -76,4 +76,4 @@ services:
         image: ghcr.io/erkexzcx/valetudopng:v1.0.12
         restart: unless-stopped
         volumes:
-            - /vacuum_map/config_01.yml:/config.yml:ro
+            - ./vacuum_map/config_01.yml:/config.yml:ro
