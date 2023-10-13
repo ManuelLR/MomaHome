@@ -18,17 +18,23 @@ browser_mod:
                 - entity: timer.washing_machine_power_on_in
                   state_not: "idle"
               row:
+                entity: timer.washing_machine_power_on_in
+            - type: conditional
+              conditions:
                 - entity: timer.washing_machine_power_on_in
-                - type: button
-                  name: Start now
-                  icon: mdi:skip-forward
-                  tap_action:
-                    action: call-service
-                    confirmation: true
-                    service: automation.trigger
-                    data:
-                      entity_id: automation.aut_washing_machine_should_power_on
-                      skip_condition: true
+                  state_not: "idle"
+              row:
+                type: button
+                name: Skip the schedule and start now 
+                icon: mdi:skip-forward
+                tap_action:
+                  action: call-service
+                  confirmation:
+                    text: Are you sure you want to skip the schedule and start now the washing machine?
+                  service: automation.trigger
+                  data:
+                    entity_id: automation.aut_washing_machine_should_power_on
+                    skip_condition: true
 
         - type: conditional
           conditions:

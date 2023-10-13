@@ -12,11 +12,14 @@ schedule_washing_machine:
       entity_id: timer.washing_machine_power_on_in
       data:
         duration: "{{ states('input_datetime.input_timer_washing_machine_power_on_in') }}"
-      ### TODO: Manually change the state of the washing machine to a new one, scheduled
     - delay:
-        seconds: 5
+        seconds: 10
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.washing_machine_status
+        option: Scheduled
     - service: script.notify_in_home_or_all
       data:
         title: 'Washing machine correctly scheduled'
         message: >
-          All is in place. Your washing machine was power off waiting till {{ state_attr('timer.washing_machine_power_on_in','finishes_at') }}
+          All is in place. Your washing machine was power off waiting till {{ as_local(state_attr('timer.washing_machine_power_on_in','finishes_at')) }}

@@ -1,2 +1,3 @@
 # timer:
     washing_machine_power_on_in:
+        name: Washing machine will turn on in...

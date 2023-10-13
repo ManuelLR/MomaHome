@@ -47,6 +47,7 @@
             - 'Off'
             - 'Finishing'
             - 'Clean'
+            - 'Scheduled'
     action:
       - service: input_select.select_option
         data:
