@@ -14,7 +14,8 @@ entities:
   #   s/n: xxxx...xx 3401
   #   name: Luz salón
   - device_tracker.print_canon_mx920
-  - sensor.washing_machine_status
+  - entity: sensor.washing_machine_status
+    tap_action: !include ../utils/washing-machine-card.yaml
   - light.midesklamp1s_01
   - vacuum.valetudo_roborocks5
   - entity: input_number.vacuum_xiaomi_dust_clean_left
