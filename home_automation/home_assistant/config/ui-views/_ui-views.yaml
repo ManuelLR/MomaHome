@@ -11,6 +11,7 @@
 - title: Energy
   icon: mdi:home-lightning-bolt-outline
   cards: !include Energy.yaml
+
 - title: Net
   # icon: mdi:router-network
   icon: mdi:access-point-network

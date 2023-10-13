@@ -1,6 +1,11 @@
 - type: vertical-stack
   cards:
     # - type: energy-date-selection
+    - type: entity
+      entity: sensor.edata_mp0f
+      attribute: last_registered_date
+      name: Most recent data
+      icon: mdi:calendar
     - type: custom:apexcharts-card
       graph_span: 30d
       stacked: true
@@ -151,6 +156,13 @@
             in_chart: false
             in_header: true
           name: Factura
+
+    # Hourly consumption
+    - type: vertical-stack
+      title: Hourly consumption + Others
+      cards:
+        - type: energy-date-selection
+        - type: energy-usage-graph
 
     - type: custom:apexcharts-card
       graph_span: 395d
