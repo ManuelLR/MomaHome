@@ -44,8 +44,9 @@ browser_mod:
 
                   **1.** Add all things and close the door.
 
-                  **2.** Define when the washing machine should start:
+                  **2.** Define how soon the washing machine should start:
               - type: entities
+                name: washing machine should start in...
                 entities:
                   - input_datetime.input_timer_washing_machine_power_on_in
               - type: markdown
