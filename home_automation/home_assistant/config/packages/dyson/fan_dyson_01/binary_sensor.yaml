@@ -3,6 +3,7 @@
     sensors:
       'dyson_01_temperature_falling':
         entity_id: sensor.dyson_01_temperature
+        attribute: current_temperature
         sample_duration: 7200
         max_samples: 400
         invert: true
@@ -11,6 +12,7 @@
 
       'dyson_01_temperature_rising':
         entity_id: sensor.dyson_01_temperature
+        attribute: current_temperature
         sample_duration: 7200
         max_samples: 400
         # min_gradient: 0.0008

@@ -2,10 +2,9 @@ action: fire-dom-event
 browser_mod:
   service: browser_mod.popup
   style:
-    border-radius: 20px
+    border-radius: 0px
     '--ha-card-border-radius': 0px
   data:
-    size: 'wide'
     content:
       type: vertical-stack
       title: Washing Machine
