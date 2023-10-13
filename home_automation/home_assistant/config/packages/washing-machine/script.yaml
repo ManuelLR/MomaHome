@@ -11,7 +11,7 @@ schedule_washing_machine:
     - service: timer.start
       entity_id: timer.washing_machine_power_on_in
       data:
-        duration: "{{states('input_datetime.input_timer_washing_machine_power_on_in)'}}"
+        duration: "{{ states('input_datetime.input_timer_washing_machine_power_on_in') }}"
       ### TODO: Manually change the state of the washing machine to a new one, scheduled
     - delay:
         seconds: 5

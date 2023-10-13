@@ -46,9 +46,9 @@ browser_mod:
 
                   **2.** Define how soon the washing machine should start:
               - type: entities
-                name: washing machine should start in...
                 entities:
-                  - input_datetime.input_timer_washing_machine_power_on_in
+                  - entity: input_datetime.input_timer_washing_machine_power_on_in
+                    name: washing machine should start in...
               - type: markdown
                 content: >
                   **3.** In the washing machine, start the program as usual.
