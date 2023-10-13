@@ -1,10 +1,11 @@
 action: fire-dom-event
 browser_mod:
   service: browser_mod.popup
-  # style:
-  #   border-radius: 20px
-  #   '--ha-card-border-radius': 0px
+  style:
+    border-radius: 20px
+    '--ha-card-border-radius': 0px
   data:
+    size: 'wide'
     content:
       type: vertical-stack
       title: Washing Machine
@@ -29,8 +30,9 @@ browser_mod:
                 icon: mdi:skip-forward
                 tap_action:
                   action: call-service
-                  confirmation:
-                    text: Are you sure you want to skip the schedule and start now the washing machine?
+                  ## It doesn't work with browser_mod.popup
+                  # confirmation:
+                  #   text: Are you sure you want to skip the schedule and start now the washing machine?
                   service: automation.trigger
                   data:
                     entity_id: automation.aut_washing_machine_should_power_on

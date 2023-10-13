@@ -16,7 +16,7 @@
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
-          option: Off
+          option: 'Off'
       - service: switch.turn_on
         target:
           entity_id:
