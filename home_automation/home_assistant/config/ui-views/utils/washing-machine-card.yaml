@@ -1,0 +1,71 @@
+action: fire-dom-event
+browser_mod:
+  service: browser_mod.popup
+  style:
+    border-radius: 0px
+    '--ha-card-border-radius': 0px
+  data:
+    content:
+      type: vertical-stack
+      title: Washing Machine
+      cards:
+        - type: entities
+          entities:
+            - sensor.washing_machine_status
+            # If a timer is enabled, we are going to show it
+            - type: conditional
+              conditions:
+                - entity: timer.washing_machine_power_on_in
+                  state_not: "idle"
+              row:
+                entity: timer.washing_machine_power_on_in
+            - type: conditional
+              conditions:
+                - entity: timer.washing_machine_power_on_in
+                  state_not: "idle"
+              row:
+                type: button
+                name: Skip the schedule and start now
+                icon: mdi:skip-forward
+                tap_action:
+                  action: call-service
+                  ## It doesn't work with browser_mod.popup
+                  # confirmation:
+                  #   text: Are you sure you want to skip the schedule and start now the washing machine?
+                  service: automation.trigger
+                  data:
+                    entity_id: automation.aut_washing_machine_should_power_on
+                    skip_condition: true
+
+        - type: conditional
+          conditions:
+            - entity: sensor.washing_machine_status
+              state_not: Scheduled
+          card:
+            type: vertical-stack
+            title: Schedule washing machine
+            cards:
+              - type: markdown
+                content: >
+                  If you would like to schedule the washing machine follow the next steps:
+
+                  **1.** Add all things and close the door.
+
+                  **2.** Define how soon the washing machine should start:
+              - type: entities
+                entities:
+                  - entity: input_datetime.input_timer_washing_machine_power_on_in
+                    name: washing machine should start in...
+              - type: markdown
+                content: >
+                  **3.** In the washing machine, start the program as usual.
+
+                  **4.** Exec the next script:
+              - type: entities
+                entities:
+                  - script.schedule_washing_machine
+              - type: markdown
+                content: >
+                  **5.** Wait till washing machine is powered off and this page is updated
+
+

@@ -1,0 +1,5 @@
+# input_datetime:
+  input_timer_washing_machine_power_on_in:
+      # name: Input time when should start the washing machine
+      has_date: false
+      has_time: true

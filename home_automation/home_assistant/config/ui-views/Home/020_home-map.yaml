@@ -61,8 +61,7 @@ elements:
       left: 25%
       "--paper-item-icon-color": blue
   - type: state-icon
-    tap_action:
-      action: more-info
+    tap_action: !include ../utils/washing-machine-card.yaml
     entity: sensor.washing_machine_status
     style:
       top: 50%

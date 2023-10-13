@@ -9,10 +9,18 @@
         event_data:
           entity_id: timer.washing_machine_power_on_in
     action:
-        - service: switch.turn_on
-          target:
-            entity_id:
-              - switch.man_002
+      - service: timer.cancel
+        target:
+          entity_id: timer.washing_machine_power_on_in
+        # If the washing machine was properly ready, is going to auto turn-on in next seconds
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.washing_machine_status
+          option: 'Off'
+      - service: switch.turn_on
+        target:
+          entity_id:
+            - switch.man_002
 
 
 
@@ -44,6 +52,7 @@
             - 'Off'
             - 'Finishing'
             - 'Clean'
+            - 'Scheduled'
     action:
       - service: input_select.select_option
         data:

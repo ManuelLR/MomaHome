@@ -1,39 +1,40 @@
 # camera:
+  # NOT USED ANYMORE. Now I use valetudo :)
   # https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
-  - name: Xiaomi Vacuum map
-    platform: xiaomi_cloud_map_extractor
-    host: 192.168.200.50
-    token: !secret xiaomi_vacuum_token_0
-    username: !secret xiaomi_cloud_username
-    password: !secret xiaomi_cloud_password
-    scan_interval:
-      seconds: 10
-    map_transformation:  &vacuum_map_transformation
-      scale: 2
-      trim:
-        top: 23
-        bottom: 25
-        left: 23
-        right: 24
-    colors: &vacuum_map_colors
-      color_map_outside: [0, 0, 0, 0]
-      color_map_wall: [36, 36, 68]
-      color_map_wall_v2: [36, 36, 68]
-      color_map_inside: [174, 183, 200]
-      color_path: [165, 255, 255]
-    draw: ['all']
-    attributes:
-      - calibration_points
-  - name: Home map
-    platform: xiaomi_cloud_map_extractor
-    host: 192.168.200.50
-    token: !secret xiaomi_vacuum_token_0
-    username: !secret xiaomi_cloud_username
-    password: !secret xiaomi_cloud_password
-    scan_interval:
-      minutes: 10
-    map_transformation: *vacuum_map_transformation
-    colors: *vacuum_map_colors
-    draw: ['virtual_walls']
-    attributes:
-      - calibration_points
+  # - name: Xiaomi Vacuum map
+  #   platform: xiaomi_cloud_map_extractor
+  #   host: 192.168.200.50
+  #   token: !secret xiaomi_vacuum_token_0
+  #   username: !secret xiaomi_cloud_username
+  #   password: !secret xiaomi_cloud_password
+  #   scan_interval:
+  #     seconds: 10
+  #   map_transformation:  &vacuum_map_transformation
+  #     scale: 2
+  #     trim:
+  #       top: 23
+  #       bottom: 25
+  #       left: 23
+  #       right: 24
+  #   colors: &vacuum_map_colors
+  #     color_map_outside: [0, 0, 0, 0]
+  #     color_map_wall: [36, 36, 68]
+  #     color_map_wall_v2: [36, 36, 68]
+  #     color_map_inside: [174, 183, 200]
+  #     color_path: [165, 255, 255]
+  #   draw: ['all']
+  #   attributes:
+  #     - calibration_points
+  # - name: Home map
+  #   platform: xiaomi_cloud_map_extractor
+  #   host: 192.168.200.50
+  #   token: !secret xiaomi_vacuum_token_0
+  #   username: !secret xiaomi_cloud_username
+  #   password: !secret xiaomi_cloud_password
+  #   scan_interval:
+  #     minutes: 10
+  #   map_transformation: *vacuum_map_transformation
+  #   colors: *vacuum_map_colors
+  #   draw: ['virtual_walls']
+  #   attributes:
+  #     - calibration_points
