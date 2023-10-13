@@ -176,7 +176,7 @@
             disable_notification: True
           message: |
             *Clean finished !*
-            `{{states("sensor.xiaomi_vacuum_last_clean_area")}}` square meters have been cleaned
+            `{{(states('sensor.valetudo_roborocks5_current_statistics_area')|int // 10000)}}` square meters have been cleaned
 
   - alias: AUT-Notify Vacuum maintenance
     mode: restart
