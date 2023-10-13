@@ -1,0 +1,35 @@
+
+schedule_washing_machine:
+  alias: "Schedule washing machine"
+  sequence:
+    # Wait until washing machine is ready
+    - alias: "Wait until Washing machine is washing"
+      wait_template: "{{ is_state('input_select.washing_machine_status', 'Washing') }}"
+      timeout: "00:04:00"
+    - if:
+        - "{{ not wait.completed }}"
+      then:
+        - service: script.notify_in_home_or_all
+          data:
+            title: "Washing machine couldn't be scheduled"
+            message: >
+              Please, check if you power on and start the program before try to reschedule the start moment.
+      else:
+        # Washing machine is running so we need to power of and reschedule the start time
+        - service: switch.turn_off
+          target:
+            entity_id:
+              - switch.man_002
+        ## Put the timer and notify of the scheduler
+        - service: timer.start
+          entity_id: timer.washing_machine_power_on_in
+          data:
+            duration: "00:05:00"
+          ### TODO: Manually change the state of the washing machine to a new one, scheduled
+        - delay:
+            seconds: 5
+        - service: script.notify_in_home_or_all
+          data:
+            title: 'Washing machine correctly scheduled'
+            message: >
+              All is in place. Your washing machine was power off waiting till {{ state_attr('timer.washing_machine_power_on_in','finishes_at') }}
