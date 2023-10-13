@@ -38,6 +38,13 @@ entities:
     tap_action: !include ../utils/tv-card.yaml
   - entity: media_player.mini
     name: Mini (cocina)
+  # We should use the ID of the new integration but it contains serial id
+  - entity: sensor.lavavajillas_operation_state
+    name: Lavavajillas
+    icon: mdi:dishwasher
+    state_filter:
+      - operator: '!='
+        value: 'READY'
   # - plant.flora_001
   - entity: switch.adguard_protection
     name: AdGuard - Bloqueo de anuncios
