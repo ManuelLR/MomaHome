@@ -36,7 +36,15 @@ browser_mod:
                   data:
                     entity_id: automation.aut_washing_machine_should_power_on
                     skip_condition: true
-
+            # Show the button to mark the washing machine as empty
+            - type: conditional
+              conditions:
+                - entity: sensor.washing_machine_status
+                  state_not: "Off"
+              row:
+                entity: automation.aut_washing_machine_force_off
+                name: Change the status to power off
+                icon: mdi:washing-machine-off
         - type: conditional
           conditions:
             - entity: sensor.washing_machine_status
