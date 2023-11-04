@@ -18,6 +18,7 @@ entities:
     tap_action: !include ../utils/washing-machine-card.yaml
   - light.midesklamp1s_01
   - vacuum.valetudo_roborocks5
+  - group.nighstand_bedroom_lights
   - entity: input_number.vacuum_xiaomi_dust_clean_left
     name: "[Vacuum] Bin dust left"
     type: button
