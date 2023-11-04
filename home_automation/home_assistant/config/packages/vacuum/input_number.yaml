@@ -9,7 +9,7 @@
   vacuum_xiaomi_dust_clean_left:
     min: 0
     # max: 140
-    max: 250
+    max: 200
     unit_of_measurement: square meter
     icon: mdi:basket-fill
     mode: slider
