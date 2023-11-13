@@ -73,7 +73,7 @@ services:
     vacuum_map:
         # Valetudo PNG (to transforma vacuum map to PNG)
         # https://github.com/erkexzcx/valetudopng
-        image: ghcr.io/erkexzcx/valetudopng:v1.0.13
+        image: ghcr.io/erkexzcx/valetudopng:v1.0.15
         restart: unless-stopped
         volumes:
             - ./vacuum_map/config_01.yml:/config.yml:ro
