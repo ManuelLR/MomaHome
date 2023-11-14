@@ -5,7 +5,7 @@ services:
   ##   - Check if the module loaded: lsmod | grep wireguard
   ##   - Load the module on startup (require reboot): echo "wireguard" > /etc/modules-load.d/wireguard.conf
   wireguard:
-    image: linuxserver/wireguard:latest  # <-- change me
+    image: lscr.io/linuxserver/wireguard:latest  # <-- change me
     container_name: wireguard
     cap_add:
       - NET_ADMIN
