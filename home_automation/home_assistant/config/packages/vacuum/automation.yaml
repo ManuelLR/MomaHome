@@ -143,9 +143,10 @@
         entity_id: vacuum.valetudo_roborocks5
         to: returning
     action:
+      - delay: '00:00:10'
         # If we have the same total historic time than before obviously we are trying to update the same values
       - condition: template
-        value_template: "{{ states('input_number.vacuum_xiaomi_historic_cleaning_time') != states('sensor.valetudo_roborocks5_total_statistics_time') }}"
+        value_template: "{{ (states('input_number.vacuum_xiaomi_historic_cleaning_time')|int) != (states('sensor.valetudo_roborocks5_total_statistics_time')|int) }}"
       - service: input_number.set_value
         target:
           entity_id: input_number.vacuum_xiaomi_historic_cleaning_time
@@ -158,8 +159,8 @@
             {{ [(states('input_number.vacuum_xiaomi_dust_clean_left')|int) - (states('sensor.valetudo_roborocks5_current_statistics_area')|int // 10000), 0] | max }}
     # We considered a full cleaning if we clean more than 34 m2
       - condition: numeric_state
-        entity_id: sensor.xiaomi_vacuum_last_clean_area
-        above: 34
+        entity_id: sensor.valetudo_roborocks5_current_statistics_area
+        above: 340000
       - service: input_datetime.set_datetime
         target:
           entity_id: input_datetime.vacuum_last_full_clean
@@ -175,7 +176,7 @@
             disable_notification: True
           message: |
             *Clean finished !*
-            `{{states("sensor.xiaomi_vacuum_last_clean_area")}}` square meters have been cleaned
+            `{{(states('sensor.valetudo_roborocks5_current_statistics_area')|int // 10000)}}` square meters have been cleaned
 
   - alias: AUT-Notify Vacuum maintenance
     mode: restart

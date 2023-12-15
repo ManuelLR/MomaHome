@@ -152,8 +152,9 @@ telegram_bot: !include_dir_merge_list __auto_generated-config/telegram_bot/
 
 timer: !include_dir_merge_named __auto_generated-config/timer/
 
-
 input_datetime: !include_dir_merge_named __auto_generated-config/input_datetime/
+
+home_connect_alt: !include_dir_merge_named __auto_generated-config/home_connect_alt/
 
 # vacuum: !include_dir_merge_list __auto_generated-config/vacuum/
 

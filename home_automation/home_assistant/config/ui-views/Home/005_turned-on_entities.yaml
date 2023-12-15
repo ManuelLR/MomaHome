@@ -14,9 +14,11 @@ entities:
   #   s/n: xxxx...xx 3401
   #   name: Luz salón
   - device_tracker.print_canon_mx920
-  - sensor.washing_machine_status
+  - entity: sensor.washing_machine_status
+    tap_action: !include ../utils/washing-machine-card.yaml
   - light.midesklamp1s_01
   - vacuum.valetudo_roborocks5
+  - group.nighstand_bedroom_lights
   - entity: input_number.vacuum_xiaomi_dust_clean_left
     name: "[Vacuum] Bin dust left"
     type: button
@@ -38,6 +40,13 @@ entities:
     tap_action: !include ../utils/tv-card.yaml
   - entity: media_player.mini
     name: Mini (cocina)
+  # We should use the ID of the new integration but it contains serial id
+  - entity: sensor.lavavajillas_operation_state
+    name: Lavavajillas
+    icon: mdi:dishwasher
+    state_filter:
+      - operator: '!='
+        value: 'Ready'
   # - plant.flora_001
   - entity: switch.adguard_protection
     name: AdGuard - Bloqueo de anuncios

@@ -1,6 +1,32 @@
 # automation:
+
+
+  - alias: AUT-Washing machine should power on
+    initial_state: 'on'
+    trigger:
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.washing_machine_power_on_in
+    action:
+      - service: timer.cancel
+        target:
+          entity_id: timer.washing_machine_power_on_in
+        # If the washing machine was properly ready, is going to auto turn-on in next seconds
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.washing_machine_status
+          option: 'Off'
+      - service: switch.turn_on
+        target:
+          entity_id:
+            - switch.man_002
+
+
+
   ############################################
   #
+  # Logic to know washing machine status checking the power consumption
   # If you would like to check a better example, check the automation.yaml.old
   #
   ############################################
@@ -26,6 +52,7 @@
             - 'Off'
             - 'Finishing'
             - 'Clean'
+            - 'Scheduled'
     action:
       - service: input_select.select_option
         data:

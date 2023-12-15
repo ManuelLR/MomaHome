@@ -4,8 +4,8 @@
     options:
       # It's turned off
       - 'Off'
-      # # Waiting the timer to start washing.
-      # - Scheduled
+      # Waiting the timer to start washing.
+      - Scheduled
       # Well, that's it, cleaning up
       - Washing
       # # ?¿

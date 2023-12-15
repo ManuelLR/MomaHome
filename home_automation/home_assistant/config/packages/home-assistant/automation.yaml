@@ -10,7 +10,7 @@
       service: notify.manolo
       data:
         title: "*New Home Assistant Release*"
-        message: "[Home Assistant {{ states('sensor.docker_hub') }}](https://github.com/home-assistant/core/releases/tag/{{ state_attr('binary_sensor.updater', 'newest_version') }}) is now available"
+        message: "[Home Assistant {{ states('sensor.docker_hub') }}](https://github.com/home-assistant/core/releases/tag/{{ states('sensor.docker_hub') }}) is now available"
 
   - alias: "AUT-Backup Home Assistant"
     trigger:

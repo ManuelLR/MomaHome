@@ -13,7 +13,8 @@
           hours_to_show: 24
           entity: sensor.ble_temperature_flora_001
         - <<: *environment-24h-card
-          entity: sensor.dyson_01_temperature
+          entity: climate.dyson_01
+          attribute: current_temperature
         - <<: *environment-24h-card
           entity: sensor.xiaomi_001_c12a_temperature
         - <<: *environment-24h-card
@@ -54,7 +55,8 @@
           hours_to_show: 168
           entity: sensor.ble_temperature_flora_001
         - <<: *environment-7d-card
-          entity: sensor.dyson_01_temperature
+          entity: climate.dyson_01
+          attribute: current_temperature
         - <<: *environment-7d-card
           entity: sensor.xiaomi_001_c12a_temperature
         - <<: *environment-7d-card

@@ -1,0 +1,11 @@
+# device_tracker:
+  - platform: bluetooth_le_tracker
+    interval_seconds: 540
+    # We need to avoid track every new device, too much noise
+    track_new_devices: false
+    # Only request battery info each 72h
+    track_battery: true
+    track_battery_interval: '72:00'
+    # To avoid back and force, we consider as not_home after 9 minutes undetected
+    consider_home: 0:09:00
+

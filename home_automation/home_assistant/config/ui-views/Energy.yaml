@@ -1,0 +1,269 @@
+- type: vertical-stack
+  cards:
+    # - type: energy-date-selection
+    - type: entity
+      entity: sensor.edata_mp0f
+      attribute: last_registered_date
+      name: Most recent data
+      icon: mdi:calendar
+    - type: custom:apexcharts-card
+      graph_span: 30d
+      stacked: true
+      span:
+        offset: '-1d'
+      experimental:
+        brush: true
+      header:
+        show: true
+        title: Daily consumption
+        show_states: false
+        colorize_states: false
+      brush:
+        selection_span: 10d
+      all_series_config:
+        type: column
+        unit: kWh
+        show:
+          legend_value: false
+      series:
+        - entity: sensor.edata_mp0f
+          name: Total
+          type: column
+          data_generator: |
+            return hass.connection.sendMessagePromise({
+            type: 'edata/consumptions/daily',
+            scups: 'mp0f'}).then(
+                (resp) => {
+                    return resp.map((data, index) => {
+                      return [new Date(data['datetime']).getTime(), data['value_kWh']];
+                    });
+                }
+            );
+          show:
+            in_chart: false
+            in_brush: true
+        - entity: sensor.edata_mp0f
+          name: Punta
+          data_generator: |
+            return hass.connection.sendMessagePromise({
+            type: 'edata/consumptions/daily',
+            scups: 'mp0f'}).then(
+                (resp) => {
+                    return resp.map((data, index) => {
+                      return [new Date(data['datetime']).getTime(), data['value_p1_kWh']];
+                    });
+                }
+            );
+        - entity: sensor.edata_mp0f
+          name: Llano
+          data_generator: |
+            return hass.connection.sendMessagePromise({
+            type: 'edata/consumptions/daily',
+            scups: 'mp0f'}).then(
+                (resp) => {
+                    return resp.map((data, index) => {
+                      return [new Date(data['datetime']).getTime(), data['value_p2_kWh']];
+                    });
+                }
+            );
+        - entity: sensor.edata_mp0f
+          name: Valle
+          data_generator: |
+            return hass.connection.sendMessagePromise({
+            type: 'edata/consumptions/daily',
+            scups: 'mp0f'}).then(
+                (resp) => {
+                    return resp.map((data, index) => {
+                      return [new Date(data['datetime']).getTime(), data['value_p3_kWh']];
+                    });
+                }
+            );
+    - type: custom:apexcharts-card
+      chart_type: pie
+      header:
+        show: true
+        title: Current month
+        show_states: true
+        colorize_states: true
+        floating: true
+      all_series_config:
+        show:
+          legend_value: true
+          in_header: false
+        unit: kWh
+      apex_config:
+        chart:
+          height: 250px
+      series:
+        - entity: sensor.edata_mp0f
+          attribute: month_kWh
+          show:
+            in_chart: false
+            in_header: true
+          name: Total
+        - entity: sensor.edata_mp0f
+          attribute: month_p1_kWh
+          name: Punta
+        - entity: sensor.edata_mp0f
+          attribute: month_p2_kWh
+          name: Llano
+        - entity: sensor.edata_mp0f
+          attribute: month_p3_kWh
+          name: Valle
+        - entity: sensor.edata_mp0f
+          attribute: month_€
+          unit: €
+          show:
+            in_chart: false
+            in_header: true
+          name: Factura
+    - type: custom:apexcharts-card
+      chart_type: pie
+      header:
+        show: true
+        title: Last month
+        show_states: true
+        colorize_states: true
+        floating: true
+      all_series_config:
+        show:
+          legend_value: true
+          in_header: false
+        unit: kWh
+      apex_config:
+        chart:
+          height: 250px
+      series:
+        - entity: sensor.edata_mp0f
+          attribute: last_month_kWh
+          show:
+            in_chart: false
+            in_header: true
+          name: Total
+        - entity: sensor.edata_mp0f
+          attribute: last_month_p1_kWh
+          name: Punta
+        - entity: sensor.edata_mp0f
+          attribute: last_month_p2_kWh
+          name: Llano
+        - entity: sensor.edata_mp0f
+          attribute: last_month_p3_kWh
+          name: Valle
+        - entity: sensor.edata_mp0f
+          attribute: last_month_€
+          unit: €
+          show:
+            in_chart: false
+            in_header: true
+          name: Factura
+
+    # Hourly consumption
+    - type: vertical-stack
+      title: Hourly consumption + Others
+      cards:
+        - type: energy-date-selection
+        - type: energy-usage-graph
+
+    - type: custom:apexcharts-card
+      graph_span: 395d
+      stacked: true
+      yaxis:
+        - id: eje
+          opposite: false
+          max: '|+20|'
+          min: ~0
+          apex_config:
+            forceNiceScale: true
+      header:
+        show: true
+        title: Monthly consumption
+        show_states: false
+        colorize_states: false
+      all_series_config:
+        type: column
+        unit: kWh
+        yaxis_id: eje
+        extend_to: false
+        show:
+          legend_value: false
+      series:
+        - entity: sensor.edata_mp0f
+          type: line
+          name: Total
+          data_generator: |
+            return hass.connection.sendMessagePromise({
+            type: 'edata/consumptions/monthly',
+            scups: 'mp0f'}).then(
+                (resp) => {
+                    return resp.map((data, index) => {
+                      return [new Date(data['datetime']).getTime(), data['value_kWh']];
+                    });
+                }
+            );
+          show:
+            in_chart: true
+        - entity: sensor.edata_mp0f
+          name: Punta
+          data_generator: |
+            return hass.connection.sendMessagePromise({
+            type: 'edata/consumptions/monthly',
+            scups: 'mp0f'}).then(
+                (resp) => {
+                    return resp.map((data, index) => {
+                      return [new Date(data['datetime']).getTime(), data['value_p1_kWh']];
+                    });
+                }
+            );
+        - entity: sensor.edata_mp0f
+          name: Llano
+          data_generator: |
+            return hass.connection.sendMessagePromise({
+            type: 'edata/consumptions/monthly',
+            scups: 'mp0f'}).then(
+                (resp) => {
+                    return resp.map((data, index) => {
+                      return [new Date(data['datetime']).getTime(), data['value_p2_kWh']];
+                    });
+                }
+            );
+        - entity: sensor.edata_mp0f
+          name: Valle
+          data_generator: |
+            return hass.connection.sendMessagePromise({
+            type: 'edata/consumptions/monthly',
+            scups: 'mp0f'}).then(
+                (resp) => {
+                    return resp.map((data, index) => {
+                      return [new Date(data['datetime']).getTime(), data['value_p3_kWh']];
+                    });
+                }
+            );
+    - type: custom:apexcharts-card
+      graph_span: 1y
+      span:
+        offset: '-30d'
+      header:
+        show: true
+        title: Max power consumption
+        show_states: false
+        colorize_states: false
+      chart_type: scatter
+      series:
+        - entity: sensor.edata_mp0f
+          name: Potencia máxima
+          type: column
+          extend_to: false
+          unit: kW
+          show:
+            extremas: true
+            datalabels: false
+          data_generator: |
+            return hass.connection.sendMessagePromise({
+            type: 'edata/maximeter',
+            scups: 'mp0f'}).then(
+                (resp) => {
+                    return resp.map((data, index) => {
+                      return [new Date(data['datetime']).getTime(), data['value_kW']];
+                    });
+                }
+            );

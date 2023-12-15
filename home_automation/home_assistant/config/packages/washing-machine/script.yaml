@@ -1,0 +1,25 @@
+
+schedule_washing_machine:
+  alias: "Schedule washing machine"
+  sequence:
+    # Washing machine is running so we need to power of and reschedule the start time
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.man_002
+    ## Put the timer and notify of the scheduler
+    - service: timer.start
+      entity_id: timer.washing_machine_power_on_in
+      data:
+        duration: "{{ states('input_datetime.input_timer_washing_machine_power_on_in') }}"
+    - delay:
+        seconds: 10
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.washing_machine_status
+        option: Scheduled
+    - service: script.notify_in_home_or_all
+      data:
+        title: 'Washing machine correctly scheduled'
+        message: >
+          All is in place. Your washing machine was power off waiting till {{ as_local(state_attr('timer.washing_machine_power_on_in','finishes_at')) }}

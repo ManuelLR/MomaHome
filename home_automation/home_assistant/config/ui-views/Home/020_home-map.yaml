@@ -9,8 +9,8 @@ elements:
       action: toggle
     entity: light.living_room_light
     style:
-      top: 35%
-      left: 18%
+      top: 85%
+      left: 88%
       "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
@@ -18,16 +18,16 @@ elements:
     entity: group.man_003
     # entity: group.vacuum_room
     style:
-      top: 12%
-      left: 94%
+      top: 53%
+      left: 80%
       "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
       action: toggle
     entity: switch.man_004
     style:
-      top: 15%
-      left: 70%
+      top: 85%
+      left: 80%
       "--paper-item-icon-color": blue
   - type: state-icon
     tap_action: !include ../utils/tv-card.yaml
@@ -41,31 +41,30 @@ elements:
     # state_filter:
     #   "off": --paper-item-icon-color=pink
     style:
-      top: 60%
-      left: 23%
+      top: 5%
+      left: 25%
       "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info
     entity: vacuum.valetudo_roborocks5
     style:
-      top: 33%
-      left: 44%
+      top: 4%
+      left: 18%
       "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info
     entity: light.midesklamp1s_01
     style:
-      top: 58%
-      left: 53%
+      top: 40%
+      left: 25%
       "--paper-item-icon-color": blue
   - type: state-icon
-    tap_action:
-      action: more-info
+    tap_action: !include ../utils/washing-machine-card.yaml
     entity: sensor.washing_machine_status
     style:
-      top: 42%
+      top: 50%
       left: 93%
       "--paper-item-icon-color": blue
   - type: conditional
@@ -112,5 +111,5 @@ elements:
       action: navigate
       navigation_path: /lovelace/0
     style:
-      top: 10%
-      left: 10%
+      top: 5%
+      left: 5%

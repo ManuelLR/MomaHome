@@ -8,6 +8,10 @@
 - title: Climate
   icon: mdi:thermostat
   cards: !include Climate.yaml
+- title: Energy
+  icon: mdi:home-lightning-bolt-outline
+  cards: !include Energy.yaml
+
 - title: Net
   # icon: mdi:router-network
   icon: mdi:access-point-network
