@@ -13,7 +13,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=2.3.0 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
-    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.10.2 \
+    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.11.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.1 \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
