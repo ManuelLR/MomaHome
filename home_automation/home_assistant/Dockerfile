@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2023.10.5
+FROM ghcr.io/home-assistant/home-assistant:2023.12.4
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -13,7 +13,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=2.3.0 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
-    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.10.2 \
+    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.11.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.1 \
       # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
@@ -23,13 +23,13 @@ ENV \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
     CUSTOM_COMPONENT_EDATA_VERSION=2023.06.3 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
-    CUSTOM_COMPONENT_HOME_CONNECT=0.6.8 \
+    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=0.7.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.2 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
     CUSTOM_CARD_VALETUDO_VACUUM_MAP_VERSION=v2023.04.0 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
-    CUSTOM_CARD_UPTIME_VERSION=v0.14.0 \
+    CUSTOM_CARD_UPTIME_VERSION=v0.15.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.11.0 \
       # renovatebot: datasource=github-releases depName=RomRider/apexcharts-card
@@ -86,7 +86,7 @@ RUN \
     && cd - && cp -r /tmp/homeassistant-edata/custom_components/* /opt/HA/config/custom_components/ \
     # HomeConnect (Bosh/Balay/Siemens)
     && git clone https://github.com/ekutner/home-connect-hass /tmp/home-connect-hass \
-    && cd /tmp/home-connect-hass && git checkout $CUSTOM_COMPONENT_HOME_CONNECT \
+    && cd /tmp/home-connect-hass && git checkout $CUSTOM_COMPONENT_HOME_CONNECT_VERSION \
     && cd - && cp -r /tmp/home-connect-hass/custom_components/* /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
