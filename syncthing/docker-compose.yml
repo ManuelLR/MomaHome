@@ -3,7 +3,7 @@ services:
     syncthing:
         container_name: syncthing
         hostname: woody-docker_syncthing
-        image: syncthing/syncthing:1.27.2
+        image: syncthing/syncthing:1.27.3
         ports:
             - 0.0.0.0:8384:8384
             - 0.0.0.0:22000:22000
