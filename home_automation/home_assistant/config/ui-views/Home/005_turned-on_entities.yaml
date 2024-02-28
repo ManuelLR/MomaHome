@@ -17,6 +17,7 @@ entities:
   - entity: sensor.washing_machine_status
     tap_action: !include ../utils/washing-machine-card.yaml
   - light.midesklamp1s_01
+  - light.flexo_light_01_light
   - vacuum.valetudo_roborocks5
   - group.nighstand_bedroom_lights
   - entity: input_number.vacuum_xiaomi_dust_clean_left
