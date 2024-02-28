@@ -22,7 +22,7 @@
     mode: queued
     trigger:
       - platform: template
-        value_template: "{{ states('binary_sensor.environment_001_temperature_falling') and (states('sensor.ble_temperature_environment_001') < states('sensor.dyson_01_temperature')) }}"
+        value_template: "{{ states('binary_sensor.environment_001_temperature_falling') and (states('sensor.ble_environment_001_temperature') < states('sensor.dyson_01_temperature')) }}"
         for: "00:10:00"
     # condition:
     #   - platform: template
