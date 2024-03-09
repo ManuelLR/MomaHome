@@ -1,5 +1,0 @@
-# group:
-  nighstand_bedroom_lights:
-      entities:
-        - light.manolo_nightstand_light
-        - light.monica_nightstand_light

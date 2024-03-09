@@ -12,9 +12,7 @@
         subtype: turn_on
     action:
       - service: scene.turn_on
-        entity_id: scene.night
-      - service: notify.manolo
+        entity_id: scene.ReadOnBedroom
         data:
-          title: "*Example*"
-          message: "We properly detect the button!"
+          transition: 2.5
 

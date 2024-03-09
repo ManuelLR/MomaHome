@@ -1,0 +1,8 @@
+# scene:
+  - name: ReadOnBedroom
+    entities:
+      light.nighstand_bedroom_lights:
+        brightness_pct: 50
+        kelvin: 4200
+
+
