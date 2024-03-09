@@ -2,7 +2,6 @@
   - platform: group
     unique_id: nighstand_bedroom_lights
     name: "Nighstand bedroom lights"
-    view: yes
     entities:
       - light.manolo_nightstand_light
       - light.monica_nightstand_light
