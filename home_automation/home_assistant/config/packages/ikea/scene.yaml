@@ -4,6 +4,13 @@
       light.nighstand_bedroom_lights:
         state: "on"
         brightness_pct: 50
-        kelvin: 4200
+        kelvin: 3500
+
+  - name: BeforeSleepOnBedroom
+    entities:
+      light.nighstand_bedroom_lights:
+        state: "on"
+        brightness_pct: 5
+        kelvin: 2202
 
 
