@@ -1,5 +1,22 @@
 # automation:
-  - alias: AUT-Test_Ikea_button
+  - alias: AUT-LightForReadOnBed
+    initial_state: 'on'
+    trace:
+      stored_traces: 5
+    mode: 'queued'
+    trigger:
+      - platform: device
+        domain: zha
+        device_id: d738497a8cef8b04d4c8f51710a9074d
+        type: remote_button_double_press
+        subtype: turn_on
+    action:
+      - service: scene.turn_on
+        entity_id: scene.ReadOnBedroom
+        # data:
+        #   # If enabled, brightness didn't change
+        #   transition: 2.5
+  - alias: AUT-LightForSleep
     initial_state: 'on'
     trace:
       stored_traces: 5
@@ -12,7 +29,24 @@
         subtype: turn_on
     action:
       - service: scene.turn_on
-        entity_id: scene.ReadOnBedroom
-        data:
-          transition: 2.5
-
+        entity_id: scene.BeforeSleepOnBedroom
+        # data:
+        #   # If enabled, brightness didn't change
+        #   transition: 2.5
+  - alias: AUT-MaxLightOnBedroom
+    initial_state: 'on'
+    trace:
+      stored_traces: 5
+    mode: 'queued'
+    trigger:
+      - platform: device
+        domain: zha
+        device_id: d738497a8cef8b04d4c8f51710a9074d
+        type: remote_button_long_press
+        subtype: dim_up
+    action:
+      - service: scene.turn_on
+        entity_id: scene.MaxIlluminationOnBedroom
+        # data:
+        #   # If enabled, brightness didn't change
+        #   transition: 2.5
