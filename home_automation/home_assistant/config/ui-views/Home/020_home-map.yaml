@@ -7,10 +7,10 @@ elements:
   - type: state-icon
     tap_action:
       action: toggle
-    entity: light.living_room_light
+    entity: switch.man_001
     style:
-      top: 85%
-      left: 88%
+      top: 70%
+      left: 65%
       "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:

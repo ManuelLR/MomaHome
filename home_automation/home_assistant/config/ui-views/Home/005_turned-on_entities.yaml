@@ -9,7 +9,7 @@ entities:
   - entity: switch.man_004
     name: Luz entrada
   - entity: switch.man_001
-    name: Enchufe luz salón
+    name: Enchufe mesa Manolo
   # - entity: switch.02007254dc4f22ff4f45
   #   s/n: xxxx...xx 3401
   #   name: Luz salón

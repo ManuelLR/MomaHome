@@ -1,8 +1,9 @@
 # google_assistant:
   # entity_config:
-    light.living_room_light:
-      room: Living Room
+    switch.man_001:
+      room: Manolo office
       expose: True
       aliases:
-        - Luz
-        - Luz salón
+        - Oficina
+        - Oficina de Manolo
+        - Enchufe mesa Manolo
