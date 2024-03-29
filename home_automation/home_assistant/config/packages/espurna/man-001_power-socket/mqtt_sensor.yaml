@@ -11,7 +11,7 @@
       unit_of_measurement: "V"
       device:
         identifiers: man-001
-        name: Living room light socket
+        name: Manolo desk power socket
     - name: "man-001 Current A"
       qos: "1"
       state_topic: "man-001/espurna/current"
@@ -19,7 +19,7 @@
       unit_of_measurement: "A"
       device:
         identifiers: man-001
-        name: Living room light socket
+        name: Manolo desk power socket
     - name: "man-001 Energy"
       qos: "1"
       state_topic: "man-001/espurna/energy"
@@ -27,7 +27,7 @@
       unit_of_measurement: "kWh"
       device:
         identifiers: man-001
-        name: Living room light socket
+        name: Manolo desk power socket
     - name: "man-001 Power"
       qos: "1"
       state_topic: "man-001/espurna/power"
@@ -35,7 +35,7 @@
       unit_of_measurement: "W"
       device:
         identifiers: man-001
-        name: Living room light socket
+        name: Manolo desk power socket
     - name: "man-001 Power factor"
       qos: "1"
       state_topic: "man-001/espurna/factor"
@@ -43,4 +43,4 @@
       unit_of_measurement: "%"
       device:
         identifiers: man-001
-        name: Living room light socket
+        name: Manolo desk power socket
