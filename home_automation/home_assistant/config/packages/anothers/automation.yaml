@@ -1,57 +1,57 @@
 # automation:
-  - alias: AUT-Sunset
-    initial_state: 'on'
-    trigger:
-      - platform: state
-        to: 'Just Arrived'
-        entity_id:
-          - sensor.home_occupancy_status
-      - platform: sun
-        event: sunset
-        offset: '-00:30:00'
-    condition:
-      - condition: sun
-        after: sunset
-        after_offset: '-00:30:00'
-      - condition: time
-        after: '13:00:00'
-        before: '03:00:00'
-      - condition: state
-        state:
-          - 'Just Arrived'
-          - 'Home'
-        entity_id:
-          - sensor.home_occupancy_status
-    action:
-      - service: scene.turn_on
-        entity_id: scene.night
-      - service: script.notify_in_home_or_all
-        data:
-          title: 'Auto turned on light'
-          message: 'Light turned on by automation `AUT-Sunset`'
-          data:
-            inline_keyboard:
-              - 'Turn off:/turn_off_scene_night'
+  # - alias: AUT-Sunset
+  #   initial_state: 'on'
+  #   trigger:
+  #     - platform: state
+  #       to: 'Just Arrived'
+  #       entity_id:
+  #         - sensor.home_occupancy_status
+  #     - platform: sun
+  #       event: sunset
+  #       offset: '-00:30:00'
+  #   condition:
+  #     - condition: sun
+  #       after: sunset
+  #       after_offset: '-00:30:00'
+  #     - condition: time
+  #       after: '13:00:00'
+  #       before: '03:00:00'
+  #     - condition: state
+  #       state:
+  #         - 'Just Arrived'
+  #         - 'Home'
+  #       entity_id:
+  #         - sensor.home_occupancy_status
+  #   action:
+  #     - service: scene.turn_on
+  #       entity_id: scene.night
+  #     - service: script.notify_in_home_or_all
+  #       data:
+  #         title: 'Auto turned on light'
+  #         message: 'Light turned on by automation `AUT-Sunset`'
+  #         data:
+  #           inline_keyboard:
+  #             - 'Turn off:/turn_off_scene_night'
 
-  - alias: AUT-Turn off scene night
-    mode: restart
-    initial_state: 'on'
-    trigger:
-      - platform: event
-        event_type: telegram_command
-        event_data: &telegram_turn_off_scene_light
-          command: "/turn_off_scene_night"
-      - platform: event
-        event_type: telegram_callback
-        event_data: *telegram_turn_off_scene_light
-    action:
-      - service: switch.turn_off
-        entity_id:
-          - switch.man_001
-      # Answer to the telegram callback if needed
-      - condition: template
-        value_template: "{{  trigger.event.event_type == 'telegram_callback' }}"
-      - service: telegram_bot.answer_callback_query
-        data:
-          callback_query_id: "{{ trigger.event.data.id }}"
-          message: "Done!"
+  # - alias: AUT-Turn off scene night
+  #   mode: restart
+  #   initial_state: 'on'
+  #   trigger:
+  #     - platform: event
+  #       event_type: telegram_command
+  #       event_data: &telegram_turn_off_scene_light
+  #         command: "/turn_off_scene_night"
+  #     - platform: event
+  #       event_type: telegram_callback
+  #       event_data: *telegram_turn_off_scene_light
+  #   action:
+  #     - service: switch.turn_off
+  #       entity_id:
+  #         - switch.man_001
+  #     # Answer to the telegram callback if needed
+  #     - condition: template
+  #       value_template: "{{  trigger.event.event_type == 'telegram_callback' }}"
+  #     - service: telegram_bot.answer_callback_query
+  #       data:
+  #         callback_query_id: "{{ trigger.event.data.id }}"
+  #         message: "Done!"
