@@ -25,7 +25,7 @@ services:
       - /var/log:/host/var/log:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # For systemd units monitoring
-      /run/dbus:/run/dbus:ro
+      - /run/dbus:/run/dbus:ro
     environment:
       - NETDATA_EXTRA_DEB_PACKAGES=lm-sensors,wireguard,fail2ban,traefik
 
@@ -37,4 +37,14 @@ volumes:
       type: none
       device: ./netadataconfig
   netdatalib:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./netadatalib
   netdatacache:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./netadatadata
