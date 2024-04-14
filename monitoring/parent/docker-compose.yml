@@ -3,7 +3,7 @@ services:
   netdata:
     image: netdata/netdata:v1.45.2
     container_name: netdata
-    hostname: woody_container_netdata
+    hostname: woody
     pid: host
     network_mode: host
     restart: unless-stopped
@@ -13,9 +13,9 @@ services:
     security_opt:
       - apparmor:unconfined
     volumes:
-      - netdataconfig:/etc/netdata
-      - netdatalib:/var/lib/netdata
-      - netdatacache:/var/cache/netdata
+      - ./netdataconfig:/etc/netdata
+      - ./netdatalib:/var/lib/netdata
+      - ./netdatacache:/var/cache/netdata
       - /etc/passwd:/host/etc/passwd:ro
       - /etc/group:/host/etc/group:ro
       - /etc/localtime:/etc/localtime:ro
@@ -26,25 +26,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # For systemd units monitoring
       - /run/dbus:/run/dbus:ro
-    environment:
-      - NETDATA_EXTRA_DEB_PACKAGES=lm-sensors,wireguard,fail2ban,traefik
+      # For smartd (disk health utility)
+      - /var/lib/smartmontools/:/var/lib/smartmontools/:ro
+      # Disable cloud services
+      - ./disable-cloud.conf:/var/lib/netdata/cloud.d/cloud.conf:ro
 
-volumes:
-  netdataconfig:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./netadataconfig
-  netdatalib:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./netadatalib
-  netdatacache:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./netadatadata
+    environment:
+      - NETDATA_EXTRA_DEB_PACKAGES=lm-sensors wireguard fail2ban apcupsd
