@@ -23,7 +23,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
     CUSTOM_COMPONENT_EDATA_VERSION=2023.06.3 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
-    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=0.7.0 \
+    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.1.6 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.2 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
