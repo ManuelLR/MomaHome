@@ -9,7 +9,7 @@
         domain: zha
         device_id: d207bfdca66e300274e57e4d3ff883f6
         type: remote_button_short_press
-        subtype: button_01
+        subtype: button_1
     action:
       - service: switch.turn_on
         target:
@@ -25,7 +25,7 @@
         domain: zha
         device_id: d207bfdca66e300274e57e4d3ff883f6
         type: remote_button_double_press
-        subtype: button_01
+        subtype: button_1
     action:
       - service: switch.turn_off
         target:
