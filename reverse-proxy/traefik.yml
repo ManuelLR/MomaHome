@@ -33,6 +33,12 @@ providers:
   file:
     directory: "/etc/traefik/file-dynamic-conf/"
 
+metrics:
+  prometheus:
+    # Used by monitoring components
+    addRoutersLabels: true
+    entryPoint: traefik
+
 # API and dashboard configuration
 api:
   insecure: True

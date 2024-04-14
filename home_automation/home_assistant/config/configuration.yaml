@@ -110,6 +110,14 @@ mqtt:
   sensor: !include_dir_merge_list __auto_generated-config/mqtt_sensor/
   switch: !include_dir_merge_list __auto_generated-config/mqtt_switch/
 
+
+# ZHA -> Native Zigbee in Home Assistant
+zha:
+  zigpy_config:
+    ota:
+      ikea_provider: true
+
+
 # Server
 # pi_hole: !include_dir_merge_named __auto_generated-config/pi_hole/
 duckdns: !include_dir_merge_named __auto_generated-config/duckdns/
