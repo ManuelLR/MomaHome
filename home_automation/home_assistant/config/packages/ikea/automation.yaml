@@ -7,7 +7,7 @@
     trigger:
       - platform: device
         domain: zha
-        device_id: d738497a8cef8b04d4c8f51710a9074d
+        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
         type: remote_button_double_press
         subtype: turn_on
     action:
@@ -24,7 +24,7 @@
     trigger:
       - platform: device
         domain: zha
-        device_id: d738497a8cef8b04d4c8f51710a9074d
+        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
         type: remote_button_short_press
         subtype: turn_on
     action:
@@ -41,7 +41,7 @@
     trigger:
       - platform: device
         domain: zha
-        device_id: d738497a8cef8b04d4c8f51710a9074d
+        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
         type: remote_button_long_press
         subtype: dim_up
     action:
