@@ -15,7 +15,7 @@
     "allowPlugins": true,
     "prHourlyLimit": 0,
     "globalExtends": [
-      "config:base",
+      "config:recommended",
       ":rebaseStalePrs",
       "github>whitesource/merge-confidence:beta"
     ],
@@ -27,8 +27,9 @@
         "enabled": false
       }
     ],
-    "regexManagers": [
+    "customManagers": [
       {
+        "customType": "regex",
         "fileMatch": [
           "(^|/|\\.)Dockerfile$",
           "(^|/)Dockerfile\\.[^/]*$"
@@ -39,6 +40,7 @@
         "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
       },
       {
+        "customType": "regex",
         // We should create our custom regex for traefik because they publish the container previous the stable version
         "fileMatch": [
           "reverse-proxy/docker-compose.yml"
