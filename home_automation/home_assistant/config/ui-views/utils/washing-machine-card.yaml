@@ -42,9 +42,15 @@ browser_mod:
                 - entity: sensor.washing_machine_status
                   state_not: "Off"
               row:
-                entity: automation.aut_washing_machine_force_off
+                type: button
                 name: Change the status to power off
                 icon: mdi:washing-machine-off
+                tap_action:
+                  action: call-service
+                  service: automation.trigger
+                  data:
+                    entity_id: automation.aut_washing_machine_force_off
+                    skip_condition: true
         - type: conditional
           conditions:
             - entity: sensor.washing_machine_status

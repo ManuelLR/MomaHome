@@ -1,0 +1,35 @@
+version: "2.4"
+services:
+  netdata:
+    image: netdata/netdata:v1.45.3
+    container_name: netdata
+    hostname: Woody
+    pid: host
+    network_mode: host
+    restart: unless-stopped
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - ./netdataconfig:/etc/netdata
+      - ./netdatalib:/var/lib/netdata
+      - ./netdatacache:/var/cache/netdata
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /var/log:/host/var/log:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # For systemd units monitoring
+      - /run/dbus:/run/dbus:ro
+      # For smartd (disk health utility)
+      - /var/lib/smartmontools/:/var/lib/smartmontools/:ro
+      # Disable cloud services
+      - ./disable-cloud.conf:/var/lib/netdata/cloud.d/cloud.conf:ro
+
+    environment:
+      - NETDATA_EXTRA_DEB_PACKAGES=lm-sensors wireguard fail2ban apcupsd

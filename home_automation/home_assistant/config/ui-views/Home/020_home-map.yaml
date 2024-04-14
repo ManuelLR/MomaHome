@@ -7,10 +7,10 @@ elements:
   - type: state-icon
     tap_action:
       action: toggle
-    entity: light.living_room_light
+    entity: switch.man_001
     style:
-      top: 85%
-      left: 88%
+      top: 70%
+      left: 65%
       "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
@@ -52,6 +52,21 @@ elements:
       top: 4%
       left: 18%
       "--paper-item-icon-color": blue
+  - type: conditional
+    tap_action:
+      action: none
+    conditions:
+      - entity: light.flexo_light_01_light
+        state_not: unavailable
+    elements:
+      - type: state-icon
+        tap_action:
+          action: more-info
+        entity: light.flexo_light_01_light
+        style:
+          top: 18%
+          left: 28%
+          "--paper-item-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info

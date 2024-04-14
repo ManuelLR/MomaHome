@@ -1,0 +1,29 @@
+# scene:
+  - name: ReadOnBedroom
+    entities:
+      light.nighstand_bedroom_lights:
+        state: "on"
+        # From 0 to 255
+        brightness: 180
+        # In mierds so 1000000/kelvin
+        color_temp: 285
+
+  - name: BeforeSleepOnBedroom
+    entities:
+      light.nighstand_bedroom_lights:
+        state: "on"
+        # From 0 to 255
+        brightness: 3
+        # In mierds so 1000000/kelvin
+        color_temp: 454
+
+  - name: MaxIlluminationOnBedroom
+    entities:
+      light.nighstand_bedroom_lights:
+        state: "on"
+        # From 0 to 255
+        brightness: 255
+        # In mierds so 1000000/kelvin
+        color_temp: 250
+
+

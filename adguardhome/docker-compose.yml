@@ -1,7 +1,7 @@
 version: "2.4"
 services:
     adguardhome:
-        image: adguard/adguardhome:v0.107.43
+        image: adguard/adguardhome:v0.107.48
         ports:
             - "${ServerIP}:53:53/tcp"
             - "${ServerIP}:53:53/udp"
