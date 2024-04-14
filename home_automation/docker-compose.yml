@@ -34,7 +34,7 @@ services:
             - "traefik.http.routers.home-assistant.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
     esphome:
-        image: esphome/esphome:2024.2.1
+        image: esphome/esphome:2024.3.2
         restart: unless-stopped
         ports:
             - 0.0.0.0:6052:6052
