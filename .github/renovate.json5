@@ -3,7 +3,7 @@
     "onboarding": false,
     "printConfig": true,
     "branchPrefix": "renovate_cron/",
-    "baseBranches": ["update/renovatebot"],
+    "baseBranches": ["next"],
     "platform": "github",
     "forkProcessing": "disabled",
     "repositories": [
