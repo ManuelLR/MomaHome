@@ -3,9 +3,9 @@
     "onboarding": false,
     "printConfig": true,
     "branchPrefix": "renovate_cron/",
-    "baseBranches": ["next"],
+    "baseBranches": ["update/renovatebot"],
     "platform": "github",
-    "includeForks": false,
+    "forkProcessing": "disabled",
     "repositories": [
       "ManuelLR/MomaHome"
     ],
