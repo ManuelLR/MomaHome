@@ -12,5 +12,5 @@ To check configuration syntax, you can execute the next command:
 ```bash
 hass -c home_assistant-config/ --script check_config [--info <section_to_show>]
 # or
-docker run -it -v $PWD/home_automation/home_assistant/config/:/config/:ro homeassistant/home-assistant:2022.3.7 hass -c /config/ --script check_config  [--info <section_to_show>]
+docker run -it -v $PWD/home_automation/home_assistant/config/:/config/:ro homeassistant/home-assistant:2024.3.3 hass -c /config/ --script check_config  [--info <section_to_show>]
 ```

@@ -2,7 +2,7 @@
   - name: ReadOnBedroom
     entities:
       light.nighstand_bedroom_lights:
-        state: "on"
+        # state: "on"
         # From 0 to 255
         brightness: 180
         # In mierds so 1000000/kelvin
@@ -11,7 +11,7 @@
   - name: BeforeSleepOnBedroom
     entities:
       light.nighstand_bedroom_lights:
-        state: "on"
+        # state: "on"
         # From 0 to 255
         brightness: 3
         # In mierds so 1000000/kelvin
