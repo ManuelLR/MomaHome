@@ -142,6 +142,7 @@
               #     entity_id:
               #       - light.manolo_nighstand_light
               - service: scene.apply
+                metadata: {}
                 data:
                   entities:
                     light.manolo_nighstand_light: *read_on_bedroom
