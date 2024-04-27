@@ -76,21 +76,33 @@
       dummy_template_to_be_reused_by_single_press_01: &single_press_01
         type: remote_button_short_press
         subtype: button_1
+        variables:
+          scene_alias: beforeSleep
       dummy_template_to_be_reused_by_double_press_01: &double_press_01
         type: remote_button_double_press
         subtype: button_1
+        variables:
+          scene_alias: readOnBed
       dummy_template_to_be_reused_by_long_press_01: &long_press_01
         type: remote_button_long_press
         subtype: button_1
+        variables:
+          scene_alias: maxIllumination
       dummy_template_to_be_reused_by_single_press_02: &single_press_02
         type: remote_button_short_press
         subtype: button_2
+        variables:
+          scene_alias: singleOff
       dummy_template_to_be_reused_by_double_press_02: &double_press_02
         type: remote_button_double_press
         subtype: button_2
+        variables:
+          scene_alias: allOff
       dummy_template_to_be_reused_by_long_press_02: &long_press_02
         type: remote_button_long_press
         subtype: button_2
+        variables:
+          scene_alias: allOff
       ### Scenes
       dummy_template_to_be_reused_by_read_on_bedroom: &read_on_bedroom
         state: "on"
@@ -102,48 +114,54 @@
       #   <<: *single_press_01
       - <<: *manolo_button
         <<: *single_press_01
+      - <<: *manolo_button
+        <<: *double_press_01
+      - <<: *manolo_button
+        <<: *long_press_01
     action:
-      # - service: scene.turn_on
-      #   entity_id: scene.ReadOnBedroom
-      #   # data:
-      #   #   # If enabled, brightness didn't change
-      #   #   transition: 2.5
-      # - service: scene.apply
-      #   data:
-      #     # Read on bed scene
-      #     entities:
-      #       light.nighstand_bedroom_lights:
-      #         state: "on"
-      #         # From 0 to 255
-      #         brightness: 180
-      #         # In mierds so 1000000/kelvin
-      #         color_temp: 285
-      - choose:
-          - conditions:
-              # Check if was triggered by Monica with the device id
-              - condition: template
-                value_template: "{{ trigger.event.data.device_id == monica_button_id }}"
-            sequence:
-              # - service: light.turn_on
-              #   target:
-              #     entity_id:
-              #       - light.monica_nightstand_light
-              - service: scene.apply
-                data:
-                  entities:
-                    light.monica_nightstand_light: *read_on_bedroom
-          - conditions:
-              # Check if was triggered by Manolo with the device id
-              - condition: template
-                value_template: "{{ trigger.event.data.device_id == manolo_button_id }}"
-            sequence:
-              # - service: light.turn_on
-              #   target:
-              #     entity_id: light.manolo_nightstand_light
-              #   data:
-              #     brightness: 180
-              #     color_temp: 285
-              - service: scene.apply
-                data:
-                  entities:
-                    light.manolo_nightstand_light: *read_on_bedroom
+      - alias: "Define affected devices"
+        variables:
+          entity_to_configure: >-
+            {% set all_lights_on = is_state('light.monica_nightstand_light', 'on') and is_state('light.manolo_nightstand_light', 'on') %}
+            {% if (all_lights_on) or (scene_alias in ['allOff', 'maxIllumination']) %}
+              light.nighstand_bedroom_lights
+            {% elif trigger.event.data.device_id == monica_button_id %}
+              light.monica_nightstand_light
+            {% elif trigger.event.data.device_id == manolo_button_id %}
+              light.manolo_nightstand_light
+            {% endif %}
+      - service: light.turn_on
+        target:
+          entity_id: "{{ entity_to_configure }}"
+        data:
+          brightness: 180
+          color_temp: 285
+      # - choose:
+      #     - conditions:
+      #         # Check if was triggered by Monica with the device id
+      #         - condition: template
+      #           value_template: "{{ trigger.event.data.device_id == monica_button_id }}"
+      #       sequence:
+      #         # - service: light.turn_on
+      #         #   target:
+      #         #     entity_id:
+      #         #       - light.monica_nightstand_light
+      #         - service: scene.apply
+      #           data:
+      #             entities:
+      #               light.monica_nightstand_light: *read_on_bedroom
+      #     - conditions:
+      #         # Check if was triggered by Manolo with the device id
+      #         - condition: template
+      #           value_template: "{{ trigger.event.data.device_id == manolo_button_id }}"
+      #       sequence:
+      #         # - service: light.turn_on
+      #         #   target:
+      #         #     entity_id: light.manolo_nightstand_light
+      #         #   data:
+      #         #     brightness: 180
+      #         #     color_temp: 285
+      #         - service: scene.apply
+      #           data:
+      #             entities:
+      #               light.manolo_nightstand_light: *read_on_bedroom
