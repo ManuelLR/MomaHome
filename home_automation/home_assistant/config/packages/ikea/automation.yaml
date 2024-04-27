@@ -54,6 +54,7 @@
 
 ### WIP
   - alias: AUT-NighstandButtons
+    id: 'automation_nighstand_buttons'
     initial_state: 'on'
     trace:
       stored_traces: 5
@@ -143,4 +144,4 @@
               - service: scene.apply
                 data:
                   entities:
-                    light.monica_nighstand_light: *read_on_bedroom
+                    light.manolo_nighstand_light: *read_on_bedroom
