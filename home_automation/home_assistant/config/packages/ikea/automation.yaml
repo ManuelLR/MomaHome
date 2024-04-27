@@ -92,8 +92,8 @@
         subtype: button_2
     trigger:
       # Define a generic trigger that the define the common part of the triggers
-      - <<: *monica_button
-        <<: *single_press_01
+      # - <<: *monica_button
+      #   <<: *single_press_01
       - <<: *manolo_button
         <<: *single_press_01
     action:
