@@ -1,55 +1,55 @@
 # automation:
-  - alias: AUT-LightForReadOnBed
-    initial_state: 'on'
-    trace:
-      stored_traces: 5
-    mode: 'queued'
-    trigger:
-      - platform: device
-        domain: zha
-        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
-        type: remote_button_double_press
-        subtype: turn_on
-    action:
-      - service: scene.turn_on
-        entity_id: scene.ReadOnBedroom
-        # data:
-        #   # If enabled, brightness didn't change
-        #   transition: 2.5
-  - alias: AUT-LightForSleep
-    initial_state: 'on'
-    trace:
-      stored_traces: 5
-    mode: 'queued'
-    trigger:
-      - platform: device
-        domain: zha
-        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
-        type: remote_button_short_press
-        subtype: turn_on
-    action:
-      - service: scene.turn_on
-        entity_id: scene.BeforeSleepOnBedroom
-        # data:
-        #   # If enabled, brightness didn't change
-        #   transition: 2.5
-  - alias: AUT-MaxLightOnBedroom
-    initial_state: 'on'
-    trace:
-      stored_traces: 5
-    mode: 'queued'
-    trigger:
-      - platform: device
-        domain: zha
-        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
-        type: remote_button_long_press
-        subtype: dim_up
-    action:
-      - service: scene.turn_on
-        entity_id: scene.MaxIlluminationOnBedroom
-        # data:
-        #   # If enabled, brightness didn't change
-        #   transition: 2.5
+  # - alias: AUT-LightForReadOnBed
+  #   initial_state: 'on'
+  #   trace:
+  #     stored_traces: 5
+  #   mode: 'queued'
+  #   trigger:
+  #     - platform: device
+  #       domain: zha
+  #       device_id: fc590f181eaddcfcfc6d6984c7ec76c5
+  #       type: remote_button_double_press
+  #       subtype: turn_on
+  #   action:
+  #     - service: scene.turn_on
+  #       entity_id: scene.ReadOnBedroom
+  #       # data:
+  #       #   # If enabled, brightness didn't change
+  #       #   transition: 2.5
+  # - alias: AUT-LightForSleep
+  #   initial_state: 'on'
+  #   trace:
+  #     stored_traces: 5
+  #   mode: 'queued'
+  #   trigger:
+  #     - platform: device
+  #       domain: zha
+  #       device_id: fc590f181eaddcfcfc6d6984c7ec76c5
+  #       type: remote_button_short_press
+  #       subtype: turn_on
+  #   action:
+  #     - service: scene.turn_on
+  #       entity_id: scene.BeforeSleepOnBedroom
+  #       # data:
+  #       #   # If enabled, brightness didn't change
+  #       #   transition: 2.5
+  # - alias: AUT-MaxLightOnBedroom
+  #   initial_state: 'on'
+  #   trace:
+  #     stored_traces: 5
+  #   mode: 'queued'
+  #   trigger:
+  #     - platform: device
+  #       domain: zha
+  #       device_id: fc590f181eaddcfcfc6d6984c7ec76c5
+  #       type: remote_button_long_press
+  #       subtype: dim_up
+  #   action:
+  #     - service: scene.turn_on
+  #       entity_id: scene.MaxIlluminationOnBedroom
+  #       # data:
+  #       #   # If enabled, brightness didn't change
+  #       #   transition: 2.5
 
 
 ### WIP
@@ -60,7 +60,7 @@
       stored_traces: 5
     mode: 'queued'
     trigger_variables:
-      monica_button_id: &monica_button_id fc590f181eaddcfcfc6d6984c7ec76c5
+      monica_button_id: &monica_button_id d207bfdca66e300274e57e4d3ff883f6
       manolo_button_id: &manolo_button_id 66e6c2331edc3c62560fab9b8285ad85
       # We're going to define dummy variables that will be reused by the triggers
       ### Trigged Devices
@@ -119,9 +119,18 @@
         subtype: button_2
         variables: *scene_all_off
     trigger:
-      # Define a generic trigger that the define the common part of the triggers
-      # - <<: *monica_button
-      #   <<: *single_press_01
+      - <<: *monica_button
+        <<: *single_press_01
+      - <<: *monica_button
+        <<: *double_press_01
+      - <<: *monica_button
+        <<: *long_press_01
+      - <<: *monica_button
+        <<: *single_press_02
+      - <<: *monica_button
+        <<: *double_press_02
+      - <<: *monica_button
+        <<: *long_press_02
       - <<: *manolo_button
         <<: *single_press_01
       - <<: *manolo_button
