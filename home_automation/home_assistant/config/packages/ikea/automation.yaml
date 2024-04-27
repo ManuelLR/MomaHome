@@ -53,8 +53,8 @@
 
 
 ### WIP
-  - alias: AUT-NighstandButtons
-    id: 'automation_nighstand_buttons'
+  - alias: AUT-NightstandButtons
+    id: 'automation_nightstand_buttons'
     initial_state: 'on'
     trace:
       stored_traces: 5
@@ -103,12 +103,6 @@
       - <<: *manolo_button
         <<: *single_press_01
     action:
-      - service: light.turn_on
-        target:
-          entity_id: light.manolo_nighstand_light
-        data:
-          brightness: 180
-          color_temp: 285
       # - service: scene.turn_on
       #   entity_id: scene.ReadOnBedroom
       #   # data:
@@ -133,24 +127,23 @@
               # - service: light.turn_on
               #   target:
               #     entity_id:
-              #       - light.monica_nighstand_light
+              #       - light.monica_nightstand_light
               - service: scene.apply
                 data:
                   entities:
-                    light.monica_nighstand_light: *read_on_bedroom
+                    light.monica_nightstand_light: *read_on_bedroom
           - conditions:
               # Check if was triggered by Manolo with the device id
               - condition: template
                 value_template: "{{ trigger.event.data.device_id == manolo_button_id }}"
             sequence:
-              - service: light.turn_on
-                target:
-                  entity_id: light.manolo_nighstand_light
-                data:
-                  brightness: 180
-                  color_temp: 285
               # - service: light.turn_on
-              #   metadata: {}
+              #   target:
+              #     entity_id: light.manolo_nightstand_light
               #   data:
-              #     entities:
-              #       light.manolo_nighstand_light: *read_on_bedroom
+              #     brightness: 180
+              #     color_temp: 285
+              - service: scene.apply
+                data:
+                  entities:
+                    light.manolo_nightstand_light: *read_on_bedroom
