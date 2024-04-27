@@ -105,21 +105,19 @@
         subtype: button_2
         variables:
           scene_alias: singleOff
+          scene_data:
+            state: "off"
       dummy_template_to_be_reused_by_double_press_02: &double_press_02
         type: remote_button_double_press
         subtype: button_2
-        variables:
+        variables: &scene_all_off
           scene_alias: allOff
+          scene_data:
+            state: "off"
       dummy_template_to_be_reused_by_long_press_02: &long_press_02
         type: remote_button_long_press
         subtype: button_2
-        variables:
-          scene_alias: allOff
-      ### Scenes
-      dummy_template_to_be_reused_by_read_on_bedroom: &read_on_bedroom
-        state: "on"
-        brightness: 180
-        color_temp: 285
+        variables: *scene_all_off
     trigger:
       # Define a generic trigger that the define the common part of the triggers
       # - <<: *monica_button
@@ -130,6 +128,12 @@
         <<: *double_press_01
       - <<: *manolo_button
         <<: *long_press_01
+      - <<: *manolo_button
+        <<: *single_press_02
+      - <<: *manolo_button
+        <<: *double_press_02
+      - <<: *manolo_button
+        <<: *long_press_02
     action:
       - alias: "Define affected devices"
         variables:
