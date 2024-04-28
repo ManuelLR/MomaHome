@@ -1,0 +1,86 @@
+action: fire-dom-event
+browser_mod:
+  service: browser_mod.popup
+  style:
+    border-radius: 0px
+    '--ha-card-border-radius': 0px
+  data:
+    dismissable: true
+    style:
+      border-radius: 0px
+      '--ha-card-border-radius': 0px
+    content:
+      type: vertical-stack
+      title: Nightstand Lights
+      cards:
+        - type: tile
+          entity: light.bedroom_nightstand_lights
+          features: &features_lights
+            - type: light-brightness
+            - type: light-color-temp
+        - type: grid
+          columns: 3
+          square: false
+          cards:
+            - name: Min
+              type: tile
+              entity: light.bedroom_nightstand_lights
+              show_entity_picture: false
+              hide_state: true
+              vertical: false
+              color: primary
+              icon: mdi:lightbulb-night
+              tap_action: &tap_action_min
+                action: call-service
+                service: scene.apply
+                data:
+                  entities:
+                    light.bedroom_nightstand_lights:
+                      state: "on"
+                      brightness: 3
+                      color_temp: 454
+              icon_tap_action: *tap_action_min
+            - name: Read
+              type: tile
+              entity: light.bedroom_nightstand_lights
+              show_entity_picture: false
+              hide_state: true
+              vertical: false
+              color: primary
+              icon: mdi:book-open-blank-variant
+              tap_action: &tap_action_read
+                action: call-service
+                service: scene.apply
+                data:
+                  entities:
+                    light.bedroom_nightstand_lights:
+                      state: "on"
+                      brightness: 180
+                      color_temp: 285
+              icon_tap_action: *tap_action_read
+            - name: Max
+              type: tile
+              entity: light.bedroom_nightstand_lights
+              show_entity_picture: false
+              hide_state: true
+              vertical: false
+              color: primary
+              icon: mdi:lightbulb-on
+              tap_action: &tap_action_max
+                action: call-service
+                service: scene.apply
+                data:
+                  entities:
+                    light.bedroom_nightstand_lights:
+                      state: "on"
+                      brightness: 255
+                      color_temp: 250
+              icon_tap_action: *tap_action_max
+        - type: horizontal-stack
+          cards:
+            - type: tile
+              entity: light.monica_nightstand_light
+              features: *features_lights
+            - type: tile
+              entity: light.manolo_nightstand_light
+              features: *features_lights
