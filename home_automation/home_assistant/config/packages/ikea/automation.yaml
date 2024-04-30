@@ -1,52 +1,120 @@
 # automation:
-  - alias: AUT-LightForReadOnBed
+  - alias: AUT-NightstandButtons
+    id: 'automation_nightstand_buttons'
     initial_state: 'on'
     trace:
       stored_traces: 5
     mode: 'queued'
+    trigger_variables:
+      monica_nightstand_button_id: &monica_nightstand_button_id d207bfdca66e300274e57e4d3ff883f6
+      manolo_nightstand_button_id: &manolo_nightstand_button_id 66e6c2331edc3c62560fab9b8285ad85
+      # Define some yaml anchors and aliases to be reused by the triggers
+      tmp_yaml_defined_aliases:
+        ### Trigged Devices
+        tmp_trigger_nightstand_monica_button: &trigger_nightstand_monica_button
+          platform: device
+          domain: zha
+          device_id: *monica_nightstand_button_id
+        tmp_trigger_nightstand_manolo_button: &trigger_nightstand_manolo_button
+          platform: device
+          domain: zha
+          device_id: *manolo_nightstand_button_id
+        ### Trigger Pulsations and Scenes to apply to each one
+        tmp_trigger_nightstand_pulsation_and_scene__single_press_01: &trigger_nightstand_single_press_01
+          type: remote_button_short_press
+          subtype: button_1
+          variables:
+            scene_alias: beforeSleep
+            scene_data:
+              state: "on"
+              brightness: 3
+              color_temp: 454
+        tmp_trigger_nightstand_pulsation_and_scene__double_press_01: &trigger_nightstand_double_press_01
+          type: remote_button_double_press
+          subtype: button_1
+          variables:
+            scene_alias: readOnBed
+            scene_data:
+              state: "on"
+              brightness: 180
+              color_temp: 285
+        tmp_trigger_nightstand_pulsation_and_scene__long_press_01: &trigger_nightstand_long_press_01
+          type: remote_button_long_press
+          subtype: button_1
+          variables:
+            scene_alias: maxIllumination
+            scene_data:
+              state: "on"
+              brightness: 255
+              color_temp: 250
+        tmp_trigger_nightstand_pulsation_and_scene__single_press_02: &trigger_nightstand_single_press_02
+          type: remote_button_short_press
+          subtype: button_2
+          variables:
+            scene_alias: singleOff
+            scene_data:
+              state: "off"
+        tmp_trigger_nightstand_pulsation_and_scene__double_press_02: &trigger_nightstand_double_press_02
+          type: remote_button_double_press
+          subtype: button_2
+          variables: &scene_all_off
+            scene_alias: allOff
+            scene_data:
+              state: "off"
+        tmp_trigger_nightstand_pulsation_and_scene__long_press_02: &trigger_nightstand_long_press_02
+          type: remote_button_long_press
+          subtype: button_2
+          variables: *scene_all_off
     trigger:
-      - platform: device
-        domain: zha
-        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
-        type: remote_button_double_press
-        subtype: turn_on
+      # All possible trigger combinations between the buttons and the kind of pulsations
+      - <<: *trigger_nightstand_monica_button
+        <<: *trigger_nightstand_single_press_01
+      - <<: *trigger_nightstand_monica_button
+        <<: *trigger_nightstand_double_press_01
+      - <<: *trigger_nightstand_monica_button
+        <<: *trigger_nightstand_long_press_01
+      - <<: *trigger_nightstand_monica_button
+        <<: *trigger_nightstand_single_press_02
+      - <<: *trigger_nightstand_monica_button
+        <<: *trigger_nightstand_double_press_02
+      - <<: *trigger_nightstand_monica_button
+        <<: *trigger_nightstand_long_press_02
+      - <<: *trigger_nightstand_manolo_button
+        <<: *trigger_nightstand_single_press_01
+      - <<: *trigger_nightstand_manolo_button
+        <<: *trigger_nightstand_double_press_01
+      - <<: *trigger_nightstand_manolo_button
+        <<: *trigger_nightstand_long_press_01
+      - <<: *trigger_nightstand_manolo_button
+        <<: *trigger_nightstand_single_press_02
+      - <<: *trigger_nightstand_manolo_button
+        <<: *trigger_nightstand_double_press_02
+      - <<: *trigger_nightstand_manolo_button
+        <<: *trigger_nightstand_long_press_02
     action:
-      - service: scene.turn_on
-        entity_id: scene.ReadOnBedroom
-        # data:
-        #   # If enabled, brightness didn't change
-        #   transition: 2.5
-  - alias: AUT-LightForSleep
-    initial_state: 'on'
-    trace:
-      stored_traces: 5
-    mode: 'queued'
-    trigger:
-      - platform: device
-        domain: zha
-        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
-        type: remote_button_short_press
-        subtype: turn_on
-    action:
-      - service: scene.turn_on
-        entity_id: scene.BeforeSleepOnBedroom
-        # data:
-        #   # If enabled, brightness didn't change
-        #   transition: 2.5
-  - alias: AUT-MaxLightOnBedroom
-    initial_state: 'on'
-    trace:
-      stored_traces: 5
-    mode: 'queued'
-    trigger:
-      - platform: device
-        domain: zha
-        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
-        type: remote_button_long_press
-        subtype: dim_up
-    action:
-      - service: scene.turn_on
-        entity_id: scene.MaxIlluminationOnBedroom
-        # data:
-        #   # If enabled, brightness didn't change
-        #   transition: 2.5
+      - alias: "Device(s) to apply the scene"
+        variables:
+          # By default, we should apply the scene to the entity that triggered the automation
+          # But:
+          #   If both nightstand lights are on (or are going to be after the action), we should apply the scene to both
+          #   If the scene is allOff or maxIllumination, we should apply the scene to both
+          #   If the scene is singleOff, we should apply the scene only to the entity that triggered the automation
+          entity_to_set: >-
+            {% set all_lights_on = is_state('light.monica_nightstand_light', 'on') and is_state('light.manolo_nightstand_light', 'on') %}
+            {% set cross_device_already_on_01 = (trigger.event.data.device_id == monica_nightstand_button_id) and (is_state('light.manolo_nightstand_light', 'on')) %}
+            {% set cross_device_already_on_02 = (trigger.event.data.device_id == manolo_nightstand_button_id) and (is_state('light.monica_nightstand_light', 'on')) %}
+            {% set cross_device_already_on = cross_device_already_on_01 or cross_device_already_on_02 %}
+            {% set should_apply_to_all = cross_device_already_on or (scene_alias in ['allOff', 'maxIllumination']) %}
+            {% set force_apply_to_one = (scene_alias in ['singleOff']) %}
+            {% if (not force_apply_to_one) and (should_apply_to_all) %}
+              light.bedroom_nightstand_lights
+            {% elif trigger.event.data.device_id == monica_nightstand_button_id %}
+              light.monica_nightstand_light
+            {% elif trigger.event.data.device_id == manolo_nightstand_button_id %}
+              light.manolo_nightstand_light
+            {% endif %}
+
+      - service: scene.apply
+        data:
+          entities:
+            "{{ entity_to_set }}": "{{ scene_data }}"
