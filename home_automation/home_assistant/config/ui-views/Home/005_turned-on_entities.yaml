@@ -19,7 +19,8 @@ entities:
   - light.midesklamp1s_01
   - light.flexo_light_01_light
   - vacuum.valetudo_roborocks5
-  - light.nighstand_bedroom_lights
+  - entity: light.bedroom_nightstand_lights
+    tap_action: !include ../utils/nightstand-lights.yaml
   - entity: input_number.vacuum_xiaomi_dust_clean_left
     name: "[Vacuum] Bin dust left"
     type: button

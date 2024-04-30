@@ -7,9 +7,9 @@
     trigger:
       - platform: device
         domain: zha
-        device_id: d207bfdca66e300274e57e4d3ff883f6
+        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
         type: remote_button_short_press
-        subtype: button_1
+        subtype: turn_on
     action:
       - service: switch.turn_on
         target:
@@ -23,9 +23,9 @@
     trigger:
       - platform: device
         domain: zha
-        device_id: d207bfdca66e300274e57e4d3ff883f6
+        device_id: fc590f181eaddcfcfc6d6984c7ec76c5
         type: remote_button_double_press
-        subtype: button_1
+        subtype: turn_on
     action:
       - service: switch.turn_off
         target:

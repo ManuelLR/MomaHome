@@ -76,6 +76,13 @@ elements:
       left: 25%
       "--paper-item-icon-color": blue
   - type: state-icon
+    tap_action: !include ../utils/nightstand-lights.yaml
+    entity: light.bedroom_nightstand_lights
+    style:
+      top: 85%
+      left: 25%
+      "--paper-item-icon-color": blue
+  - type: state-icon
     tap_action: !include ../utils/washing-machine-card.yaml
     entity: sensor.washing_machine_status
     style:
