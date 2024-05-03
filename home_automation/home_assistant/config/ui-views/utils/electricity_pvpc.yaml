@@ -1,0 +1,34 @@
+type: custom:apexcharts-card
+header:
+  show: true
+  title: Electricity Prices Today
+  show_states: true
+  standard_format: true
+graph_span: 24h
+span:
+  start: day
+series:
+  - entity: sensor.pvpc
+    type: column
+    unit: €/kWh
+    float_precision: 3
+    show:
+      extremas: true
+    data_generator: >
+      const hours = ['00h', '01h', '02h', '03h', '04h', '05h', '06h', '07h',
+      '08h', '09h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h',
+      '18h', '19h', '20h', '21h', '22h', '23h'];
+
+      return hours.map(hour => {
+        const price = entity.attributes['price_' + hour] || 0;
+        const hourInt = parseInt(hour.slice(0, -1), 10); // Correctly parse the hour integer, removing the 'h'
+        const date = new Date();
+        date.setHours(hourInt, 0, 0, 0); // Sets the hour for the current date
+        return [date.getTime(), price];
+      });
+now:
+  show: true
+  label: Now
+yaxis:
+  - decimals: 2
+    min: ~0
