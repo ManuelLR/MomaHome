@@ -29,7 +29,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
     CUSTOM_CARD_VALETUDO_VACUUM_MAP_VERSION=v2023.04.0 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
-    CUSTOM_CARD_UPTIME_VERSION=v0.15.0 \
+    CUSTOM_CARD_UPTIME_VERSION=v0.16.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.12.1 \
       # renovatebot: datasource=github-releases depName=RomRider/apexcharts-card
