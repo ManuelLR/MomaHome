@@ -1,7 +1,7 @@
 version: "2.4"
 services:
   traefik:
-    image: traefik:v2.11.2
+    image: traefik:v2.11.6
     container_name: reverse-proxy_traefik
     restart: always
     ports:
