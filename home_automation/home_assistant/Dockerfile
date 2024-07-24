@@ -33,7 +33,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.12.1 \
       # renovatebot: datasource=github-releases depName=RomRider/apexcharts-card
-    CUSTOM_CARD_APEXCHARTS_VERSION=v2.0.4 \
+    CUSTOM_CARD_APEXCHARTS_VERSION=v2.1.2 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.1 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
