@@ -57,6 +57,7 @@ certificatesResolvers:
       dnsChallenge:
         provider: duckdns
   newDomain:
+    acme:
       storage: /letsencrypt/acme.json
       ## Used as env variable
       # email: xyz@example.con
