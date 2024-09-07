@@ -20,7 +20,13 @@ services:
       - net-reverse-proxy
     environment: 
       - TRAEFIK_CERTIFICATESRESOLVERS_PRINCIPAL_ACME_EMAIL=${TRAEFIK_CERTIFICATESRESOLVERS_PRINCIPAL_ACME_EMAIL:-example@abc.com}
+      - TRAEFIK_CERTIFICATESRESOLVERS_OLDDOMAIN_ACME_EMAIL=${TRAEFIK_CERTIFICATESRESOLVERS_PRINCIPAL_ACME_EMAIL:-example@abc.com}
       - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
+      - DESEC_TOKEN=${DESEC_TOKEN}
+      - DESEC_POLLING_INTERVAL=240s
+      - DESEC_PROPAGATION_TIMEOUT=500s
+        # Looks like desec is having problems creating CNAME entries used to validate wildcard certs
+      - LEGO_DISABLE_CNAME_SUPPORT=true
 
 networks:
   net-reverse-proxy:
