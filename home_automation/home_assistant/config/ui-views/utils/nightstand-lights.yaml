@@ -5,13 +5,13 @@ browser_mod:
     border-radius: 0px
     '--ha-card-border-radius': 0px
   data:
+    title: Nightstand Lights
     dismissable: true
     style:
       border-radius: 0px
       '--ha-card-border-radius': 0px
     content:
       type: vertical-stack
-      title: Nightstand Lights
       cards:
         - type: tile
           entity: light.bedroom_nightstand_lights

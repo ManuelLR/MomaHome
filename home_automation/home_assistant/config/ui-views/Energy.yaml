@@ -1,5 +1,6 @@
 - type: vertical-stack
   cards:
+    - !include utils/electricity_pvpc.yaml
     # - type: energy-date-selection
     - type: entity
       entity: sensor.edata_mp0f

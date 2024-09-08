@@ -5,9 +5,9 @@ browser_mod:
     border-radius: 0px
     '--ha-card-border-radius': 0px
   data:
+    title: Washing Machine
     content:
       type: vertical-stack
-      title: Washing Machine
       cards:
         - type: entities
           entities:

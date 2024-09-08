@@ -55,4 +55,13 @@ certificatesResolvers:
       ## With the next flag we indicate that we would like to generate the certificate with that root cert that is valid until "04 Jun 2035"
       preferredChain: 'ISRG Root X1'
       dnsChallenge:
+        provider: desec
+  oldDomain:
+    acme:
+      storage: /letsencrypt/acme.json
+      ## Used as env variable
+      # email: xyz@example.con
+      ## With the next flag we indicate that we would like to generate the certificate with that root cert that is valid until "04 Jun 2035"
+      preferredChain: 'ISRG Root X1'
+      dnsChallenge:
         provider: duckdns
