@@ -16,6 +16,7 @@
     "prHourlyLimit": 0,
     "globalExtends": [
       "config:recommended",
+      ":dependencyDashboard",
       ":rebaseStalePrs",
       ":semanticCommits",
       ":semanticCommitScope(deps)",
@@ -39,7 +40,7 @@
         "matchStrings": [
           "datasource=(?<datasource>.*?) depName=(?<depName>.*?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?( versioning=(?<versioning>.*?))?(\\s|\\n).*?_VERSION=(?<currentValue>[^ ]*)( \\\\|\\s|\\n)"
         ],
-        "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+        "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}loose{{/if}}"
       },
       {
         "customType": "regex",
