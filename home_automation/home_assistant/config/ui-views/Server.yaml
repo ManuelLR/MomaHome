@@ -1,5 +1,5 @@
 - type: entities
-  title: 'UPS'
+  title: 'UPS Server'
   entities:
     - sensor.ups_battery
     - sensor.ups_load
@@ -11,3 +11,12 @@
     - sensor.ups_time_on_battery
     - sensor.ups_total_time_on_battery
     - sensor.ups_transfer_from_battery
+
+- type: entities
+  title: 'UPS Network'
+  entities:
+    - sensor.network_ups_carga_de_la_bateria
+    - sensor.network_ups_carga
+    - sensor.network_ups_estado
+    - sensor.network_ups_datos_de_estado
+    - sensor.network_ups_autonomia_de_la_bateria

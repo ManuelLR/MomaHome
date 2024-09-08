@@ -6,10 +6,25 @@
         event_type: home_connect_alt_event
         id: input_event
     action:
-      - service: script.notify_in_home_or_all
+      - service: notify.manolo
         data:
           title: 'An event was triggered from home connect'
           message: >
+            Event: `{{ trigger.event }}`
+            Event.Data: `{{ trigger.event.data }}`
+
+  - alias: AUT-Notify home connect entity finished
+    initial_state: 'on'
+    trigger:
+      - platform: event
+        event_type: program_finished
+        id: input_event
+    action:
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'Dishwasher finished'
+          message: >
+            Ey, dishwasher just finished.
             Event: `{{ trigger.event }}`
             Event.Data: `{{ trigger.event.data }}`
 
