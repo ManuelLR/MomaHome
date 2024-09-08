@@ -1,4 +1,6 @@
 ## traefik.yml
+core:
+  defaultRuleSyntax: v2
 
 global:
   checkNewVersion: True
