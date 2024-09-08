@@ -25,7 +25,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.1.6 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.2 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.4 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
     CUSTOM_CARD_VALETUDO_VACUUM_MAP_VERSION=v2023.04.0 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
