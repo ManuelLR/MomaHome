@@ -11,7 +11,7 @@ ENV \
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=2.3.0 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.3.1 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.11.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
@@ -25,7 +25,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.1.6 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.2 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.4 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
     CUSTOM_CARD_VALETUDO_VACUUM_MAP_VERSION=v2023.04.0 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
