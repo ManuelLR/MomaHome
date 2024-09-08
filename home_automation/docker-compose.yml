@@ -7,8 +7,8 @@ services:
             context: home_assistant/
         depends_on:
           - postgres
-        ports:
-            - 0.0.0.0:8123:8123
+        # ports:
+        #     - 0.0.0.0:8123:8123
         volumes:
             # Config files
             - ./home_assistant/config/:/config/
@@ -36,8 +36,8 @@ services:
     esphome:
         image: esphome/esphome:2024.5.5
         restart: unless-stopped
-        ports:
-            - 0.0.0.0:6052:6052
+        # ports:
+        #     - 0.0.0.0:6052:6052
         ## Required to be able to auto-discover devices in the network
         network_mode: "host"
         volumes:
