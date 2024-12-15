@@ -96,4 +96,4 @@
         - <<: *environment-7d-card
           entity: sensor.xiaomi_004_3c9a_battery
         - <<: *environment-7d-card
-          entity: sensor.entry_door_sensor_battery
+          entity: sensor.entrance_door_sensor_battery
