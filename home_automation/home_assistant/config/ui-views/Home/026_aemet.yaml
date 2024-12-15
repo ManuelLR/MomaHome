@@ -1,3 +1,7 @@
 type: weather-forecast
-entity: weather.aemet_daily
+entity: weather.aemet
 secondary_info_attribute: humidity
+# secondary_info_attribute: wind_speed
+forecast_type: daily
+show_current: true
+show_forecast: true
