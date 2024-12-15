@@ -65,9 +65,9 @@ entities:
       - operator: '<'
         value: 99
   - entity: binary_sensor.entrance_door_sensor_opened
-    name: Door Status
+    name: Entrance Door
   - entity: sensor.entrance_door_sensor_battery
-    name: Door Sensor Battery Low
+    name: Entrance Door Sensor Battery Low
     state_filter:
       - operator: '<='
         value: 10

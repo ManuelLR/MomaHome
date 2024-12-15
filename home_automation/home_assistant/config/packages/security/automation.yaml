@@ -88,7 +88,7 @@
     action:
       - service: notify.manolo
         data:
-          title: 'Door Opened'
+          title: '*Door Opened*'
           message: 'The entrance door has been opened.'
 
   - alias: AUT-Notify Entrance Door Opened Extended Away
@@ -113,9 +113,9 @@
       - platform: state
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
-        for: '00:04:00'
+        for: '00:03:00'
     action:
       - service: script.notify_in_home_or_all
         data:
           title: 'Alert: Door Left Open'
-          message: 'The entrance door has been left open for more than 4 minutes.'
+          message: 'The entrance door has been left open for more than 3 minutes.'
