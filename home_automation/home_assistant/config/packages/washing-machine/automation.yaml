@@ -3,12 +3,12 @@
 
   - alias: AUT-Washing machine should power on
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: event
         event_type: timer.finished
         event_data:
           entity_id: timer.washing_machine_power_on_in
-    action:
+    actions:
       - service: timer.cancel
         target:
           entity_id: timer.washing_machine_power_on_in
@@ -39,11 +39,11 @@
   # to Running each time the power level changes, and we're already
   # in the Running state.
   - alias: AUT-Washing machine Running
-    trigger:
+    triggers:
       - platform: numeric_state
         entity_id: sensor.man_002_current_a
         above: 1
-    condition:
+    conditions:
       condition: or
       conditions:
         - condition: state
@@ -53,7 +53,7 @@
             - 'Finishing'
             - 'Clean'
             - 'Scheduled'
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
@@ -65,14 +65,14 @@
   # washing machine is in between cycles and the power drops, we 
   # won't mark the washing machine cycle as finished too early.
   - alias: AUT-Washing machine Clean
-    trigger:
+    triggers:
       - platform: numeric_state
         entity_id: sensor.man_002_current_a
         below: 0.001
         #above: 0.001
         for:
           minutes: 8
-    condition:
+    conditions:
       condition: or
       conditions:
         - condition: state
@@ -80,7 +80,7 @@
           state:
             - 'Washing'
             - 'Finishing'
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
@@ -90,18 +90,18 @@
   # If the state was clean and we receive some power, we turn on to empty it
   # so we change the status to emptying
   - alias: AUT-Washing machine Emptying
-    trigger:
+    triggers:
       - platform: numeric_state
         entity_id: sensor.man_002_current_a
         above: 0.001
-    condition:
+    conditions:
       condition: or
       conditions:
         - condition: state
           entity_id: input_select.washing_machine_status
           state:
             - 'Clean'
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
@@ -111,13 +111,13 @@
   # a state different of 'Off' state or 'Clean', change the status of 
   # the washing machine to 'Off'.
   - alias: AUT-Washing machine Off
-    trigger:
+    triggers:
       - platform: numeric_state
         entity_id: sensor.man_002_current_a
         below: 0.001
         for:
           minutes: 15
-    condition:
+    conditions:
       condition: or
       conditions:
         - condition: state
@@ -127,14 +127,14 @@
             # - 'Washing'
             # - 'Clean'
             - 'Emptying'
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
           option: 'Off'
 
   - alias: AUT-Washing machine Force Off
-    trigger:
+    triggers:
       - platform: event
         event_type: telegram_command
         event_data: &telegram_washine_machine_empty
@@ -142,7 +142,7 @@
       - platform: event
         event_type: telegram_callback
         event_data: *telegram_washine_machine_empty
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status

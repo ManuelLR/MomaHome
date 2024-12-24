@@ -2,10 +2,10 @@
   - alias: AUT-New device found
     initial_state: 'on'
     mode: parallel
-    trigger:
+    triggers:
       - platform: event
         event_type: device_tracker_new_device
-    action:
+    actions:
       - service: script.notify_in_home_or_all
         data: &data-alert-new-device
           title: 'ALERT: New device found !'
@@ -16,13 +16,13 @@
   - alias: AUT-Notify failed login attempt
     initial_state: 'on'
     mode: parallel
-    trigger:
+    triggers:
       - platform: state
         entity_id: persistent_notification.http_login
-    condition:
+    conditions:
       - condition: template
         value_template: "{{ trigger.to_state.state != 'None' }}"
-    action:
+    actions:
       service: notify.manolo
       data:
         title: "*{{ state_attr('persistent_notification.http_login', 'title') }} !*"
@@ -31,13 +31,13 @@
   - alias: AUT-Notify ip_banned
     initial_state: 'on'
     mode: parallel
-    trigger:
+    triggers:
       - platform: state
         entity_id: persistent_notification.ip_ban
-    condition:
+    conditions:
       - condition: template
         value_template: "{{ trigger.to_state.state != 'None' }}"
-    action:
+    actions:
       - alias: "Set variables"
         variables:
             # Extracted from a message like: Too many login attemps from xxx.xxx.xxx.xxx
@@ -53,7 +53,7 @@
   - alias: AUT-Unban IP
     mode: restart
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: event
         id: event_telegram_command
         event_type: telegram_command
@@ -67,7 +67,7 @@
         event_data: *telegram_unban_ip_device
         variables:
           ip_to_unban: "{{ trigger.event.data['data'].split(' ')[1] }}"
-    action:
+    actions:
       - service: shell_command.unban_ip
         data:
           ip_to_unban: "{{ ip_to_unban }}"
@@ -81,11 +81,11 @@
 
   - alias: AUT-Notify Entrance Door Opened
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: state
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
-    action:
+    actions:
       - service: notify.manolo
         data:
           title: '*Door Opened*'
@@ -93,15 +93,15 @@
 
   - alias: AUT-Notify Entrance Door Opened Extended Away
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: state
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
-    condition:
+    conditions:
       - condition: state
         entity_id: sensor.home_occupancy_status
         state: 'Extended Away'
-    action:
+    actions:
       - service: script.notify_in_home_or_all
         data:
           title: 'Alert: Door Opened'
@@ -109,12 +109,12 @@
 
   - alias: AUT-Notify Entrance Door Opened Too much time
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: state
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
         for: '00:03:00'
-    action:
+    actions:
       - service: script.notify_in_home_or_all
         data:
           title: 'Alert: Door Left Open'

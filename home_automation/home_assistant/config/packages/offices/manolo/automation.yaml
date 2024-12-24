@@ -4,13 +4,13 @@
     trace:
       stored_traces: 5
     mode: 'queued'
-    trigger:
+    triggers:
       - platform: device
         domain: zha
         device_id: fc590f181eaddcfcfc6d6984c7ec76c5
         type: remote_button_short_press
         subtype: turn_on
-    action:
+    actions:
       - service: switch.turn_on
         target:
           entity_id:
@@ -20,13 +20,13 @@
     trace:
       stored_traces: 5
     mode: 'queued'
-    trigger:
+    triggers:
       - platform: device
         domain: zha
         device_id: fc590f181eaddcfcfc6d6984c7ec76c5
         type: remote_button_double_press
         subtype: turn_on
-    action:
+    actions:
       - service: switch.turn_off
         target:
           entity_id:
