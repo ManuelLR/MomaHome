@@ -78,3 +78,44 @@
               callback_query_id: "{{ trigger.event.data.id }}"
               message: "Unbanned and restarting HomeAssistant"
       - service: homeassistant.restart
+
+  - alias: AUT-Notify Entrance Door Opened
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entrance_door_sensor_opened
+        to: 'on'
+    action:
+      - service: notify.manolo
+        data:
+          title: '*Door Opened*'
+          message: 'The entrance door has been opened.'
+
+  - alias: AUT-Notify Entrance Door Opened Extended Away
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entrance_door_sensor_opened
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: sensor.home_occupancy_status
+        state: 'Extended Away'
+    action:
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'Alert: Door Opened'
+          message: 'The entrance door has been opened while the house is in Extended Away mode.'
+
+  - alias: AUT-Notify Entrance Door Opened Too much time
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entrance_door_sensor_opened
+        to: 'on'
+        for: '00:03:00'
+    action:
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'Alert: Door Left Open'
+          message: 'The entrance door has been left open for more than 3 minutes.'
