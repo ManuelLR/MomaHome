@@ -53,6 +53,7 @@ RUN \
     && apk add --no-cache --virtual run-dep \
         # Used for some shell_command
       yq \
+      tzdata \
     && apk add --no-cache --virtual build-dep \
       git \
     && mkdir -p /opt/HA/config/custom_components/ \
