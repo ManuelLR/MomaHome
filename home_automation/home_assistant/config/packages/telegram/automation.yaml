@@ -3,7 +3,7 @@
   - alias: AUT-Telegram turn on device
     mode: restart
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: event
         event_type: telegram_command
         event_data: &telegram_turn_on_device
@@ -11,7 +11,7 @@
       - platform: event
         event_type: telegram_callback
         event_data: *telegram_turn_on_device
-    action:
+    actions:
       - service: switch.turn_on
         data_template:
           entity_id: >

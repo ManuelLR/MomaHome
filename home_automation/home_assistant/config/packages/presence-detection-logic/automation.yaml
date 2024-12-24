@@ -2,14 +2,14 @@
   # Inspired/Copy from https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
   - alias: PTR-Mark person as just arrived
     mode: queued
-    trigger:
+    triggers:
       - platform: state
         from: 'not_home'
         to: 'home'
         entity_id: &persons
           - person.monica
           - person.manolo
-    action:
+    actions:
       - service: input_select.select_option
         data_template:
           entity_id: >
@@ -22,7 +22,7 @@
 
   - alias: PTR-Mark person as home
     mode: queued
-    trigger:
+    triggers:
       - platform: state
         entity_id: &input-select-people-status
           - input_select.manolo_status_dropdown
@@ -34,7 +34,7 @@
         entity_id: *input-select-people-status
         from: 'Just Left'
         to: 'Just Arrived'
-    action:
+    actions:
       - service: input_select.select_option
         data_template:
           entity_id: >
@@ -47,12 +47,12 @@
 
   - alias: PTR-Mark person as just left
     mode: queued
-    trigger:
+    triggers:
       - platform: state
         entity_id: *persons
         from: 'home'
         to: 'not_home'
-    action:
+    actions:
       - service: input_select.select_option
         data_template:
           entity_id: >
@@ -65,13 +65,13 @@
 
   - alias: PTR-Mark person as away
     mode: queued
-    trigger:
+    triggers:
       - platform: state
         entity_id: *input-select-people-status
         to: 'Just Left'
         for:
           minutes: 10
-    action:
+    actions:
       - service: input_select.select_option
         data_template:
           entity_id: >
@@ -84,13 +84,13 @@
 
   - alias: PTR-Mark person as extended away
     mode: queued
-    trigger:
+    triggers:
       - platform: state
         entity_id: *input-select-people-status
         to: 'Away'
         for:
           hours: 24
-    action:
+    actions:
       - service: input_select.select_option
         data_template:
           entity_id: >
@@ -105,12 +105,12 @@
   # Myself
   - alias: PTR-Update home occupancy
     mode: queued
-    trigger:
+    triggers:
       - platform: state
         # from: 'not_home'
         # to: 'home'
         entity_id: *input-select-people-status
-    action:
+    actions:
       - service: input_select.select_option
         data_template:
           entity_id: input_select.home_occupancy_status_dropdown

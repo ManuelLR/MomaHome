@@ -65,7 +65,7 @@
           type: remote_button_long_press
           subtype: button_2
           variables: *scene_all_off
-    trigger:
+    triggers:
       # All possible trigger combinations between the buttons and the kind of pulsations
       - <<: *trigger_nightstand_monica_button
         <<: *trigger_nightstand_single_press_01
@@ -91,7 +91,7 @@
         <<: *trigger_nightstand_double_press_02
       - <<: *trigger_nightstand_manolo_button
         <<: *trigger_nightstand_long_press_02
-    action:
+    actions:
       - alias: "Device(s) to apply the scene"
         variables:
           # By default, we should apply the scene to the entity that triggered the automation

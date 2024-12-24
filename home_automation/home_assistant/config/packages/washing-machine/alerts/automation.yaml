@@ -1,6 +1,6 @@
 # automation:
   - alias: AUT-Notify Washing machine finished
-    trigger:
+    triggers:
       - platform: state
         entity_id: sensor.washing_machine_status
         to: Clean
@@ -10,13 +10,13 @@
         to: 'Home'
         for:
           minutes: 2
-    condition:
+    conditions:
       condition: and
       conditions:
         - condition: state
           entity_id: sensor.washing_machine_status
           state: Clean
-    action:
+    actions:
       - service: script.notify_in_home_or_all
         data:
           title: 'Washing Machine finished'

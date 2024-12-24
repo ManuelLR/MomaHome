@@ -2,13 +2,13 @@
 
   # When low power is detected, probably we would like to turn off the power plug.
   - alias: AUT-Turn off man-003
-    trigger:
+    triggers:
       - platform: numeric_state
         entity_id: sensor.man_003_energy_current
         below: 0.3
         for:
           minutes: 10
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.man_003_auto_poweroff
         state: "on"
@@ -20,7 +20,7 @@
           - condition: state
             entity_id: switch.man_003_right
             state: 'on'
-    action:
+    actions:
       - service: switch.turn_off
         entity_id:
           - switch.man_003_left

@@ -1,11 +1,11 @@
 # automation:
   - alias: AUT-Notify home connect entity finish(Testing)
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: event
         event_type: home_connect_alt_event
         id: input_event
-    action:
+    actions:
       - service: notify.manolo
         data:
           title: 'An event was triggered from home connect'
@@ -15,11 +15,11 @@
 
   - alias: AUT-Notify home connect entity finished
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: event
         event_type: program_finished
         id: input_event
-    action:
+    actions:
       - service: script.notify_in_home_or_all
         data:
           title: 'Dishwasher finished'

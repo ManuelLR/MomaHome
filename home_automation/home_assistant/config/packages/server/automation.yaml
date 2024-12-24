@@ -1,10 +1,10 @@
 # automation:
   - alias: AUT-No energy in house
     mode: queued
-    trigger:
+    triggers:
       - platform: template
         value_template: "{% if 'ONBATT' in states('sensor.ups_status') %}true{% endif %}"
-    action:
+    actions:
       - service: remote.send_command
         data:
           entity_id: remote.sony_bravia_tv
@@ -33,10 +33,10 @@
 
   - alias: AUT-Energy back in house
     mode: queued
-    trigger:
+    triggers:
       - platform: template
         value_template: "{% if 'ONLINE' in states('sensor.ups_status') %}true{% endif %}"
-    action:
+    actions:
       - service: script.notify_in_home_or_all
         data:
           title: 'Energy back in home !'
