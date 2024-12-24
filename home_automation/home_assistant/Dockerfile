@@ -16,8 +16,8 @@ ENV \
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.11.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.1 \
-      # renovatebot: datasource=github-releases depName=shenxn/ha-dyson
-    CUSTOM_COMPONENT_DYSON_LOCAL_VERSION=v0.16.4-4 \
+      # renovatebot: datasource=github-releases depName=libdyson-wg/ha-dyson
+    CUSTOM_COMPONENT_DYSON_VERSION=v1.4.2 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
@@ -72,10 +72,10 @@ RUN \
     && git clone https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor.git /tmp/xiaomi-cloud-map-extractor \
     && cd /tmp/xiaomi-cloud-map-extractor && git checkout $CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION \
     && cd - && cp -r /tmp/xiaomi-cloud-map-extractor/custom_components/xiaomi_cloud_map_extractor /opt/HA/config/custom_components/ \
-    # dyson-local
-    && git clone https://github.com/shenxn/ha-dyson.git /tmp/ha-dyson-local \
-    && cd /tmp/ha-dyson-local && git checkout $CUSTOM_COMPONENT_DYSON_LOCAL_VERSION \
-    && cd - && cp -r /tmp/ha-dyson-local/custom_components/dyson_local /opt/HA/config/custom_components/ \
+    # dyson
+    && git clone https://github.com/libdyson-wg/ha-dyson.git /tmp/ha-dyson \
+    && cd /tmp/ha-dyson && git checkout $CUSTOM_COMPONENT_DYSON_VERSION \
+    && cd - && cp -r /tmp/ha-dyson/custom_components/dyson_local /opt/HA/config/custom_components/ \
     # delete-file
     && git clone https://github.com/chomupashchuk/delete-file-home-assistant.git /tmp/delete-file-home-assistant \
     && cd /tmp/delete-file-home-assistant && git checkout $CUSTOM_COMPONENT_DELETE_FILE_VERSION \
