@@ -119,3 +119,147 @@
         data:
           title: 'Alert: Door Left Open'
           message: 'The entrance door has been left open for more than 3 minutes.'
+
+  - alias: AUT-Notify Centinel Mode on Extended Away
+    initial_state: 'on'
+    triggers:
+      - platform: state
+        entity_id: sensor.home_occupancy_status
+        to: 'Extended Away'
+    actions:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.centinel_mode
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'Centinel Mode'
+          message: 'Centinel Mode has been enabled automatically due to Extended Away status.'
+          data:
+            inline_keyboard:
+              - 'Disable Centinel Mode:/disable_centinel_mode'
+
+  - alias: AUT-Disable Centinel Mode
+    mode: restart
+    initial_state: 'on'
+    triggers:
+      - platform: event
+        event_type: telegram_command
+        event_data: &telegram_disable_centinel_mode
+          command: "/disable_centinel_mode"
+      - platform: event
+        event_type: telegram_callback
+        event_data: *telegram_disable_centinel_mode
+    actions:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.centinel_mode
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'Centinel Mode'
+          message: 'Centinel Mode has been disabled.'
+      # Answer to the telegram callback if needed
+      - condition: template
+        value_template: "{{ trigger.event.event_type == 'telegram_callback' }}"
+      - service: telegram_bot.answer_callback_query
+        data:
+          callback_query_id: "{{ trigger.event.data.id }}"
+          message: "Done!"
+
+  - alias: AUT-Centinel Mode Door Camera Recording
+    initial_state: 'on'
+    triggers:
+      - platform: state
+        entity_id: binary_sensor.entrance_door_sensor_opened
+        to: 'on'
+    conditions:
+      - condition: state
+        entity_id: input_boolean.centinel_mode
+        state: 'on'
+    actions:
+      - parallel:
+        - service: script.notify_in_home_or_all
+          data:
+            title: 'Alert: Door Opened - Starting Video Recording'
+            message: 'The entrance door has been opened while Centinel Mode is active. Starting video recordings.'
+        - sequence:
+          # Immediate 4s recording
+          - service: camera.record
+            target:
+              entity_id: camera.entrance_camera
+            data:
+              duration: 4
+              filename: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_4s.mp4"
+          - service: script.notify_in_home_or_all
+            data:
+              title: 'Door Recording - 4s'
+              message: 'First video recording (4s) completed.'
+              data:
+                video:
+                  - file: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_4s.mp4"
+      - sequence:
+        # Start 8s recording from door opening
+        - service: camera.record
+          target:
+          entity_id: camera.entrance_camera
+          data:
+            duration: 8
+            filename: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
+        - service: script.notify_in_home_or_all
+          data:
+            title: 'Door Recording - 8s'
+            message: 'Second video recording (8s) completed.'
+            data:
+              video:
+                  - file: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
+      - sequence:
+        # Start 15s recording from door opening
+        - service: camera.record
+          target:
+          entity_id: camera.entrance_camera
+          data:
+            duration: 15
+            filename: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_15s.mp4"
+        - service: script.notify_in_home_or_all
+          data:
+            title: 'Door Recording - 15s'
+            message: 'Final video recording (15s) completed.'
+            data:
+              video:
+                - file: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_15s.mp4"
+
+  # Simulate presence with light patterns
+  - alias: AUT-Centinel Mode Light Control - Sunset
+    initial_state: 'on'
+    triggers:
+      - platform: sun
+        event: sunset
+        offset: "-00:{{ range(0, 30) | random }}:00"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.centinel_mode
+        state: 'on'
+    actions:
+      - service: light.turn_on
+        target:
+          entity_id: group.centinel_mode_lights
+        data:
+          brightness: "{{ range(180, 255) | random }}"
+          transition: "{{ range(5, 15) | random }}"
+
+  - alias: AUT-Centinel Mode Light Control - Night Off
+    initial_state: 'on'
+    triggers:
+      - platform: time
+        at: '23:00:00'
+    conditions:
+      - condition: state
+        entity_id: input_boolean.centinel_mode
+        state: 'on'
+    actions:
+      - delay:
+          minutes: "{{ range(0, 59) | random }}"
+      - service: light.turn_off
+        target:
+          entity_id: group.centinel_mode_lights
+        data:
+          transition: "{{ range(5, 15) | random }}"

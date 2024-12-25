@@ -1,0 +1,5 @@
+# input_boolean:
+  centinel_mode:
+    name: Centinel Mode
+    icon: mdi:shield-home
+    initial: off 
