@@ -2,4 +2,4 @@
   centinel_mode:
     name: Centinel Mode
     icon: mdi:shield-home
-    initial: off 
+    initial: off

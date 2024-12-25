@@ -187,7 +187,8 @@
             target:
               entity_id: camera.entrance_camera
             data:
-              duration: 4
+              duration: 8
+              lookback: 4
               filename: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_4s.mp4"
           - service: script.notify_in_home_or_all
             data:
@@ -202,7 +203,8 @@
           target:
           entity_id: camera.entrance_camera
           data:
-            duration: 8
+            duration: 16
+            lookback: 8
             filename: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
         - service: script.notify_in_home_or_all
           data:
@@ -210,14 +212,15 @@
             message: 'Second video recording (8s) completed.'
             data:
               video:
-                  - file: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
+                - file: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
       - sequence:
         # Start 15s recording from door opening
         - service: camera.record
           target:
           entity_id: camera.entrance_camera
           data:
-            duration: 15
+            duration: 30
+            lookback: 15
             filename: "/config/www/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_15s.mp4"
         - service: script.notify_in_home_or_all
           data:
@@ -233,12 +236,13 @@
     triggers:
       - platform: sun
         event: sunset
-        offset: "-00:{{ range(0, 30) | random }}:00"
     conditions:
       - condition: state
         entity_id: input_boolean.centinel_mode
         state: 'on'
     actions:
+      - delay:
+          minutes: "{{ range(0, 30) | random }}"
       - service: light.turn_on
         target:
           entity_id: group.centinel_mode_lights
