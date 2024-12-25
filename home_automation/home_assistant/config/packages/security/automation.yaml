@@ -201,7 +201,7 @@
         # Start 8s recording from door opening
         - service: camera.record
           target:
-          entity_id: camera.entrance_camera
+            entity_id: camera.entrance_camera
           data:
             duration: 16
             lookback: 8
@@ -217,7 +217,7 @@
         # Start 15s recording from door opening
         - service: camera.record
           target:
-          entity_id: camera.entrance_camera
+            entity_id: camera.entrance_camera
           data:
             duration: 30
             lookback: 15
