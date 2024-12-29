@@ -71,6 +71,9 @@ entities:
     state_filter:
       - operator: '<='
         value: 10
+  - entity: input_boolean.centinel_mode
+    name: Centinel Mode
+    icon: mdi:shield-home
 state_filter:
   - "on"
   - "home"

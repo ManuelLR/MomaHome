@@ -1,0 +1,7 @@
+# group:
+  centinel_mode_lights:
+    name: Centinel Mode Lights
+    icon: mdi:lightbulb-group
+    entities:
+      - light.flexo_light_01_light
+      - light.bedroom_nightstand_lights
