@@ -177,6 +177,8 @@
       - platform: state
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
+    variables:
+      trigger_time: "{{ now().strftime('%Y%m%d_%H%M%S') }}"
     conditions:
       - condition: state
         entity_id: input_boolean.centinel_mode
@@ -196,7 +198,7 @@
               duration: 4
               # duration: 8
               # lookback: 4
-              filename: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_4s.mp4"
+              filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
           - delay:
               seconds: 15
           - service: script.notify_in_home_or_all
@@ -205,7 +207,7 @@
               message: 'First video recording (4s) completed.'
               data:
                 video:
-                  - file: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_4s.mp4"
+                  - file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
                     caption: 'Recording (4s)'
       - sequence:
         # Start 8s recording from door opening
@@ -216,7 +218,7 @@
             duration: 5
             # duration: 16
             # lookback: 8
-            filename: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
+            filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_8s.mp4"
         - delay:
             seconds: 15
         - service: script.notify_in_home_or_all
@@ -225,7 +227,7 @@
             message: 'Second video recording (8s) completed.'
             data:
               video:
-                - file: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
+                - file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_8s.mp4"
                   caption: 'Recording (8s)'
       # Unfortunatelly, we can't use the camera.record_video service in parallel.
       - sequence:
@@ -237,7 +239,7 @@
             duration: 10
             # duration: 30
             # lookback: 15
-            filename: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_15s.mp4"
+            filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_15s.mp4"
         - delay:
             seconds: 15
         - service: script.notify_in_home_or_all
@@ -246,7 +248,7 @@
             message: 'Final video recording (15s) completed.'
             data:
               video:
-                - file: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_15s.mp4"
+                - file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_15s.mp4"
                   caption: 'Recording (15s)'
   # Simulate presence with light patterns
   - alias: AUT-Centinel Mode Light Control - Sunset
