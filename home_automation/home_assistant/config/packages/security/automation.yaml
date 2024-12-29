@@ -195,9 +195,9 @@
             target:
               entity_id: camera.entrance_camera
             data:
-              duration: 4
-              # duration: 8
-              # lookback: 4
+              # duration: 4
+              duration: 8
+              lookback: 4
               filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
           # - delay:
           #     seconds: 15
@@ -208,16 +208,16 @@
               data:
                 video:
                   - file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
-                    caption: 'Recording (4s)'
+                    caption: 'Recording #{{ trigger_time }} (4s)'
       - sequence:
         # Start 8s recording from door opening
         - service: camera.record
           target:
             entity_id: camera.entrance_camera
           data:
-            duration: 5
-            # duration: 16
-            # lookback: 8
+            # duration: 5
+            duration: 16
+            lookback: 8
             filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_8s.mp4"
         # - delay:
         #     seconds: 15
@@ -250,6 +250,9 @@
               video:
                 - file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_15s.mp4"
                   caption: 'Recording (15s)'
+      # Clean old recordings
+      - service: shell_command.delete_old_camera_recordings
+
   # Simulate presence with light patterns
   - alias: AUT-Centinel Mode Light Control - Sunset
     initial_state: 'on'

@@ -3,3 +3,8 @@
     bash -exc '
     yq eval "del( .[\"{{ ip_to_unban }}\"] )" -i ip_bans.yaml
     '
+
+  delete_old_camera_recordings: |-
+    bash -exc '
+    find /tmp/homeassistant/camera_recordings -type f -mtime +300 -delete
+    '
