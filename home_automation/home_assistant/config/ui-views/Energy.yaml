@@ -4,7 +4,6 @@
     # - type: energy-date-selection
     - type: entity
       entity: sensor.edata_mp0f
-      attribute: last_registered_date
       name: Most recent data
       icon: mdi:calendar
     - type: custom:apexcharts-card
