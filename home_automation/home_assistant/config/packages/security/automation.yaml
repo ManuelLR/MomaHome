@@ -274,7 +274,6 @@
           entity_id: group.centinel_mode_lights
         data:
           brightness: "{{ range(180, 255) | random }}"
-          transition: "{{ range(5, 15) | random }}"
 
   - alias: AUT-Centinel Mode Light Control - Night Off
     id: AUT-Centinel_Mode_Light_Control_Night_Off
@@ -292,5 +291,3 @@
       - service: light.turn_off
         target:
           entity_id: group.centinel_mode_lights
-        data:
-          transition: "{{ range(5, 15) | random }}"
