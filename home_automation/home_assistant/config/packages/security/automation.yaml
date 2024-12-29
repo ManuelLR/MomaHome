@@ -205,6 +205,7 @@
               data:
                 video:
                   - file: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_4s.mp4"
+                    caption: 'Recording (4s)'
       - sequence:
         # Start 8s recording from door opening
         - service: camera.record
@@ -214,6 +215,8 @@
             duration: 16
             lookback: 8
             filename: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
+        - delay:
+            seconds: 15
         - service: script.notify_in_home_or_all
           data:
             title: 'Door Recording - 8s'
@@ -221,6 +224,7 @@
             data:
               video:
                 - file: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
+                  caption: 'Recording (8s)'
       # Unfortunatelly, we can't use the camera.record_video service in parallel.
       - sequence:
         # Start 15s recording from door opening
@@ -231,6 +235,8 @@
             duration: 30
             lookback: 15
             filename: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_15s.mp4"
+        - delay:
+            seconds: 15
         - service: script.notify_in_home_or_all
           data:
             title: 'Door Recording - 15s'
@@ -238,7 +244,7 @@
             data:
               video:
                 - file: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_15s.mp4"
-
+                  caption: 'Recording (15s)'
   # Simulate presence with light patterns
   - alias: AUT-Centinel Mode Light Control - Sunset
     initial_state: 'on'
