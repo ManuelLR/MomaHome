@@ -43,7 +43,7 @@ entities:
   - entity: media_player.mini
     name: Mini (cocina)
   # We should use the ID of the new integration but it contains serial id
-  - entity: sensor.lavavajillas_operation_state
+  - entity: sensor.lavavajillas_status_operationstate
     name: Lavavajillas
     icon: mdi:dishwasher
     state_filter:

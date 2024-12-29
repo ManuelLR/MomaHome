@@ -16,9 +16,11 @@
   - alias: AUT-Notify home connect entity finished
     initial_state: 'on'
     triggers:
-      - platform: event
-        event_type: program_finished
-        id: input_event
+      - domain: home_connect_alt
+        type: program_finished
+        trigger: device
+        device_id: !secret momahome_dishwasher_device_id
+
     actions:
       - service: script.notify_in_home_or_all
         data:
