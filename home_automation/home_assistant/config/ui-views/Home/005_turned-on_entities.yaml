@@ -24,19 +24,21 @@ entities:
   - entity: input_number.vacuum_xiaomi_dust_clean_left
     name: "[Vacuum] Bin dust left"
     type: button
-    state_filter:
-      - operator: '<'
-        value: 10
+    conditions:
+      - condition: numeric_state
+        below: 10
   - entity: fan.dyson_01
     name: Dyson 01 Fan
   - entity: sensor.mini_timers
     name: Kitchen timer
-    state_filter: &google_home_enabled
-      - operator: '!='
-        value: unavailable
+    conditions:
+      - condition: state
+        state_not: unavailable
   - entity: sensor.mini_alarms
     name: Kitchen alarm
-    state_filter: *google_home_enabled
+    conditions:
+      - condition: state
+        state_not: unavailable
   - entity: media_player.sony_bravia_tv
     name: Tele salón
     tap_action: !include ../utils/tv-card.yaml
@@ -46,49 +48,53 @@ entities:
   - entity: sensor.lavavajillas_status_operationstate
     name: Lavavajillas
     icon: mdi:dishwasher
-    state_filter:
-      - operator: '!='
-        value: 'Ready'
-  # - plant.flora_001
+    conditions:
+      - condition: state
+        state_not: Ready
   - entity: switch.adguard_protection
     name: AdGuard - Bloqueo de anuncios
-    state_filter:
-      - "off"
+    conditions:
+      - condition: state
+        state: "off"
   - entity: sensor.ups_status
-    state_filter:
-      - operator: '!='
-        value: 'ONLINE'
+    conditions:
+      - condition: state
+        state_not: ONLINE
   - entity: sensor.ups_battery
     name: "[UPS] Battery status"
     icon: mdi:home-battery-outline
-    state_filter:
-      - operator: '<'
-        value: 99
+    conditions:
+      - condition: numeric_state
+        below: 99
   - entity: binary_sensor.entrance_door_sensor_opened
     name: Entrance Door
   - entity: sensor.entrance_door_sensor_battery
     name: Entrance Door Sensor Battery Low
-    state_filter:
-      - operator: '<='
-        value: 10
+    conditions:
+      - condition: numeric_state
+        below: 11
   - entity: input_boolean.centinel_mode
     name: Centinel Mode
     icon: mdi:shield-home
-state_filter:
-  - "on"
-  - "home"
-  - "playing"
-  # sensor.washing_machine_status
-  - "Scheduled"
-  - "Washing"
-  - "Finishing"
-  - "Clean"
-  - "Emptying"
-  # vacuum.valetudo_roborocks5
-  - "cleaning"
-  - "returning"
-  - "error"
-  - "idle"
-  - "paused"
-  # Plant
-  - "problem"
+conditions:
+  - condition: or
+    conditions:
+      - condition: state
+        state:
+          - "on"
+          - "home"
+          - "playing"
+          # sensor.washing_machine_status
+          - "Scheduled"
+          - "Washing"
+          - "Finishing"
+          - "Clean"
+          - "Emptying"
+          # vacuum.valetudo_roborocks5
+          - "cleaning"
+          - "returning"
+          - "error"
+          - "idle"
+          - "paused"
+          # Plant
+          - "problem"
