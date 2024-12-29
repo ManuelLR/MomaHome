@@ -197,7 +197,7 @@
               lookback: 4
               filename: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_4s.mp4"
           - delay:
-              seconds: 2
+              seconds: 15
           - service: script.notify_in_home_or_all
             data:
               title: 'Door Recording - 4s'
