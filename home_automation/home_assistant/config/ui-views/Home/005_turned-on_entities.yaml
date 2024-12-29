@@ -50,7 +50,7 @@ entities:
     icon: mdi:dishwasher
     conditions:
       - condition: state
-        state_not: Ready
+        state_not: BSH.Common.EnumType.OperationState.Ready
   - entity: switch.adguard_protection
     name: AdGuard - Bloqueo de anuncios
     conditions:
