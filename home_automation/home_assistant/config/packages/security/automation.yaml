@@ -1,5 +1,6 @@
 # automation:
   - alias: AUT-New device found
+    id: AUT-New_Device_Found
     initial_state: 'on'
     mode: parallel
     triggers:
@@ -14,6 +15,7 @@
         data: *data-alert-new-device
 
   - alias: AUT-Notify failed login attempt
+    id: AUT-Notify_Failed_Login_Attempt
     initial_state: 'on'
     mode: parallel
     triggers:
@@ -29,6 +31,7 @@
         message: "{{ state_attr('persistent_notification.http_login', 'message') }}"
 
   - alias: AUT-Notify ip_banned
+    id: AUT-Notify_IP_Banned
     initial_state: 'on'
     mode: parallel
     triggers:
@@ -51,6 +54,7 @@
               - 'Unban {{ banned_ip }} and restart Home Assistant:/unban_ip {{ banned_ip }}'
 
   - alias: AUT-Unban IP
+    id: AUT-Unban_IP
     mode: restart
     initial_state: 'on'
     triggers:
@@ -80,6 +84,7 @@
       - service: homeassistant.restart
 
   - alias: AUT-Notify Entrance Door Opened
+    id: AUT-Notify_Entrance_Door_Opened
     initial_state: 'on'
     triggers:
       - platform: state
@@ -94,6 +99,7 @@
             disable_notification: True
 
   - alias: AUT-Notify Entrance Door Opened Extended Away
+    id: AUT-Notify_Entrance_Door_Opened_Extended_Away
     initial_state: 'on'
     triggers:
       - platform: state
@@ -113,6 +119,7 @@
           message: 'The entrance door has been opened while the house is in Extended Away mode.'
 
   - alias: AUT-Notify Entrance Door Opened Too much time
+    id: AUT-Notify_Entrance_Door_Opened_Too_Much_Time
     initial_state: 'on'
     triggers:
       - platform: state
@@ -126,6 +133,7 @@
           message: 'The entrance door has been left open for more than 3 minutes.'
 
   - alias: AUT-Notify Centinel Mode on Extended Away
+    id: AUT-Notify_Centinel_Mode_On_Extended_Away
     initial_state: 'on'
     triggers:
       - platform: state
@@ -144,6 +152,7 @@
               - 'Disable Centinel Mode:/disable_centinel_mode'
 
   - alias: AUT-Disable Centinel Mode
+    id: AUT-Disable_Centinel_Mode
     mode: restart
     initial_state: 'on'
     triggers:
@@ -248,6 +257,7 @@
 
   # Simulate presence with light patterns
   - alias: AUT-Centinel Mode Light Control - Sunset
+    id: AUT-Centinel_Mode_Light_Control_Sunset
     initial_state: 'on'
     triggers:
       - platform: sun
@@ -267,6 +277,7 @@
           transition: "{{ range(5, 15) | random }}"
 
   - alias: AUT-Centinel Mode Light Control - Night Off
+    id: AUT-Centinel_Mode_Light_Control_Night_Off
     initial_state: 'on'
     triggers:
       - platform: time
