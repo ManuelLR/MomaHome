@@ -88,8 +88,10 @@
     actions:
       - service: notify.manolo
         data:
-          title: '*Door Opened*'
+          title: '[Debug] *Door Opened*'
           message: 'The entrance door has been opened.'
+          data:
+            disable_notification: True
 
   - alias: AUT-Notify Entrance Door Opened Extended Away
     initial_state: 'on'
@@ -100,7 +102,10 @@
     conditions:
       - condition: state
         entity_id: sensor.home_occupancy_status
-        state: 'Extended Away'
+        state:
+          - 'Extended Away'
+          # Some times after 'Extended Away', we have race condition so temporarily we should add that state
+          - 'Just Arrived'
     actions:
       - service: script.notify_in_home_or_all
         data:
