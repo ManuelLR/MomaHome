@@ -188,19 +188,16 @@
         - service: script.notify_in_home_or_all
           data:
             title: 'Alert: Door Opened - Starting Video Recording'
-            message: 'The entrance door has been opened while Centinel Mode is active. Starting video recordings.'
+            message: "The entrance door has been opened at {{ trigger_time }} while Centinel Mode is active. Starting video recordings."
         - sequence:
           # Immediate 4s recording
           - service: camera.record
             target:
               entity_id: camera.entrance_camera
             data:
-              # duration: 4
-              duration: 8
+              duration: 4
               lookback: 4
               filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
-          # - delay:
-          #     seconds: 15
           - service: script.notify_in_home_or_all
             data:
               title: 'Door Recording - 4s'
@@ -208,48 +205,44 @@
               data:
                 video:
                   - file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
-                    caption: 'Recording (4s)'
+                    caption: "Recording #{{ trigger_time }} (4s)"
+
+      # Unfortunatelly, we can't use the camera.record_video service in parallel.
       - sequence:
-        # Start 8s recording from door opening
+        # Start 5s recording after previous record from door opening
         - service: camera.record
           target:
             entity_id: camera.entrance_camera
           data:
-            # duration: 5
-            duration: 16
-            lookback: 8
-            filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_8s.mp4"
-        # - delay:
-        #     seconds: 15
+            duration: 5
+            # lookback: 8
+            filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
         - service: script.notify_in_home_or_all
           data:
-            title: 'Door Recording - 8s'
-            message: 'Second video recording (8s) completed.'
+            title: 'Door Recording - 5s'
+            message: 'Second video recording (5s) completed.'
             data:
               video:
                 - file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_8s.mp4"
-                  caption: 'Recording (8s)'
-      # Unfortunatelly, we can't use the camera.record_video service in parallel.
+                  caption: "Continuation recording #{{ trigger_time }} (5s)"
       - sequence:
-        # Start 15s recording from door opening
+        # Start 25s recording from previous recording
         - service: camera.record
           target:
             entity_id: camera.entrance_camera
           data:
-            duration: 10
+            duration: 25
             # duration: 30
-            # lookback: 15
-            filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_15s.mp4"
-        # - delay:
-        #     seconds: 15
+            lookback: 20
+            filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_25s.mp4"
         - service: script.notify_in_home_or_all
           data:
-            title: 'Door Recording - 15s'
-            message: 'Final video recording (15s) completed.'
+            title: 'Door Recording - 25s'
+            message: 'Final video recording (25s) completed.'
             data:
               video:
-                - file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_15s.mp4"
-                  caption: 'Recording (15s)'
+                - file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_25s.mp4"
+                  caption: "Continuation recording #{{ trigger_time }} (25s)"
       # Clean old recordings
       - service: shell_command.delete_old_camera_recordings
 
