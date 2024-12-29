@@ -193,7 +193,7 @@
             target:
               entity_id: camera.entrance_camera
             data:
-              duration: 4s
+              duration: 4
               # duration: 8
               # lookback: 4
               filename: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_4s.mp4"
@@ -213,7 +213,7 @@
           target:
             entity_id: camera.entrance_camera
           data:
-            duration: 5s
+            duration: 5
             # duration: 16
             # lookback: 8
             filename: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_8s.mp4"
@@ -234,7 +234,7 @@
           target:
             entity_id: camera.entrance_camera
           data:
-            duration: 10s
+            duration: 10
             # duration: 30
             # lookback: 15
             filename: "/tmp/homeassistant/camera_recordings/entrance_{{ now().strftime('%Y%m%d_%H%M%S') }}_15s.mp4"
