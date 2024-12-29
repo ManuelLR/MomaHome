@@ -171,6 +171,7 @@
           message: "Done!"
 
   - alias: AUT-Centinel Mode Door Camera Recording
+    id: AUT-Centinel_Mode_Door_Camera_Recording
     initial_state: 'on'
     triggers:
       - platform: state
