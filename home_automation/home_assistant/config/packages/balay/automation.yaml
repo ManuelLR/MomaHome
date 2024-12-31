@@ -27,6 +27,4 @@
           title: 'Dishwasher finished'
           message: >
             Ey, dishwasher just finished.
-            Event: `{{ trigger.event }}`
-            Event.Data: `{{ trigger.event.data }}`
 
