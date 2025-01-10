@@ -1,7 +1,7 @@
 # automation:
   # - alias: AUT-Sunset
   #   initial_state: 'on'
-  #   trigger:
+  #   triggers:
   #     - platform: state
   #       to: 'Just Arrived'
   #       entity_id:
@@ -22,7 +22,7 @@
   #         - 'Home'
   #       entity_id:
   #         - sensor.home_occupancy_status
-  #   action:
+  #   actions:
   #     - service: scene.turn_on
   #       entity_id: scene.night
   #     - service: script.notify_in_home_or_all
@@ -36,7 +36,7 @@
   # - alias: AUT-Turn off scene night
   #   mode: restart
   #   initial_state: 'on'
-  #   trigger:
+  #   triggers:
   #     - platform: event
   #       event_type: telegram_command
   #       event_data: &telegram_turn_off_scene_light
@@ -44,7 +44,7 @@
   #     - platform: event
   #       event_type: telegram_callback
   #       event_data: *telegram_turn_off_scene_light
-  #   action:
+  #   actions:
   #     - service: switch.turn_off
   #       entity_id:
   #         - switch.man_001

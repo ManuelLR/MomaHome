@@ -115,7 +115,9 @@ mqtt:
 zha:
   zigpy_config:
     ota:
-      ikea_provider: true
+      # Replace with "providers" to override default config.
+      extra_providers:
+        - type: ikea
 
 
 # Server

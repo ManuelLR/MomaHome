@@ -1,7 +1,7 @@
 # automation:
   - alias: AUT-Notify Vacuum Error
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: state
         entity_id: vacuum.valetudo_roborocks5
         to: error
@@ -11,13 +11,13 @@
         to: 'Home'
         for:
           minutes: 2
-    condition:
+    conditions:
       condition: and
       conditions:
         - condition: state
           entity_id: vacuum.valetudo_roborocks5
           state: error
-    action:
+    actions:
       ## Wait until map fully updated
       - delay: '00:00:21'
       - service: script.take_camera_snapshot_and_send_telegram
@@ -33,7 +33,7 @@
 
   - alias: AUT-Vacuum
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: time
         at: '12:32:00'
       - platform: time
@@ -47,7 +47,7 @@
           - sensor.home_occupancy_status
         to: "Away"
         for: "00:05:00"
-    condition:
+    conditions:
       - condition: and
         conditions:
       # Check if decent hours
@@ -98,7 +98,7 @@
                       - "Extended Away"
                       - "Away"
 
-    action:
+    actions:
       # If someone in house, we should send a notification and create a timer and start after the notification isn't answered or timer cancelled
       - service: timer.start
         entity_id: timer.vacuum_start_in
@@ -115,7 +115,7 @@
 
   - alias: AUT-Vacuum start
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: event
         event_type: timer.finished
         event_data:
@@ -127,7 +127,7 @@
       - platform: event
         event_type: telegram_callback
         event_data: *telegram_vacuum_start
-    action:
+    actions:
       - service: vacuum.set_fan_speed
         entity_id: vacuum.valetudo_roborocks5
         data:
@@ -138,11 +138,11 @@
   - alias: AUT-Vacuum update statistics
     mode: queued
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: state
         entity_id: vacuum.valetudo_roborocks5
         to: returning
-    action:
+    actions:
       - delay: '00:00:10'
         # If we have the same total historic time than before obviously we are trying to update the same values
       - condition: template
@@ -181,21 +181,21 @@
   - alias: AUT-Notify Vacuum maintenance
     mode: restart
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: state
         entity_id: vacuum.valetudo_roborocks5
         to: returning
       - platform: state
         entity_id: input_number.vacuum_xiaomi_dust_clean_left
     # This must be only send when someone come home
-    condition:
+    conditions:
       - condition: template
         value_template: >
           {%- set minimal_notify = 2 -%}
           {{ 
               (states('input_number.vacuum_xiaomi_dust_clean_left')|int) < minimal_notify
           }}
-    action:
+    actions:
       - service: script.notify_in_home_or_all
         data:
           title: 'Vacuum need maintenance'
@@ -216,7 +216,7 @@
   - alias: AUT-Telegram reset Vacuum meters
     mode: restart
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: event
         event_type: telegram_command
         event_data: &telegram_vacuum_cleaned
@@ -224,7 +224,7 @@
       - platform: event
         event_type: telegram_callback
         event_data: *telegram_vacuum_cleaned
-    action:
+    actions:
       - service: input_number.set_value
         data_template:
           entity_id: input_number.vacuum_xiaomi_dust_clean_left
@@ -241,7 +241,7 @@
   - alias: AUT-Telegram stop Vacuum
     mode: restart
     initial_state: 'on'
-    trigger:
+    triggers:
       - platform: event
         event_type: telegram_command
         event_data: &telegram_vacuum_stop
@@ -249,7 +249,7 @@
       - platform: event
         event_type: telegram_callback
         event_data: *telegram_vacuum_stop
-    action:
+    actions:
       - service: timer.cancel
         target:
           entity_id: timer.vacuum_start_in

@@ -4,11 +4,11 @@
   - alias: AUT-Update presence of man-005 devices
     mode: parallel
     max: 1000
-    trigger:
+    triggers:
       - platform: event
         ## We trigger that on any state changed
         event_type: state_changed
-    condition:
+    conditions:
       - alias: "Filter by device"
         condition: template
         value_template: >
@@ -18,7 +18,7 @@
       #   condition: template
       #   value_template: >
       #     {{ trigger.event.data.entity_id is not match('automation.') }}
-    action:
+    actions:
       - variables:
           triggered_entity_id: '{{ trigger.event.data.entity_id }}'
       ### ------- For Debugging -----------

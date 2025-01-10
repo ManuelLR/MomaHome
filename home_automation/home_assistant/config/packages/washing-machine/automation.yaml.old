@@ -4,18 +4,18 @@
   # the Off state, change the status of the washing machine
   # to Scheduled.
   - alias: AUT-Washing machine Scheduled
-    trigger:
+    triggers:
       - platform: numeric_state
         entity_id: sensor.man_002_current_a
         below: 0.05
         above: 0
-    condition:
+    conditions:
       condition: or
       conditions:
         - condition: state
           entity_id: sensor.washing_machine_status
           state: 'Off'
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
@@ -29,11 +29,11 @@
   # in the Running state.
 
   - alias: AUT-Washing machine Running
-    trigger:
+    triggers:
       - platform: numeric_state
         entity_id: sensor.man_002_current_a
         above: 1
-    condition:
+    conditions:
       condition: or
       conditions:
         - condition: state
@@ -43,7 +43,7 @@
             - 'Scheduled'
             - 'Finishing'
             - 'Clean'
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
@@ -52,17 +52,17 @@
   # # When the power drops, move the state of the washing machine to 
   # # Finishing.
   # - alias: AUT-Washing machine Finishing
-  #   trigger:
+  #   triggers:
   #     - platform: numeric_state
   #       entity_id: sensor.man_002_current_a
   #       below: 2
-  #   condition:
+  #   conditions:
   #     condition: and
   #     conditions:
   #       - condition: state
   #         entity_id: input_select.washing_machine_status
   #         state: 'Washing'
-  #   action:
+  #   actions:
   #     - service: input_select.select_option
   #       data:
   #         entity_id: input_select.washing_machine_status
@@ -73,7 +73,7 @@
   # washing machine is in between cycles and the power drops, we 
   # won't mark the washing machine cycle as finished too early.
   - alias: AUT-Washing machine Clean
-    trigger:
+    triggers:
         # Wait 8 minutes for us to be in the Finishing state before we
         # decide the washing machine has finished. This way, if the 
         # washing machine is in between cycles and the power drops, we 
@@ -90,7 +90,7 @@
         for:
           # Time takes to open the door
           minutes: 4
-    condition:
+    conditions:
       condition: or
       conditions:
         - condition: state
@@ -98,7 +98,7 @@
           state:
             - 'Washing'
             - 'Finishing'
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
@@ -108,13 +108,13 @@
   # a state different of 'Off' state, change the status of 
   # the washing machine to 'Off'.
   - alias: AUT-Washing machine Off
-    trigger:
+    triggers:
       - platform: numeric_state
         entity_id: sensor.man_002_current_a
         below: 0.001
         # for:
         #   minutes: 5
-    condition:
+    conditions:
       condition: or
       conditions:
         - condition: state
@@ -124,7 +124,7 @@
             - 'Washing'
             - 'Finishing'
             - 'Clean'
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.washing_machine_status
@@ -135,19 +135,19 @@
   # # idle, so we don't spam people that the washing machine has 
   # # finished, and someone has already emptied it
   # - alias: AUT-Washing machine dirty when door opens
-  #   trigger:
+  #   triggers:
   #     # I've setup a template sensor to change make the binary_sensor report open and closed
   #     # instead of 1 and 0
   #     - platform: state
   #       entity_id: input_select.washingmachine_door_status
   #       to: 'Open'
-  #   condition:
+  #   conditions:
   #     condition: and
   #     conditions:
   #       - condition: state
   #         entity_id: input_select.washing_machine_status
   #         state: 'Clean'
-  #   action:
+  #   actions:
   #     - service: input_select.select_option
   #       data:
   #         entity_id: input_select.washing_machine_status

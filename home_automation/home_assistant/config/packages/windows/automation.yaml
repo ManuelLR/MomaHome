@@ -7,12 +7,12 @@
 
   - alias: AUT-Mark windows preferred status as close
     mode: queued
-    trigger:
+    triggers:
       - platform: template
         value_template: "{{ states('binary_sensor.environment_001_temperature_rising') and states('binary_sensor.dyson_01_temperature_rising') }}"
         # for: "00:10:00"
         for: "01:30:00"
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.windows_preferred_status
@@ -20,16 +20,16 @@
 
   - alias: AUT-Mark windows preferred status as open
     mode: queued
-    trigger:
+    triggers:
       - platform: template
         value_template: "{{ states('binary_sensor.environment_001_temperature_falling') and (states('sensor.ble_environment_001_temperature') < states('sensor.dyson_01_temperature')) }}"
         for: "00:10:00"
-    # condition:
+    # conditions:
     #   - platform: template
     #     value_template: "{{ states('binary_sensor.environment_001_temperature_falling') }}"
     #     # for: "00:10:00"
     #     for: "01:00:00"
-    action:
+    actions:
       - service: input_select.select_option
         data:
           entity_id: input_select.windows_preferred_status

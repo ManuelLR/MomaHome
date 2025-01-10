@@ -4,7 +4,6 @@
     # - type: energy-date-selection
     - type: entity
       entity: sensor.edata_mp0f
-      attribute: last_registered_date
       name: Most recent data
       icon: mdi:calendar
     - type: custom:apexcharts-card
@@ -79,84 +78,92 @@
                     });
                 }
             );
-    - type: custom:apexcharts-card
-      chart_type: pie
-      header:
-        show: true
-        title: Current month
-        show_states: true
-        colorize_states: true
-        floating: true
-      all_series_config:
-        show:
-          legend_value: true
-          in_header: false
-        unit: kWh
-      apex_config:
-        chart:
-          height: 250px
-      series:
-        - entity: sensor.edata_mp0f
-          attribute: month_kWh
-          show:
-            in_chart: false
-            in_header: true
-          name: Total
-        - entity: sensor.edata_mp0f
-          attribute: month_p1_kWh
-          name: Punta
-        - entity: sensor.edata_mp0f
-          attribute: month_p2_kWh
-          name: Llano
-        - entity: sensor.edata_mp0f
-          attribute: month_p3_kWh
-          name: Valle
-        - entity: sensor.edata_mp0f
-          attribute: month_€
-          unit: €
-          show:
-            in_chart: false
-            in_header: true
-          name: Factura
-    - type: custom:apexcharts-card
-      chart_type: pie
-      header:
-        show: true
-        title: Last month
-        show_states: true
-        colorize_states: true
-        floating: true
-      all_series_config:
-        show:
-          legend_value: true
-          in_header: false
-        unit: kWh
-      apex_config:
-        chart:
-          height: 250px
-      series:
-        - entity: sensor.edata_mp0f
-          attribute: last_month_kWh
-          show:
-            in_chart: false
-            in_header: true
-          name: Total
-        - entity: sensor.edata_mp0f
-          attribute: last_month_p1_kWh
-          name: Punta
-        - entity: sensor.edata_mp0f
-          attribute: last_month_p2_kWh
-          name: Llano
-        - entity: sensor.edata_mp0f
-          attribute: last_month_p3_kWh
-          name: Valle
-        - entity: sensor.edata_mp0f
-          attribute: last_month_€
-          unit: €
-          show:
-            in_chart: false
-            in_header: true
-          name: Factura
+    - type: custom:edata-card
+      entity: sensor.edata_mp0f
+      chart: summary-month
+      title: Current month
+    # - type: custom:apexcharts-card
+    #   chart_type: pie
+    #   header:
+    #     show: true
+    #     title: Current month
+    #     show_states: true
+    #     colorize_states: true
+    #     floating: true
+    #   all_series_config:
+    #     show:
+    #       legend_value: true
+    #       in_header: false
+    #     unit: kWh
+    #   apex_config:
+    #     chart:
+    #       height: 250px
+    #   series:
+    #     - entity: sensor.edata_mp0f
+    #       attribute: month_kWh
+    #       show:
+    #         in_chart: false
+    #         in_header: true
+    #       name: Total
+    #     - entity: sensor.edata_mp0f
+    #       attribute: month_p1_kWh
+    #       name: Punta
+    #     - entity: sensor.edata_mp0f
+    #       attribute: month_p2_kWh
+    #       name: Llano
+    #     - entity: sensor.edata_mp0f
+    #       attribute: month_p3_kWh
+    #       name: Valle
+    #     - entity: sensor.edata_mp0f
+    #       attribute: month_€
+    #       unit: €
+    #       show:
+    #         in_chart: false
+    #         in_header: true
+    #       name: Factura
+    - type: custom:edata-card
+      entity: sensor.edata_mp0f
+      chart: summary-last-month
+      title: Last month
+    # - type: custom:apexcharts-card
+    #   chart_type: pie
+    #   header:
+    #     show: true
+    #     title: Last month
+    #     show_states: true
+    #     colorize_states: true
+    #     floating: true
+    #   all_series_config:
+    #     show:
+    #       legend_value: true
+    #       in_header: false
+    #     unit: kWh
+    #   apex_config:
+    #     chart:
+    #       height: 250px
+    #   series:
+    #     - entity: sensor.edata_mp0f
+    #       attribute: last_month_kWh
+    #       show:
+    #         in_chart: false
+    #         in_header: true
+    #       name: Total
+    #     - entity: sensor.edata_mp0f
+    #       attribute: last_month_p1_kWh
+    #       name: Punta
+    #     - entity: sensor.edata_mp0f
+    #       attribute: last_month_p2_kWh
+    #       name: Llano
+    #     - entity: sensor.edata_mp0f
+    #       attribute: last_month_p3_kWh
+    #       name: Valle
+    #     - entity: sensor.edata_mp0f
+    #       attribute: last_month_€
+    #       unit: €
+    #       show:
+    #         in_chart: false
+    #         in_header: true
+    #       name: Factura
 
     # Hourly consumption
     - type: vertical-stack
@@ -164,6 +171,7 @@
       cards:
         - type: energy-date-selection
         - type: energy-usage-graph
+        - type: energy-sources-table
 
     - type: custom:apexcharts-card
       graph_span: 395d
