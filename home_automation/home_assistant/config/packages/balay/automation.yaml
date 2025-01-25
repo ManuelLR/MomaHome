@@ -1,10 +1,29 @@
 # automation:
   - alias: AUT-Notify home connect entity finish(Testing)
+    id: AUT-Notify_Home_Connect_Entity_Finish_Testing
+    description: >
+      Testing automation that logs all Home Connect events except those that
+      already have specific handling. This helps in discovering and debugging
+      new events.
     initial_state: 'on'
     triggers:
       - platform: event
         event_type: home_connect_alt_event
         id: input_event
+    condition:
+      # Skip events that already have specific handling
+      # List of skipped events and their handlers:
+      # - 'Dishcare.Dishwasher.Event.RinseAidNearlyEmpty': Handled by AUT-Notify_Dishwasher_Rinse_Aid_Level
+      # - 'BSH.Common.Event.ProgramFinished': Handled by AUT-Notify_Home_Connect_Entity_Finished
+      # - 'BSH.Common.Status.OperationState': Handled through device status in UI
+      - condition: template
+        value_template: >
+          {% set skip_events = [
+            'Dishcare.Dishwasher.Event.RinseAidNearlyEmpty',
+            'BSH.Common.Event.ProgramFinished',
+            'BSH.Common.Status.OperationState'
+          ] %}
+          {{ trigger.event.data.key not in skip_events }}
     actions:
       - service: notify.manolo
         data:
@@ -13,18 +32,42 @@
             Event: `{{ trigger.event }}`
             Event.Data: `{{ trigger.event.data }}`
 
+  # Specific event handlers
   - alias: AUT-Notify home connect entity finished
+    id: AUT-Notify_Home_Connect_Entity_Finished
+    description: Notifies when the dishwasher program has finished
     initial_state: 'on'
     triggers:
       - domain: home_connect_alt
         type: program_finished
         trigger: device
         device_id: !secret momahome_dishwasher_device_id
-
     actions:
       - service: script.notify_in_home_or_all
         data:
           title: 'Dishwasher finished'
           message: >
             Ey, dishwasher just finished.
+
+  - alias: AUT-Notify dishwasher rinse aid level
+    id: AUT-Notify_Dishwasher_Rinse_Aid_Level
+    description: Monitors and notifies about changes in the dishwasher rinse aid level
+    initial_state: 'on'
+    triggers:
+      - platform: event
+        event_type: home_connect_alt_event
+        event_data:
+          key: Dishcare.Dishwasher.Event.RinseAidNearlyEmpty
+    actions:
+      - service: script.notify_in_home_or_all
+        data:
+          title: 'Dishwasher Rinse Aid Status'
+          message: >
+            {% if trigger.event.data.value == 'BSH.Common.EnumType.EventPresentState.Present' %}
+            Warning: Dishwasher rinse aid is nearly empty. Please refill soon.
+            {% elif trigger.event.data.value == 'BSH.Common.EnumType.EventPresentState.Off' %}
+            Rinse aid level is now OK.
+            {% else %}
+            Rinse aid status changed to: {{ trigger.event.data.value }}
+            {% endif %}
 
