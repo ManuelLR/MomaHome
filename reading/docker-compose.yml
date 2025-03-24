@@ -1,5 +1,23 @@
 version: "2.4"
 services:
+  common_db:
+    image: postgres:16.8-alpine
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      - POSTGRES_PASSWORD=${READING_DB_ADMIN_PASSWORD:?Define a password please}
+      - POSTGRES_USER=${READING_DB_ADMIN_USER:?Define a user please}
+      - LANG=es_ES.UTF-8
+      - POSTGRES_INITDB_ARGS=--locale-provider=icu --icu-locale=es_ES
+    volumes:
+      - ./data/reading-db:/var/lib/postgresql/data
+    #   ## All scripts in init_sql should be executed manually with
+    #   ##    docker-compose exec common_db bash -c "psql -U ${READING_DB_ADMIN_USER} -f /init_sql/*.sql"
+    #   - ./init_sql/:/init_sql/:ro
+    # env_file:
+    #   - .env
+    networks:
+      - internal
   wallabag:
     image: wallabag/wallabag:2.6.10
     restart: unless-stopped
@@ -8,23 +26,26 @@ services:
       - SYMFONY__ENV__SERVER_NAME="MoMa's Wallabag"
       - SYMFONY__ENV__FOSUSER_REGISTRATION=false
       - SYMFONY__ENV__FOSUSER_CONFIRMATION=false
-      - SYMFONY__ENV__DATABASE_DRIVER=pdo_sqlite
-      - SYMFONY__ENV__DATABASE_NAME=wallabag
-      - SYMFONY__ENV__DATABASE_PATH=/var/www/wallabag/data/db/wallabag.sqlite
+      ## Database
+      - SYMFONY__ENV__DATABASE_DRIVER=pdo_pgsql
+      - SYMFONY__ENV__DATABASE_NAME=${WALLABAG_DB_NAME}
+      - SYMFONY__ENV__DATABASE_USER=${WALLABAG_DB_USER}
+      - SYMFONY__ENV__DATABASE_PASSWORD=${WALLABAG_DB_PASSWORD}
+      - SYMFONY__ENV__DATABASE_HOST=common_db
+      - SYMFONY__ENV__DATABASE_PORT=5432
+      - POSTGRES_USER=${WALLABAG_DB_USER}
+      - POSTGRES_PASSWORD=${WALLABAG_DB_PASSWORD}
       # - SYMFONY__ENV__MAILER_HOST=${MAILER_HOST:-127.0.0.1}
       # - SYMFONY__ENV__MAILER_USER=${MAILER_USER:-null}
       # - SYMFONY__ENV__MAILER_PASSWORD=${MAILER_PASSWORD:-null}
       # - SYMFONY__ENV__FROM_EMAIL=${FROM_EMAIL:-wallabag@example.com}
       - SYMFONY__ENV__SECRET=${WALLABAG_SECRET:?Define a secret please}
-      # Default admin credentials (change on first login)
-      - SYMFONY__ENV__FOSUSER_INITIAL_USERNAME=${WALLABAG_ADMIN_USER:-wallabag}
-      - SYMFONY__ENV__FOSUSER_INITIAL_PASSWORD=${WALLABAG_ADMIN_PASSWORD:-wallapass}
-      - SYMFONY__ENV__FOSUSER_INITIAL_EMAIL=${WALLABAG_ADMIN_EMAIL:-admin@wallabag.local}
-    volumes:
-      - ./data/wallabag/images:/var/www/wallabag/web/assets/images
-      - ./data/wallabag/data:/var/www/wallabag/data
+    # volumes:
+    #   - ./data/wallabag/images:/var/www/wallabag/web/assets/images
+    #   - ./data/wallabag/data:/var/www/wallabag/data
     networks:
       - reverse-proxy
+      - internal
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.wallabag.loadbalancer.server.port=80"
