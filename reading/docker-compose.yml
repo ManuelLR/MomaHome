@@ -12,7 +12,7 @@ services:
     volumes:
       - ./data/reading-db:/var/lib/postgresql/data
     #   ## All scripts in init_sql should be executed manually with
-    #   ##    docker-compose exec common_db bash -c "psql -U ${READING_DB_ADMIN_USER} -f /init_sql/*.sql"
+    #   ##    docker-compose exec common_db bash -c 'psql -U ${READING_DB_ADMIN_USER} -f /init_sql/*.sql'
     #   - ./init_sql/:/init_sql/:ro
     env_file:
       - .env
@@ -69,7 +69,7 @@ services:
     image: ghcr.io/miniflux/miniflux:2.2.7
     restart: unless-stopped
     environment:
-      - DATABASE_URL=postgres://${MINIFLUX_DB_USER}:${MINIFLUX_DB_PASSWORD}@common_db:5432/${MINIFLUX_DB_NAME}
+      - DATABASE_URL=postgres://${MINIFLUX_DB_USER}:${MINIFLUX_DB_PASSWORD}@common_db:5432/${MINIFLUX_DB_NAME}?sslmode=disable
       - BASE_URL=https://${MINIFLUX_EXTERNAL_DOMAIN}
       - RUN_MIGRATIONS=1
       # Only Uncomment on the first run
