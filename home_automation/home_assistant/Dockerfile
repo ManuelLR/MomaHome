@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2025.2.5
+FROM ghcr.io/home-assistant/home-assistant:2025.3.4
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -6,6 +6,7 @@ FROM ghcr.io/home-assistant/home-assistant:2025.2.5
 # - Input_button could be really helpful
 # - Add the update option to espurna/tasmota/esphome: https://www.home-assistant.io/blog/2022/04/06/release-20224/#introducing-update-entities
 # - Consider setting up the new backup features from the 2025.2 release
+# - Explore the new dashboard view headers and tile card features from 2025.3 release
 
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
