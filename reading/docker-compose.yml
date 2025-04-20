@@ -12,7 +12,7 @@ services:
     volumes:
       - ./data/reading-db:/var/lib/postgresql/data
     #   ## All scripts in init_sql should be executed manually with
-    #   ##    docker-compose exec common_db bash -c "psql -U ${READING_DB_ADMIN_USER} -f /init_sql/*.sql"
+    #   ##    docker-compose exec common_db bash -c "psql -U \${READING_DB_ADMIN_USER} -f /init_sql/*.sql"
     #   - ./init_sql/:/init_sql/:ro
     # env_file:
     #   - .env
@@ -21,11 +21,15 @@ services:
   wallabag:
     image: wallabag/wallabag:2.6.10
     restart: unless-stopped
+    # 1. Run the container
+    # 2. Install wallabag: docker-compose exec wallabag bin/console --env=prod wallabag:install -n
+    # 3. Fix permissions: docker-compose exec wallabag chown -R nobody:nobody /var/www/wallabag
     environment:
       - SYMFONY__ENV__DOMAIN_NAME=https://${WALLABAG_EXTERNAL_DOMAIN}
       - SYMFONY__ENV__SERVER_NAME="MoMa's Wallabag"
       - SYMFONY__ENV__FOSUSER_REGISTRATION=false
       - SYMFONY__ENV__FOSUSER_CONFIRMATION=false
+      - POPULATE_DATABASE=false
       ## Database
       - SYMFONY__ENV__DATABASE_DRIVER=pdo_pgsql
       - SYMFONY__ENV__DATABASE_NAME=${WALLABAG_DB_NAME}
@@ -33,6 +37,7 @@ services:
       - SYMFONY__ENV__DATABASE_PASSWORD=${WALLABAG_DB_PASSWORD}
       - SYMFONY__ENV__DATABASE_HOST=common_db
       - SYMFONY__ENV__DATABASE_PORT=5432
+      - SYMFONY__ENV__DATABASE_PATH=psql://${WALLABAG_DB_USER}:${WALLABAG_DB_PASSWORD}@common_db:5432/${WALLABAG_DB_NAME}
       - POSTGRES_USER=${WALLABAG_DB_USER}
       - POSTGRES_PASSWORD=${WALLABAG_DB_PASSWORD}
       # - SYMFONY__ENV__MAILER_HOST=${MAILER_HOST:-127.0.0.1}
