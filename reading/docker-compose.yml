@@ -12,10 +12,10 @@ services:
     volumes:
       - ./data/reading-db:/var/lib/postgresql/data
     #   ## All scripts in init_sql should be executed manually with
-    #   ##    docker-compose exec common_db bash -c "psql -U \${READING_DB_ADMIN_USER} -f /init_sql/*.sql"
+    #   ##    docker-compose exec common_db bash -c 'psql -U ${READING_DB_ADMIN_USER} -f /init_sql/*.sql'
     #   - ./init_sql/:/init_sql/:ro
-    # env_file:
-    #   - .env
+    env_file:
+      - .env
     networks:
       - internal
   wallabag:
@@ -58,7 +58,7 @@ services:
       - "traefik.http.routers.wallabag.entrypoints=websecure"
       - "traefik.http.routers.wallabag.tls.certresolver=principal"
       - "traefik.http.routers.wallabag.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
-  
+
       # # Security headers
       # - "traefik.http.middlewares.wallabag-security-headers.headers.browserXssFilter=true"
       # - "traefik.http.middlewares.wallabag-security-headers.headers.contentTypeNosniff=true"
@@ -67,6 +67,29 @@ services:
       # - "traefik.http.middlewares.wallabag-security-headers.headers.stsPreload=true"
       # - "traefik.http.middlewares.wallabag-security-headers.headers.stsSeconds=31536000"
       # - "traefik.http.routers.wallabag.middlewares=wallabag-security-headers"
+
+  miniflux:
+    image: ghcr.io/miniflux/miniflux:2.2.7
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://${MINIFLUX_DB_USER}:${MINIFLUX_DB_PASSWORD}@common_db:5432/${MINIFLUX_DB_NAME}?sslmode=disable
+      - BASE_URL=https://${MINIFLUX_EXTERNAL_DOMAIN}
+      - RUN_MIGRATIONS=1
+      # Only Uncomment on the first run
+      # - CREATE_ADMIN=1
+      # - ADMIN_USERNAME=${MINIFLUX_ADMIN_USERNAME}
+      # - ADMIN_PASSWORD=${MINIFLUX_ADMIN_PASSWORD}
+    networks:
+      - reverse-proxy
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
+      - "traefik.http.routers.miniflux.rule=Host(`${MINIFLUX_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.miniflux.entrypoints=websecure"
+      - "traefik.http.routers.miniflux.tls.certresolver=principal"
+      - "traefik.http.routers.miniflux.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+
 
 networks:
   reverse-proxy:
