@@ -189,7 +189,7 @@ shell_command: !include_dir_merge_named __auto_generated-config/shell_command/
 
 notify: !include_dir_merge_list __auto_generated-config/notify/
 
-person: !include_dir_merge_list __auto_generated-config/person/
+# person: !include_dir_merge_list __auto_generated-config/person/
 
 zone:
   # This will override the default home zone
