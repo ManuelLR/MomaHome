@@ -1,0 +1,98 @@
+version: "2.4"
+services:
+  common_db:
+    image: postgres:16.8-alpine
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      - POSTGRES_PASSWORD=${READING_DB_ADMIN_PASSWORD:?Define a password please}
+      - POSTGRES_USER=${READING_DB_ADMIN_USER:?Define a user please}
+      - LANG=es_ES.UTF-8
+      - POSTGRES_INITDB_ARGS=--locale-provider=icu --icu-locale=es_ES
+    volumes:
+      - ./data/reading-db:/var/lib/postgresql/data
+    #   ## All scripts in init_sql should be executed manually with
+    #   ##    docker-compose exec common_db bash -c 'psql -U ${READING_DB_ADMIN_USER} -f /init_sql/*.sql'
+    #   - ./init_sql/:/init_sql/:ro
+    env_file:
+      - .env
+    networks:
+      - internal
+  wallabag:
+    image: wallabag/wallabag:2.6.10
+    restart: unless-stopped
+    # 1. Run the container
+    # 2. Install wallabag: docker-compose exec wallabag bin/console --env=prod wallabag:install -n
+    # 3. Fix permissions: docker-compose exec wallabag chown -R nobody:nobody /var/www/wallabag
+    environment:
+      - SYMFONY__ENV__DOMAIN_NAME=https://${WALLABAG_EXTERNAL_DOMAIN}
+      - SYMFONY__ENV__SERVER_NAME="MoMa's Wallabag"
+      - SYMFONY__ENV__FOSUSER_REGISTRATION=false
+      - SYMFONY__ENV__FOSUSER_CONFIRMATION=false
+      - POPULATE_DATABASE=false
+      ## Database
+      - SYMFONY__ENV__DATABASE_DRIVER=pdo_pgsql
+      - SYMFONY__ENV__DATABASE_NAME=${WALLABAG_DB_NAME}
+      - SYMFONY__ENV__DATABASE_USER=${WALLABAG_DB_USER}
+      - SYMFONY__ENV__DATABASE_PASSWORD=${WALLABAG_DB_PASSWORD}
+      - SYMFONY__ENV__DATABASE_HOST=common_db
+      - SYMFONY__ENV__DATABASE_PORT=5432
+      - SYMFONY__ENV__DATABASE_PATH=psql://${WALLABAG_DB_USER}:${WALLABAG_DB_PASSWORD}@common_db:5432/${WALLABAG_DB_NAME}
+      - POSTGRES_USER=${WALLABAG_DB_USER}
+      - POSTGRES_PASSWORD=${WALLABAG_DB_PASSWORD}
+      # - SYMFONY__ENV__MAILER_HOST=${MAILER_HOST:-127.0.0.1}
+      # - SYMFONY__ENV__MAILER_USER=${MAILER_USER:-null}
+      # - SYMFONY__ENV__MAILER_PASSWORD=${MAILER_PASSWORD:-null}
+      # - SYMFONY__ENV__FROM_EMAIL=${FROM_EMAIL:-wallabag@example.com}
+      - SYMFONY__ENV__SECRET=${WALLABAG_SECRET:?Define a secret please}
+    # volumes:
+    #   - ./data/wallabag/images:/var/www/wallabag/web/assets/images
+    #   - ./data/wallabag/data:/var/www/wallabag/data
+    networks:
+      - reverse-proxy
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.wallabag.loadbalancer.server.port=80"
+      - "traefik.http.routers.wallabag.rule=Host(`${WALLABAG_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.wallabag.entrypoints=websecure"
+      - "traefik.http.routers.wallabag.tls.certresolver=principal"
+      - "traefik.http.routers.wallabag.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+
+      # # Security headers
+      # - "traefik.http.middlewares.wallabag-security-headers.headers.browserXssFilter=true"
+      # - "traefik.http.middlewares.wallabag-security-headers.headers.contentTypeNosniff=true"
+      # - "traefik.http.middlewares.wallabag-security-headers.headers.forceSTSHeader=true"
+      # - "traefik.http.middlewares.wallabag-security-headers.headers.stsIncludeSubdomains=true"
+      # - "traefik.http.middlewares.wallabag-security-headers.headers.stsPreload=true"
+      # - "traefik.http.middlewares.wallabag-security-headers.headers.stsSeconds=31536000"
+      # - "traefik.http.routers.wallabag.middlewares=wallabag-security-headers"
+
+  miniflux:
+    image: ghcr.io/miniflux/miniflux:2.2.7
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://${MINIFLUX_DB_USER}:${MINIFLUX_DB_PASSWORD}@common_db:5432/${MINIFLUX_DB_NAME}?sslmode=disable
+      - BASE_URL=https://${MINIFLUX_EXTERNAL_DOMAIN}
+      - RUN_MIGRATIONS=1
+      # Only Uncomment on the first run
+      # - CREATE_ADMIN=1
+      # - ADMIN_USERNAME=${MINIFLUX_ADMIN_USERNAME}
+      # - ADMIN_PASSWORD=${MINIFLUX_ADMIN_PASSWORD}
+    networks:
+      - reverse-proxy
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
+      - "traefik.http.routers.miniflux.rule=Host(`${MINIFLUX_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.miniflux.entrypoints=websecure"
+      - "traefik.http.routers.miniflux.tls.certresolver=principal"
+      - "traefik.http.routers.miniflux.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+
+
+networks:
+  reverse-proxy:
+    # External network created by reverse-proxy setup
+    external: true
+  internal:
