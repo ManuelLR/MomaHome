@@ -19,7 +19,7 @@ services:
     networks:
       - internal
   wallabag:
-    image: wallabag/wallabag:2.6.10
+    image: wallabag/wallabag:2.6.12
     restart: unless-stopped
     # 1. Run the container
     # 2. Install wallabag: docker-compose exec wallabag bin/console --env=prod wallabag:install -n
