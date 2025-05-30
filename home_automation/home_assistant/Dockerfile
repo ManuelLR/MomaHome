@@ -11,7 +11,7 @@ FROM ghcr.io/home-assistant/home-assistant:2025.3.4
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
-    # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
+    # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=13.4.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod versioning=semver
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.3.3 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
