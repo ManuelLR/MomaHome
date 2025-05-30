@@ -21,7 +21,7 @@ entryPoints:
   websecure:
     address: ":443"
     http:
-      maxHeaderSize: 4194304
+      maxHeaderBytes: 4194304
   dns-tls:
     address: ":853"
 
