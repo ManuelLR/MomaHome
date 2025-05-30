@@ -90,6 +90,27 @@ services:
       - "traefik.http.routers.miniflux.tls.certresolver=principal"
       - "traefik.http.routers.miniflux.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
+  calibre-web:
+    image: crocodilestick/calibre-web-automated:3.0.4
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ./data/calibre-web/config:/config
+      - ./data/calibre-web/to-be-ingested:/cwa-book-ingest
+      - ./data/calibre-web/library:/calibre-library
+    networks:
+      - reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.calibre-web.loadbalancer.server.port=8083"
+      - "traefik.http.routers.calibre-web.rule=Host(`${CALIBRE_WEB_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.calibre-web.entrypoints=websecure"
+      - "traefik.http.routers.calibre-web.tls.certresolver=principal"
+      - "traefik.http.routers.calibre-web.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+    restart: unless-stopped
 
 networks:
   reverse-proxy:
