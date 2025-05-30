@@ -3,15 +3,15 @@
     id: person_manolo
     user_id: !secret person_user_id_manolo
     device_trackers:
-      - device_tracker.manolo_movil
-      # - device_tracker.man_005_tile_llaves_manolo
-      - device_tracker.tile_manolo_keys
-      - !secret tile_device_manolo_keys
+      # - device_tracker.manolo_movil
+      - device_tracker.man_005_tile_llaves_manolo
+      # - device_tracker.tile_manolo_keys
+      # - !secret tile_device_manolo_keys
 
   - name: Monica
     id: person_monica
     user_id: !secret person_user_id_monica
     device_trackers:
-      - device_tracker.iphone_2
-      # - device_tracker.man_005_tile_llaves_monica
-      - device_tracker.tile_monica_keys
+      # - device_tracker.iphone_2
+      - device_tracker.man_005_tile_llaves_monica
+      # - device_tracker.tile_monica_keys
