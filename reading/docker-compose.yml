@@ -110,7 +110,12 @@ services:
       - "traefik.http.routers.calibre-web.entrypoints=websecure"
       - "traefik.http.routers.calibre-web.tls.certresolver=principal"
       - "traefik.http.routers.calibre-web.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
-    restart: unless-stopped
+      # Buffering middleware for large headers
+      - "traefik.http.middlewares.calibre-web-buffering.buffering.maxRequestBodyBytes=4194304"
+      - "traefik.http.middlewares.calibre-web-buffering.buffering.memRequestBodyBytes=2097152"
+      #- "traefik.http.middlewares.calibre-web-buffering.buffering.maxResponseBodyBytes=4194304"
+      #- "traefik.http.middlewares.calibre-web-buffering.buffering.memResponseBodyBytes=2097152"
+      - "traefik.http.routers.calibre-web.middlewares=calibre-web-buffering@docker"
 
 networks:
   reverse-proxy:

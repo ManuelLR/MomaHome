@@ -20,6 +20,8 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
+    http:
+      maxHeaderSize: 4194304
   dns-tls:
     address: ":853"
 
@@ -30,6 +32,7 @@ providers:
     endpoint: "unix:///tmp/docker.sock"
     exposedbydefault: False
     # defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`)"
+    network: reverse-proxy
   file:
     directory: "/etc/traefik/file-dynamic-conf/"
 
