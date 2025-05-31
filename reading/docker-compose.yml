@@ -121,7 +121,7 @@ services:
       # redirect of some paths so we need to do it manually
       - "traefik.http.routers.calibre-web-kobo-redirector.priority=20" # Higher priority to avoid defining path in the main router
         ## Filter per host and path in order to redirect to the kobo store api
-      - "traefik.http.routers.calibre-web-kobo-redirector.rule=Host(`${CALIBRE_WEB_EXTERNAL_DOMAIN}`) && PathPrefix(`/kobo/[a-zA-Z0-9]+/`) && (PathRegexp(`^.*/featuredforkoboplus.*`))"
+      - "traefik.http.routers.calibre-web-kobo-redirector.rule=Host(`${CALIBRE_WEB_EXTERNAL_DOMAIN}`) && PathPrefix(`/kobo/[a-zA-Z0-9]+/`) && (PathRegexp(`^.*/featuredforkoboplus.*`) || PathRegexp(`^.*/categories/00000000-0000-0000-0000-000000000001`) || PathRegexp(`^.*/user/browsehistory`))"
       - "traefik.http.routers.calibre-web-kobo-redirector.entrypoints=websecure"
       - "traefik.http.routers.calibre-web-kobo-redirector.tls.certresolver=principal"
       - "traefik.http.routers.calibre-web-kobo-redirector.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"

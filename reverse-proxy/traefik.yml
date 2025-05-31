@@ -20,8 +20,8 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
-    http:
-      maxHeaderBytes: 4194304
+    # http:
+    #   maxHeaderBytes: 4194304
   dns-tls:
     address: ":853"
 
