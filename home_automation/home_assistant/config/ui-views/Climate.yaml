@@ -1,3 +1,6 @@
+- type: thermostat
+  name: Centralized AC
+  entity: climate.centralized_ac
 - type: vertical-stack
   title: 'Dyson Fan 01'
   cards:
