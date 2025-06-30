@@ -1,0 +1,10 @@
+
+# climate:
+  - platform: smartir
+    name: "Centralized AC"
+    unique_id: centralized_ac_ir
+    device_code: 1341
+    controller_data: remote.ir_living_room_remote
+    # temperature_sensor: sensor.living_room_temperature  # Optional: temperature sensor
+    # humidity_sensor: sensor.living_room_humidity        # Optional: humidity sensor
+    # power_sensor: binary_sensor.living_room_ac_power    # Optional: power sensor

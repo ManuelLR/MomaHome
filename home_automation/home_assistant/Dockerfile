@@ -26,6 +26,8 @@ ENV \
     CUSTOM_COMPONENT_EDATA_VERSION=2024.07.6 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.1.12 \
+      # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
+    CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.4 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
@@ -91,6 +93,10 @@ RUN \
     && git clone https://github.com/ekutner/home-connect-hass /tmp/home-connect-hass \
     && cd /tmp/home-connect-hass && git checkout $CUSTOM_COMPONENT_HOME_CONNECT_VERSION \
     && cd - && cp -r /tmp/home-connect-hass/custom_components/* /opt/HA/config/custom_components/ \
+    # SmartIR
+    && git clone https://github.com/smartHomeHub/SmartIR.git /tmp/smartir \
+    && cd /tmp/smartir && git checkout $CUSTOM_COMPONENT_SMARTIR_VERSION \
+    && cd - && cp -r /tmp/smartir/custom_components/smartir /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
