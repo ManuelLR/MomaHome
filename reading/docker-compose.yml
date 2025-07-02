@@ -19,7 +19,7 @@ services:
     networks:
       - internal
   wallabag:
-    image: wallabag/wallabag:2.6.10
+    image: wallabag/wallabag:2.6.13
     restart: unless-stopped
     # 1. Run the container
     # 2. Install wallabag: docker-compose exec wallabag bin/console --env=prod wallabag:install -n
@@ -69,7 +69,7 @@ services:
       # - "traefik.http.routers.wallabag.middlewares=wallabag-security-headers"
 
   miniflux:
-    image: ghcr.io/miniflux/miniflux:2.2.7
+    image: ghcr.io/miniflux/miniflux:2.2.10
     restart: unless-stopped
     environment:
       - DATABASE_URL=postgres://${MINIFLUX_DB_USER}:${MINIFLUX_DB_PASSWORD}@common_db:5432/${MINIFLUX_DB_NAME}?sslmode=disable
@@ -90,6 +90,46 @@ services:
       - "traefik.http.routers.miniflux.tls.certresolver=principal"
       - "traefik.http.routers.miniflux.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
+  calibre-web:
+    image: crocodilestick/calibre-web-automated:V3.0.4
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ./data/calibre-web/config:/config
+      - ./data/calibre-web/to-be-ingested:/cwa-book-ingest
+      - ./data/calibre-web/library:/calibre-library
+    networks:
+      - reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.calibre-web.priority=10" # Less priority that the next one to route preferable paths as a redirection
+      - "traefik.http.services.calibre-web.loadbalancer.server.port=8083"
+      - "traefik.http.routers.calibre-web.rule=Host(`${CALIBRE_WEB_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.calibre-web.entrypoints=websecure"
+      - "traefik.http.routers.calibre-web.tls.certresolver=principal"
+      - "traefik.http.routers.calibre-web.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      # We need to support not most secured algorithms in order to sync with kobo devices
+      - "traefik.http.routers.calibre-web.tls.options=mozilla-intermediate@file"
+
+      #########################################################################################
+      ### Kobo devices hack to avoid problems with some features
+      #########################################################################################
+      ## On Kobo devices, not all features native works because calibre-web don't implement the
+      # redirect of some paths so we need to do it manually
+      - "traefik.http.routers.calibre-web-kobo-redirector.priority=20" # Higher priority to avoid defining path in the main router
+        ## Filter per host and path in order to redirect to the kobo store api
+      - "traefik.http.routers.calibre-web-kobo-redirector.rule=Host(`${CALIBRE_WEB_EXTERNAL_DOMAIN}`) && PathRegexp(`^/kobo/[a-zA-Z0-9]+/.*`) && (PathRegexp(`^.*/featuredforkoboplus.*`) || PathRegexp(`^.*/categories/[a-zA-Z0-9\\-]+`) || PathRegexp(`^.*/user/browsehistory.*`))"
+      - "traefik.http.routers.calibre-web-kobo-redirector.entrypoints=websecure"
+      - "traefik.http.routers.calibre-web-kobo-redirector.tls.certresolver=principal"
+      - "traefik.http.routers.calibre-web-kobo-redirector.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      - "traefik.http.routers.calibre-web-kobo-redirector.tls.options=mozilla-intermediate@file"
+      - "traefik.http.routers.calibre-web-kobo-redirector.middlewares=calibre-web-kobo-redirector-middleware@docker"
+      - "traefik.http.middlewares.calibre-web-kobo-redirector-middleware.redirectregex.permanent=false"
+      - "traefik.http.middlewares.calibre-web-kobo-redirector-middleware.redirectregex.regex=^https://${CALIBRE_WEB_EXTERNAL_DOMAIN}/kobo/[a-zA-Z0-9]+/(.*)"
+      - "traefik.http.middlewares.calibre-web-kobo-redirector-middleware.redirectregex.replacement=https://storeapi.kobo.com/$${1}"
 
 networks:
   reverse-proxy:

@@ -153,6 +153,11 @@ browser_mod:
 delete:
   # https://github.com/chomupashchuk/delete-file-home-assistant
 
+smartir:
+  # https://github.com/smartHomeHub/SmartIR
+  # Home Assistant integration to manage climate systems, TVs, fans and lights using IR/RF controllers
+  check_updates: false
+
 # Text to speech
 tts:
   - platform: google_translate
@@ -176,6 +181,8 @@ switch: !include_dir_merge_list __auto_generated-config/switch/
 light: !include_dir_merge_list __auto_generated-config/light/
 
 plant: !include_dir_merge_named __auto_generated-config/plant/
+
+climate: !include_dir_merge_list __auto_generated-config/climate/
 
 # Now forced to be managed from UI. Release 2021.6
 # tuya: !include_dir_merge_named __auto_generated-config/tuya/
