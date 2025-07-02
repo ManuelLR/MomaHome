@@ -3,7 +3,7 @@
   icon: mdi:home
   cards: !include_dir_list Home/
 - title: Vacuum
-  icon: mdi:robot-vacuum
+  icon: mdi:vacuum
   cards: !include Vacuum.yaml
 - title: Climate
   icon: mdi:air-conditioner
@@ -11,6 +11,9 @@
 - title: Energy
   icon: mdi:home-lightning-bolt-outline
   cards: !include Energy.yaml
+- title: Environment
+  icon: mdi:thermometer-water
+  cards: !include Environment.yaml
 
 - title: Net
   # icon: mdi:router-network
@@ -19,9 +22,6 @@
 - title: Server
   icon: mdi:server
   cards: !include Server.yaml
-- title: Environment
-  icon: mdi:coolant-temperature
-  cards: !include Environment.yaml
 # - title: Flora
 #   icon: mdi:flower
 #   cards: !include Flora.yaml
