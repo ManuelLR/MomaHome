@@ -6,7 +6,7 @@
   icon: mdi:robot-vacuum
   cards: !include Vacuum.yaml
 - title: Climate
-  icon: mdi:thermostat
+  icon: mdi:air-conditioner
   cards: !include Climate.yaml
 - title: Energy
   icon: mdi:home-lightning-bolt-outline
