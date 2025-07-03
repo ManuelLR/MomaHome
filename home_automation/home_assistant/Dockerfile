@@ -27,7 +27,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.1.12 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
-    CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.0 \
+    CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
