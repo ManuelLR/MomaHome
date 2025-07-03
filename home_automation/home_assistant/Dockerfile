@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2025.3.4
+FROM ghcr.io/home-assistant/home-assistant:2025.4.4
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -13,11 +13,11 @@ ENV \
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod versioning=semver
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.3.3 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.3.7 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.12.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
-    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.3 \
+    CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.4 \
       # renovatebot: datasource=github-releases depName=libdyson-wg/ha-dyson
     CUSTOM_COMPONENT_DYSON_VERSION=v1.4.2 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
@@ -29,13 +29,13 @@ ENV \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.2.4 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
     CUSTOM_CARD_VALETUDO_VACUUM_MAP_VERSION=v2023.04.0 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
     CUSTOM_CARD_UPTIME_VERSION=v0.16.0 \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
-    CUSTOM_CARD_MINI_GRAPH_VERSION=v0.12.1 \
+    CUSTOM_CARD_MINI_GRAPH_VERSION=v0.13.0 \
       # renovatebot: datasource=github-releases depName=RomRider/apexcharts-card
     CUSTOM_CARD_APEXCHARTS_VERSION=v2.1.2 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
