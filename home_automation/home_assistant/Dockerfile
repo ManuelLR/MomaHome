@@ -23,7 +23,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
-    CUSTOM_COMPONENT_EDATA_VERSION=2024.07.6 \
+    CUSTOM_COMPONENT_EDATA_VERSION=2025.03.1 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.1.12 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
