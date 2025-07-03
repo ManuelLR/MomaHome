@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2025.4.4
+FROM ghcr.io/home-assistant/home-assistant:2025.5.3
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -7,13 +7,15 @@ FROM ghcr.io/home-assistant/home-assistant:2025.4.4
 # - Add the update option to espurna/tasmota/esphome: https://www.home-assistant.io/blog/2022/04/06/release-20224/#introducing-update-entities
 # - Consider setting up the new backup features from the 2025.2 release
 # - Explore the new dashboard view headers and tile card features from 2025.3 release
+# - Review/redo all the backup things.
+
 
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod versioning=semver
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.3.3 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.3.8 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.12.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
@@ -25,9 +27,9 @@ ENV \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
     CUSTOM_COMPONENT_EDATA_VERSION=2025.03.1 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
-    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.1.12 \
+    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.2.1 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
-    CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.0 \
+    CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
