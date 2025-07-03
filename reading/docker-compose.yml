@@ -1,7 +1,7 @@
 version: "2.4"
 services:
   common_db:
-    image: postgres:16.8-alpine
+    image: postgres:16.9-alpine
     restart: unless-stopped
     shm_size: 128mb
     environment:
