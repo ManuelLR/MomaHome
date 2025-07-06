@@ -36,6 +36,9 @@ services:
             - "traefik.tcp.routers.adguardhome-tls.tls.options=dns-over-tls@file"
             - "traefik.tcp.routers.adguardhome-tls.tls.certresolver=principal"
             - "traefik.tcp.routers.adguardhome-tls.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+            # Unfortunatly,  AdGuard don't support to know the original IP on DNS over TLS protocol:
+            #    https://github.com/AdguardTeam/AdGuardHome/issues/2798
+            # - "traefik.tcp.services.adguardhome-tls.loadbalancer.proxyprotocol.version=2"
 
 
 
