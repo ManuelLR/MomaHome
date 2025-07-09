@@ -41,7 +41,7 @@
           - added
     conditions:
       - condition: template
-        value_template: "{{ 'IP banned' in trigger.notification.title }}"
+        value_template: "{{ 'Banning IP' in trigger.notification.title }}"
     actions:
       - alias: "Set variables"
         variables:
