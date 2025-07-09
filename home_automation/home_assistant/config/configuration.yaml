@@ -118,6 +118,9 @@ zha:
       # Replace with "providers" to override default config.
       extra_providers:
         - type: ikea
+      # For other devices like LYWSD03MMC-z
+      z2m_remote_index: https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/index.json
+
 
 
 # Server
