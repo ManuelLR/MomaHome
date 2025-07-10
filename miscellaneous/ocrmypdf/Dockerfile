@@ -1,4 +1,4 @@
-FROM jbarlow83/ocrmypdf:v16.10.2
+FROM jbarlow83/ocrmypdf:v16.10.4
 
 RUN apt install tesseract-ocr-spa
 
