@@ -2,6 +2,7 @@ title: Cosas encendidas
 type: entity-filter
 show_header_toggle: true
 entities:
+  - entity: climate.centralized_ac
   - entity: switch.man_003_left
     name: Enchufe cocina doble izq.
   - entity: switch.man_003_right

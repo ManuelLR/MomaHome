@@ -17,11 +17,11 @@
         - <<: *environment-24h-card
           entity: sensor.xiaomi_lywsd03mmc_z_01_temperatura
         - <<: *environment-24h-card
-          entity: sensor.xiaomi_002_c421_temperature
+          entity: sensor.xiaomi_lywsd03mmc_z_02_temperatura
         - <<: *environment-24h-card
-          entity: sensor.xiaomi_003_5e2f_temperature
+          entity: sensor.xiaomi_lywsd03mmc_z_03_temperatura
         - <<: *environment-24h-card
-          entity: sensor.xiaomi_004_3c9a_temperature
+          entity: sensor.xiaomi_lywsd03mmc_z_04_temperatura
 
     ## Humidity
     - type: grid
@@ -33,11 +33,11 @@
         - <<: *environment-24h-card
           entity: sensor.xiaomi_lywsd03mmc_z_01_humedad
         - <<: *environment-24h-card
-          entity: sensor.xiaomi_002_c421_humidity
+          entity: sensor.xiaomi_lywsd03mmc_z_02_humedad
         - <<: *environment-24h-card
-          entity: sensor.xiaomi_003_5e2f_humidity
+          entity: sensor.xiaomi_lywsd03mmc_z_03_humedad
         - <<: *environment-24h-card
-          entity: sensor.xiaomi_004_3c9a_humidity
+          entity: sensor.xiaomi_lywsd03mmc_z_04_humedad
 
 - type: vertical-stack
   title: 'Last 7d'
@@ -58,11 +58,11 @@
         - <<: *environment-7d-card
           entity: sensor.xiaomi_lywsd03mmc_z_01_temperatura
         - <<: *environment-7d-card
-          entity: sensor.xiaomi_002_c421_temperature
+          entity: sensor.xiaomi_lywsd03mmc_z_02_temperatura
         - <<: *environment-7d-card
-          entity: sensor.xiaomi_003_5e2f_temperature
+          entity: sensor.xiaomi_lywsd03mmc_z_03_temperatura
         - <<: *environment-7d-card
-          entity: sensor.xiaomi_004_3c9a_temperature
+          entity: sensor.xiaomi_lywsd03mmc_z_04_temperatura
 
     ## Humidity
     - type: grid
@@ -74,11 +74,11 @@
         - <<: *environment-7d-card
           entity: sensor.xiaomi_lywsd03mmc_z_01_humedad
         - <<: *environment-7d-card
-          entity: sensor.xiaomi_002_c421_humidity
+          entity: sensor.xiaomi_lywsd03mmc_z_02_humedad
         - <<: *environment-7d-card
-          entity: sensor.xiaomi_003_5e2f_humidity
+          entity: sensor.xiaomi_lywsd03mmc_z_03_humedad
         - <<: *environment-7d-card
-          entity: sensor.xiaomi_004_3c9a_humidity
+          entity: sensor.xiaomi_lywsd03mmc_z_04_humedad
 
     ## Battery
     - type: grid
@@ -90,10 +90,10 @@
         - <<: *environment-7d-card
           entity: sensor.xiaomi_lywsd03mmc_z_01_bateria
         - <<: *environment-7d-card
-          entity: sensor.xiaomi_002_c421_battery
+          entity: sensor.xiaomi_lywsd03mmc_z_02_bateria
         - <<: *environment-7d-card
-          entity: sensor.xiaomi_003_5e2f_battery
+          entity: sensor.xiaomi_lywsd03mmc_z_03_bateria
         - <<: *environment-7d-card
-          entity: sensor.xiaomi_004_3c9a_battery
+          entity: sensor.xiaomi_lywsd03mmc_z_04_bateria
         - <<: *environment-7d-card
           entity: sensor.entrance_door_sensor_battery

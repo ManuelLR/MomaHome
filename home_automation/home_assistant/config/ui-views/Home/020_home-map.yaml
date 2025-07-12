@@ -11,7 +11,7 @@ elements:
     style:
       top: 70%
       left: 65%
-      "--paper-item-icon-color": blue
+      "--state-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info
@@ -20,7 +20,7 @@ elements:
     style:
       top: 53%
       left: 80%
-      "--paper-item-icon-color": blue
+      "--state-icon-color": blue
   - type: state-icon
     tap_action:
       action: toggle
@@ -28,7 +28,7 @@ elements:
     style:
       top: 85%
       left: 80%
-      "--paper-item-icon-color": blue
+      "--state-icon-color": blue
   - type: state-icon
     tap_action: !include ../utils/tv-card.yaml
     hold_action:
@@ -39,11 +39,11 @@ elements:
     entity: media_player.sony_bravia_tv
     icon: mdi:television-classic
     # state_filter:
-    #   "off": --paper-item-icon-color=pink
+    #   "off": --state-icon-color=pink
     style:
       top: 5%
       left: 25%
-      "--paper-item-icon-color": blue
+      "--state-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info
@@ -51,7 +51,7 @@ elements:
     style:
       top: 4%
       left: 18%
-      "--paper-item-icon-color": blue
+      "--state-icon-color": blue
   - type: conditional
     tap_action:
       action: none
@@ -66,7 +66,7 @@ elements:
         style:
           top: 18%
           left: 28%
-          "--paper-item-icon-color": blue
+          "--state-icon-color": blue
   - type: state-icon
     tap_action:
       action: more-info
@@ -74,21 +74,21 @@ elements:
     style:
       top: 40%
       left: 25%
-      "--paper-item-icon-color": blue
+      "--state-icon-color": blue
   - type: state-icon
     tap_action: !include ../utils/nightstand-lights.yaml
     entity: light.bedroom_nightstand_lights
     style:
       top: 85%
       left: 25%
-      "--paper-item-icon-color": blue
+      "--state-icon-color": blue
   - type: state-icon
     tap_action: !include ../utils/washing-machine-card.yaml
     entity: sensor.washing_machine_status
     style:
       top: 50%
       left: 93%
-      "--paper-item-icon-color": blue
+      "--state-icon-color": blue
   - type: conditional
     tap_action:
       action: none
@@ -103,7 +103,7 @@ elements:
         style:
           top: 80%
           left: 80%
-          "--paper-item-icon-color": yellow
+          "--state-icon-color": yellow
   - type: state-icon
     tap_action:
       action: more-info
@@ -112,7 +112,7 @@ elements:
     style:
       top: 42%
       left: 7%
-      "--paper-item-icon-color": blue
+      "--state-icon-color": blue
   # - type: state-label
   #   entity: sensor.outside_temperature
   #   style:

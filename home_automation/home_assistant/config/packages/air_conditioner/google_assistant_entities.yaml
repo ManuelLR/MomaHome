@@ -1,0 +1,9 @@
+# google_assistant:
+  # entity_config:
+    climate.centralized_ac:
+      room: Living Room
+      expose: True
+      aliases:
+        - Aire acondicionado
+        - AC
+        - Aire

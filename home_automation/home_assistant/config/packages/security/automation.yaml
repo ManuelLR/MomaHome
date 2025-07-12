@@ -19,36 +19,38 @@
     initial_state: 'on'
     mode: parallel
     triggers:
-      - platform: state
-        entity_id: persistent_notification.http_login
+      - trigger: persistent_notification
+        update_type:
+          - added
     conditions:
       - condition: template
-        value_template: "{{ trigger.to_state.state != 'None' }}"
+        value_template: "{{ 'Login attempt' in trigger.notification.title }}"
     actions:
       service: notify.manolo
       data:
-        title: "*{{ state_attr('persistent_notification.http_login', 'title') }} !*"
-        message: "{{ state_attr('persistent_notification.http_login', 'message') }}"
+        title: "*{{ trigger.notification.title }} !*"
+        message: "{{ trigger.notification.message }}"
 
   - alias: AUT-Notify ip_banned
     id: AUT-Notify_IP_Banned
     initial_state: 'on'
     mode: parallel
     triggers:
-      - platform: state
-        entity_id: persistent_notification.ip_ban
+      - trigger: persistent_notification
+        update_type:
+          - added
     conditions:
       - condition: template
-        value_template: "{{ trigger.to_state.state != 'None' }}"
+        value_template: "{{ 'Banning IP' in trigger.notification.title }}"
     actions:
       - alias: "Set variables"
         variables:
             # Extracted from a message like: Too many login attemps from xxx.xxx.xxx.xxx
-          banned_ip: "{{ state_attr('persistent_notification.ip_ban', 'message').split(' ') | last }}"
+          banned_ip: "{{ trigger.notification.message.split(' ') | last }}"
       - service: notify.manolo
         data:
-          title: "*{{ state_attr('persistent_notification.ip_ban', 'title') }} !*"
-          message: "{{ state_attr('persistent_notification.ip_ban', 'message') }}"
+          title: "*{{ trigger.notification.title }} !*"
+          message: "{{ trigger.notification.message }}"
           data:
             inline_keyboard:
               - 'Unban {{ banned_ip }} and restart Home Assistant:/unban_ip {{ banned_ip }}'
