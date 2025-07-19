@@ -1,0 +1,37 @@
+# Example Gicisky BLE Label Configuration
+# This is an example configuration for a Gicisky label that displays the current date
+# Replace the device_id with your actual Gicisky device ID
+
+alias: "Gicisky Date Label Example"
+description: "Example automation to display current date on Gicisky label"
+triggers:
+  - trigger: time
+    at: "00:00:00"
+  - trigger: time_pattern
+    minutes: "/30"
+conditions: []
+actions:
+  - action: gicisky.write
+    data:
+      payload:
+        - type: text
+          value: "{{ now().strftime('%m/%d') }}"
+          font: fonts/arial.ttf
+          anchor: mt
+          x: 125
+          y: 10
+          size: 45
+          color: black
+        - type: text
+          value: "{{ now().strftime('%A') }}"
+          font: fonts/arial.ttf
+          anchor: mb
+          x: 125
+          y: 108
+          size: 35
+          color: |
+            {% set date = now().strftime('%A') %}
+            {{ 'red' if date == 'Saturday' or date == 'Sunday' else 'black' }}
+    target:
+      device_id: YOUR_GICISKY_DEVICE_ID_HERE
+mode: single

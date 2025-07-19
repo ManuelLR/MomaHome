@@ -30,6 +30,8 @@ ENV \
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.2.1 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
+      # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
+    CUSTOM_COMPONENT_GICISKY_VERSION=1.2.6 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
@@ -99,6 +101,10 @@ RUN \
     && git clone https://github.com/smartHomeHub/SmartIR.git /tmp/smartir \
     && cd /tmp/smartir && git checkout $CUSTOM_COMPONENT_SMARTIR_VERSION \
     && cd - && cp -r /tmp/smartir/custom_components/smartir /opt/HA/config/custom_components/ \
+    # gicisky
+    && git clone https://github.com/eigger/hass-gicisky.git /tmp/hass-gicisky \
+    && cd /tmp/hass-gicisky && git checkout $CUSTOM_COMPONENT_GICISKY_VERSION \
+    && cd - && cp -r /tmp/hass-gicisky/custom_components/gicisky /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card

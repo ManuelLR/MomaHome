@@ -161,6 +161,10 @@ smartir:
   # Home Assistant integration to manage climate systems, TVs, fans and lights using IR/RF controllers
   check_updates: false
 
+gicisky:
+  # https://github.com/eigger/hass-gicisky
+  # Gicisky BLE Label Home Assistant Integration
+
 # Text to speech
 tts:
   - platform: google_translate
