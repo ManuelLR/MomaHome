@@ -21,7 +21,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.5 \
       # renovatebot: datasource=github-releases depName=libdyson-wg/ha-dyson
-    CUSTOM_COMPONENT_DYSON_VERSION=v1.5.7 \
+    CUSTOM_COMPONENT_DYSON_VERSION=v1.6.0 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
