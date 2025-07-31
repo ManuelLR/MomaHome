@@ -1,0 +1,214 @@
+# automation:
+  - alias: "AUT-Front Door electronic label"
+    description: "This automation is used to update the information shown in the electronic label."
+    id: "aut_front_door_electronic_label"
+    mode: single
+    triggers:
+      - trigger: event
+        event_type: manual_event  
+      ## Check if we should update the display hourly 
+      - trigger: time_pattern
+        hours: "*"
+        minutes: 3
+        id: "trigger_hourly"
+    conditions:
+      - or:
+          - alias: "Last update is more than 4 hours ago"
+            condition: template
+            value_template: >
+              {% set last_update = states('sensor.gicisky_92975006_last_update_time') %}
+              {% if last_update == 'unavailable' or last_update == 'unknown' %}
+                {{ true }}
+              {% else %}
+                {% set time_diff = (now() - (last_update| as_datetime)).total_seconds() / 3600 %}
+                {{ time_diff >= 3.8 }}
+              {% endif %}
+    variables:
+      gicisky_write_dry_run: true
+      # gicisky_device_id: "f93ebcba62a0eaf2f06932acdc6b11ba"
+      # # sensor.gicisky_92975071_last_update_time
+      gicisky_device_id: "e7c82815299126f4297b877d0cc343d4"
+      # sensor.gicisky_92975006_last_update_time
+      section_weather_y_start: 45
+      weather_graphs_height: >
+        {{ (53/2)|round(0,'ceil')|int }}
+      weather_wind_speed_alert: 20
+      weather_wind_speed_max_shown: 40
+      weather_precipitation_alert: 0.25
+      weather_precipitation_max_shown: 1.2
+
+    actions:
+      - action: weather.get_forecasts
+        target:
+          entity_id: weather.aemet
+        data:
+          type: hourly
+        response_variable: weather_forecasts
+      - variables:
+          weather_forecasts_8h: >
+            {{ weather_forecasts['weather.aemet'].forecast[0:8] }}
+          weather_max_temperature: >
+            {{ weather_forecasts_8h|map(attribute='temperature')|max|int }}
+          weather_min_temperature: >
+            {{ weather_forecasts_8h|map(attribute='temperature')|min|int }}
+          weather_wind_speed_8h: >
+            {{ weather_forecasts_8h|map(attribute='wind_speed')|list }}
+          weather_precipitation_8h: >
+            {{ weather_forecasts_8h|map(attribute='precipitation')|list }}
+      - variables:
+          weather_graph_precipitation_8h: |-
+            {# Comment to force be understanded as object #}
+            [
+            {% for i in range(weather_precipitation_8h|length) %}
+              {
+                "type": "rectangle",
+                "x_start": {{ 25 + i * 9 }},
+                "x_end": {{ 25 + 7 + i * 9 }},
+                "y_start": {{ section_weather_y_start + 100 - ([(weather_precipitation_8h[i] / weather_precipitation_max_shown * weather_graphs_height), weather_graphs_height]|min|round(0,'ceil')|int) }},
+                "y_end": {{ section_weather_y_start + 100 }},
+                "fill": "{{ 'red' if weather_precipitation_8h[i] > weather_precipitation_alert else 'black' }}",
+                "width": 0
+              },
+            {% endfor %}
+            ]
+          weather_graph_wind_speed_8h: |-
+            {# Comment to force be understanded as object #}
+            [
+            {% for i in range(weather_wind_speed_8h|length) %}
+              {
+                "type": "rectangle",
+                "x_start": {{ 25 + i * 9 }},
+                "x_end": {{ 25 + 7 + i * 9 }},
+                "y_start": {{ section_weather_y_start + 100 }},
+                "y_end": {{ section_weather_y_start + 100 + ([(weather_wind_speed_8h[i] / weather_wind_speed_max_shown * weather_graphs_height), weather_graphs_height]|min|round(0,'ceil')|int) }},
+                "fill": "{{ 'red' if weather_wind_speed_8h[i] > weather_wind_speed_alert else 'black' }}",
+                "width": 0
+              },
+            {% endfor %}
+            ]
+      - variables: 
+          header_section: |-
+            {# Comment to force be understanded as object #}
+            [
+              {
+                "type": "rectangle",
+                "x_start": 0,
+                "x_end": 128,
+                "y_start": 0,
+                "y_end": 40,
+                "fill": "black",
+                "width": 0
+              },
+              {
+                "type": "text",
+                "value": "231",
+                "x": 20,
+                "y": 20,
+                "size": 28,
+                "color": "white",
+                "anchor": "lm"
+              },
+              {
+                "type": "icon",
+                "value": "mdi:bell",
+                "x": 118,
+                "y": 20,
+                "size": 24,
+                "anchor": "rm",
+                "color": "white"
+              }
+            ]
+          weather_section: |-
+            {# Comment to force be understanded as object #}
+            [
+              {
+                "type": "icon",
+                "value": "mdi:weather-{{ states('weather.climacell_daily') }}",
+                "x": 0,
+                "y": {{ section_weather_y_start }},
+                "size": 75,
+                "color": "black"
+              },
+              {
+                "type": "icon",
+                "value": "mdi:arrow-collapse-up",
+                "anchor": "lm",
+                "x": 76,
+                "y": {{ section_weather_y_start + 17 }},
+                "size": 11,
+                "color": "black"
+              },
+              {
+                "type": "icon",
+                "value": "mdi:arrow-collapse-down",
+                "anchor": "lm",
+                "x": 76,
+                "y": {{ section_weather_y_start + 44 }},
+                "size": 11,
+                "color": "black"
+              },
+              {
+                "type": "text",
+                "anchor": "rt",
+                "x": 90,
+                "y": {{ section_weather_y_start + 1 }},
+                "max_width": 58,
+                "size": 21,
+                "value": "{{ weather_max_temperature }}°"
+              },
+              {
+                "type": "text",
+                "anchor": "rt",
+                "x": 90,
+                "y": {{ section_weather_y_start + 27 }},
+                "max_width": 58,
+                "size": 21,
+                "value": "{{ weather_min_temperature }}°"
+              },
+              {
+                "type": "icon",
+                "value": "mdi:water",
+                "anchor": "lb",
+                "x": 0,
+                "y": {{ section_weather_y_start + 97 }},
+                "size": 20,
+                "color": "black"
+              },
+              {
+                "type": "icon",
+                "value": "mdi:weather-windy",
+                "anchor": "lt",
+                "x": 0,
+                "y": {{ section_weather_y_start + 107 }},
+                "size": 20,
+                "color": "black"
+              },
+              {
+                "type": "line",
+                "x_start": 25,
+                "y_start": {{ section_weather_y_start + 100 }},
+                "x_end": 95,
+                "y_end": {{ section_weather_y_start + 100 }},
+                "fill": "black",
+                "width": 1
+              },
+              {
+                "type": "text",
+                "anchor": "lm",
+                "x": 100,
+                "y": {{ section_weather_y_start + 100 }},
+                "size": 11,
+                "value": "{{ weather_forecasts_8h[-1].datetime| as_timestamp |timestamp_custom('%I%p', local=true) }}"
+              }
+            ]
+      - action: gicisky.write
+        target:
+          device_id: >
+            {{ gicisky_device_id }}
+        data:
+          rotate: 270
+          background: white
+          dry_run: >
+            {{ gicisky_write_dry_run }}
+          payload: >
+            {{ (header_section) + (weather_section) + (weather_graph_precipitation_8h) + (weather_graph_wind_speed_8h) }}
