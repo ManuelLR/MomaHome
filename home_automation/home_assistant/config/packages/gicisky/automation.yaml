@@ -29,14 +29,43 @@
       # # sensor.gicisky_92975071_last_update_time
       gicisky_device_id: "e7c82815299126f4297b877d0cc343d4"
       # sensor.gicisky_92975006_last_update_time
-      section_weather_y_start: 45
+      section_weather_y_start: 32
+      section_reminders_y_start: 163
       weather_graphs_height: >
         {{ (53/2)|round(0,'ceil')|int }}
       weather_wind_speed_alert: 20
       weather_wind_speed_max_shown: 40
       weather_precipitation_alert: 0.25
       weather_precipitation_max_shown: 1.2
-
+      example_multiline_text: |-
+        abcdefghijklmnopqrstuvwxyz
+        abcdefghijklmnopqrstuvwxyz
+        abcdefghijklmnopqrstuvwxyz
+      reminders_icons:
+        # turned on devices
+        - icon: mdi:lightbulb-on
+          enabled: >
+            {{ false }}
+        # Washing machine
+        - icon: mdi:washing-machine
+          enabled: >
+            {{ states.sensor.washing_machine_status.state != 'Off' }}
+        # Garbage
+        - icon: mdi:garbage-can
+          enabled: >
+            {{ true }}
+        # Lift bags
+        - icon: mdi:bag-suitcase
+          enabled: >
+            {{ false }}
+        # Car
+        - icon: mdi:car
+          enabled: >
+            {{ false }}
+        # Dummy
+        - icon: mdi:apple-keyboard-caps
+          enabled: >
+            {{ false }}
     actions:
       - action: weather.get_forecasts
         target:
@@ -55,6 +84,56 @@
             {{ weather_forecasts_8h|map(attribute='wind_speed')|list }}
           weather_precipitation_8h: >
             {{ weather_forecasts_8h|map(attribute='precipitation')|list }}
+      - variables:
+          reminders_section: |-
+            {# Comment to force be understanded as object #}
+            {% set reminders_enabled = reminders_icons|selectattr("enabled")|list %}
+            {% set n_reminders_enabled = reminders_enabled|length %}
+            {% set row_size = 42 %}
+            {% set n_rows = (n_reminders_enabled / 3)|round(0,'ceil')|int %}
+            {% set y_deviation = 0 if n_rows == 2 else ((row_size/2)|round(0,'ceil')|int) %}
+            [
+            {% set counter = namespace(value=0) %}
+            {% set i_x = namespace(value=0) %}
+            {% set i_y = namespace(value=0) %}
+            {% for reminder in reminders_enabled %}
+              {
+                "type": "circle",
+                "x": {{ 21 + i_x.value * row_size }},
+                "y": {{ 21 + i_y.value * row_size + section_reminders_y_start + y_deviation }},
+                "radius": 18,
+                "fill": "black",
+                "width": 0
+              },
+              {
+                "type": "icon",
+                "x": {{ 21 + i_x.value * row_size }},
+                "y": {{ 21 + i_y.value * row_size + section_reminders_y_start + y_deviation }},
+                "size": 26,
+                "color": "white",
+                "value": "{{ reminder.icon }}",
+                "anchor": "mm"
+              },
+              {% set i_x.value = i_x.value + 1 %}
+              {% if i_x.value == 3 %}
+                {% set i_x.value = 0 %}
+                {% set i_y.value = i_y.value + 1 %}
+              {% endif %}
+            {% endfor %}
+            {
+              "type": "multiline",
+              "value": {{ example_multiline_text|tojson| replace("\\n", "<br/>") }},
+              "x": 0,
+              "start_y": {{ section_reminders_y_start + 2 * 42 }},
+              "y_padding": 0,
+              "delimiter": "<br/>",
+              {# "max_width": 15, #}
+              "anchor": "lt",
+              "size": 14,
+              "offset_y": 15,
+              "color": "black"
+            },
+            ]
       - variables:
           weather_graph_precipitation_8h: |-
             {# Comment to force be understanded as object #}
@@ -95,15 +174,15 @@
                 "x_start": 0,
                 "x_end": 128,
                 "y_start": 0,
-                "y_end": 40,
+                "y_end": 30,
                 "fill": "black",
                 "width": 0
               },
               {
                 "type": "text",
                 "value": "231",
-                "x": 20,
-                "y": 20,
+                "x": 15,
+                "y": 15,
                 "size": 28,
                 "color": "white",
                 "anchor": "lm"
@@ -112,7 +191,7 @@
                 "type": "icon",
                 "value": "mdi:bell",
                 "x": 118,
-                "y": 20,
+                "y": 15,
                 "size": 24,
                 "anchor": "rm",
                 "color": "white"
@@ -211,4 +290,4 @@
           dry_run: >
             {{ gicisky_write_dry_run }}
           payload: >
-            {{ (header_section) + (weather_section) + (weather_graph_precipitation_8h) + (weather_graph_wind_speed_8h) }}
+            {{ (header_section) + (weather_section) + (weather_graph_precipitation_8h) + (weather_graph_wind_speed_8h) + (reminders_section) }}
