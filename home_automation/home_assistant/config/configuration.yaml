@@ -141,7 +141,7 @@ input_number: !include_dir_merge_named __auto_generated-config/input_number/
 
 input_boolean: !include_dir_merge_named __auto_generated-config/input_boolean/
 
-template: !include_dir_merge_named __auto_generated-config/template/
+template: !include_dir_merge_list __auto_generated-config/template/
 
 bluetooth:
 # ble_monitor:
@@ -163,7 +163,7 @@ smartir:
   # Home Assistant integration to manage climate systems, TVs, fans and lights using IR/RF controllers
   check_updates: false
 
-gicisky:
+# gicisky:
   # https://github.com/eigger/hass-gicisky
   # Gicisky BLE Label Home Assistant Integration
 
