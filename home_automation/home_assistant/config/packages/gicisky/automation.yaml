@@ -95,39 +95,48 @@
       reminders_icons:
       ### Sort by priority
         # Washing machine
-        - icon: mdi:washing-machine
+        - icon: >
+            {{ state_attr('sensor.washing_machine_status', 'icon') }}
           enabled: >
             {{ states('sensor.washing_machine_status') != 'Off' }}
         # turned on devices
-        - icon: mdi:lightbulb-on
+        - icon: >
+            {{ state_attr('sensor.amount_turned_on_entities_monitored_by_label', 'icon') }}
           enabled: >
             {{ states('sensor.amount_turned_on_entities_monitored_by_label')|int > 0 }}
         # Car
-        - icon: mdi:car
+        - icon: >
+            {{ state_attr('input_boolean.car_reminder', 'icon') }}
           enabled: >
             {{ states('input_boolean.car_reminder') == 'on' }}
         # clothes hanging out to dry
-        - icon: mdi:tshirt-crew
+        - icon: >
+            {{ state_attr('input_boolean.clothes_drying_reminder', 'icon') }}
           enabled: >
             {{ states('input_boolean.clothes_drying_reminder') == 'on' }}
         # Garbage
-        - icon: mdi:trash-can
+        - icon: >
+            {{ state_attr('input_boolean.garbage_reminder', 'icon') }}
           enabled: >
             {{ states('input_boolean.garbage_reminder') == 'on' }}
-        # Withdraw money
-        - icon: mdi:bank
+        # withdraw money
+        - icon: >
+            {{ state_attr('input_boolean.withdraw_money_reminder', 'icon') }}
           enabled: >
             {{ states('input_boolean.withdraw_money_reminder') == 'on' }}
         # Lift bags
-        - icon: mdi:shopping
+        - icon: >
+            {{ state_attr('input_boolean.pick_up_bags_reminder', 'icon') }}
           enabled: >
             {{ states('input_boolean.pick_up_bags_reminder') == 'on' }}
         # Pick up package
-        - icon: mdi:package-variant-closed
+        - icon: >
+            {{ state_attr('input_boolean.pick_up_package_reminder', 'icon') }}
           enabled: >
             {{ states('input_boolean.pick_up_package_reminder') == 'on' }}
         # go shopping
-        - icon: mdi:cart
+        - icon: >
+            {{ state_attr('input_boolean.go_shopping_reminder', 'icon') }}
           enabled: >
             {{ states('input_boolean.go_shopping_reminder') == 'on' }}
 

@@ -25,5 +25,5 @@
     initial: off
   withdraw_money_reminder:
     name: Withdraw Money Reminder
-    icon: mdi:bank
+    icon: mdi:cash-multiple
     initial: off
