@@ -23,6 +23,30 @@
         id: "trigger_turned_off_devices"
         for:
           minutes: 3
+      # Trigger if the washing machine turned on
+      - trigger: state
+        entity_id: sensor.washing_machine_status
+        from: "Off"
+        for:
+          minutes: 3
+        id: "trigger_washing_machine_on"
+      # Trigger if the washing machine turned off
+      - trigger: state
+        entity_id: sensor.washing_machine_status
+        to: "Off"
+        for:
+          minutes: 3
+        id: "trigger_washing_machine_off"
+      ## Trigger by standard reminders
+      - trigger: state
+        entity_id:
+          - input_boolean.car_reminder
+          - input_boolean.clothes_drying_reminder
+          - input_boolean.garbage_reminder
+          - input_boolean.pick_up_bags_reminder
+          - input_boolean.pick_up_package_reminder
+          - input_boolean.go_shopping_reminder
+        id: "trigger_reminders"
       ## Check if we should update the display hourly 
       - trigger: time_pattern
         hours: "*"
@@ -44,8 +68,12 @@
             condition: trigger
             id:
               - "trigger_manual_event"
+              - "trigger_washing_machine_on"
+              # - "trigger_washing_machine_off"  ## Not relevant for now
               - "trigger_turned_on_devices"
               - "trigger_turned_off_devices"
+              - "trigger_reminders"
+
     variables:
       gicisky_write_dry_run: true
       # gicisky_device_id: "f93ebcba62a0eaf2f06932acdc6b11ba"
@@ -65,30 +93,44 @@
         1
         2
       reminders_icons:
-        # turned on devices
-        - icon: mdi:lightbulb-on
-          enabled: >
-            {{ states('sensor.amount_turned_on_entities_monitored_by_label')|int > 0 }}
+      ### Sort by priority
         # Washing machine
         - icon: mdi:washing-machine
           enabled: >
             {{ states('sensor.washing_machine_status') != 'Off' }}
-        # Garbage
-        - icon: mdi:garbage-can
+        # turned on devices
+        - icon: mdi:lightbulb-on
           enabled: >
-            {{ true }}
-        # Lift bags
-        - icon: mdi:bag-suitcase
-          enabled: >
-            {{ false }}
+            {{ states('sensor.amount_turned_on_entities_monitored_by_label')|int > 0 }}
         # Car
         - icon: mdi:car
           enabled: >
-            {{ false }}
-        # Dummy
-        - icon: mdi:apple-keyboard-caps
+            {{ states('input_boolean.car_reminder') == 'on' }}
+        # clothes hanging out to dry
+        - icon: mdi:tshirt-crew
           enabled: >
-            {{ false }}
+            {{ states('input_boolean.clothes_drying_reminder') == 'on' }}
+        # Garbage
+        - icon: mdi:trash-can
+          enabled: >
+            {{ states('input_boolean.garbage_reminder') == 'on' }}
+        # Withdraw money
+        - icon: mdi:bank
+          enabled: >
+            {{ states('input_boolean.withdraw_money_reminder') == 'on' }}
+        # Lift bags
+        - icon: mdi:shopping
+          enabled: >
+            {{ states('input_boolean.pick_up_bags_reminder') == 'on' }}
+        # Pick up package
+        - icon: mdi:package-variant-closed
+          enabled: >
+            {{ states('input_boolean.pick_up_package_reminder') == 'on' }}
+        # go shopping
+        - icon: mdi:cart
+          enabled: >
+            {{ states('input_boolean.go_shopping_reminder') == 'on' }}
+
     actions:
       - action: weather.get_forecasts
         target:

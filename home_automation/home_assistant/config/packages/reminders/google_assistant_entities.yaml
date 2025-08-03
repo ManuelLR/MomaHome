@@ -39,3 +39,10 @@
         - Recoger el paquete
         - Paquete
         - Recoger paquete
+    input_boolean.withdraw_money_reminder:
+      expose: true
+      aliases:
+        - Withdraw Money Reminder
+        - Recordatorio de sacar dinero
+        - Sacar dinero
+        - Dinero
