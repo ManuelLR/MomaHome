@@ -3,13 +3,11 @@
     - name: amount_turned_on_entities_monitored_by_label
       unique_id: amount_turned_on_entities_monitored_by_label
       icon: mdi:lightbulb-on
-      variables:
-        entities_on: >
-          expand(label_entities('monitorTurnedOn')) | selectattr('state', 'eq', 'on') | list | map(attribute='entity_id') | list
-      state: >
-        {{ entities_on | count }}
+      ### DON'T USE `variables:` HERE, IT WILL CAUSE NOT UPDATES TO THE STATES
+      state: >-
+        {{ expand(label_entities('monitorTurnedOn')) | selectattr('state', 'eq', 'on') | list | map(attribute='entity_id') | list | length }}
       attributes:
         entities_on: >
-          {{ entities_on }}
+          {{ expand(label_entities('monitorTurnedOn')) | selectattr('state', 'eq', 'on') | list | map(attribute='entity_id') | list }}
       state_class: total
       unit_of_measurement: entities

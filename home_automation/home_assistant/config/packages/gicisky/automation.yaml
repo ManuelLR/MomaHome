@@ -5,7 +5,24 @@
     mode: single
     triggers:
       - trigger: event
-        event_type: manual_event  
+        event_type: manual_event
+        id: "trigger_manual_event"
+      # Trigger if a monitored by label device is turned on
+      - trigger: numeric_state
+        entity_id:
+          - sensor.amount_turned_on_entities_monitored_by_label
+        above: 0
+        id: "trigger_turned_on_devices"
+        for:
+          minutes: 3
+      # Trigger if a monitored by label device is turned off
+      - trigger: numeric_state
+        entity_id:
+          - sensor.amount_turned_on_entities_monitored_by_label
+        below: 1
+        id: "trigger_turned_off_devices"
+        for:
+          minutes: 3
       ## Check if we should update the display hourly 
       - trigger: time_pattern
         hours: "*"
@@ -23,6 +40,12 @@
                 {% set time_diff = (now() - (last_update| as_datetime)).total_seconds() / 3600 %}
                 {{ time_diff >= 3.8 }}
               {% endif %}
+          - alias: "Not check last time updated for next triggers"
+            condition: trigger
+            id:
+              - "trigger_manual_event"
+              - "trigger_turned_on_devices"
+              - "trigger_turned_off_devices"
     variables:
       gicisky_write_dry_run: true
       # gicisky_device_id: "f93ebcba62a0eaf2f06932acdc6b11ba"
@@ -45,11 +68,11 @@
         # turned on devices
         - icon: mdi:lightbulb-on
           enabled: >
-            {{ false }}
+            {{ states('sensor.amount_turned_on_entities_monitored_by_label')|int > 0 }}
         # Washing machine
         - icon: mdi:washing-machine
           enabled: >
-            {{ states.sensor.washing_machine_status.state != 'Off' }}
+            {{ states('sensor.washing_machine_status') != 'Off' }}
         # Garbage
         - icon: mdi:garbage-can
           enabled: >
