@@ -1,0 +1,41 @@
+# google_assistant:
+  # entity_config:
+    input_boolean.car_reminder:
+      expose: true
+      aliases:
+        - Recordatorio de coche
+    input_boolean.clothes_drying_reminder:
+      expose: true
+      aliases:
+        - Clothes Drying Reminder
+        - Recordatio de ropa tendida
+        - Ropa tendida
+    input_boolean.go_shopping_reminder:
+      expose: true
+      aliases:
+        - Go Shopping Reminder
+        - Recordatorio de ir a comprar
+        - Ir a comprar
+    input_boolean.garbage_reminder:
+      expose: true
+      aliases:
+        - Garbage Reminder
+        - Recordatorio de tirar labasura
+        - Tirar la basura
+        - Basura
+    input_boolean.pick_up_bags_reminder:
+      expose: true
+      aliases:
+        - Pick Up Bags Reminder
+        - Recordatorio de bajar las bolsas
+        - Bajar las bolsas
+        - Coger las bolsas
+        - Bolsas
+    input_boolean.pick_up_package_reminder:
+      expose: true
+      aliases:
+        - Pick Up Package Reminder
+        - Recordatorio de recoger el paquete
+        - Recoger el paquete
+        - Paquete
+        - Recoger paquete

@@ -1,0 +1,25 @@
+# input_boolean:
+  car_reminder:
+    name: Car Reminder
+    icon: mdi:car
+    initial: off
+  clothes_drying_reminder:
+    name: Clothes Drying Reminder
+    icon: mdi:tshirt-crew
+    initial: off
+  go_shopping_reminder:
+    name: Go Shopping Reminder
+    icon: mdi:cart
+    initial: off
+  garbage_reminder:
+    name: Garbage Reminder
+    icon: mdi:garbage-can
+    initial: off
+  pick_up_bags_reminder:
+    name: Pick Up Bags Reminder
+    icon: mdi:bag-suitcase
+    initial: off
+  pick_up_package_reminder:
+    name: Pick Up Package Reminder
+    icon: mdi:package-variant-closed
+    initial: off
