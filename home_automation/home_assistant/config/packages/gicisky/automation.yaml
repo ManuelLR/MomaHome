@@ -88,6 +88,7 @@
       weather_wind_speed_max_shown: 40
       weather_precipitation_alert: 0.25
       weather_precipitation_max_shown: 1.2
+      weather_temperature_alert: 45
       example_multiline_text: |-
         MomaHome
         1
@@ -158,6 +159,10 @@
             {{ weather_forecasts_10h|map(attribute='wind_speed')|list }}
           weather_precipitation_10h: >
             {{ weather_forecasts_10h|map(attribute='precipitation')|list }}
+          weather_temperature_10h: >
+            {{ weather_forecasts_10h|map(attribute='temperature')|list }}
+          show_precipitation_graph: >
+            {{ weather_precipitation_10h|sum|int > 0 }}
       - variables:
           reminders_section: |-
             {# Comment to force be understanded as object #}
@@ -220,6 +225,23 @@
                 "y_start": {{ section_weather_y_start + 100 - ([(weather_precipitation_10h[i] / weather_precipitation_max_shown * weather_graphs_height), weather_graphs_height]|min|round(0,'ceil')|int) }},
                 "y_end": {{ section_weather_y_start + 100 }},
                 "fill": "{{ 'red' if weather_precipitation_10h[i] > weather_precipitation_alert else 'black' }}",
+                "width": 0
+              },
+            {% endfor %}
+            ]
+          weather_graph_temperature_10h: |-
+            {# Comment to force be understanded as object #}
+            {% set relative_temperature_max = weather_max_temperature - weather_min_temperature %}
+            [
+            {% for i in range(weather_temperature_10h|length) %}
+              {% set y_height = ((((weather_temperature_10h[i] - weather_min_temperature) / relative_temperature_max) * weather_graphs_height)|round(0,'ceil')|int) %}
+              {
+                "type": "rectangle",
+                "x_start": {{ 22 + i * 10 }},
+                "x_end": {{ 22 + 8 + i * 10 }},
+                "y_start": {{ section_weather_y_start + 100 - y_height }},
+                "y_end": {{ section_weather_y_start + 100 }},
+                "fill": "{{ 'red' if weather_temperature_10h[i] > weather_temperature_alert else 'black' }}",
                 "width": 0
               },
             {% endfor %}
@@ -320,12 +342,12 @@
               },
               {
                 "type": "icon",
-                "value": "mdi:water",
+                "value": "{{ 'mdi:water' if show_precipitation_graph else 'mdi:temperature-celsius' }}",
                 "anchor": "lm",
                 "x": 0,
                 "y": {{ section_weather_y_start + 100 - (weather_graphs_height/2)|round(0,'ceil')|int }},
                 "size": 20,
-                "color": "black"
+                "color": "{{ 'red' if show_precipitation_graph else 'black' }}"
               },
               {
                 "type": "icon",
@@ -406,4 +428,4 @@
           dry_run: >
             {{ gicisky_write_dry_run }}
           payload: >
-            {{ (header_section) + (weather_section) + (weather_graph_precipitation_10h) + (weather_graph_wind_speed_10h) + (reminders_section) }}
+            {{ (header_section) + (weather_section) + (weather_graph_precipitation_10h if show_precipitation_graph else weather_graph_temperature_10h) + (weather_graph_wind_speed_10h) + (reminders_section) }}
