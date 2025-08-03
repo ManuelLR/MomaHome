@@ -141,6 +141,8 @@ input_number: !include_dir_merge_named __auto_generated-config/input_number/
 
 input_boolean: !include_dir_merge_named __auto_generated-config/input_boolean/
 
+template: !include_dir_merge_named __auto_generated-config/template/
+
 bluetooth:
 # ble_monitor:
 #   # https://github.com/custom-components/ble_monitor
