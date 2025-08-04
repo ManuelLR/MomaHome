@@ -5,9 +5,9 @@
       icon: mdi:lightbulb-on
       ### DON'T USE `variables:` HERE, IT WILL CAUSE NOT UPDATES TO THE STATES
       state: >-
-        {{ expand(label_entities('monitorTurnedOn')) | selectattr('state', 'eq', 'on') | list | map(attribute='entity_id') | list | length }}
+        {{ expand(label_entities('monitorTurnedOn')) | rejectattr('state', 'in', ['off', 'unavailable']) | list | map(attribute='entity_id') | list | length }}
       attributes:
         entities_on: >
-          {{ expand(label_entities('monitorTurnedOn')) | selectattr('state', 'eq', 'on') | list | map(attribute='entity_id') | list }}
+          {{ expand(label_entities('monitorTurnedOn')) | rejectattr('state', 'in', ['off', 'unavailable']) | list | map(attribute='entity_id') | list }}
       state_class: total
       unit_of_measurement: entities
