@@ -1,0 +1,22 @@
+# input_boolean:
+  car_reminder:
+    name: Car Reminder
+    icon: mdi:car
+  clothes_drying_reminder:
+    name: Clothes Drying Reminder
+    icon: mdi:tshirt-crew
+  go_shopping_reminder:
+    name: Go Shopping Reminder
+    icon: mdi:cart
+  garbage_reminder:
+    name: Garbage Reminder
+    icon: mdi:trash-can
+  pick_up_bags_reminder:
+    name: Pick Up Bags Reminder
+    icon: mdi:shopping
+  pick_up_package_reminder:
+    name: Pick Up Package Reminder
+    icon: mdi:package-variant-closed
+  withdraw_money_reminder:
+    name: Withdraw Money Reminder
+    icon: mdi:cash-multiple

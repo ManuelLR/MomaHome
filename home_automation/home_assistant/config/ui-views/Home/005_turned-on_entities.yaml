@@ -77,6 +77,13 @@ entities:
   - entity: input_boolean.centinel_mode
     name: Centinel Mode
     icon: mdi:shield-home
+  - entity: input_boolean.car_reminder
+  - entity: input_boolean.clothes_drying_reminder
+  - entity: input_boolean.garbage_reminder
+  - entity: input_boolean.pick_up_bags_reminder
+  - entity: input_boolean.pick_up_package_reminder
+  - entity: input_boolean.go_shopping_reminder
+  - entity: input_boolean.withdraw_money_reminder
 conditions:
   - condition: or
     conditions:
@@ -97,5 +104,8 @@ conditions:
           - "error"
           - "idle"
           - "paused"
+          # climate
+          - "cool"
+          - "heat"
           # Plant
           - "problem"
