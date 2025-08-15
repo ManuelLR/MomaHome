@@ -69,7 +69,7 @@ services:
       # - "traefik.http.routers.wallabag.middlewares=wallabag-security-headers"
 
   miniflux:
-    image: ghcr.io/miniflux/miniflux:2.2.10
+    image: ghcr.io/miniflux/miniflux:2.2.11
     restart: unless-stopped
     environment:
       - DATABASE_URL=postgres://${MINIFLUX_DB_USER}:${MINIFLUX_DB_PASSWORD}@common_db:5432/${MINIFLUX_DB_NAME}?sslmode=disable
