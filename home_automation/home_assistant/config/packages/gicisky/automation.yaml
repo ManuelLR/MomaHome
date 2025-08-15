@@ -71,7 +71,7 @@
               - "trigger_washing_machine_on"
               # - "trigger_washing_machine_off"  ## Not relevant for now
               - "trigger_turned_on_devices"
-              - "trigger_turned_off_devices"
+              # - "trigger_turned_off_devices"   ## Not relevant for now
               - "trigger_reminders"
 
     variables:
