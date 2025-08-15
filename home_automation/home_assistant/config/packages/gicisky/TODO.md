@@ -1,0 +1,10 @@
+- ✅ Group (in some way) turned on devices to trigger the refresh. (Try to make it compatible with WWW)
+- ✅ Add start time to the graph
+- ✅ Add more hours to the graph
+- ✅ Add individual "alerts" like Garbage, Lift bags, Car, pick up package, go shopping, recoger ropa, etc.
+- Dynamic showed text
+- Manage updates when alerts on individual devices are modified.
+  - Avoid to update the panel if is going to show the same information.
+- Improve image quality and readability.
+- ✅ Change precipitation graph per temperature graph when not raining.
+- Add AEMET alerts
