@@ -5,6 +5,6 @@
     unique_id: centralized_ac_ir
     device_code: 1341
     controller_data: remote.ir_living_room_remote
-    temperature_sensor: sensor.sensor.xiaomi_lywsd03mmc_z_04_temperatura
+    temperature_sensor: sensor.xiaomi_lywsd03mmc_z_04_temperatura
     humidity_sensor: sensor.xiaomi_lywsd03mmc_z_04_humedad
     # power_sensor: binary_sensor.living_room_ac_power    # Optional: power sensor
