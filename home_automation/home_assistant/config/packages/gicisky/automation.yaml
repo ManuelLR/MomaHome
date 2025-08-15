@@ -75,13 +75,15 @@
               - "trigger_reminders"
 
     variables:
-      gicisky_write_dry_run: true
+      gicisky_write_dry_run: false
       # gicisky_device_id: "f93ebcba62a0eaf2f06932acdc6b11ba"
       # # sensor.gicisky_92975071_last_update_time
       gicisky_device_id: "e7c82815299126f4297b877d0cc343d4"
       # sensor.gicisky_92975006_last_update_time
       section_weather_y_start: 32
       section_reminders_y_start: 177
+      # weather_entity: weather.aemet
+      weather_entity: weather.climacell_daily
       weather_graphs_height: >
         {{ (53/2)|round(0,'ceil')|int }}
       weather_wind_speed_alert: 20
@@ -144,13 +146,14 @@
     actions:
       - action: weather.get_forecasts
         target:
-          entity_id: weather.aemet
+          entity_id: >
+            {{ weather_entity }}
         data:
           type: hourly
         response_variable: weather_forecasts
       - variables:
           weather_forecasts_10h: >
-            {{ weather_forecasts['weather.aemet'].forecast[0:10] }}
+            {{ weather_forecasts[weather_entity].forecast[0:10] }}
           weather_max_temperature: >
             {{ weather_forecasts_10h|map(attribute='temperature')|max|int }}
           weather_min_temperature: >
