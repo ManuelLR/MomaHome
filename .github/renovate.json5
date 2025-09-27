@@ -57,6 +57,19 @@
       },
       {
         "customType": "regex",
+        // We should create our custom regex for Calibre Web because it is not auto detected
+        "fileMatch": [
+          "reading/docker-compose.yml"
+        ],
+        "matchStrings": [
+          "image: ghcr.io/crocodilestick/calibre-web-automated:(?<currentValue>[^ ]*)\\n"
+        ],
+        "depNameTemplate": "crocodilestick/calibre-web-automated",
+        "datasourceTemplate": "github-releases",
+        "versioningTemplate": "semver-coerced"
+      },
+      {
+        "customType": "regex",
         "description": ["Update `version:` and `_VERSION:` variables in github workflows"],
         "fileMatch": ["^\\.github/workflows/[^/]+\\.ya?ml$"],
         "matchStrings": [
