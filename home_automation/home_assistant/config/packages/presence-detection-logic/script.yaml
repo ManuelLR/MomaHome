@@ -1,6 +1,7 @@
 # script:
   notify_in_home_or_all:
     alias: "Notify person in home or all"
+    mode: parallel
     fields:
       title: &fields_conf
         required: false
