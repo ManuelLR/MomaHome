@@ -43,5 +43,10 @@ module.exports = {
   printConfig: true,
 
   // 'prHourlyLimit' controls the rate of PR creation (0 = unlimited)
-  prHourlyLimit: 0
+  prHourlyLimit: 0,
+
+  // 'useBaseBranchConfig' determines how configs from different branches are handled
+  // 'merge' allows testing configuration changes before merging to the base branch
+  // by merging the base branch config with the current branch config
+  useBaseBranchConfig: 'merge'
 };

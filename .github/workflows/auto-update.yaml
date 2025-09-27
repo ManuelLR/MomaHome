@@ -25,6 +25,7 @@ jobs:
         uses: renovatebot/github-action@v43.0.13
         with:
           renovate-version: ${{ env.RENOVATE_VERSION }}
+          # Use the global configuration file that it's going to load the specific repo config file.
           configurationFile: .github/renovate.global.js
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
