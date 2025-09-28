@@ -27,7 +27,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
     CUSTOM_COMPONENT_EDATA_VERSION=2025.03.1 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
-    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.2.1 \
+    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.3.1 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
