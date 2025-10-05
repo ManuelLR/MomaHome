@@ -1,6 +1,11 @@
 - type: thermostat
   name: Centralized AC
   entity: climate.centralized_ac
+  features:
+    - style: dropdown
+      type: climate-hvac-modes
+    - style: dropdown
+      type: climate-fan-modes
 - type: vertical-stack
   title: 'Dyson Fan 01'
   cards:
@@ -19,3 +24,8 @@
     - type: thermostat
       name: Hot control
       entity: climate.dyson_01
+      features:
+        - style: dropdown
+          type: climate-hvac-modes
+        - style: dropdown
+          type: climate-fan-modes
