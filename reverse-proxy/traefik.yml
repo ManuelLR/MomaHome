@@ -59,6 +59,7 @@ certificatesResolvers:
       preferredChain: 'ISRG Root X1'
       dnsChallenge:
         provider: desec
+        delayBeforeCheck: 60s
   oldDomain:
     acme:
       storage: /letsencrypt/acme.json
