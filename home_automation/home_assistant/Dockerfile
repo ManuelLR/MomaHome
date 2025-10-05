@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2025.9.4
+FROM ghcr.io/home-assistant/home-assistant:2025.10.1
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -15,7 +15,7 @@ ENV \
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod versioning=semver
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.5.3 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.6.1 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.13.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
@@ -41,7 +41,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.13.0 \
       # renovatebot: datasource=github-releases depName=RomRider/apexcharts-card
-    CUSTOM_CARD_APEXCHARTS_VERSION=v2.1.2 \
+    CUSTOM_CARD_APEXCHARTS_VERSION=v2.2.3 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.1 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
