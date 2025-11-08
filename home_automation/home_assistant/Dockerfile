@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2025.10.1
+FROM ghcr.io/home-assistant/home-assistant:2025.11.1
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
