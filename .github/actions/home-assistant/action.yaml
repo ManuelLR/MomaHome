@@ -12,9 +12,10 @@ runs:
   image: '../../../home_automation/home_assistant/Dockerfile'
   args:
     - /usr/local/bin/hass
-    - -c=home_automation/home_assistant/config/
+    - --config=home_automation/home_assistant/config/
     - --script
     ## Must be in that way, if not, info=all fail
     - check_config
+    - --config=home_automation/home_assistant/config/
     - --info=all
 #  ${{ inputs.my_command }}
