@@ -1,0 +1,33 @@
+## Weather Radar Card Example
+## Documentation: https://github.com/Makin-Things/weather-radar-card
+##
+## This card uses RainViewer to display animated precipitation radar
+## It requires Leaflet.js which is bundled with the card
+##
+## To add this card to your dashboard:
+## 1. Add the following configuration to your Lovelace view
+## 2. Adjust the coordinates to your location
+## 3. Customize the appearance and behavior as needed
+
+# Basic configuration
+type: custom:weather-radar-card
+card_title: "☔ Precipitation Radar"
+center_latitude: 37.3891  # Replace with your latitude
+center_longitude: -5.9845  # Replace with your longitude
+marker_latitude: 37.3891   # Replace with your latitude (home marker)
+marker_longitude: -5.9845  # Replace with your longitude (home marker)
+show_marker: true
+show_playback: true
+show_zoom: true
+show_recenter: true
+frame_count: 36           # Number of frames to show (default: 10)
+frame_delay: 100          # Delay between frames in ms (default: 500)
+data_source: "RainViewer-Original"  # Options: RainViewer-Original, RainViewer-UniversalBlue, RainViewer-TITAN, RainViewer-TWC, RainViewer-Meteored, RainViewer-NEXRAD, RainViewer-RainbowDark, RainViewer-BlackAndWhite
+map_style: "dark"         # Options: dark, light
+zoom_level: 9             # Initial zoom level (1-13)
+
+## Advanced options (uncomment to use):
+# map_height: 450px        # Height of the map (default: 450px)
+# show_range: true         # Show range rings around the marker
+# show_scale: true         # Show map scale
+# extra_labels: true       # Show additional labels on the map

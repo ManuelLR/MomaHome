@@ -46,7 +46,9 @@ ENV \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.1 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
-    CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0 \
+      # renovatebot: datasource=github-releases depName=Makin-Things/weather-radar-card
+    CUSTOM_CARD_WEATHER_RADAR_VERSION=v2.1.0
 
 ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
@@ -55,7 +57,8 @@ ENV \
     CUSTOM_CARD_MINI_GRAPH_PATH=/local/external-cards/mini-graph-card-bundle.js?version=${CUSTOM_CARD_MINI_GRAPH_VERSION} \
     CUSTOM_CARD_APEXCHARTS_PATH=/local/external-cards/apexcharts-card.js?version=${CUSTOM_CARD_APEXCHARTS_VERSION} \
     CUSTOM_CARD_TV_REMOTE_PATH=/local/external-cards/tv-card.js?version=${CUSTOM_CARD_TV_REMOTE_VERSION} \
-    CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION}
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION} \
+    CUSTOM_CARD_WEATHER_RADAR_PATH=/local/external-cards/weather-radar-card/weather-radar-card.js?version=${CUSTOM_CARD_WEATHER_RADAR_VERSION}
 
 RUN \
     set -ex \
@@ -133,6 +136,11 @@ RUN \
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
     && cd /tmp/google_home_timers_card && git checkout $CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION \
     && cd - && cp -r /tmp/google_home_timers_card/googletimers-card.js /HA-custom-www/external-cards/ \
+    # Weather Radar Card
+    && git clone https://github.com/Makin-Things/weather-radar-card.git /tmp/weather_radar_card \
+    && cd /tmp/weather_radar_card && git checkout $CUSTOM_CARD_WEATHER_RADAR_VERSION \
+    && cd - && mkdir -p /HA-custom-www/external-cards/weather-radar-card \
+    && cp -r /tmp/weather_radar_card/dist/* /HA-custom-www/external-cards/weather-radar-card/ \
     && apk del build-dep
 
 RUN \
