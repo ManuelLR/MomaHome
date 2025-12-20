@@ -46,7 +46,9 @@ ENV \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.1 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
-    CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0 \
+      # renovatebot: datasource=github-releases depName=Makin-Things/weather-radar-card
+    CUSTOM_CARD_WEATHER_RADAR_VERSION=v2.1.0
 
 ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
@@ -55,7 +57,8 @@ ENV \
     CUSTOM_CARD_MINI_GRAPH_PATH=/local/external-cards/mini-graph-card-bundle.js?version=${CUSTOM_CARD_MINI_GRAPH_VERSION} \
     CUSTOM_CARD_APEXCHARTS_PATH=/local/external-cards/apexcharts-card.js?version=${CUSTOM_CARD_APEXCHARTS_VERSION} \
     CUSTOM_CARD_TV_REMOTE_PATH=/local/external-cards/tv-card.js?version=${CUSTOM_CARD_TV_REMOTE_VERSION} \
-    CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION}
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION} \
+    CUSTOM_CARD_WEATHER_RADAR_PATH=/local/external-cards/weather-radar-card/weather-radar-card.js?version=${CUSTOM_CARD_WEATHER_RADAR_VERSION}
 
 RUN \
     set -ex \
@@ -133,6 +136,28 @@ RUN \
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
     && cd /tmp/google_home_timers_card && git checkout $CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION \
     && cd - && cp -r /tmp/google_home_timers_card/googletimers-card.js /HA-custom-www/external-cards/ \
+    # Weather Radar Card (and required assets)
+    && mkdir -p /HA-custom-www/external-cards/weather-radar-card/ \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/weather-radar-card.js" -o /HA-custom-www/external-cards/weather-radar-card/weather-radar-card.js \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/leaflet.js" -o /HA-custom-www/external-cards/weather-radar-card/leaflet.js \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/leaflet.css" -o /HA-custom-www/external-cards/weather-radar-card/leaflet.css \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/leaflet.toolbar.min.js" -o /HA-custom-www/external-cards/weather-radar-card/leaflet.toolbar.min.js \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/leaflet.toolbar.min.css" -o /HA-custom-www/external-cards/weather-radar-card/leaflet.toolbar.min.css \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/home-circle-dark.svg" -o /HA-custom-www/external-cards/weather-radar-card/home-circle-dark.svg \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/home-circle-light.svg" -o /HA-custom-www/external-cards/weather-radar-card/home-circle-light.svg \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/play.png" -o /HA-custom-www/external-cards/weather-radar-card/play.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/pause.png" -o /HA-custom-www/external-cards/weather-radar-card/pause.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/skip-next.png" -o /HA-custom-www/external-cards/weather-radar-card/skip-next.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/skip-back.png" -o /HA-custom-www/external-cards/weather-radar-card/skip-back.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/recenter.png" -o /HA-custom-www/external-cards/weather-radar-card/recenter.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/radar-colour-bar-original.png" -o /HA-custom-www/external-cards/weather-radar-card/radar-colour-bar-original.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/radar-colour-bar-darksky.png" -o /HA-custom-www/external-cards/weather-radar-card/radar-colour-bar-darksky.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/radar-colour-bar-meteored.png" -o /HA-custom-www/external-cards/weather-radar-card/radar-colour-bar-meteored.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/radar-colour-bar-nexrad.png" -o /HA-custom-www/external-cards/weather-radar-card/radar-colour-bar-nexrad.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/radar-colour-bar-rainbow.png" -o /HA-custom-www/external-cards/weather-radar-card/radar-colour-bar-rainbow.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/radar-colour-bar-titan.png" -o /HA-custom-www/external-cards/weather-radar-card/radar-colour-bar-titan.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/radar-colour-bar-twc.png" -o /HA-custom-www/external-cards/weather-radar-card/radar-colour-bar-twc.png \
+    && curl -fsSL "https://github.com/Makin-Things/weather-radar-card/releases/download/${CUSTOM_CARD_WEATHER_RADAR_VERSION}/radar-colour-bar-universalblue.png" -o /HA-custom-www/external-cards/weather-radar-card/radar-colour-bar-universalblue.png \
     && apk del build-dep
 
 RUN \

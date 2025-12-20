@@ -1,0 +1,15 @@
+type: custom:weather-radar-card
+card_title: "☔ Precipitation Radar"
+center_latitude: 37.3891
+center_longitude: -5.9845
+marker_latitude: 37.3891
+marker_longitude: -5.9845
+show_marker: true
+show_playback: true
+show_zoom: true
+show_recenter: true
+frame_count: 36
+frame_delay: 100
+data_source: RainViewer-Original
+map_style: dark
+zoom_level: 9
