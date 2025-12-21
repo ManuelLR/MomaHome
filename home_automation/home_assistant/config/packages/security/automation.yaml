@@ -199,7 +199,7 @@
         - service: script.notify_in_home_or_all
           data:
             title: 'Alert: Door Opened - Starting Video Recording'
-            message: "The entrance door has been opened at {{ trigger_time }} while Centinel Mode is active. Starting video recordings."
+            message: "The entrance door has been opened at `{{ trigger_time }}` and we are starting video recordings."
         - sequence:
           # Immediate 4s recording
           - service: camera.record
