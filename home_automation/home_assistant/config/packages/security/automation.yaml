@@ -189,7 +189,7 @@
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
     variables:
-      trigger_time: "{{ now().strftime('%Y%m%d_%H%M%S') }}"
+      trigger_time: "{{ now().strftime('%Y%m%d-%H%M%S') }}"
     conditions:
       - condition: state
         entity_id: input_boolean.centinel_mode
@@ -233,7 +233,7 @@
             filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
         - delay:
             ## Adding a bit of delay to avoid race condition (not confirmed but not harmful)
-            seconds: 2
+            seconds: 4
         - service: script.notify_in_home_or_all
           data:
             title: 'Door Recording - 5s'
@@ -254,7 +254,7 @@
             filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_25s.mp4"
         - delay:
             ## Adding a bit of delay to avoid race condition (not confirmed but not harmful)
-            seconds: 2
+            seconds: 8
         - service: script.notify_in_home_or_all
           data:
             title: 'Door Recording - 25s'
