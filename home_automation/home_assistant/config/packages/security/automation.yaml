@@ -209,6 +209,9 @@
               duration: 4
               lookback: 4
               filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
+          - delay:
+              ## Adding a bit of delay to avoid race condition (not confirmed but not harmful)
+              seconds: 2
           - service: script.notify_in_home_or_all
             data:
               title: 'Door Recording - 4s'
@@ -228,6 +231,9 @@
             duration: 5
             # lookback: 8
             filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
+        - delay:
+            ## Adding a bit of delay to avoid race condition (not confirmed but not harmful)
+            seconds: 2
         - service: script.notify_in_home_or_all
           data:
             title: 'Door Recording - 5s'
@@ -248,7 +254,7 @@
             filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_25s.mp4"
         - delay:
             ## Adding a bit of delay to avoid race condition (not confirmed but not harmful)
-            seconds: 10
+            seconds: 2
         - service: script.notify_in_home_or_all
           data:
             title: 'Door Recording - 25s'
