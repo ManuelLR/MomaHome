@@ -28,7 +28,7 @@ ENV \
     CUSTOM_COMPONENT_EDATA_VERSION=0f812f83854f85a5d000e29939db89618c2c67a4 \
       ## ⬆️ Revert when https://github.com/uvejota/homeassistant-edata/pull/296 is closed
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
-    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.3.1 \
+    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.3.4 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
