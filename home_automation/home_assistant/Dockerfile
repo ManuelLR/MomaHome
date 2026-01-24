@@ -25,8 +25,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
-    CUSTOM_COMPONENT_EDATA_VERSION=0f812f83854f85a5d000e29939db89618c2c67a4 \
-      ## ⬆️ Revert when https://github.com/uvejota/homeassistant-edata/pull/296 is closed
+    CUSTOM_COMPONENT_EDATA_VERSION=2025.11.3 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.3.4 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
@@ -91,9 +90,7 @@ RUN \
     && cd /tmp/delete-file-home-assistant && git checkout $CUSTOM_COMPONENT_DELETE_FILE_VERSION \
     && cd - && cp -r /tmp/delete-file-home-assistant/custom_components/* /opt/HA/config/custom_components/ \
     # edata
-    # && git clone https://github.com/uvejota/homeassistant-edata.git /tmp/homeassistant-edata \
-    ## ⬇️ ⬆️ Revert when https://github.com/uvejota/homeassistant-edata/pull/296 is closed
-    && git clone https://github.com/pedroangelini/homeassistant-edata.git /tmp/homeassistant-edata \
+    && git clone https://github.com/uvejota/homeassistant-edata.git /tmp/homeassistant-edata \
     && cd /tmp/homeassistant-edata && git checkout $CUSTOM_COMPONENT_EDATA_VERSION \
     && cd - && cp -r /tmp/homeassistant-edata/custom_components/* /opt/HA/config/custom_components/ \
     # HomeConnect (Bosh/Balay/Siemens)
