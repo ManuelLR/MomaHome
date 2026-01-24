@@ -172,7 +172,7 @@ tts:
   - platform: google_translate
     service_name: google_say
 
-telegram_bot: !include_dir_merge_list __auto_generated-config/telegram_bot/
+# telegram_bot: !include_dir_merge_list __auto_generated-config/telegram_bot/
 
 timer: !include_dir_merge_named __auto_generated-config/timer/
 
