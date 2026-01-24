@@ -21,7 +21,7 @@
             is `{{ states('sensor.ups_time_left') }} minutes`.
 
             Any way, I powered off the tv to save energy.
-      - service: notify.manolo
+      - service: notify.telegram_manolo
         data:
           title: 'Debug UPS'
           message: |
@@ -45,7 +45,7 @@
             The current battery is `{{ states('sensor.ups_battery') }}%`.
           data:
             disable_notification: True
-      - service: notify.manolo
+      - service: notify.telegram_manolo
         data:
           title: 'Debug UPS'
           message: |

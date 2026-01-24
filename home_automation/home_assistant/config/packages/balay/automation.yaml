@@ -25,7 +25,7 @@
           ] %}
           {{ trigger.event.data.key not in skip_events }}
     actions:
-      - service: notify.manolo
+      - service: notify.telegram_manolo
         data:
           title: 'An event was triggered from home connect'
           message: >

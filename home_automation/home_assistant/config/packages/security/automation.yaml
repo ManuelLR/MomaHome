@@ -11,7 +11,7 @@
         data: &data-alert-new-device
           title: 'ALERT: New device found !'
           message: 'New device called `{{ trigger.event.data.host_name }}` with MAC `{{ trigger.event.data.mac }}` found'
-      - service: notify.manolo
+      - service: notify.telegram_manolo
         data: *data-alert-new-device
 
   - alias: AUT-Notify failed login attempt
@@ -26,7 +26,7 @@
       - condition: template
         value_template: "{{ 'Login attempt' in trigger.notification.title }}"
     actions:
-      service: notify.manolo
+      service: notify.telegram_manolo
       data:
         title: "*{{ trigger.notification.title }} !*"
         message: "{{ trigger.notification.message }}"
@@ -47,7 +47,7 @@
         variables:
             # Extracted from a message like: Too many login attemps from xxx.xxx.xxx.xxx
           banned_ip: "{{ trigger.notification.message.split(' ') | last }}"
-      - service: notify.manolo
+      - service: notify.telegram_manolo
         data:
           title: "*{{ trigger.notification.title }} !*"
           message: "{{ trigger.notification.message }}"
@@ -93,7 +93,7 @@
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
     actions:
-      - service: notify.manolo
+      - service: notify.telegram_manolo
         data:
           title: '[Debug] *Door Opened*'
           message: 'The entrance door has been opened.'

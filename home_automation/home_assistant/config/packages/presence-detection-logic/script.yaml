@@ -13,11 +13,11 @@
       # Notify to person in home or by default, Manolo (then we notify to Monica)
       - service: >
           {% if (is_state('sensor.manolo_status', 'Home') or is_state('sensor.manolo_status', 'Just Arrived')) %}
-            notify.manolo
+            notify.telegram_manolo
           {% elif (is_state('sensor.monica_status', 'Home') or is_state('sensor.monica_status', 'Just Arrived')) %}
-            notify.monica
+            notify.telegram_monica
           {% else %}
-            notify.manolo
+            notify.telegram_manolo
           {% endif %}
         data: &notify-telegram-message
           title: '*{{ title }}*'
@@ -33,5 +33,5 @@
         conditions:
           - condition: template
             value_template: "{{ (is_state('sensor.manolo_status', 'Home') or is_state('sensor.manolo_status', 'Just Arrived')) == (is_state('sensor.monica_status', 'Home') or is_state('sensor.monica_status', 'Just Arrived')) }}"
-      - service: notify.monica
+      - service: notify.telegram_monica
         data: *notify-telegram-message
