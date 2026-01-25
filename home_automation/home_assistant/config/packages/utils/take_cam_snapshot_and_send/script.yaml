@@ -6,47 +6,51 @@
     fields:
       camera_entity:
         required: true
-      notify_to:
+        selector:
+          entity:
+            domain: camera
+      target_person:
         required: true
-        description: Service to call. Could be `script.notify_in_home_or_all` or `notify.<person>`
-      message: &fields_conf
+        default: 'auto'
+        selector:
+          select:
+            options:
+              - label: "Auto (in home or all)"
+                value: "auto"
+              - label: "Manolo"
+                value: "manolo"
+              - label: "Monica"
+                value: "monica"
+      message:
         required: false
-      data: *fields_conf
+        selector:
+          text:
+      disable_notification:
+        required: false
+        default: false
+        selector:
+          boolean:
     variables:
       tmp_path_to_use: "/tmp/homeassistant/snapshots/"
     sequence:
       - alias: "Set variables"
         variables:
           file_path: '{{ tmp_path_to_use }}/{{ camera_entity }}_{{ now().strftime("%Y%m%d-%H%M%S%f") }}.png'
-          data_photo: >
-            {{ [{'file': file_path, 'caption': message}] }}
       - service: camera.snapshot
         target:
           entity_id: "{{ camera_entity }}"
         data:
           filename: '{{ file_path }}'
-      - service: '{{ notify_to }}'
+      - service: script.telegram_notify
         data:
-          # data:
-          #   photo:
-          #     - file: '{{ file_path }}'
-          #       caption: '{{ message }}'
-          data: >
-            {% set data_old = {} %}
-            {% if data is defined %}
-              {% set data_old = data %}
-            {% endif %}
-            {% set data_new = {'photo': data_photo} %}
-            {# make current a list of tuples #}
-            {% set current = data_old.items() | list %}
-            {# make update a list of tuples #}
-            {% set update = data_new.items() | list %}
-            {# remove keys from current that are in update #}
-            {% set current = current | rejectattr('0', 'eq', update | map(attribute='0') | list) | list %}
-            {{ dict.from_keys(current + update) }}
+          target_person: '{{ target_person | default("auto") }}'
+          content_type: 'send_photo'
+          photo_file: '{{ file_path }}'
+          media_caption: '{{ message }}'
+          disable_notification: '{{ disable_notification | default(false) }}'
       - delay:
           seconds: 15
       - service: delete.file
-          # This is a cutom integration !
+          # This is a custom integration !
         data:
           file: '{{ file_path }}'
