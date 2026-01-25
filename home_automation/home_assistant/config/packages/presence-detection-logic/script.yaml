@@ -1,37 +1,189 @@
 # script:
-  notify_in_home_or_all:
-    alias: "Notify person in home or all"
+  telegram_notify:
+    alias: "Telegram Notify"
     mode: queued
     fields:
-      title: &fields_conf
+      target_person:
         required: false
-      message: *fields_conf
-      data: *fields_conf
-    sequence:
-      # Change to if/else/then https://www.home-assistant.io/blog/2022/05/04/release-20225/#if-then
-      # Change to for each https://www.home-assistant.io/blog/2022/05/04/release-20225/#for-each
-      # Notify to person in home or by default, Manolo (then we notify to Monica)
-      - service: >
-          {% if (is_state('sensor.manolo_status', 'Home') or is_state('sensor.manolo_status', 'Just Arrived')) %}
-            notify.telegram_manolo
-          {% elif (is_state('sensor.monica_status', 'Home') or is_state('sensor.monica_status', 'Just Arrived')) %}
-            notify.telegram_monica
+        selector:
+          select:
+            options:
+              - label: "Auto (in home or all)"
+                value: "auto"
+              - label: "Manolo"
+                value: "manolo"
+              - label: "Monica"
+                value: "monica"
+      message:
+        required: false
+        selector:
+          text:
+            multiline: true
+      title: &field_text_optional
+        required: false
+        selector:
+          text:
+      content_type:
+        required: false
+        default: send_message
+        selector:
+          select:
+            options:
+              - label: "Message"
+                value: "send_message"
+              - label: "Photo"
+                value: "send_photo"
+              - label: "Video"
+                value: "send_video"
+              - label: "Document"
+                value: "send_document"
+      inline_keyboard:
+        required: false
+        selector:
+          object:
+      photo_file:
+        <<: *field_text_optional
+      video_file:
+        <<: *field_text_optional
+      document_file:
+        <<: *field_text_optional
+      media_caption:
+        <<: *field_text_optional
+      disable_notification:
+        required: false
+        default: false
+        selector:
+          boolean:
+      parse_mode:
+        required: false
+        default: "Markdown"
+        selector:
+          select:
+            options:
+              - "Markdown"
+              - "HTML"
+              - "plain_text"
+    
+    variables:
+      # Dictionary mapping people to their presence sensors and chat IDs
+      people:
+        manolo:
+          presence_sensor: sensor.manolo_status
+          chat_id: !secret telegram_userid_manolo
+        monica:
+          presence_sensor: sensor.monica_status
+          chat_id: !secret telegram_userid_monica
+      
+      # States considered as "home"
+      home_states:
+        - 'Just Arrived'
+        - 'Home'
+        - 'Just Left'
+      
+      # Build target list dynamically based on target_person or presence
+      targets_to_notify: >
+        {% if target_person is defined and target_person and target_person != 'auto' %}
+          {# Specific person requested #}
+          {% if target_person in people %}
+            {{ [people[target_person].chat_id] }}
           {% else %}
-            notify.telegram_manolo
+            {{ [] }}
           {% endif %}
-        data: &notify-telegram-message
-          title: '*{{ title }}*'
-          message: '{{ message }}'
-          data: >
-            {% if data is defined %}
-              {{data}}
-            {% else %}
-              {}
+        {% else %}
+          {# Auto mode: notify people at home, or everyone if nobody is home #}
+          {% set ns = namespace(targets=[]) %}
+          {% for person_name, person_data in people.items() %}
+            {% if states(person_data.presence_sensor) in home_states %}
+              {% set ns.targets = ns.targets + [person_data.chat_id] %}
             {% endif %}
-      # Check if both in the same state to continue notifying
-      - condition: or
-        conditions:
-          - condition: template
-            value_template: "{{ (is_state('sensor.manolo_status', 'Home') or is_state('sensor.manolo_status', 'Just Arrived')) == (is_state('sensor.monica_status', 'Home') or is_state('sensor.monica_status', 'Just Arrived')) }}"
-      - service: notify.telegram_monica
-        data: *notify-telegram-message
+          {% endfor %}
+          {% if ns.targets | length == 0 %}
+            {% set ns.targets = people.values() | map(attribute='chat_id') | list %}
+          {% endif %}
+          {{ ns.targets }}
+        {% endif %}
+      
+      # Determine service to use
+      service_to_use: "telegram_bot.{{ content_type | default('send_message') }}"
+      
+      # Build data payload dynamically based on service
+      telegram_data: >
+        {% set data = {} %}
+        {% set service = content_type | default('send_message') %}
+        
+        {# Always include target #}
+        {% set data = dict(data, **{'target': targets_to_notify}) %}
+        
+        {# Add parse_mode #}
+        {% set data = dict(data, **{'parse_mode': parse_mode | default('Markdown')}) %}
+        
+        {# Add disable_notification if true #}
+        {% if disable_notification is defined and disable_notification %}
+          {% set data = dict(data, **{'disable_notification': true}) %}
+        {% endif %}
+        
+        {# Add inline_keyboard if provided (available in all services) #}
+        {% if inline_keyboard is defined and inline_keyboard %}
+          {% set data = dict(data, **{'inline_keyboard': inline_keyboard}) %}
+        {% endif %}
+        
+        {# Service-specific parameters #}
+        {% if service == 'send_message' %}
+          {# Message service: message + optional title #}
+          {% if message is defined %}
+            {% set data = dict(data, **{'message': message}) %}
+          {% endif %}
+          {% if title is defined and title %}
+            {% set data = dict(data, **{'title': '*' + title + '*'}) %}
+          {% endif %}
+        
+        {% elif service == 'send_photo' %}
+          {# Photo service: file + caption #}
+          {% if photo_file is defined %}
+            {% set data = dict(data, **{'file': photo_file}) %}
+          {% endif %}
+          {% if media_caption is defined %}
+            {% set data = dict(data, **{'caption': media_caption}) %}
+          {% elif message is defined %}
+            {% set data = dict(data, **{'caption': message}) %}
+          {% endif %}
+        
+        {% elif service == 'send_video' %}
+          {# Video service: file + caption #}
+          {% if video_file is defined %}
+            {% set data = dict(data, **{'file': video_file}) %}
+          {% endif %}
+          {% if media_caption is defined %}
+            {% set data = dict(data, **{'caption': media_caption}) %}
+          {% elif message is defined %}
+            {% set data = dict(data, **{'caption': message}) %}
+          {% endif %}
+        
+        {% elif service == 'send_document' %}
+          {# Document service: file + caption #}
+          {% if document_file is defined %}
+            {% set data = dict(data, **{'file': document_file}) %}
+          {% endif %}
+          {% if media_caption is defined %}
+            {% set data = dict(data, **{'caption': media_caption}) %}
+          {% elif message is defined %}
+            {% set data = dict(data, **{'caption': message}) %}
+          {% endif %}
+        {% endif %}
+        
+        {{ data }}
+    
+    sequence:
+      # Debug log (opcional, descomentar para depurar)
+      # - service: system_log.write
+      #   data:
+      #     logger: homeassistant.components.script.telegram_notify
+      #     level: info
+      #     message: >
+      #       Service: {{ service_to_use }}
+      #       Targets: {{ targets_to_notify }}
+      #       Data: {{ telegram_data }}
+      
+      # Call the appropriate telegram_bot service dynamically
+      - service: "{{ service_to_use }}"
+        data: "{{ telegram_data }}"

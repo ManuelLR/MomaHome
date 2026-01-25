@@ -23,7 +23,6 @@
       - service: script.take_camera_snapshot_and_send_telegram
         data:
           camera_entity: camera.roborocks5_map
-          notify_to: script.notify_in_home_or_all
           message: |
             *Something fail in the vacuum...*
             Error was: `{{state_attr("sensor.valetudo_roborocks5_error", "severity")}}`
@@ -104,14 +103,13 @@
         entity_id: timer.vacuum_start_in
         data:
           duration: "00:05:00"
-      - service: script.notify_in_home_or_all
+      - service: script.telegram_notify
         data:
           title: 'Vacuum is going to start'
           message: >
             Vacuum is going to start in 5 minutes.
-          data:
-            inline_keyboard:
-              - '🚫 Stop it 🚫:/vacuum_stop, ✅ Start now:/vacuum_start'
+          inline_keyboard:
+            - '🚫 Stop it 🚫:/vacuum_stop, ✅ Start now:/vacuum_start'
 
   - alias: AUT-Vacuum start
     initial_state: 'on'
@@ -171,9 +169,7 @@
       - service: script.take_camera_snapshot_and_send_telegram
         data:
           camera_entity: camera.roborocks5_map
-          notify_to: script.notify_in_home_or_all
-          data:
-            disable_notification: True
+          disable_notification: true
           message: |
             *Clean finished !*
             `{{(states('sensor.valetudo_roborocks5_current_statistics_area')|int // 10000)}}` square meters have been cleaned
@@ -196,7 +192,7 @@
               (states('input_number.vacuum_xiaomi_dust_clean_left')|int) < minimal_notify
           }}
     actions:
-      - service: script.notify_in_home_or_all
+      - service: script.telegram_notify
         data:
           title: 'Vacuum need maintenance'
           message: >

@@ -25,9 +25,10 @@
           ] %}
           {{ trigger.event.data.key not in skip_events }}
     actions:
-      - service: notify.telegram_manolo
+      - service: script.telegram_notify
         data:
-          title: 'An event was triggered from home connect'
+          target_person: manolo
+          title: '*An event was triggered from home connect*'
           message: >
             Event: `{{ trigger.event }}`
             Event.Data: `{{ trigger.event.data }}`
@@ -43,7 +44,7 @@
         trigger: device
         device_id: !secret momahome_dishwasher_device_id
     actions:
-      - service: script.notify_in_home_or_all
+      - service: script.telegram_notify
         data:
           title: 'Dishwasher finished'
           message: >
@@ -59,7 +60,7 @@
         event_data:
           key: Dishcare.Dishwasher.Event.RinseAidNearlyEmpty
     actions:
-      - service: script.notify_in_home_or_all
+      - service: script.telegram_notify
         data:
           title: 'Dishwasher Rinse Aid Status'
           message: >

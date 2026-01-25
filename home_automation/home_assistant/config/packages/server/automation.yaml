@@ -9,7 +9,7 @@
         data:
           entity_id: remote.sony_bravia_tv
           command: PowerOff
-      - service: script.notify_in_home_or_all
+      - service: script.telegram_notify
         data:
           title: 'ALERT: No energy in home !'
           message: >
@@ -21,7 +21,9 @@
             is `{{ states('sensor.ups_time_left') }} minutes`.
 
             Any way, I powered off the tv to save energy.
-      - service: notify.telegram_manolo
+      - action: notify.send_message
+        target:
+          entity_id: notify.telegram_manolo
         data:
           title: 'Debug UPS'
           message: |
@@ -37,15 +39,16 @@
       - platform: template
         value_template: "{% if 'ONLINE' in states('sensor.ups_status') %}true{% endif %}"
     actions:
-      - service: script.notify_in_home_or_all
+      - service: script.telegram_notify
         data:
           title: 'Energy back in home !'
           message: >
             Ey, the UPS status now is `{{ states('sensor.ups_status') }}` so probably the power is back.
             The current battery is `{{ states('sensor.ups_battery') }}%`.
-          data:
-            disable_notification: True
-      - service: notify.telegram_manolo
+          disable_notification: true
+      - action: notify.send_message
+        target:
+          entity_id: notify.telegram_manolo
         data:
           title: 'Debug UPS'
           message: |
