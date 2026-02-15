@@ -7,8 +7,9 @@
         from: 'off'
         to: 'on'
     actions:
-      service: notify.manolo
+      service: script.telegram_notify
       data:
+        target_person: manolo
         title: "*New Home Assistant Release*"
         message: "[Home Assistant {{ states('sensor.docker_hub') }}](https://github.com/home-assistant/core/releases/tag/{{ states('sensor.docker_hub') }}) is now available"
 

@@ -1,7 +1,7 @@
 version: "2.4"
 services:
   traefik:
-    image: traefik:v3.5.0
+    image: traefik:v3.6.7
     container_name: reverse-proxy_traefik
     restart: always
     ports:
@@ -23,8 +23,8 @@ services:
       - TRAEFIK_CERTIFICATESRESOLVERS_OLDDOMAIN_ACME_EMAIL=${TRAEFIK_CERTIFICATESRESOLVERS_PRINCIPAL_ACME_EMAIL:-example@abc.com}
       - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
       - DESEC_TOKEN=${DESEC_TOKEN}
-      - DESEC_POLLING_INTERVAL=240s
-      - DESEC_PROPAGATION_TIMEOUT=500s
+      - DESEC_POLLING_INTERVAL=60
+      - DESEC_PROPAGATION_TIMEOUT=660
         # Looks like desec is having problems creating CNAME entries used to validate wildcard certs
       - LEGO_DISABLE_CNAME_SUPPORT=true
 

@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2025.7.4
+FROM ghcr.io/home-assistant/home-assistant:2026.1.3
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -15,23 +15,23 @@ ENV \
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod versioning=semver
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.4.2 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.7.0 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
-    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.13.1 \
+    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.13.3 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.5 \
       # renovatebot: datasource=github-releases depName=libdyson-wg/ha-dyson
-    CUSTOM_COMPONENT_DYSON_VERSION=v1.5.7 \
+    CUSTOM_COMPONENT_DYSON_VERSION=v1.7.0 \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
-    CUSTOM_COMPONENT_EDATA_VERSION=2025.03.1 \
+    CUSTOM_COMPONENT_EDATA_VERSION=2025.11.3 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
-    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.2.1 \
+    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.3.4 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
-    CUSTOM_COMPONENT_GICISKY_VERSION=1.3.0 \
+    CUSTOM_COMPONENT_GICISKY_VERSION=1.4.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
@@ -41,7 +41,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=kalkih/mini-graph-card
     CUSTOM_CARD_MINI_GRAPH_VERSION=v0.13.0 \
       # renovatebot: datasource=github-releases depName=RomRider/apexcharts-card
-    CUSTOM_CARD_APEXCHARTS_VERSION=v2.1.2 \
+    CUSTOM_CARD_APEXCHARTS_VERSION=v2.2.3 \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.1 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card

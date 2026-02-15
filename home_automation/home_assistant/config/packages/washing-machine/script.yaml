@@ -18,7 +18,7 @@ schedule_washing_machine:
       data:
         entity_id: input_select.washing_machine_status
         option: Scheduled
-    - service: script.notify_in_home_or_all
+    - service: script.telegram_notify
       data:
         title: 'Washing machine correctly scheduled'
         message: >

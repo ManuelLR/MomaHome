@@ -17,7 +17,7 @@ fi
 echo "Starting checking HomeAssistant..."
 
 set +e
-/usr/local/bin/hass -c ${CONFIG_PREFIX_PATH}/ --script check_config --info=all > /tmp/firstCheckConfig.log 2>&1
+/usr/local/bin/hass --config ${CONFIG_PREFIX_PATH}/ --script check_config --config=${CONFIG_PREFIX_PATH}/ --info=all > /tmp/firstCheckConfig.log 2>&1
 firstCheckConfigStatus=$?
 set -e
 
@@ -31,4 +31,4 @@ if [ $firstCheckConfigStatus -ne 0 ]; then
     # exit $firstCheckConfigStatus
 fi
 
-/usr/local/bin/hass -c ${CONFIG_PREFIX_PATH}/ --script check_config --info=all
+/usr/local/bin/hass --config ${CONFIG_PREFIX_PATH}/ --script check_config --config=${CONFIG_PREFIX_PATH}/ --info=all

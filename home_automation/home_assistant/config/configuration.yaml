@@ -172,7 +172,7 @@ tts:
   - platform: google_translate
     service_name: google_say
 
-telegram_bot: !include_dir_merge_list __auto_generated-config/telegram_bot/
+# telegram_bot: !include_dir_merge_list __auto_generated-config/telegram_bot/
 
 timer: !include_dir_merge_named __auto_generated-config/timer/
 
@@ -203,7 +203,7 @@ shell_command: !include_dir_merge_named __auto_generated-config/shell_command/
 #   grocy_consume_item: "curl -X POST https://{{server_ip}}/api/stock/products/{{product_id}}/consume -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'GROCY-API-KEY: {{grocy_key}}' -H 'cache-control: no-cache' -d '{ \"amount\": {{amount}},  \"transaction_type\": \"consume\",  \"spoiled\": false }'"
 
 
-notify: !include_dir_merge_list __auto_generated-config/notify/
+# notify: !include_dir_merge_list __auto_generated-config/notify/
 
 person: !include_dir_merge_list __auto_generated-config/person/
 
