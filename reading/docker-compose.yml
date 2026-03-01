@@ -68,6 +68,35 @@ services:
       # - "traefik.http.middlewares.wallabag-security-headers.headers.stsSeconds=31536000"
       # - "traefik.http.routers.wallabag.middlewares=wallabag-security-headers"
 
+  readeck:
+    image: codeberg.org/readeck/readeck:0.21.6
+    restart: unless-stopped
+    environment:
+      # # Defines the application log level. Can be error, warn, info, debug.
+      # READECK_LOG_LEVEL: info
+      READECK_LOG_FORMAT: text
+      READECK_SERVER_HOST: "0.0.0.0"
+      READECK_SERVER_PORT: 8000
+      READECK_SECRET_KEY: ${READECK_SECRET_KEY:?Define a secret key please}
+      READECK_ALLOWED_HOSTS: "${READECK_EXTERNAL_DOMAIN:?Define a domain please}"
+    volumes:
+      - ./data/readeck:/readeck
+    networks:
+      - reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.readeck.loadbalancer.server.port=8000"
+      - "traefik.http.routers.readeck.rule=Host(`${READECK_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.readeck.entrypoints=websecure"
+      - "traefik.http.routers.readeck.tls.certresolver=principal"
+      - "traefik.http.routers.readeck.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      - "traefik.http.routers.readeck.tls.options=mozilla-intermediate@file"
+    healthcheck:
+      test: ["CMD", "/bin/readeck", "healthcheck", "-config", "config.toml"]
+      interval: 30s
+      timeout: 2s
+      retries: 3
+
   miniflux:
     image: ghcr.io/miniflux/miniflux:2.2.16
     restart: unless-stopped
