@@ -1,0 +1,8 @@
+# template:
+  # WARNING: state-based sensor — briefly shows 'unknown' on restart and 'unavailable'
+  # on YAML reload. Automations triggering on this sensor MUST use not_from: [unknown, unavailable].
+  - sensor:
+    - name: Washing Machine
+      unique_id: washing_machine_status
+      default_entity_id: sensor.washing_machine_status
+      state: '{{ states.input_select.washing_machine_status.state }}'

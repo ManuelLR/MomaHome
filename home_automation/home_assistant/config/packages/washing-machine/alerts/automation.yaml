@@ -4,10 +4,16 @@
       - platform: state
         entity_id: sensor.washing_machine_status
         to: Clean
+        not_from:
+          - 'unknown'
+          - 'unavailable'
       - platform: state
         entity_id:
           - sensor.home_occupancy_status
         to: 'Home'
+        not_from:
+          - 'unknown'
+          - 'unavailable'
         for:
           minutes: 2
     conditions:

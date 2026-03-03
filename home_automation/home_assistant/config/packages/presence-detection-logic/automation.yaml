@@ -113,9 +113,15 @@
     mode: queued
     triggers:
       - platform: state
-        # from: 'not_home'
-        # to: 'home'
-        entity_id: *input-select-people-status
+        not_from:
+          - 'unknown'
+          - 'unavailable'
+        # Trigger on the sensors (not the input_selects) so the template sensors are
+        # guaranteed to be up-to-date when the action reads them, eliminating a race
+        # condition where the automation could fire before the sensors had re-evaluated.
+        entity_id:
+          - sensor.manolo_status
+          - sensor.monica_status
     actions:
       - service: input_select.select_option
         data_template:
