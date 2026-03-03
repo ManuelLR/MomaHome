@@ -5,27 +5,11 @@
     mode: queued
     triggers:
       - platform: state
-        from:
-          - 'not_home'
-          - 'unknown'
-          - 'unavailable'
+        from: 'not_home'
         to: 'home'
         entity_id: &persons
           - person.monica
           - person.manolo
-    conditions:
-      # When coming from unknown/unavailable (HA restart or tracker reconnection), only act
-      # if input_select is genuinely out of sync. This avoids disrupting correct states
-      # (e.g. someone who was already Home before restart stays Home, not reset to Just Arrived).
-      # Normal transitions (from: not_home) are always allowed through.
-      - condition: template
-        value_template: >
-          {% set dropdown = 'input_select.manolo_status_dropdown' if trigger.entity_id == 'person.manolo' else 'input_select.monica_status_dropdown' %}
-          {% if trigger.from_state.state in ['unknown', 'unavailable'] %}
-            {{ states(dropdown) not in ['Home', 'Just Arrived'] }}
-          {% else %}
-            true
-          {% endif %}
     actions:
       - service: input_select.select_option
         data_template:
@@ -69,24 +53,8 @@
     triggers:
       - platform: state
         entity_id: *persons
-        from:
-          - 'home'
-          - 'unknown'
-          - 'unavailable'
+        from: 'home'
         to: 'not_home'
-    conditions:
-      # When coming from unknown/unavailable (HA restart or tracker reconnection), only act
-      # if input_select is genuinely out of sync. This avoids resetting Extended Away or
-      # other correct away-states back to Just Left unnecessarily.
-      # Normal transitions (from: home) are always allowed through.
-      - condition: template
-        value_template: >
-          {% set dropdown = 'input_select.manolo_status_dropdown' if trigger.entity_id == 'person.manolo' else 'input_select.monica_status_dropdown' %}
-          {% if trigger.from_state.state in ['unknown', 'unavailable'] %}
-            {{ states(dropdown) not in ['Away', 'Just Left', 'Extended Away'] }}
-          {% else %}
-            true
-          {% endif %}
     actions:
       - service: input_select.select_option
         data_template:
