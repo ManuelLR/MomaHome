@@ -1,9 +1,6 @@
 # template:
-  # Trigger-based: state is restored on restart (never unknown).
-  - trigger:
-      - platform: state
-        entity_id: input_select.washing_machine_status
-    sensor:
-      - name: Washing Machine
-        unique_id: washing_machine_status
-        state: "{{ states('input_select.washing_machine_status') }}"
+  - sensor:
+    - name: Washing Machine
+      unique_id: washing_machine_status
+      default_entity_id: sensor.washing_machine_status
+      state: '{{ states.input_select.washing_machine_status.state }}'
