@@ -9,6 +9,9 @@
         entity_id:
           - sensor.home_occupancy_status
         to: 'Home'
+        not_from:
+          - 'unknown'
+          - 'unavailable'
         for:
           minutes: 2
     conditions:
@@ -45,6 +48,9 @@
         entity_id:
           - sensor.home_occupancy_status
         to: "Away"
+        not_from:
+          - 'unknown'
+          - 'unavailable'
         for: "00:05:00"
     conditions:
       - condition: and

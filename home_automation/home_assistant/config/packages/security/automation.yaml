@@ -143,6 +143,9 @@
       - platform: state
         entity_id: sensor.home_occupancy_status
         to: 'Extended Away'
+        not_from:
+          - 'unknown'
+          - 'unavailable'
     actions:
       - service: input_boolean.turn_on
         target:

@@ -145,6 +145,9 @@
     mode: queued
     triggers:
       - platform: state
+        not_from:
+          - 'unknown'
+          - 'unavailable'
         # Trigger on the sensors (not the input_selects) so the template sensors are
         # guaranteed to be up-to-date when the action reads them, eliminating a race
         # condition where the automation could fire before the sensors had re-evaluated.

@@ -1,5 +1,8 @@
 # template:
   # https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
+  # WARNING: these are state-based sensors — they briefly show 'unknown' on HA restart
+  # and 'unavailable' on YAML reload. Any automation triggering on these sensors MUST
+  # use not_from: [unknown, unavailable] to avoid false triggers.
   - sensor:
     - name: Manolo
       unique_id: manolo_status
