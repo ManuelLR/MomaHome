@@ -1,15 +1,24 @@
 # template:
   # https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/
-  - sensor:
-    - name: Manolo
-      unique_id: manolo_status
-      default_entity_id: sensor.manolo_status
-      state: '{{ states.input_select.manolo_status_dropdown.state }}'
-    - name: Monica
-      unique_id: monica_status
-      default_entity_id: sensor.monica_status
-      state: '{{ states.input_select.monica_status_dropdown.state }}'
-    - name: Home Occupancy
-      unique_id: home_occupancy_status
-      default_entity_id: sensor.home_occupancy_status
-      state: '{{ states.input_select.home_occupancy_status_dropdown.state }}'
+  # Trigger-based: state is restored on restart (never unknown).
+  - trigger:
+      - platform: state
+        entity_id: input_select.manolo_status_dropdown
+    sensor:
+      - name: Manolo
+        unique_id: manolo_status
+        state: "{{ states('input_select.manolo_status_dropdown') }}"
+  - trigger:
+      - platform: state
+        entity_id: input_select.monica_status_dropdown
+    sensor:
+      - name: Monica
+        unique_id: monica_status
+        state: "{{ states('input_select.monica_status_dropdown') }}"
+  - trigger:
+      - platform: state
+        entity_id: input_select.home_occupancy_status_dropdown
+    sensor:
+      - name: Home Occupancy
+        unique_id: home_occupancy_status
+        state: "{{ states('input_select.home_occupancy_status_dropdown') }}"
