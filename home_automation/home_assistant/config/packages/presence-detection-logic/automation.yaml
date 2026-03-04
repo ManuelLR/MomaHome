@@ -122,6 +122,13 @@
         entity_id:
           - sensor.manolo_status
           - sensor.monica_status
+    conditions:
+      # During YAML reload, template sensors can briefly emit a null state (not
+      # 'unknown'/'unavailable', so not_from doesn't catch it). Guard here so we
+      # never act on an invalid state and set home_occupancy to Extended Away by mistake.
+      - condition: template
+        value_template: >
+          {{ states(trigger.entity_id) in ['Home', 'Just Arrived', 'Just Left', 'Away', 'Extended Away'] }}
     actions:
       - service: input_select.select_option
         data_template:
@@ -139,7 +146,7 @@
                   "Extended Away": 4
               } -%}
               {%- set next_home_occupancy = namespace(value=status_json['Extended Away'],name='Extended Away') -%}
-              {%- for tracker in expand('group.people_status') if status_json[tracker.state] < next_home_occupancy.value -%}
+              {%- for tracker in expand('group.people_status') if tracker.state in status_json and status_json[tracker.state] < next_home_occupancy.value -%}
                   {%- set next_home_occupancy.value = status_json[tracker.state] -%}
                   {%- set next_home_occupancy.name = tracker.state -%}
               {%- endfor -%}
