@@ -1,0 +1,37 @@
+# template:
+
+  # Live work hours sensor — updates every minute and on state changes.
+  # state_class: measurement ensures HA stores this in long-term statistics.
+  # The max value per day in statistics equals the total hours worked that day.
+  - trigger:
+      - platform: state
+        entity_id:
+          - input_boolean.manolo_working
+          - input_number.manolo_work_hours_today
+      - platform: time_pattern
+        minutes: "/1"
+    sensor:
+      - name: "Manolo Work Hours Live"
+        unique_id: manolo_work_hours_live
+        unit_of_measurement: "h"
+        state_class: measurement
+        icon: mdi:briefcase-clock
+        state: >
+          {% set today = states('input_number.manolo_work_hours_today') | float(0) %}
+          {% if is_state('input_boolean.manolo_working', 'on') %}
+            {% set session_start = as_timestamp(states('input_datetime.manolo_work_session_start')) %}
+            {% set session_h = (now().timestamp() - session_start) / 3600 %}
+            {{ (today + [session_h, 0] | max) | round(2) }}
+          {% else %}
+            {{ today | round(2) }}
+          {% endif %}
+
+  # Combined work signal — OR of both physical signals.
+  # Add extra signals here in the future (e.g. KDE laptop tracker) for remote work detection.
+  - binary_sensor:
+      - name: "Manolo Work Signal"
+        unique_id: manolo_work_signal
+        icon: mdi:signal
+        state: >
+          {{ is_state('binary_sensor.s23_work_profile', 'on')
+             or is_state('switch.man_001', 'on') }}

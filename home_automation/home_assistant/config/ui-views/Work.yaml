@@ -1,0 +1,172 @@
+##
+## Work Tracking Dashboard
+## Uses calendar.manolo_work (Local Calendar) as source of truth.
+## Bar charts use HA long-term statistics from sensor.manolo_work_hours_live.
+## Timeline uses the HA Calendar REST API to show exact session ranges.
+##
+
+- type: vertical-stack
+  cards:
+
+    # ── Estado actual ───────────────────────────────────────────────
+    - type: entities
+      title: "Hoy"
+      entities:
+        - entity: input_boolean.manolo_working
+          name: "Estado"
+          icon: mdi:briefcase
+        - entity: input_datetime.manolo_work_session_start
+          name: "Inicio sesión actual"
+          icon: mdi:clock-start
+        - entity: sensor.manolo_work_hours_live
+          name: "Horas hoy (en curso)"
+          icon: mdi:clock-outline
+        - entity: input_number.manolo_work_hours_yesterday
+          name: "Horas ayer"
+          icon: mdi:clock-check-outline
+
+    # ── Señales físicas (diagnóstico) ────────────────────────────────
+    - type: entities
+      title: "Señales detectadas"
+      entities:
+        - entity: binary_sensor.manolo_work_signal
+          name: "Señal combinada"
+        - entity: binary_sensor.s23_work_profile
+          name: "Perfil trabajo Android"
+        - entity: switch.man_001
+          name: "Socket escritorio (man-001)"
+        - entity: binary_sensor.workday_sensor
+          name: "Día laborable"
+
+    # ── Barras — Esta semana ─────────────────────────────────────────
+    # Uses long-term statistics (max per day = total worked that day).
+    - type: custom:apexcharts-card
+      graph_span: 7d
+      span:
+        start: week
+      header:
+        show: true
+        title: "Esta semana"
+        show_states: true
+        colorize_states: true
+      chart_type: bar
+      yaxis:
+        - min: 0
+          decimals: 1
+          apex_config:
+            title:
+              text: "Horas"
+      apex_config:
+        plotOptions:
+          bar:
+            horizontal: false
+            columnWidth: 60%
+      series:
+        - entity: sensor.manolo_work_hours_live
+          name: "Horas trabajadas"
+          type: column
+          color: "#2196f3"
+          unit: "h"
+          statistics:
+            type: max
+            period: day
+          show:
+            legend_value: true
+
+    # ── Barras — Últimos 30 días ─────────────────────────────────────
+    - type: custom:apexcharts-card
+      graph_span: 30d
+      header:
+        show: true
+        title: "Últimos 30 días"
+        show_states: true
+        colorize_states: true
+      chart_type: bar
+      yaxis:
+        - min: 0
+          decimals: 1
+          apex_config:
+            title:
+              text: "Horas"
+      apex_config:
+        plotOptions:
+          bar:
+            horizontal: false
+            columnWidth: 70%
+      series:
+        - entity: sensor.manolo_work_hours_live
+          name: "Horas trabajadas"
+          type: column
+          color: "#2196f3"
+          unit: "h"
+          statistics:
+            type: max
+            period: day
+          show:
+            legend_value: true
+
+    # ── Timeline — Sesiones exactas (para exportar a empresa) ────────
+    # Queries the HA Calendar REST API directly to show exact work sessions.
+    # Shows sessions with ✓ in summary (closed/confirmed sessions).
+    # Change graph_span to 1d, 3d, 7d, 30d, etc. as needed.
+    # If the session currently in progress should appear, edit the event
+    # in calendar.manolo_work and the chart will refresh.
+    - type: custom:apexcharts-card
+      graph_span: 7d
+      header:
+        show: true
+        title: "Sesiones de trabajo (para exportar)"
+      chart_type: rangeBar
+      apex_config:
+        plotOptions:
+          bar:
+            horizontal: true
+        xaxis:
+          type: datetime
+        tooltip:
+          x:
+            format: "dd MMM HH:mm"
+        dataLabels:
+          enabled: true
+          formatter: |
+            EVAL:function(val, opts) {
+              var dur = (val[1] - val[0]) / 3600000;
+              return dur.toFixed(1) + 'h';
+            }
+      series:
+        - entity: calendar.manolo_work
+          name: "Sesiones"
+          color: "#4caf50"
+          data_generator: |
+            const calStart = new Date(start).toISOString();
+            const calEnd   = new Date(end).toISOString();
+            return hass.callApi(
+              'GET',
+              'calendars/calendar.manolo_work?start=' +
+                encodeURIComponent(calStart) +
+                '&end=' +
+                encodeURIComponent(calEnd)
+            ).then(events => {
+              return (events || [])
+                .filter(e =>
+                  e.end &&
+                  e.summary &&
+                  e.summary.includes('\u2713')  // ✓
+                )
+                .map(e => ({
+                  x: new Date(e.start.dateTime || e.start.date)
+                       .toLocaleDateString('es-ES', {weekday:'short', day:'numeric', month:'short'}),
+                  y: [
+                    new Date(e.start.dateTime || e.start.date).getTime(),
+                    new Date(e.end.dateTime   || e.end.date  ).getTime()
+                  ]
+                }));
+            });
+
+    # ── Calendario nativo HA ─────────────────────────────────────────
+    # Allows viewing and manually editing/creating/deleting calendar events.
+    # Manual edits are reflected in the metrics within 5 minutes.
+    - type: calendar
+      entities:
+        - calendar.manolo_work
+      initial_view: week

@@ -1,0 +1,5 @@
+# input_text:
+  manolo_work_current_event_uid:
+    name: Manolo Work Current Event UID
+    max: 100
+    icon: mdi:calendar-clock

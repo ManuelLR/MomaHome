@@ -1,0 +1,18 @@
+# input_number:
+  manolo_work_hours_today:
+    name: Manolo Work Hours Today
+    min: 0
+    max: 24
+    step: 0.01
+    unit_of_measurement: "h"
+    icon: mdi:clock-outline
+    mode: box
+
+  manolo_work_hours_yesterday:
+    name: Manolo Work Hours Yesterday
+    min: 0
+    max: 24
+    step: 0.01
+    unit_of_measurement: "h"
+    icon: mdi:clock-outline
+    mode: box
