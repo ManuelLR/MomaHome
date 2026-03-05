@@ -1,5 +1,0 @@
-# input_boolean:
-  manolo_working:
-    name: Manolo Working
-    icon: mdi:briefcase
-    initial: false

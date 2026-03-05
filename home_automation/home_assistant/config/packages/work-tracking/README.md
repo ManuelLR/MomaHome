@@ -1,144 +1,150 @@
 # Work Tracking
 
-Tracks Manolo's work hours using physical signals (Android work profile + desk power socket) with Telegram confirmation. The **Local Calendar** (`calendar.manolo_work`) is the single source of truth — every work session is a calendar event that can be manually edited, added, or deleted at any time.
+Tracks work hours using physical signals (e.g. a desk power socket, a phone work profile) with Telegram confirmation. The **Local Calendar** (`calendar.<person>_work`) is the single source of truth — every work session is a calendar event that can be manually edited, added, or deleted at any time.
 
 ## How it works
+
+### Invariant: events never overlap in time
+
+At any given moment, there is exactly one event in the calendar covering that time (or none). Before creating a new event, any currently open event is automatically closed at the start of the new one. This way, looking at "right now" in the calendar always returns exactly one event.
 
 ### Session lifecycle
 
 ```
-Signal ON (socket or Android work profile)
+Signal turns ON  (e.g. socket powered on, work profile activated)
   │
-  ├─ input_boolean.manolo_working → ON   (recorder captures real start time T0)
-  ├─ Calendar event created: "⏰ ¿Trabajando?" (start=T0, end=T0+23h placeholder)
+  ├─ Any currently open event → closed at this exact moment (no gap, no overlap)
+  ├─ New event created: "⏰ ¿Trabajando?", start = now, end = now + 23h (placeholder)
   └─ Telegram: "Are you working?" [✅ Yes | ❌ No]
 
-        YES → event updated to "💼 Trabajo" (confirmed, in progress)
-        NO  → event deleted, boolean reset
+  YES → event updated: "💼 Trabajo" (workday) or "🏖️ Trabajo (especial)" (weekend/holiday)
+  NO  → event deleted
 
-Signal OFF (both signals gone for 30+ seconds, session > 2 min)
-  └─ Telegram: "Done working?" with signal-off time as end timestamp
-               [✅ Yes, finished at HH:MM | ⏸ No, still working]
-
-        YES → event updated to "💼 Trabajo ✓" with real end time
-        NO  → session continues
+Signal turns OFF  (30s debounce after signal goes low)
+  │
+  ├─ Currently active event closed: end = signal-off timestamp
+  │    • Confirmed events (💼/🏖️): summary gets " ✓" appended
+  │    • Pending events (⏰): closed but summary kept as-is (visible in calendar for review)
+  └─ If another signal is still ON → new ⏰ event + Telegram (same question)
 ```
 
-### Calendar event states
+**No "Did you finish?" question ever.** The session end is always the moment the last signal turned off. If the auto-close was wrong (e.g. socket bumped by accident), edit the calendar event directly.
 
-| Summary | Meaning |
-|---------|---------|
-| `⏰ ¿Trabajando?` | Signal detected, awaiting user confirmation |
-| `💼 Trabajo` | Session confirmed and in progress |
-| `💼 Trabajo ✓` | Session closed (workday) |
-| `🏖️ Trabajo (especial) ✓` | Session closed (weekend/holiday/vacation) |
-| *(deleted)* | User responded NO — not a work session |
+### Special days
 
-Day type (workday vs special) is determined by `binary_sensor.workday_sensor` at the moment of confirmation. Vacation days are added manually in the HA Workday integration UI.
+The same `⏰ → 💼/🏖️ → ✓` lifecycle applies on weekends, public holidays, and vacation days. The event title distinguishes them (`💼` for workdays, `🏖️` for special days) based on the workday sensor at the moment of confirmation.
 
-### Retroactivity
+### End of day: compaction
 
-The calendar event `start` is set to the **exact moment the physical signal fired** (T0), not when the user responds to Telegram. This means if the user confirms 30 minutes after turning on the socket, those 30 minutes are correctly counted. The `end` time is also accurate: it is captured at the moment the signal turns off and embedded in the Telegram button, so even a delayed response records the correct end time.
+At 00:30, an automation processes the previous day's confirmed events and merges consecutive sessions where the gap between them is ≤ 2 minutes (e.g. two sessions that are effectively the same because they were split by a brief signal interruption).
 
-### Manual corrections
+### Midnight sessions
 
-Because the calendar is the source of truth, any mistake can be fixed directly in HA's Calendar UI:
-- **Wrong end time** → edit the event's end time
-- **Missed a session** → create a new event manually with the correct times
-- **False positive** → delete the `⏰ ¿Trabajando?` event or change its summary
-- Metric sensors sync automatically within 5 minutes of any calendar change
+If a confirmed session is still active at midnight, it is automatically split: the old event is closed at 00:00 and a new one is opened to continue into the new day.
 
 ---
 
-## Entities
+## Calendar event states
 
-| Entity | Purpose |
-|--------|---------|
-| `binary_sensor.manolo_work_signal` | OR of all physical signals. **Add new signals here** for future remote work detection. |
-| `input_boolean.manolo_working` | Live working state (ON while session active). Also stored in recorder for backup timeline. |
-| `input_datetime.manolo_work_session_start` | Exact retroactive start time (T0). |
-| `input_text.manolo_work_current_event_uid` | UID of the active calendar event. Used to update/delete it. |
-| `input_number.manolo_work_hours_today` | Sum of today's closed sessions (synced from calendar every 5 min). |
-| `input_number.manolo_work_hours_yesterday` | Yesterday's total (updated daily at 00:05). |
-| `sensor.manolo_work_hours_live` | Live display: `hours_today` + current session duration. `state_class: measurement` → HA long-term statistics. |
+| Summary | Meaning |
+|---------|---------|
+| `⏰ ¿Trabajando?` | Signal detected, awaiting confirmation. Can be reviewed manually. |
+| `💼 Trabajo` | Confirmed working session, in progress (workday) |
+| `💼 Trabajo ✓` | Confirmed and closed (workday) |
+| `🏖️ Trabajo (especial)` | Confirmed session, in progress (special day) |
+| `🏖️ Trabajo (especial) ✓` | Confirmed and closed (special day) |
+| *(deleted)* | User responded NO — not a work session |
 
 ---
 
 ## Automations
 
-| ID | Trigger | Action |
-|----|---------|--------|
-| `WRK-MAN-Signal ON` | `binary_sensor.manolo_work_signal` → on (while not working) | Create calendar event, send Telegram with UID |
-| `WRK-MAN-Start YES` | Telegram `/work_start_yes_manolo {uid}` | Update event to confirmed, store UID |
-| `WRK-MAN-Start NO` | Telegram `/work_start_no_manolo {uid}` | Delete event, reset boolean |
-| `WRK-MAN-Signal OFF` | Signal off for 30s (session > 2 min) | Send "Done?" Telegram with signal-off timestamp |
-| `WRK-MAN-End YES` | Telegram `/work_end_yes_manolo {uid} {unix_ts}` | Update event end to signal-off time, close session. If signal is already ON when session closes, re-triggers `WRK-MAN-Signal ON` automatically. |
-| `WRK-MAN-End NO` | Telegram `/work_end_no_manolo {uid}` | Acknowledge, keep session active |
-| `WRK-MAN-Calendar sync` | Every 5 minutes | Query closed (✓) events → update `manolo_work_hours_today` |
-| `WRK-MAN-Update yesterday` | 00:05 daily | Query yesterday's closed events → update `manolo_work_hours_yesterday` |
-| `WRK-MAN-Split midnight` | 00:00:00 (if working) | Close current event at midnight, create new event for new day |
+| Automation | Trigger | Action |
+|------------|---------|--------|
+| `AUT-Work <Person> - Signal ON` | Any signal turns ON | Close any open event; create ⏰ event; send Telegram |
+| `AUT-Work <Person> - Start YES` | Telegram `/work_start_yes_<person> {uid}` | Update event to 💼/🏖️ |
+| `AUT-Work <Person> - Start NO` | Telegram `/work_start_no_<person> {uid}` | Delete event |
+| `AUT-Work <Person> - Signal OFF` | Any signal turns OFF (30s debounce) | Close active event; if other signal still on → new ⏰ |
+| `AUT-Work <Person> - Split midnight` | 00:00:00 (if active 💼 event) | Close event at midnight; open continuation |
+| `AUT-Work <Person> - Compact yesterday` | 00:30:00 | Merge yesterday's consecutive sessions with gap ≤ 2 min |
 
 ### Telegram command format
 
-Commands are standard bot commands with the event UID (and optionally a Unix timestamp) as space-separated arguments:
+The event UID is a space-separated argument in the button command:
 
 ```
-/work_start_yes_manolo <uid>
-/work_start_no_manolo <uid>
-/work_end_yes_manolo <uid> <unix_timestamp>
-/work_end_no_manolo <uid>
+/work_start_yes_<person> <uid>
+/work_start_no_<person> <uid>
 ```
 
-In automations, `trigger.event.data.args[0]` gives the UID and `trigger.event.data.args[1]` gives the timestamp.
+In automations: `trigger.event.data.args[0]` gives the UID.
 
 ---
 
 ## Dashboard (`ui-views/Work.yaml`)
 
-- **Status card** — current session state, start time, hours today, hours yesterday
-- **Signal diagnostics** — shows both physical signals and workday sensor
-- **This week bar chart** — ApexCharts using HA long-term statistics (max per day)
+- **Status card** — individual signals + workday sensor + current calendar event
+- **This week bar chart** — ApexCharts, queries calendar REST API, confirmed events only
 - **Last 30 days bar chart** — same, wider range
-- **Session timeline** — ApexCharts rangeBar using the Calendar REST API (`hass.callApi`), filtered to events with `✓` in summary. Shows exact start/end per session — use this to copy to your company's time tracker.
-- **Native HA Calendar card** — view/edit/create events directly
+- **Session timeline (rangeBar)** — exact start/end per session → copy to company tracker
+- **Native HA Calendar card** — view/edit/create/delete events directly
+
+All charts use `hass.callApi('GET', 'calendars/<entity>?start=...&end=...')` with JavaScript filtering for events containing `✓`.
 
 ---
 
 ## Setup requirements
 
-1. **Local Calendar integration** — create via HA UI: *Settings → Integrations → Local Calendar* → name it "Manolo Work". This generates `calendar.manolo_work`.
-2. **Telegram Bot** — must be active and receiving callbacks (verify with the washing machine notification).
-3. **HA 2024.2+** — required for `calendar.update_event`, `calendar.delete_event`, and `calendar.get_events` with `response_variable`.
-4. **Workday sensor** (`binary_sensor.workday_sensor`) — configured via HA UI for ES/AN. Add vacation days there manually.
-5. **Run the symlink script** after any package changes: `home_automation/scripts/HA_generate_real_config.sh`
+1. **Local Calendar** — create via HA UI: *Settings → Integrations → Local Calendar* → name it `<Person> Work`. Generates `calendar.<person>_work`.
+2. **Telegram Bot** — must be active and receiving callbacks.
+3. **HA 2024.2+** — required for `calendar.update_event`, `calendar.delete_event`, `calendar.get_events` with `response_variable`.
+4. **Workday sensor** — configured via HA UI for the relevant country/region. Add vacation days there.
+5. **Symlink script** — run `home_automation/scripts/HA_generate_real_config.sh` after any package changes.
 
 ---
 
-## Adding a second person (Monica)
+## Adding a second person
 
-1. Create a new calendar in HA UI: "Monica Work" → `calendar.monica_work`
-2. Copy the `manolo/` folder to `monica/`
-3. Rename all entity references from `manolo_work_*` to `monica_work_*`
-4. Replace Telegram command names (e.g. `/work_start_yes_monica`)
-5. Update `target_person: manolo` → `target_person: monica` in Telegram notify calls
-6. Run the symlink script
+1. Create a calendar in HA UI: `<Person2> Work` → generates `calendar.<person2>_work`
+2. Copy the `manolo/` folder to `<person2>/`
+3. Rename all entity and command references: `manolo` → `<person2>`
+4. Run the symlink script
 
-The physical signals (`binary_sensor.manolo_work_signal`) and the rest of the logic are structurally identical — only entity names and the calendar differ.
+The session logic and automation structure are identical — only the calendar entity and Telegram commands differ.
 
 ---
 
-## Physical signals
+## Adding new signals
 
-| Signal | Entity | Notes |
-|--------|--------|-------|
-| Android work profile | `binary_sensor.s23_work_profile` | Reported by the HA mobile app, very reliable |
-| Desk power socket | `switch.man_001` | Also controls desk lamp and other devices |
+Signals are referenced directly in the automations (no combined sensor needed). To add a new signal (e.g. laptop on home network):
 
-Either signal being ON triggers the session detection. To add a new signal (e.g. laptop on home network, KDE Connect active session), add it to `binary_sensor.manolo_work_signal` in `template.yaml`:
+Open `automation.yaml` and add it to the `triggers` block of both Signal ON and Signal OFF automations:
 
 ```yaml
-state: >
-  {{ is_state('binary_sensor.s23_work_profile', 'on')
-     or is_state('switch.man_001', 'on')
-     or is_state('device_tracker.work_laptop', 'home') }}  # ← add here
+# Signal ON triggers:
+  - platform: state
+    entity_id: device_tracker.work_laptop   # ← add here
+    to: 'home'
+
+# Signal OFF triggers:
+  - platform: state
+    entity_id: device_tracker.work_laptop   # ← add here
+    to: 'not_home'
+    for: {seconds: 30}
+```
+
+Also update the `other_signal_on` variable in Signal OFF to check the new signal:
+
+```yaml
+other_signal_on: >
+  {% if trigger.entity_id == 'switch.man_001' %}
+    {{ is_state('binary_sensor.s23_work_profile', 'on')
+       or is_state('device_tracker.work_laptop', 'home') }}
+  {% elif trigger.entity_id == 'binary_sensor.s23_work_profile' %}
+    {{ is_state('switch.man_001', 'on')
+       or is_state('device_tracker.work_laptop', 'home') }}
+  {% else %}
+    {{ is_state('switch.man_001', 'on')
+       or is_state('binary_sensor.s23_work_profile', 'on') }}
+  {% endif %}
 ```

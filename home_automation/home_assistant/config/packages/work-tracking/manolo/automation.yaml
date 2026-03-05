@@ -1,45 +1,69 @@
 # automation:
+
   # ─────────────────────────────────────────────────────────────────────
-  # WRK-MAN-Signal ON
-  # Fires when any work signal turns on and we are not already tracking.
-  # Also called programmatically by WRK-MAN-End YES when the signal was
-  # already ON at the time the previous session ended (e.g. user responds
-  # to "Done?" Telegram while already back at the desk).
-  # 1. Activates working boolean (recorder captures real T0).
-  # 2. Creates a calendar event with placeholder end (+23h).
-  # 3. Retrieves the new event's UID and stores it.
-  # 4. Sends Telegram confirmation with UID as command argument.
-  # Requires: calendar.manolo_work (Local Calendar integration via UI)
+  # AUT-Work Manolo - Signal ON
+  # Fires when any individual work signal turns ON.
+  # Invariant: events never overlap. Before creating the new ⏰ event,
+  # any currently active event (⏰ or 💼) is closed at the exact start
+  # time of the new event. This ensures querying "right now" always
+  # yields exactly one event.
+  # Requires: calendar.manolo_work (Local Calendar — create via HA UI)
   # Requires: HA 2024.2+ for calendar.get_events with response_variable
   # ─────────────────────────────────────────────────────────────────────
-  - alias: WRK-MAN-Signal ON
-    id: wrk_man_signal_on
+  - alias: "AUT-Work Manolo - Signal ON"
+    id: aut_work_manolo_signal_on
     mode: single
     initial_state: 'on'
     triggers:
       - platform: state
-        entity_id: binary_sensor.manolo_work_signal
+        entity_id: switch.man_001
         to: 'on'
-    conditions:
-      - condition: state
-        entity_id: input_boolean.manolo_working
-        state: 'off'
+      - platform: state
+        entity_id: binary_sensor.s23_work_profile
+        to: 'on'
     actions:
       - variables:
+          # Capture the exact moment the signal fired — used as both the
+          # close-time for any existing event and the start of the new one.
           start_str: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
           end_placeholder_str: "{{ (now().timestamp() + 82800) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
           start_hm: "{{ now().strftime('%H:%M') }}"
+          # 1-second window to find the event active right now
+          one_sec_later: "{{ (now().timestamp() + 1) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
 
-      - action: input_boolean.turn_on
+      # Find any currently active event (one without ✓ in summary)
+      - action: calendar.get_events
         target:
-          entity_id: input_boolean.manolo_working
-
-      - action: input_datetime.set_datetime
-        target:
-          entity_id: input_datetime.manolo_work_session_start
+          entity_id: calendar.manolo_work
         data:
-          datetime: "{{ start_str }}"
+          start_date_time: "{{ start_str }}"
+          end_date_time: "{{ one_sec_later }}"
+        response_variable: current_events
 
+      - variables:
+          existing_uid: >
+            {% set events = current_events['calendar.manolo_work']['events'] | default([]) %}
+            {% set ns = namespace(uid='') %}
+            {% for e in events %}
+              {% if '✓' not in (e.summary | default('')) and ns.uid == '' %}
+                {% set ns.uid = e.uid | default('') %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.uid }}
+
+      # Close the existing event at exactly start_str (no gap, no overlap)
+      - if:
+          - condition: template
+            value_template: "{{ existing_uid != '' }}"
+        then:
+          - action: calendar.update_event
+            target:
+              entity_id: calendar.manolo_work
+            data:
+              uid: "{{ existing_uid }}"
+              end_date_time: "{{ start_str }}"
+
+      # Create the new pending event
       - action: calendar.create_event
         target:
           entity_id: calendar.manolo_work
@@ -52,7 +76,7 @@
       - delay:
           seconds: 2
 
-      # Get the newly created event to retrieve its UID
+      # Retrieve the UID of the newly created event to embed in Telegram buttons
       - action: calendar.get_events
         target:
           entity_id: calendar.manolo_work
@@ -62,16 +86,15 @@
         response_variable: new_events
 
       - variables:
-          uid: >
+          new_uid: >
             {% set events = new_events['calendar.manolo_work']['events'] | default([]) %}
-            {% set pending = events | selectattr('summary', 'eq', '⏰ ¿Trabajando?') | list %}
-            {{ pending[0]['uid'] if pending | length > 0 else '' }}
-
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.manolo_work_current_event_uid
-        data:
-          value: "{{ uid }}"
+            {% set ns = namespace(uid='') %}
+            {% for e in events %}
+              {% if e.summary | default('') == '⏰ ¿Trabajando?' and ns.uid == '' %}
+                {% set ns.uid = e.uid | default('') %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.uid }}
 
       - action: script.telegram_notify
         data:
@@ -79,17 +102,17 @@
           title: "⏰ ¿Estás trabajando?"
           message: "Actividad detectada a las {{ start_hm }}"
           inline_keyboard:
-            - "✅ Sí:/work_start_yes_manolo {{ uid }}"
-            - "❌ No:/work_start_no_manolo {{ uid }}"
+            - "✅ Sí:/work_start_yes_manolo {{ new_uid }}"
+            - "❌ No:/work_start_no_manolo {{ new_uid }}"
 
 
   # ─────────────────────────────────────────────────────────────────────
-  # WRK-MAN-Start YES
-  # User confirmed they are working.
-  # Updates the calendar event summary to confirmed state.
+  # AUT-Work Manolo - Start YES
+  # User confirmed they are working. Updates the ⏰ event to 💼/🏖️.
+  # The UID comes from the Telegram button command argument.
   # ─────────────────────────────────────────────────────────────────────
-  - alias: WRK-MAN-Start YES
-    id: wrk_man_start_yes
+  - alias: "AUT-Work Manolo - Start YES"
+    id: aut_work_manolo_start_yes
     mode: single
     initial_state: 'on'
     triggers:
@@ -114,14 +137,6 @@
           summary: "{{ day_label }}"
           description: "Sesión confirmada"
 
-      # Ensure UID is stored for the end-of-session Telegram
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.manolo_work_current_event_uid
-        data:
-          value: "{{ uid }}"
-
-      # Answer Telegram callback if triggered via button
       - condition: template
         value_template: "{{ trigger.event.event_type == 'telegram_callback' }}"
       - action: telegram_bot.answer_callback_query
@@ -131,11 +146,11 @@
 
 
   # ─────────────────────────────────────────────────────────────────────
-  # WRK-MAN-Start NO
-  # User denied working. Remove the calendar event and reset state.
+  # AUT-Work Manolo - Start NO
+  # User denied working. Delete the ⏰ event.
   # ─────────────────────────────────────────────────────────────────────
-  - alias: WRK-MAN-Start NO
-    id: wrk_man_start_no
+  - alias: "AUT-Work Manolo - Start NO"
+    id: aut_work_manolo_start_no
     mode: single
     initial_state: 'on'
     triggers:
@@ -156,17 +171,6 @@
         data:
           uid: "{{ uid }}"
 
-      - action: input_boolean.turn_off
-        target:
-          entity_id: input_boolean.manolo_working
-
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.manolo_work_current_event_uid
-        data:
-          value: ""
-
-      # Answer Telegram callback if triggered via button
       - condition: template
         value_template: "{{ trigger.event.event_type == 'telegram_callback' }}"
       - action: telegram_bot.answer_callback_query
@@ -176,297 +180,287 @@
 
 
   # ─────────────────────────────────────────────────────────────────────
-  # WRK-MAN-Signal OFF
-  # Both signals have been off for 30 seconds and we are confirmed working.
-  # Asks the user if they have finished working, passing the signal-off
-  # timestamp as a command argument so the recorded end time is accurate
-  # even if the user responds minutes or hours later.
-  # Grace period: only fires if session has been active for > 2 minutes.
+  # AUT-Work Manolo - Signal OFF
+  # Fires when any individual work signal turns OFF (30s debounce).
+  # Closes the currently active event (whether ⏰ or 💼) with the
+  # signal-off timestamp. If the other signal is still ON, triggers
+  # Signal ON logic (creates a new ⏰ and asks again).
   # ─────────────────────────────────────────────────────────────────────
-  - alias: WRK-MAN-Signal OFF
-    id: wrk_man_signal_off
+  - alias: "AUT-Work Manolo - Signal OFF"
+    id: aut_work_manolo_signal_off
     mode: single
     initial_state: 'on'
     triggers:
       - platform: state
-        entity_id: binary_sensor.manolo_work_signal
+        entity_id: switch.man_001
         to: 'off'
         for:
           seconds: 30
-    conditions:
-      - condition: state
-        entity_id: input_boolean.manolo_working
-        state: 'on'
-      # Ignore if session started less than 2 minutes ago (signal bounce / not yet confirmed)
-      - condition: template
-        value_template: >
-          {{ (now().timestamp() - as_timestamp(states('input_datetime.manolo_work_session_start'))) > 120 }}
+      - platform: state
+        entity_id: binary_sensor.s23_work_profile
+        to: 'off'
+        for:
+          seconds: 30
     actions:
       - variables:
-          uid: "{{ states('input_text.manolo_work_current_event_uid') }}"
-          signal_off_ts: "{{ now().timestamp() | int }}"
-          signal_off_hm: "{{ now().strftime('%H:%M') }}"
+          signal_off_str: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+          one_sec_before: "{{ (now().timestamp() - 1) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
 
-      - action: script.telegram_notify
-        data:
-          target_person: manolo
-          title: "¿Has terminado de trabajar?"
-          message: "Señal apagada a las {{ signal_off_hm }}. ¿Esa es tu hora de fin?"
-          inline_keyboard:
-            - "✅ Sí, terminé a las {{ signal_off_hm }}:/work_end_yes_manolo {{ uid }} {{ signal_off_ts }}"
-            - "⏸ No, sigo trabajando:/work_end_no_manolo {{ uid }}"
-
-
-  # ─────────────────────────────────────────────────────────────────────
-  # WRK-MAN-End YES
-  # User confirmed end of session.
-  # Updates the calendar event with the actual end time (signal-off time,
-  # not the time the user responded). Resets working state.
-  # ─────────────────────────────────────────────────────────────────────
-  - alias: WRK-MAN-End YES
-    id: wrk_man_end_yes
-    mode: single
-    initial_state: 'on'
-    triggers:
-      - platform: event
-        event_type: telegram_callback
-        event_data: &work_end_yes_manolo
-          command: "/work_end_yes_manolo"
-      - platform: event
-        event_type: telegram_command
-        event_data: *work_end_yes_manolo
-    actions:
-      - variables:
-          uid: "{{ trigger.event.data.args[0] | default('') }}"
-          end_ts: "{{ trigger.event.data.args[1] | default(now().timestamp() | int) | int }}"
-          end_str: "{{ end_ts | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
-          start_ts: "{{ as_timestamp(states('input_datetime.manolo_work_session_start')) }}"
-          duration_h: "{{ ((end_ts - start_ts) / 3600) | round(2) }}"
-          day_label: >
-            {{ '🏖️ Trabajo (especial) ✓' if is_state('binary_sensor.workday_sensor', 'off') else '💼 Trabajo ✓' }}
-
-      # Update calendar event with real end time
-      - action: calendar.update_event
+      # Find the event that was active just before the signal turned off
+      - action: calendar.get_events
         target:
           entity_id: calendar.manolo_work
         data:
-          uid: "{{ uid }}"
-          end_date_time: "{{ end_str }}"
-          summary: "{{ day_label }}"
-          description: "{{ duration_h }}h"
+          start_date_time: "{{ one_sec_before }}"
+          end_date_time: "{{ signal_off_str }}"
+        response_variable: active_events
 
-      - action: input_boolean.turn_off
-        target:
-          entity_id: input_boolean.manolo_working
+      - variables:
+          active_uid: >
+            {% set events = active_events['calendar.manolo_work']['events'] | default([]) %}
+            {% set ns = namespace(uid='') %}
+            {% for e in events %}
+              {% if '✓' not in (e.summary | default('')) and ns.uid == '' %}
+                {% set ns.uid = e.uid | default('') %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.uid }}
+          active_summary: >
+            {% set events = active_events['calendar.manolo_work']['events'] | default([]) %}
+            {% set ns = namespace(summary='') %}
+            {% for e in events %}
+              {% if '✓' not in (e.summary | default('')) and ns.summary == '' %}
+                {% set ns.summary = e.summary | default('') %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.summary }}
+          # Confirmed events (💼/🏖️) get ✓ appended; pending ⏰ events keep their summary
+          new_summary: >
+            {% set s = active_summary %}
+            {% if '💼' in s or '🏖️' in s %}
+              {{ s + ' ✓' }}
+            {% else %}
+              {{ s }}
+            {% endif %}
+          other_signal_on: >
+            {% if trigger.entity_id == 'switch.man_001' %}
+              {{ is_state('binary_sensor.s23_work_profile', 'on') }}
+            {% else %}
+              {{ is_state('switch.man_001', 'on') }}
+            {% endif %}
 
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.manolo_work_current_event_uid
-        data:
-          value: ""
-
-      # Edge case: signal was already ON before the user responded to this Telegram.
-      # Since the state-change trigger already fired (and was rejected because working=on),
-      # we manually re-trigger the session detection now that working=off.
+      # Close the active event with the signal-off timestamp
       - if:
-          - condition: state
-            entity_id: binary_sensor.manolo_work_signal
-            state: 'on'
+          - condition: template
+            value_template: "{{ active_uid != '' }}"
+        then:
+          - action: calendar.update_event
+            target:
+              entity_id: calendar.manolo_work
+            data:
+              uid: "{{ active_uid }}"
+              end_date_time: "{{ signal_off_str }}"
+              summary: "{{ new_summary }}"
+
+      # If another signal is still on, start a new session detection
+      - if:
+          - condition: template
+            value_template: "{{ other_signal_on == 'True' or other_signal_on == True }}"
         then:
           - action: automation.trigger
             target:
-              entity_id: automation.wrk_man_signal_on
+              entity_id: automation.aut_work_manolo_signal_on
             data:
               skip_condition: false
 
-      # Answer Telegram callback if triggered via button
-      - condition: template
-        value_template: "{{ trigger.event.event_type == 'telegram_callback' }}"
-      - action: telegram_bot.answer_callback_query
-        data:
-          callback_query_id: "{{ trigger.event.data.id }}"
-          message: "✓ {{ duration_h }}h guardadas"
-
 
   # ─────────────────────────────────────────────────────────────────────
-  # WRK-MAN-End NO
-  # User says they are still working despite the signal being off.
+  # AUT-Work Manolo - Split midnight
+  # If a confirmed 💼 session is active at midnight, split it:
+  # close the current event and create a new one starting at midnight.
+  # Runs at exactly 00:00:00.
   # ─────────────────────────────────────────────────────────────────────
-  - alias: WRK-MAN-End NO
-    id: wrk_man_end_no
-    mode: single
-    initial_state: 'on'
-    triggers:
-      - platform: event
-        event_type: telegram_callback
-        event_data: &work_end_no_manolo
-          command: "/work_end_no_manolo"
-      - platform: event
-        event_type: telegram_command
-        event_data: *work_end_no_manolo
-    actions:
-      - condition: template
-        value_template: "{{ trigger.event.event_type == 'telegram_callback' }}"
-      - action: telegram_bot.answer_callback_query
-        data:
-          callback_query_id: "{{ trigger.event.data.id }}"
-          message: "OK, sigues trabajando ⏸"
-
-
-  # ─────────────────────────────────────────────────────────────────────
-  # WRK-MAN-Calendar sync
-  # Runs every 5 minutes. Queries today's closed calendar events
-  # (those with ✓ in summary) and updates input_number.manolo_work_hours_today.
-  # Because it queries the calendar directly, any manual edit to an event
-  # is reflected within 5 minutes.
-  # ─────────────────────────────────────────────────────────────────────
-  - alias: WRK-MAN-Calendar sync
-    id: wrk_man_calendar_sync
-    mode: single
-    initial_state: 'on'
-    triggers:
-      - platform: time_pattern
-        minutes: "/5"
-    actions:
-      - action: calendar.get_events
-        target:
-          entity_id: calendar.manolo_work
-        data:
-          start_date_time: "{{ today_at('00:00').strftime('%Y-%m-%d %H:%M:%S') }}"
-          end_date_time: "{{ today_at('23:59:59').strftime('%Y-%m-%d %H:%M:%S') }}"
-        response_variable: today_events
-
-      - variables:
-          uid_active: "{{ states('input_text.manolo_work_current_event_uid') }}"
-          total_h: >
-            {% set ns = namespace(total=0.0) %}
-            {% for e in today_events['calendar.manolo_work']['events'] | default([]) %}
-              {% if e.uid | default('') != uid_active
-                 and e.end is defined
-                 and '✓' in (e.summary | default('')) %}
-                {% set ns.total = ns.total + (as_timestamp(e.end) - as_timestamp(e.start)) / 3600 %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.total | round(2) }}
-
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.manolo_work_hours_today
-        data:
-          value: "{{ total_h }}"
-
-
-  # ─────────────────────────────────────────────────────────────────────
-  # WRK-MAN-Update yesterday
-  # Runs once at 00:05 to calculate and store yesterday's total hours.
-  # ─────────────────────────────────────────────────────────────────────
-  - alias: WRK-MAN-Update yesterday
-    id: wrk_man_update_yesterday
-    mode: single
-    initial_state: 'on'
-    triggers:
-      - platform: time
-        at: "00:05:00"
-    actions:
-      - variables:
-          yesterday_start: "{{ (now().timestamp() - 86400) | timestamp_custom('%Y-%m-%d 00:00:00', true) }}"
-          yesterday_end: "{{ (now().timestamp() - 86400) | timestamp_custom('%Y-%m-%d 23:59:59', true) }}"
-
-      - action: calendar.get_events
-        target:
-          entity_id: calendar.manolo_work
-        data:
-          start_date_time: "{{ yesterday_start }}"
-          end_date_time: "{{ yesterday_end }}"
-        response_variable: yesterday_events
-
-      - variables:
-          total_h: >
-            {% set ns = namespace(total=0.0) %}
-            {% for e in yesterday_events['calendar.manolo_work']['events'] | default([]) %}
-              {% if e.end is defined and '✓' in (e.summary | default('')) %}
-                {% set ns.total = ns.total + (as_timestamp(e.end) - as_timestamp(e.start)) / 3600 %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.total | round(2) }}
-
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.manolo_work_hours_yesterday
-        data:
-          value: "{{ total_h }}"
-
-
-  # ─────────────────────────────────────────────────────────────────────
-  # WRK-MAN-Split midnight
-  # If a work session is active at midnight, splits it:
-  # - Closes the current event at midnight (for the ending day).
-  # - Creates a new placeholder event starting at midnight (for the new day).
-  # - Updates session_start and the stored UID.
-  # ─────────────────────────────────────────────────────────────────────
-  - alias: WRK-MAN-Split midnight
-    id: wrk_man_split_midnight
+  - alias: "AUT-Work Manolo - Split midnight"
+    id: aut_work_manolo_split_midnight
     mode: single
     initial_state: 'on'
     triggers:
       - platform: time
         at: "00:00:00"
-    conditions:
-      - condition: state
-        entity_id: input_boolean.manolo_working
-        state: 'on'
     actions:
       - variables:
-          uid: "{{ states('input_text.manolo_work_current_event_uid') }}"
           midnight_str: "{{ now().strftime('%Y-%m-%d 00:00:00') }}"
           new_end_str: "{{ (now().timestamp() + 82800) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
+          one_sec_later: "{{ (now().timestamp() + 1) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
 
-      # Close the event from the ending day at midnight
-      - action: calendar.update_event
-        target:
-          entity_id: calendar.manolo_work
-        data:
-          uid: "{{ uid }}"
-          end_date_time: "{{ midnight_str }}"
-          summary: "💼 Trabajo ✓"
-          description: "Cerrado automáticamente a medianoche"
-
-      # Create a new event for the new day (confirmed, in progress)
-      - action: calendar.create_event
-        target:
-          entity_id: calendar.manolo_work
-        data:
-          summary: "💼 Trabajo"
-          start_date_time: "{{ midnight_str }}"
-          end_date_time: "{{ new_end_str }}"
-          description: "Continuación de sesión anterior"
-
-      - delay:
-          seconds: 2
-
-      # Get the UID of the new event
       - action: calendar.get_events
         target:
           entity_id: calendar.manolo_work
         data:
           start_date_time: "{{ midnight_str }}"
-          end_date_time: "{{ (now().timestamp() + 30) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
+          end_date_time: "{{ one_sec_later }}"
         response_variable: midnight_events
 
       - variables:
-          new_uid: >
+          midnight_uid: >
             {% set events = midnight_events['calendar.manolo_work']['events'] | default([]) %}
-            {% set new_ev = events | selectattr('summary', 'eq', '💼 Trabajo') | list %}
-            {{ new_ev[0]['uid'] if new_ev | length > 0 else '' }}
+            {% set ns = namespace(uid='') %}
+            {% for e in events %}
+              {% if ('💼' in (e.summary | default('')) or '🏖️' in (e.summary | default('')))
+                 and '✓' not in (e.summary | default('')) and ns.uid == '' %}
+                {% set ns.uid = e.uid | default('') %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.uid }}
+          midnight_summary: >
+            {% set events = midnight_events['calendar.manolo_work']['events'] | default([]) %}
+            {% set ns = namespace(s='') %}
+            {% for e in events %}
+              {% if ('💼' in (e.summary | default('')) or '🏖️' in (e.summary | default('')))
+                 and '✓' not in (e.summary | default('')) and ns.s == '' %}
+                {% set ns.s = e.summary | default('') %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.s }}
 
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.manolo_work_current_event_uid
-        data:
-          value: "{{ new_uid }}"
+      - if:
+          - condition: template
+            value_template: "{{ midnight_uid != '' }}"
+        then:
+          # Close the old event at midnight
+          - action: calendar.update_event
+            target:
+              entity_id: calendar.manolo_work
+            data:
+              uid: "{{ midnight_uid }}"
+              end_date_time: "{{ midnight_str }}"
+              summary: "{{ midnight_summary + ' ✓' }}"
 
-      - action: input_datetime.set_datetime
-        target:
-          entity_id: input_datetime.manolo_work_session_start
-        data:
-          datetime: "{{ midnight_str }}"
+          # Open a new confirmed event for the new day
+          - action: calendar.create_event
+            target:
+              entity_id: calendar.manolo_work
+            data:
+              summary: "{{ midnight_summary }}"
+              start_date_time: "{{ midnight_str }}"
+              end_date_time: "{{ new_end_str }}"
+              description: "Continuación de sesión anterior"
+
+
+  # ─────────────────────────────────────────────────────────────────────
+  # AUT-Work Manolo - Compact yesterday
+  # Runs at 00:30 to process yesterday's full set of events.
+  # Merges consecutive confirmed (✓) sessions where the gap between
+  # end of one and start of the next is ≤ 2 minutes.
+  # Uses repeat:count to handle multiple mergeable pairs.
+  # ─────────────────────────────────────────────────────────────────────
+  - alias: "AUT-Work Manolo - Compact yesterday"
+    id: aut_work_manolo_compact_yesterday
+    mode: single
+    initial_state: 'on'
+    triggers:
+      - platform: time
+        at: "00:30:00"
+    actions:
+      - variables:
+          yesterday_start: "{{ (today_at('00:00') | as_timestamp - 86400) | timestamp_custom('%Y-%m-%d 00:00:00', true) }}"
+          yesterday_end: "{{ (today_at('00:00') | as_timestamp - 1) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
+
+      # Up to 10 merge passes (each pass merges one pair; 10 is well above typical daily sessions)
+      - repeat:
+          count: 10
+          sequence:
+            - action: calendar.get_events
+              target:
+                entity_id: calendar.manolo_work
+              data:
+                start_date_time: "{{ yesterday_start }}"
+                end_date_time: "{{ yesterday_end }}"
+              response_variable: compact_events
+
+            - variables:
+                # Find the first consecutive pair of ✓ events with gap ≤ 2 min
+                compact_curr_uid: >
+                  {% set events = compact_events['calendar.manolo_work']['events'] | default([]) %}
+                  {% set confirmed = [] %}
+                  {% for e in events %}
+                    {% if '✓' in (e.summary | default('')) %}
+                      {% set confirmed = confirmed + [e] %}
+                    {% endif %}
+                  {% endfor %}
+                  {% set sorted_ev = confirmed | sort(attribute='start') %}
+                  {% set ns = namespace(uid='') %}
+                  {% for i in range(sorted_ev | length - 1) %}
+                    {% if ns.uid == '' %}
+                      {% set curr = sorted_ev[i] %}
+                      {% set next = sorted_ev[i+1] %}
+                      {% set gap = (as_timestamp(next.start) - as_timestamp(curr.end)) %}
+                      {% if gap <= 120 %}
+                        {% set ns.uid = curr.uid | default('') %}
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                  {{ ns.uid }}
+                compact_next_uid: >
+                  {% set events = compact_events['calendar.manolo_work']['events'] | default([]) %}
+                  {% set confirmed = [] %}
+                  {% for e in events %}
+                    {% if '✓' in (e.summary | default('')) %}
+                      {% set confirmed = confirmed + [e] %}
+                    {% endif %}
+                  {% endfor %}
+                  {% set sorted_ev = confirmed | sort(attribute='start') %}
+                  {% set ns = namespace(uid='', found=false) %}
+                  {% for i in range(sorted_ev | length - 1) %}
+                    {% if not ns.found %}
+                      {% set curr = sorted_ev[i] %}
+                      {% set next = sorted_ev[i+1] %}
+                      {% set gap = (as_timestamp(next.start) - as_timestamp(curr.end)) %}
+                      {% if gap <= 120 %}
+                        {% set ns.uid = next.uid | default('') %}
+                        {% set ns.found = true %}
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                  {{ ns.uid }}
+                compact_new_end: >
+                  {% set events = compact_events['calendar.manolo_work']['events'] | default([]) %}
+                  {% set confirmed = [] %}
+                  {% for e in events %}
+                    {% if '✓' in (e.summary | default('')) %}
+                      {% set confirmed = confirmed + [e] %}
+                    {% endif %}
+                  {% endfor %}
+                  {% set sorted_ev = confirmed | sort(attribute='start') %}
+                  {% set ns = namespace(end='', found=false) %}
+                  {% for i in range(sorted_ev | length - 1) %}
+                    {% if not ns.found %}
+                      {% set curr = sorted_ev[i] %}
+                      {% set next = sorted_ev[i+1] %}
+                      {% set gap = (as_timestamp(next.start) - as_timestamp(curr.end)) %}
+                      {% if gap <= 120 %}
+                        {% set ns.end = next.end %}
+                        {% set ns.found = true %}
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                  {{ ns.end }}
+
+            # If a pair was found, merge them
+            - if:
+                - condition: template
+                  value_template: "{{ compact_curr_uid != '' }}"
+              then:
+                # Extend the first event to cover the second
+                - action: calendar.update_event
+                  target:
+                    entity_id: calendar.manolo_work
+                  data:
+                    uid: "{{ compact_curr_uid }}"
+                    end_date_time: "{{ compact_new_end }}"
+                # Delete the second event (now merged)
+                - action: calendar.delete_event
+                  target:
+                    entity_id: calendar.manolo_work
+                  data:
+                    uid: "{{ compact_next_uid }}"

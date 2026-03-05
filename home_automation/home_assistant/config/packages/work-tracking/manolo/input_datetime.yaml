@@ -1,5 +1,0 @@
-# input_datetime:
-  manolo_work_session_start:
-    name: Manolo Work Session Start
-    has_date: true
-    has_time: true
