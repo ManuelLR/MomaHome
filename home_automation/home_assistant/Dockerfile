@@ -32,6 +32,8 @@ ENV \
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
     CUSTOM_COMPONENT_GICISKY_VERSION=1.4.0 \
+      # renovatebot: datasource=github-releases depName=randrcomputers/ics-calendar-tools
+    CUSTOM_COMPONENT_ICS_CALENDAR_TOOLS_VERSION=v2.0.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
@@ -105,6 +107,10 @@ RUN \
     && git clone https://github.com/eigger/hass-gicisky.git /tmp/hass-gicisky \
     && cd /tmp/hass-gicisky && git checkout $CUSTOM_COMPONENT_GICISKY_VERSION \
     && cd - && cp -r /tmp/hass-gicisky/custom_components/gicisky /opt/HA/config/custom_components/ \
+    # ics-calendar-tools (exposes ics_calendar_tools.update_event / delete_event for local calendars)
+    && git clone https://github.com/randrcomputers/ics-calendar-tools.git /tmp/ics-calendar-tools \
+    && cd /tmp/ics-calendar-tools && git checkout $CUSTOM_COMPONENT_ICS_CALENDAR_TOOLS_VERSION \
+    && cd - && cp -r /tmp/ics-calendar-tools/custom_components/ics_calendar_tools /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card

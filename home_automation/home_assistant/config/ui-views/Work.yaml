@@ -35,28 +35,22 @@
       header:
         show: true
         title: "Esta semana"
-        show_states: true
-        colorize_states: true
-      chart_type: bar
       yaxis:
         - min: 0
-          decimals: 1
-          apex_config:
-            title:
-              text: "Horas"
+          decimals: 2
       apex_config:
+        xaxis:
+          type: datetime
         plotOptions:
           bar:
-            horizontal: false
-            columnWidth: 60%
-        tooltip:
-          y:
-            formatter: |
-              EVAL:function(val) { return val.toFixed(2) + 'h'; }
+            columnWidth: "60%"
       series:
         - entity: calendar.manolo_work
           name: "Horas trabajadas"
           color: "#2196f3"
+          type: column
+          unit: h
+          float_precision: 2
           data_generator: |
             const s = new Date(start).toISOString();
             const e = new Date(end).toISOString();
@@ -85,28 +79,22 @@
       header:
         show: true
         title: "Últimos 30 días"
-        show_states: true
-        colorize_states: true
-      chart_type: bar
       yaxis:
         - min: 0
-          decimals: 1
-          apex_config:
-            title:
-              text: "Horas"
+          decimals: 2
       apex_config:
+        xaxis:
+          type: datetime
         plotOptions:
           bar:
-            horizontal: false
-            columnWidth: 70%
-        tooltip:
-          y:
-            formatter: |
-              EVAL:function(val) { return val.toFixed(2) + 'h'; }
+            columnWidth: "70%"
       series:
         - entity: calendar.manolo_work
           name: "Horas trabajadas"
           color: "#2196f3"
+          type: column
+          unit: h
+          float_precision: 2
           data_generator: |
             const s = new Date(start).toISOString();
             const e = new Date(end).toISOString();
@@ -137,8 +125,9 @@
       header:
         show: true
         title: "Sesiones de trabajo (para exportar)"
-      chart_type: rangeBar
       apex_config:
+        chart:
+          type: rangeBar
         plotOptions:
           bar:
             horizontal: true

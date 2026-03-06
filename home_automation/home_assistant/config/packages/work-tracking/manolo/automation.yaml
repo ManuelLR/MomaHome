@@ -60,12 +60,11 @@
           - condition: template
             value_template: "{{ existing_uid != '' }}"
         then:
-          - action: calendar.update_event
-            target:
-              entity_id: calendar.manolo_work
+          - action: ics_calendar_tools.update_event
             data:
+              calendar: calendar.manolo_work
               uid: "{{ existing_uid }}"
-              end_date_time: "{{ start_str }}"
+              end: "{{ start_str }}"
 
       # Create the new pending event with the correct day-type summary
       - action: calendar.create_event
@@ -159,10 +158,9 @@
           confirmed_summary: >
             {{ '🏖️ Working (special)' if '(special)' in pending_summary else '💼 Working' }}
 
-      - action: calendar.update_event
-        target:
-          entity_id: calendar.manolo_work
+      - action: ics_calendar_tools.update_event
         data:
+          calendar: calendar.manolo_work
           uid: "{{ uid }}"
           summary: "{{ confirmed_summary }}"
           description: "Confirmed session"
@@ -195,10 +193,9 @@
       - variables:
           uid: "{{ trigger.event.data.args[0] | default('') }}"
 
-      - action: calendar.delete_event
-        target:
-          entity_id: calendar.manolo_work
+      - action: ics_calendar_tools.delete_event
         data:
+          calendar: calendar.manolo_work
           uid: "{{ uid }}"
 
       - condition: template
@@ -272,12 +269,11 @@
           - condition: template
             value_template: "{{ active_uid != '' }}"
         then:
-          - action: calendar.update_event
-            target:
-              entity_id: calendar.manolo_work
+          - action: ics_calendar_tools.update_event
             data:
+              calendar: calendar.manolo_work
               uid: "{{ active_uid }}"
-              end_date_time: "{{ signal_off_str }}"
+              end: "{{ signal_off_str }}"
               summary: "{{ new_summary }}"
 
       # If another signal is still on, start a new session detection
@@ -339,12 +335,11 @@
               {{ midnight_uid != '' and ('💼' in midnight_summary or '🏖️' in midnight_summary) }}
         then:
           # Close the ending-day event at midnight
-          - action: calendar.update_event
-            target:
-              entity_id: calendar.manolo_work
+          - action: ics_calendar_tools.update_event
             data:
+              calendar: calendar.manolo_work
               uid: "{{ midnight_uid }}"
-              end_date_time: "{{ midnight_str }}"
+              end: "{{ midnight_str }}"
               summary: "{{ midnight_summary + ' ✓' }}"
 
           # Open a new event for the new day with the correct day type
@@ -424,15 +419,13 @@
                   value_template: "{{ compact_curr_uid != '' }}"
               then:
                 # Extend the first event to cover the second
-                - action: calendar.update_event
-                  target:
-                    entity_id: calendar.manolo_work
+                - action: ics_calendar_tools.update_event
                   data:
+                    calendar: calendar.manolo_work
                     uid: "{{ compact_curr_uid }}"
-                    end_date_time: "{{ compact_new_end }}"
+                    end: "{{ compact_new_end }}"
                 # Remove the second event (now absorbed)
-                - action: calendar.delete_event
-                  target:
-                    entity_id: calendar.manolo_work
+                - action: ics_calendar_tools.delete_event
                   data:
+                    calendar: calendar.manolo_work
                     uid: "{{ compact_next_uid }}"

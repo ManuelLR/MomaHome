@@ -100,9 +100,10 @@ All charts use `hass.callApi('GET', 'calendars/<entity>?start=...&end=...')` wit
 
 1. **Local Calendar** — create via HA UI: *Settings → Integrations → Local Calendar* → name it `<Person> Work`. Generates `calendar.<person>_work`.
 2. **Telegram Bot** — must be active and receiving callbacks.
-3. **HA 2024.2+** — required for `calendar.update_event`, `calendar.delete_event`, `calendar.get_events` with `response_variable`.
-4. **Workday sensor** — configured via HA UI for the relevant country/region. Add vacation days there.
-5. **Symlink script** — run `home_automation/scripts/HA_generate_real_config.sh` after any package changes.
+3. **HA 2024.2+** — required for `calendar.get_events` with `response_variable`.
+4. **ICS Calendar Tools** — HACS custom integration ([randrcomputers/ics-calendar-tools](https://github.com/randrcomputers/ics-calendar-tools)) required for `ics_calendar_tools.update_event` and `ics_calendar_tools.delete_event`. Native `calendar.update_event`/`calendar.delete_event` don't exist as HA automation services (only WebSocket UI commands).
+5. **Workday sensor** — configured via HA UI for the relevant country/region. Add vacation days there.
+6. **Symlink script** — run `home_automation/scripts/HA_generate_real_config.sh` after any package changes.
 
 ---
 
