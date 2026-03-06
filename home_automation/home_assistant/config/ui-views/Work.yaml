@@ -1,0 +1,175 @@
+##
+## Work Tracking Dashboard
+## All data comes directly from calendar.manolo_work (Local Calendar).
+## Charts use hass.callApi to query the HA Calendar REST API.
+## Only events with ✓ in their summary are counted as confirmed work time.
+##
+
+- type: vertical-stack
+  cards:
+
+    # ── Estado actual ────────────────────────────────────────────────────
+    - type: entities
+      title: "Estado"
+      entities:
+        - entity: switch.man_001
+          name: "Socket escritorio"
+          icon: mdi:power-socket-eu
+        - entity: binary_sensor.s23_work_profile
+          name: "Perfil trabajo Android"
+          icon: mdi:briefcase
+        - entity: binary_sensor.workday_sensor
+          name: "Día laborable"
+          icon: mdi:calendar-check
+        - entity: calendar.manolo_work
+          name: "Evento actual"
+          icon: mdi:calendar-clock
+
+    # ── Barras — Esta semana ─────────────────────────────────────────────
+    # Queries calendar directly; only shows confirmed (✓) events.
+    # Group by day and sum durations. Graph refreshes on card load.
+    - type: custom:apexcharts-card
+      graph_span: 7d
+      span:
+        start: week
+      header:
+        show: true
+        title: "Esta semana"
+      yaxis:
+        - min: 0
+          decimals: 2
+      apex_config:
+        xaxis:
+          type: datetime
+        plotOptions:
+          bar:
+            columnWidth: "60%"
+      series:
+        - entity: calendar.manolo_work
+          name: "Horas trabajadas"
+          color: "#2196f3"
+          type: column
+          unit: h
+          float_precision: 2
+          data_generator: |
+            const s = new Date(start).toISOString();
+            const e = new Date(end).toISOString();
+            return hass.callApi(
+              'GET',
+              'calendars/calendar.manolo_work?start=' +
+                encodeURIComponent(s) + '&end=' + encodeURIComponent(e)
+            ).then(events => {
+              const daily = {};
+              (events || [])
+                .filter(ev => ev.summary && ev.summary.includes('\u2713'))
+                .forEach(ev => {
+                  const evStart = new Date(ev.start.dateTime || ev.start.date);
+                  const evEnd   = new Date(ev.end.dateTime   || ev.end.date);
+                  const day = evStart.toDateString();
+                  daily[day] = (daily[day] || 0) + (evEnd - evStart) / 3600000;
+                });
+              return Object.entries(daily)
+                .sort(([a], [b]) => new Date(a) - new Date(b))
+                .map(([d, h]) => [new Date(d).getTime(), +h.toFixed(2)]);
+            });
+
+    # ── Barras — Últimos 30 días ──────────────────────────────────────────
+    - type: custom:apexcharts-card
+      graph_span: 30d
+      header:
+        show: true
+        title: "Últimos 30 días"
+      yaxis:
+        - min: 0
+          decimals: 2
+      apex_config:
+        xaxis:
+          type: datetime
+        plotOptions:
+          bar:
+            columnWidth: "70%"
+      series:
+        - entity: calendar.manolo_work
+          name: "Horas trabajadas"
+          color: "#2196f3"
+          type: column
+          unit: h
+          float_precision: 2
+          data_generator: |
+            const s = new Date(start).toISOString();
+            const e = new Date(end).toISOString();
+            return hass.callApi(
+              'GET',
+              'calendars/calendar.manolo_work?start=' +
+                encodeURIComponent(s) + '&end=' + encodeURIComponent(e)
+            ).then(events => {
+              const daily = {};
+              (events || [])
+                .filter(ev => ev.summary && ev.summary.includes('\u2713'))
+                .forEach(ev => {
+                  const evStart = new Date(ev.start.dateTime || ev.start.date);
+                  const evEnd   = new Date(ev.end.dateTime   || ev.end.date);
+                  const day = evStart.toDateString();
+                  daily[day] = (daily[day] || 0) + (evEnd - evStart) / 3600000;
+                });
+              return Object.entries(daily)
+                .sort(([a], [b]) => new Date(a) - new Date(b))
+                .map(([d, h]) => [new Date(d).getTime(), +h.toFixed(2)]);
+            });
+
+    # ── Timeline — Sesiones exactas (para exportar a empresa) ────────────
+    # Shows confirmed (✓) sessions as horizontal bars.
+    # Adjust graph_span to 1d / 3d / 7d / 30d as needed for export.
+    - type: custom:apexcharts-card
+      graph_span: 7d
+      header:
+        show: true
+        title: "Sesiones de trabajo (para exportar)"
+      apex_config:
+        chart:
+          type: rangeBar
+        plotOptions:
+          bar:
+            horizontal: true
+        xaxis:
+          type: datetime
+        tooltip:
+          x:
+            format: "dd MMM HH:mm"
+        dataLabels:
+          enabled: true
+          formatter: |
+            EVAL:function(val) {
+              var dur = (val[1] - val[0]) / 3600000;
+              return dur.toFixed(1) + 'h';
+            }
+      series:
+        - entity: calendar.manolo_work
+          name: "Sesiones"
+          color: "#4caf50"
+          data_generator: |
+            const s = new Date(start).toISOString();
+            const e = new Date(end).toISOString();
+            return hass.callApi(
+              'GET',
+              'calendars/calendar.manolo_work?start=' +
+                encodeURIComponent(s) + '&end=' + encodeURIComponent(e)
+            ).then(events => {
+              return (events || [])
+                .filter(ev => ev.summary && ev.summary.includes('\u2713') && ev.end)
+                .map(ev => ({
+                  x: new Date(ev.start.dateTime || ev.start.date)
+                       .toLocaleDateString('es-ES', {weekday:'short', day:'numeric', month:'short'}),
+                  y: [
+                    new Date(ev.start.dateTime || ev.start.date).getTime(),
+                    new Date(ev.end.dateTime   || ev.end.date  ).getTime()
+                  ]
+                }));
+            });
+
+    # ── Calendario nativo HA ──────────────────────────────────────────────
+    # View, edit, create and delete events directly from here.
+    - type: calendar
+      entities:
+        - calendar.manolo_work
+      initial_view: week

@@ -28,6 +28,10 @@
 
 
 
+- title: Work
+  icon: mdi:briefcase-clock
+  cards: !include Work.yaml
+
 # Work in Progress section
 - title: WIP
   icon: mdi:tools
