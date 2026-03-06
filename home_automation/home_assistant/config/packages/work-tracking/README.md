@@ -46,13 +46,16 @@ If a confirmed session is still active at midnight, it is automatically split: t
 
 ## Calendar event states
 
+The ⏰ summary encodes the day type at signal-fire time, so Start YES always sets the correct confirmed label even if the user responds the next day.
+
 | Summary | Meaning |
 |---------|---------|
-| `⏰ ¿Trabajando?` | Signal detected, awaiting confirmation. Can be reviewed manually. |
-| `💼 Trabajo` | Confirmed working session, in progress (workday) |
-| `💼 Trabajo ✓` | Confirmed and closed (workday) |
-| `🏖️ Trabajo (especial)` | Confirmed session, in progress (special day) |
-| `🏖️ Trabajo (especial) ✓` | Confirmed and closed (special day) |
+| `⏰ Working?` | Signal detected on a **workday** — awaiting confirmation |
+| `⏰ Working? (special)` | Signal detected on a **weekend/holiday** — awaiting confirmation |
+| `💼 Working` | Confirmed working session, in progress (workday) |
+| `💼 Working ✓` | Confirmed and closed (workday) |
+| `🏖️ Working (special)` | Confirmed working session, in progress (special day) |
+| `🏖️ Working (special) ✓` | Confirmed and closed (special day) |
 | *(deleted)* | User responded NO — not a work session |
 
 ---
@@ -123,28 +126,28 @@ Open `automation.yaml` and add it to the `triggers` block of both Signal ON and 
 ```yaml
 # Signal ON triggers:
   - platform: state
-    entity_id: device_tracker.work_laptop   # ← add here
-    to: 'home'
+    entity_id: <signal_c_entity>   # ← add the new signal entity here
+    to: '<on_state>'               # e.g. 'on', 'home', etc.
 
 # Signal OFF triggers:
   - platform: state
-    entity_id: device_tracker.work_laptop   # ← add here
-    to: 'not_home'
+    entity_id: <signal_c_entity>   # ← add the new signal entity here
+    to: '<off_state>'              # e.g. 'off', 'not_home', etc.
     for: {seconds: 30}
 ```
 
-Also update the `other_signal_on` variable in Signal OFF to check the new signal:
+Also update the `other_signal_on` variable in Signal OFF to include the new signal:
 
 ```yaml
 other_signal_on: >
-  {% if trigger.entity_id == 'switch.man_001' %}
-    {{ is_state('binary_sensor.s23_work_profile', 'on')
-       or is_state('device_tracker.work_laptop', 'home') }}
-  {% elif trigger.entity_id == 'binary_sensor.s23_work_profile' %}
-    {{ is_state('switch.man_001', 'on')
-       or is_state('device_tracker.work_laptop', 'home') }}
+  {% if trigger.entity_id == '<signal_a_entity>' %}
+    {{ is_state('<signal_b_entity>', '<b_on_state>')
+       or is_state('<signal_c_entity>', '<c_on_state>') }}
+  {% elif trigger.entity_id == '<signal_b_entity>' %}
+    {{ is_state('<signal_a_entity>', '<a_on_state>')
+       or is_state('<signal_c_entity>', '<c_on_state>') }}
   {% else %}
-    {{ is_state('switch.man_001', 'on')
-       or is_state('binary_sensor.s23_work_profile', 'on') }}
+    {{ is_state('<signal_a_entity>', '<a_on_state>')
+       or is_state('<signal_b_entity>', '<b_on_state>') }}
   {% endif %}
 ```

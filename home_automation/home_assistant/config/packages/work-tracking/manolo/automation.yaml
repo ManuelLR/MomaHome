@@ -3,16 +3,23 @@
   # ─────────────────────────────────────────────────────────────────────
   # AUT-Work Manolo - Signal ON
   # Fires when any individual work signal turns ON.
+  #
   # Invariant: events never overlap. Before creating the new ⏰ event,
-  # any currently active event (⏰ or 💼) is closed at the exact start
-  # time of the new event. This ensures querying "right now" always
-  # yields exactly one event.
+  # any currently active event is closed at the exact start time of the
+  # new one. Querying "right now" always yields at most one event.
+  #
+  # Day type is encoded in the ⏰ summary at creation time:
+  #   "⏰ Working?"          → signal fired on a workday
+  #   "⏰ Working? (special)" → signal fired on a weekend/holiday
+  # This ensures Start YES uses the correct label even if the user
+  # responds the next day (when workday_sensor reflects a different day).
+  #
   # Requires: calendar.manolo_work (Local Calendar — create via HA UI)
   # Requires: HA 2024.2+ for calendar.get_events with response_variable
   # ─────────────────────────────────────────────────────────────────────
   - alias: "AUT-Work Manolo - Signal ON"
     id: aut_work_manolo_signal_on
-    mode: single
+    mode: queued
     initial_state: 'on'
     triggers:
       - platform: state
@@ -28,10 +35,12 @@
           start_str: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
           end_placeholder_str: "{{ (now().timestamp() + 82800) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
           start_hm: "{{ now().strftime('%H:%M') }}"
-          # 1-second window to find the event active right now
           one_sec_later: "{{ (now().timestamp() + 1) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
+          # Encode the day type in the pending summary at creation time
+          pending_summary: >
+            {{ '⏰ Working? (special)' if is_state('binary_sensor.workday_sensor', 'off') else '⏰ Working?' }}
 
-      # Find any currently active event (one without ✓ in summary)
+      # Find any currently active event (invariant: at most one in this window)
       - action: calendar.get_events
         target:
           entity_id: calendar.manolo_work
@@ -41,15 +50,10 @@
         response_variable: current_events
 
       - variables:
+          # By invariant the result has 0 or 1 events — no need to loop/filter
           existing_uid: >
             {% set events = current_events['calendar.manolo_work']['events'] | default([]) %}
-            {% set ns = namespace(uid='') %}
-            {% for e in events %}
-              {% if '✓' not in (e.summary | default('')) and ns.uid == '' %}
-                {% set ns.uid = e.uid | default('') %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.uid }}
+            {{ events[0].uid if events | length > 0 else '' }}
 
       # Close the existing event at exactly start_str (no gap, no overlap)
       - if:
@@ -63,15 +67,15 @@
               uid: "{{ existing_uid }}"
               end_date_time: "{{ start_str }}"
 
-      # Create the new pending event
+      # Create the new pending event with the correct day-type summary
       - action: calendar.create_event
         target:
           entity_id: calendar.manolo_work
         data:
-          summary: "⏰ ¿Trabajando?"
+          summary: "{{ pending_summary }}"
           start_date_time: "{{ start_str }}"
           end_date_time: "{{ end_placeholder_str }}"
-          description: "Pendiente de confirmar"
+          description: "Pending confirmation"
 
       - delay:
           seconds: 2
@@ -90,7 +94,7 @@
             {% set events = new_events['calendar.manolo_work']['events'] | default([]) %}
             {% set ns = namespace(uid='') %}
             {% for e in events %}
-              {% if e.summary | default('') == '⏰ ¿Trabajando?' and ns.uid == '' %}
+              {% if '⏰' in (e.summary | default('')) and ns.uid == '' %}
                 {% set ns.uid = e.uid | default('') %}
               {% endif %}
             {% endfor %}
@@ -99,21 +103,23 @@
       - action: script.telegram_notify
         data:
           target_person: manolo
-          title: "⏰ ¿Estás trabajando?"
-          message: "Actividad detectada a las {{ start_hm }}"
+          title: "⏰ Are you working?"
+          message: "Activity detected at {{ start_hm }}"
           inline_keyboard:
-            - "✅ Sí:/work_start_yes_manolo {{ new_uid }}"
+            - "✅ Yes:/work_start_yes_manolo {{ new_uid }}"
             - "❌ No:/work_start_no_manolo {{ new_uid }}"
 
 
   # ─────────────────────────────────────────────────────────────────────
   # AUT-Work Manolo - Start YES
-  # User confirmed they are working. Updates the ⏰ event to 💼/🏖️.
-  # The UID comes from the Telegram button command argument.
+  # User confirmed they are working.
+  # Reads the ⏰ event's summary to determine the correct confirmed label
+  # (💼 Working or 🏖️ Working (special)), regardless of when the user
+  # responds — even if it's the next day.
   # ─────────────────────────────────────────────────────────────────────
   - alias: "AUT-Work Manolo - Start YES"
     id: aut_work_manolo_start_yes
-    mode: single
+    mode: queued
     initial_state: 'on'
     triggers:
       - platform: event
@@ -126,23 +132,47 @@
     actions:
       - variables:
           uid: "{{ trigger.event.data.args[0] | default('') }}"
-          day_label: >
-            {{ '🏖️ Trabajo (especial)' if is_state('binary_sensor.workday_sensor', 'off') else '💼 Trabajo' }}
+          # Search window: 3 days back + 1 day forward covers any realistic response delay
+          search_start: "{{ (now().timestamp() - 259200) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
+          search_end:   "{{ (now().timestamp() + 86400) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
+
+      # Read the event by UID to get its original pending summary
+      - action: calendar.get_events
+        target:
+          entity_id: calendar.manolo_work
+        data:
+          start_date_time: "{{ search_start }}"
+          end_date_time: "{{ search_end }}"
+        response_variable: search_events
+
+      - variables:
+          pending_summary: >
+            {% set events = search_events['calendar.manolo_work']['events'] | default([]) %}
+            {% set ns = namespace(s='') %}
+            {% for e in events %}
+              {% if e.uid | default('') == uid and ns.s == '' %}
+                {% set ns.s = e.summary | default('') %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.s }}
+          # Derive confirmed label from what was captured at signal time — correct for any day
+          confirmed_summary: >
+            {{ '🏖️ Working (special)' if '(special)' in pending_summary else '💼 Working' }}
 
       - action: calendar.update_event
         target:
           entity_id: calendar.manolo_work
         data:
           uid: "{{ uid }}"
-          summary: "{{ day_label }}"
-          description: "Sesión confirmada"
+          summary: "{{ confirmed_summary }}"
+          description: "Confirmed session"
 
       - condition: template
         value_template: "{{ trigger.event.event_type == 'telegram_callback' }}"
       - action: telegram_bot.answer_callback_query
         data:
           callback_query_id: "{{ trigger.event.data.id }}"
-          message: "¡Sesión iniciada! ✓"
+          message: "Session started ✓"
 
 
   # ─────────────────────────────────────────────────────────────────────
@@ -151,7 +181,7 @@
   # ─────────────────────────────────────────────────────────────────────
   - alias: "AUT-Work Manolo - Start NO"
     id: aut_work_manolo_start_no
-    mode: single
+    mode: queued
     initial_state: 'on'
     triggers:
       - platform: event
@@ -176,19 +206,21 @@
       - action: telegram_bot.answer_callback_query
         data:
           callback_query_id: "{{ trigger.event.data.id }}"
-          message: "Sesión cancelada"
+          message: "Session cancelled"
 
 
   # ─────────────────────────────────────────────────────────────────────
   # AUT-Work Manolo - Signal OFF
   # Fires when any individual work signal turns OFF (30s debounce).
-  # Closes the currently active event (whether ⏰ or 💼) with the
-  # signal-off timestamp. If the other signal is still ON, triggers
-  # Signal ON logic (creates a new ⏰ and asks again).
+  # Closes the currently active event (⏰ or 💼) with the signal-off
+  # timestamp:
+  #   - Confirmed events (💼/🏖️) → append " ✓"
+  #   - Pending events (⏰)       → close with timestamp, keep summary for review
+  # If another signal is still ON, triggers Signal ON to create a new ⏰.
   # ─────────────────────────────────────────────────────────────────────
   - alias: "AUT-Work Manolo - Signal OFF"
     id: aut_work_manolo_signal_off
-    mode: single
+    mode: queued
     initial_state: 'on'
     triggers:
       - platform: state
@@ -206,7 +238,8 @@
           signal_off_str: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
           one_sec_before: "{{ (now().timestamp() - 1) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
 
-      # Find the event that was active just before the signal turned off
+      # Find the event active just before the signal turned off
+      # (invariant: at most one event in this window)
       - action: calendar.get_events
         target:
           entity_id: calendar.manolo_work
@@ -216,32 +249,17 @@
         response_variable: active_events
 
       - variables:
+          # By invariant the result has 0 or 1 events — direct access
           active_uid: >
             {% set events = active_events['calendar.manolo_work']['events'] | default([]) %}
-            {% set ns = namespace(uid='') %}
-            {% for e in events %}
-              {% if '✓' not in (e.summary | default('')) and ns.uid == '' %}
-                {% set ns.uid = e.uid | default('') %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.uid }}
+            {{ events[0].uid if events | length > 0 else '' }}
           active_summary: >
             {% set events = active_events['calendar.manolo_work']['events'] | default([]) %}
-            {% set ns = namespace(summary='') %}
-            {% for e in events %}
-              {% if '✓' not in (e.summary | default('')) and ns.summary == '' %}
-                {% set ns.summary = e.summary | default('') %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.summary }}
-          # Confirmed events (💼/🏖️) get ✓ appended; pending ⏰ events keep their summary
+            {{ events[0].summary if events | length > 0 else '' }}
+          # Confirmed events get ✓; pending ⏰ events keep their summary for review
           new_summary: >
             {% set s = active_summary %}
-            {% if '💼' in s or '🏖️' in s %}
-              {{ s + ' ✓' }}
-            {% else %}
-              {{ s }}
-            {% endif %}
+            {{ s + ' ✓' if ('💼' in s or '🏖️' in s) else s }}
           other_signal_on: >
             {% if trigger.entity_id == 'switch.man_001' %}
               {{ is_state('binary_sensor.s23_work_profile', 'on') }}
@@ -276,9 +294,10 @@
 
   # ─────────────────────────────────────────────────────────────────────
   # AUT-Work Manolo - Split midnight
-  # If a confirmed 💼 session is active at midnight, split it:
-  # close the current event and create a new one starting at midnight.
-  # Runs at exactly 00:00:00.
+  # If a confirmed session is active at midnight, splits it:
+  # - Closes the current event at midnight (adds ✓)
+  # - Opens a new event for the new day using the NEW day's type
+  #   (workday_sensor reflects the new day at 00:00:00)
   # ─────────────────────────────────────────────────────────────────────
   - alias: "AUT-Work Manolo - Split midnight"
     id: aut_work_manolo_split_midnight
@@ -292,6 +311,9 @@
           midnight_str: "{{ now().strftime('%Y-%m-%d 00:00:00') }}"
           new_end_str: "{{ (now().timestamp() + 82800) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
           one_sec_later: "{{ (now().timestamp() + 1) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
+          # Day type for the new event (reflects the NEW day at 00:00:00)
+          new_day_label: >
+            {{ '🏖️ Working (special)' if is_state('binary_sensor.workday_sensor', 'off') else '💼 Working' }}
 
       - action: calendar.get_events
         target:
@@ -302,32 +324,21 @@
         response_variable: midnight_events
 
       - variables:
+          # By invariant at most one event in this window
           midnight_uid: >
             {% set events = midnight_events['calendar.manolo_work']['events'] | default([]) %}
-            {% set ns = namespace(uid='') %}
-            {% for e in events %}
-              {% if ('💼' in (e.summary | default('')) or '🏖️' in (e.summary | default('')))
-                 and '✓' not in (e.summary | default('')) and ns.uid == '' %}
-                {% set ns.uid = e.uid | default('') %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.uid }}
+            {{ events[0].uid if events | length > 0 else '' }}
           midnight_summary: >
             {% set events = midnight_events['calendar.manolo_work']['events'] | default([]) %}
-            {% set ns = namespace(s='') %}
-            {% for e in events %}
-              {% if ('💼' in (e.summary | default('')) or '🏖️' in (e.summary | default('')))
-                 and '✓' not in (e.summary | default('')) and ns.s == '' %}
-                {% set ns.s = e.summary | default('') %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.s }}
+            {{ events[0].summary if events | length > 0 else '' }}
 
       - if:
           - condition: template
-            value_template: "{{ midnight_uid != '' }}"
+            # Only split if there is a confirmed session (💼 or 🏖️, no ✓ yet)
+            value_template: >
+              {{ midnight_uid != '' and ('💼' in midnight_summary or '🏖️' in midnight_summary) }}
         then:
-          # Close the old event at midnight
+          # Close the ending-day event at midnight
           - action: calendar.update_event
             target:
               entity_id: calendar.manolo_work
@@ -336,23 +347,25 @@
               end_date_time: "{{ midnight_str }}"
               summary: "{{ midnight_summary + ' ✓' }}"
 
-          # Open a new confirmed event for the new day
+          # Open a new event for the new day with the correct day type
           - action: calendar.create_event
             target:
               entity_id: calendar.manolo_work
             data:
-              summary: "{{ midnight_summary }}"
+              summary: "{{ new_day_label }}"
               start_date_time: "{{ midnight_str }}"
               end_date_time: "{{ new_end_str }}"
-              description: "Continuación de sesión anterior"
+              description: "Continuation of previous session"
 
 
   # ─────────────────────────────────────────────────────────────────────
   # AUT-Work Manolo - Compact yesterday
   # Runs at 00:30 to process yesterday's full set of events.
-  # Merges consecutive confirmed (✓) sessions where the gap between
-  # end of one and start of the next is ≤ 2 minutes.
-  # Uses repeat:count to handle multiple mergeable pairs.
+  # Merges consecutive confirmed (✓) sessions where the gap is ≤ 2 min.
+  # Each repeat pass merges one pair; up to 10 passes handles any
+  # realistic number of daily sessions.
+  # The three values (curr_uid, next_uid, new_end) are computed in a
+  # single template pass and extracted with split('|||').
   # ─────────────────────────────────────────────────────────────────────
   - alias: "AUT-Work Manolo - Compact yesterday"
     id: aut_work_manolo_compact_yesterday
@@ -366,7 +379,6 @@
           yesterday_start: "{{ (today_at('00:00') | as_timestamp - 86400) | timestamp_custom('%Y-%m-%d 00:00:00', true) }}"
           yesterday_end: "{{ (today_at('00:00') | as_timestamp - 1) | timestamp_custom('%Y-%m-%d %H:%M:%S', true) }}"
 
-      # Up to 10 merge passes (each pass merges one pair; 10 is well above typical daily sessions)
       - repeat:
           count: 10
           sequence:
@@ -379,8 +391,9 @@
               response_variable: compact_events
 
             - variables:
-                # Find the first consecutive pair of ✓ events with gap ≤ 2 min
-                compact_curr_uid: >
+                # Single pass: find first mergeable pair and encode result as |||‑separated string.
+                # curr_uid|||next_uid|||new_end  — empty string means "no pair found".
+                compact_result: >
                   {% set events = compact_events['calendar.manolo_work']['events'] | default([]) %}
                   {% set confirmed = [] %}
                   {% for e in events %}
@@ -389,64 +402,23 @@
                     {% endif %}
                   {% endfor %}
                   {% set sorted_ev = confirmed | sort(attribute='start') %}
-                  {% set ns = namespace(uid='') %}
+                  {% set ns = namespace(curr_uid='', next_uid='', new_end='') %}
                   {% for i in range(sorted_ev | length - 1) %}
-                    {% if ns.uid == '' %}
+                    {% if ns.curr_uid == '' %}
                       {% set curr = sorted_ev[i] %}
-                      {% set next = sorted_ev[i+1] %}
-                      {% set gap = (as_timestamp(next.start) - as_timestamp(curr.end)) %}
-                      {% if gap <= 120 %}
-                        {% set ns.uid = curr.uid | default('') %}
+                      {% set nxt  = sorted_ev[i+1] %}
+                      {% if (as_timestamp(nxt.start) - as_timestamp(curr.end)) <= 120 %}
+                        {% set ns.curr_uid = curr.uid | default('') %}
+                        {% set ns.next_uid = nxt.uid  | default('') %}
+                        {% set ns.new_end  = nxt.end %}
                       {% endif %}
                     {% endif %}
                   {% endfor %}
-                  {{ ns.uid }}
-                compact_next_uid: >
-                  {% set events = compact_events['calendar.manolo_work']['events'] | default([]) %}
-                  {% set confirmed = [] %}
-                  {% for e in events %}
-                    {% if '✓' in (e.summary | default('')) %}
-                      {% set confirmed = confirmed + [e] %}
-                    {% endif %}
-                  {% endfor %}
-                  {% set sorted_ev = confirmed | sort(attribute='start') %}
-                  {% set ns = namespace(uid='', found=false) %}
-                  {% for i in range(sorted_ev | length - 1) %}
-                    {% if not ns.found %}
-                      {% set curr = sorted_ev[i] %}
-                      {% set next = sorted_ev[i+1] %}
-                      {% set gap = (as_timestamp(next.start) - as_timestamp(curr.end)) %}
-                      {% if gap <= 120 %}
-                        {% set ns.uid = next.uid | default('') %}
-                        {% set ns.found = true %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
-                  {{ ns.uid }}
-                compact_new_end: >
-                  {% set events = compact_events['calendar.manolo_work']['events'] | default([]) %}
-                  {% set confirmed = [] %}
-                  {% for e in events %}
-                    {% if '✓' in (e.summary | default('')) %}
-                      {% set confirmed = confirmed + [e] %}
-                    {% endif %}
-                  {% endfor %}
-                  {% set sorted_ev = confirmed | sort(attribute='start') %}
-                  {% set ns = namespace(end='', found=false) %}
-                  {% for i in range(sorted_ev | length - 1) %}
-                    {% if not ns.found %}
-                      {% set curr = sorted_ev[i] %}
-                      {% set next = sorted_ev[i+1] %}
-                      {% set gap = (as_timestamp(next.start) - as_timestamp(curr.end)) %}
-                      {% if gap <= 120 %}
-                        {% set ns.end = next.end %}
-                        {% set ns.found = true %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
-                  {{ ns.end }}
+                  {{ ns.curr_uid }}|||{{ ns.next_uid }}|||{{ ns.new_end }}
+                compact_curr_uid: "{{ compact_result.split('|||')[0] }}"
+                compact_next_uid: "{{ compact_result.split('|||')[1] }}"
+                compact_new_end:  "{{ compact_result.split('|||')[2] }}"
 
-            # If a pair was found, merge them
             - if:
                 - condition: template
                   value_template: "{{ compact_curr_uid != '' }}"
@@ -458,7 +430,7 @@
                   data:
                     uid: "{{ compact_curr_uid }}"
                     end_date_time: "{{ compact_new_end }}"
-                # Delete the second event (now merged)
+                # Remove the second event (now absorbed)
                 - action: calendar.delete_event
                   target:
                     entity_id: calendar.manolo_work
