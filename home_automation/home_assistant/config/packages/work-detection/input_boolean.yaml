@@ -1,0 +1,8 @@
+# input_boolean:
+
+  # Toggle manual para indicar que el perfil de trabajo del móvil está activo.
+  # Puedes automatizarlo con la app de HA (Android/iOS) si expones el modo focus,
+  # el perfil de trabajo o cualquier sensor de "no molestar laboral".
+  manolo_work_phone_profile:
+    name: "Manolo - Perfil trabajo en el móvil"
+    icon: mdi:cellphone-cog

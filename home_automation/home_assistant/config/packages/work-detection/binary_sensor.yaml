@@ -1,0 +1,190 @@
+# binary_sensor:
+
+  # ══════════════════════════════════════════════════════════════════
+  # SENSOR 1: Manolo trabajando desde casa
+  #
+  # Señales: presencia en casa + enchufe escritorio + consumo portátil
+  #          + horario + día laborable + perfil móvil.
+  #
+  # Umbral alto (0.80) porque la combinación falso-positivo (estar en casa
+  # con el escritorio encendido sin trabajar) es plausible en ocio.
+  # ══════════════════════════════════════════════════════════════════
+  - platform: bayesian
+    name: "Manolo - Trabajando en casa"
+    unique_id: manolo_working_from_home
+    prior: 0.10          # ~10 % del tiempo global está trabajando en casa
+    probability_threshold: 0.80
+    observations:
+
+      # ── Presencia en casa ──────────────────────────────────────────
+      # P(en casa | trabajando en casa) ≈ 0.98
+      # P(en casa | NO trabajando en casa) ≈ 0.60  (pasa mucho tiempo en casa)
+      - platform: template
+        value_template: >-
+          {{ states('sensor.manolo') in ['Home', 'Just Arrived'] }}
+        prob_given_true: 0.98
+        prob_given_false: 0.60
+
+      # ── Día laborable ──────────────────────────────────────────────
+      # NOTA: Verifica el entity_id de tu sensor Workday en Ajustes > Entidades.
+      #       Suele ser binary_sensor.workday_sensor o binary_sensor.workday.
+      # P(día laboral | trabajando en casa) ≈ 0.85  (excepcionalmente trabaja en festivo)
+      # P(día laboral | NO trabajando en casa) ≈ 0.71  (5 de 7 días son laborables)
+      - platform: state
+        entity_id: binary_sensor.workday_sensor
+        to_state: "on"
+        prob_given_true: 0.85
+        prob_given_false: 0.71
+
+      # ── Horario laboral central (9:00 – 18:30) ────────────────────
+      # P(en horario | trabajando en casa) ≈ 0.75  (a veces trabaja fuera de horario)
+      # P(en horario | NO trabajando en casa) ≈ 0.39  (9.5 h / 24 h)
+      - platform: template
+        value_template: >-
+          {{
+            now().hour >= 9 and
+            (now().hour < 18 or (now().hour == 18 and now().minute < 30))
+          }}
+        prob_given_true: 0.75
+        prob_given_false: 0.39
+
+      # ── Enchufe del escritorio encendido (switch.man_001) ─────────
+      # Señal fuerte: cuando trabaja en casa el enchufe está casi siempre encendido.
+      # P(enchufe ON | trabajando en casa) ≈ 0.85
+      # P(enchufe ON | NO trabajando en casa) ≈ 0.10
+      - platform: state
+        entity_id: switch.man_001
+        to_state: "on"
+        prob_given_true: 0.85
+        prob_given_false: 0.10
+
+      # ── Consumo eléctrico > 10 W (portátil enchufado y activo) ────
+      # Si el portátil está enchufado al man-001 y consume, casi seguro está trabajando.
+      # Ajusta el umbral si tienes otro dispositivo enchufado al escritorio.
+      # P(>10 W | trabajando en casa) ≈ 0.80
+      # P(>10 W | NO trabajando en casa) ≈ 0.05
+      - platform: numeric_state
+        entity_id: sensor.man_001_power
+        above: 10
+        prob_given_true: 0.80
+        prob_given_false: 0.05
+
+      # ── Perfil de trabajo activo en el móvil ──────────────────────
+      # Toggle manual o automatizado desde la app de HA (ver input_boolean.yaml).
+      # P(perfil trabajo ON | trabajando en casa) ≈ 0.70
+      # P(perfil trabajo ON | NO trabajando en casa) ≈ 0.10
+      - platform: state
+        entity_id: input_boolean.manolo_work_phone_profile
+        to_state: "on"
+        prob_given_true: 0.70
+        prob_given_false: 0.10
+
+
+  # ══════════════════════════════════════════════════════════════════
+  # SENSOR 2: Manolo trabajando desde la oficina
+  #
+  # La señal más fuerte es estar en la zona Man-Work. El resto ayuda
+  # a reducir falsos positivos (pasar por allí sin trabajar).
+  # ══════════════════════════════════════════════════════════════════
+  - platform: bayesian
+    name: "Manolo - Trabajando en la oficina"
+    unique_id: manolo_working_from_office
+    prior: 0.08          # ~8 % del tiempo global está en la oficina
+    probability_threshold: 0.75
+    observations:
+
+      # ── En la zona de trabajo (Man-Work) ──────────────────────────
+      # Señal muy fuerte: si está en la zona de trabajo, casi seguro está trabajando.
+      # P(en zona | trabajando en oficina) ≈ 0.95
+      # P(en zona | NO trabajando en oficina) ≈ 0.01
+      - platform: state
+        entity_id: person.manolo
+        to_state: "Man-Work"
+        prob_given_true: 0.95
+        prob_given_false: 0.01
+
+      # ── Día laborable ──────────────────────────────────────────────
+      # P(día laboral | trabajando en oficina) ≈ 0.90
+      # P(día laboral | NO trabajando en oficina) ≈ 0.71
+      - platform: state
+        entity_id: binary_sensor.workday_sensor
+        to_state: "on"
+        prob_given_true: 0.90
+        prob_given_false: 0.71
+
+      # ── Horario laboral en oficina (8:00 – 19:00, rango más amplio) ──
+      # En oficina puede haber reuniones más temprano o quedarse más tarde.
+      # P(en horario | trabajando en oficina) ≈ 0.85
+      # P(en horario | NO trabajando en oficina) ≈ 0.46  (11 h / 24 h)
+      - platform: template
+        value_template: >-
+          {{ now().hour >= 8 and now().hour < 19 }}
+        prob_given_true: 0.85
+        prob_given_false: 0.46
+
+      # ── Perfil de trabajo activo en el móvil ──────────────────────
+      # P(perfil trabajo ON | trabajando en oficina) ≈ 0.75
+      # P(perfil trabajo ON | NO trabajando en oficina) ≈ 0.10
+      - platform: state
+        entity_id: input_boolean.manolo_work_phone_profile
+        to_state: "on"
+        prob_given_true: 0.75
+        prob_given_false: 0.10
+
+
+  # ══════════════════════════════════════════════════════════════════
+  # SENSOR 3: Manolo trabajando a deshoras
+  #
+  # Detecta trabajo en casa FUERA del horario habitual o en fin de semana.
+  # Requiere las señales físicas fuertes (enchufe + consumo) ya que el
+  # contexto temporal no ayuda.
+  # ══════════════════════════════════════════════════════════════════
+  - platform: bayesian
+    name: "Manolo - Trabajando a deshoras"
+    unique_id: manolo_working_overtime
+    prior: 0.05          # ~5 % del tiempo global trabaja a deshoras en casa
+    probability_threshold: 0.80
+    observations:
+
+      # ── En casa ────────────────────────────────────────────────────
+      # P(en casa | trabajando a deshoras) ≈ 0.99
+      # P(en casa | NO trabajando a deshoras) ≈ 0.60
+      - platform: template
+        value_template: >-
+          {{ states('sensor.manolo') in ['Home', 'Just Arrived'] }}
+        prob_given_true: 0.99
+        prob_given_false: 0.60
+
+      # ── Fuera del horario habitual O fin de semana / festivo ───────
+      # Este es el rasgo definitorio: si trabaja a deshoras, NO es horario normal.
+      # P(fuera de horario | trabajando a deshoras) ≈ 0.95
+      # P(fuera de horario | NO trabajando a deshoras) ≈ 0.61
+      - platform: template
+        value_template: >-
+          {{
+            not (
+              is_state('binary_sensor.workday_sensor', 'on') and
+              now().hour >= 9 and
+              (now().hour < 18 or (now().hour == 18 and now().minute < 30))
+            )
+          }}
+        prob_given_true: 0.95
+        prob_given_false: 0.61
+
+      # ── Enchufe del escritorio encendido ──────────────────────────
+      # P(enchufe ON | trabajando a deshoras) ≈ 0.85
+      # P(enchufe ON | NO trabajando a deshoras) ≈ 0.10
+      - platform: state
+        entity_id: switch.man_001
+        to_state: "on"
+        prob_given_true: 0.85
+        prob_given_false: 0.10
+
+      # ── Consumo eléctrico > 10 W (portátil activo) ────────────────
+      # P(>10 W | trabajando a deshoras) ≈ 0.80
+      # P(>10 W | NO trabajando a deshoras) ≈ 0.05
+      - platform: numeric_state
+        entity_id: sensor.man_001_power
+        above: 10
+        prob_given_true: 0.80
+        prob_given_false: 0.05

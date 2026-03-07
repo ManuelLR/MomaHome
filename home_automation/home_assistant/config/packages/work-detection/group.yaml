@@ -1,0 +1,18 @@
+# group:
+
+  work_detection_manolo:
+    name: "Trabajo - Manolo"
+    icon: mdi:briefcase
+    entities:
+      # Sensor maestro
+      - binary_sensor.manolo_is_working
+      # Sensores Bayesianos por contexto
+      - binary_sensor.manolo_working_from_home
+      - binary_sensor.manolo_working_from_office
+      - binary_sensor.manolo_working_overtime
+      # Helper horario
+      - binary_sensor.manolo_in_working_hours
+      # Señales de entrada
+      - input_boolean.manolo_work_phone_profile
+      - switch.man_001
+      - sensor.man_001_power

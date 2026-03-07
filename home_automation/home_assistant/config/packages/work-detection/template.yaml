@@ -1,0 +1,35 @@
+# template:
+
+  # ══════════════════════════════════════════════════════════════════
+  # SENSOR MAESTRO: Manolo - Está trabajando
+  #
+  # Agrega los tres sensores Bayesianos. Es el sensor que debes usar
+  # en automatizaciones, dashboards y notificaciones.
+  #
+  # WARNING: state-based sensor — briefly shows 'unknown' on HA restart
+  # and 'unavailable' on YAML reload. Automations triggering on this
+  # sensor MUST use not_from: [unknown, unavailable].
+  # ══════════════════════════════════════════════════════════════════
+  - binary_sensor:
+    - name: "Manolo - Está trabajando"
+      unique_id: manolo_is_working
+      icon: mdi:briefcase-check
+      device_class: occupancy
+      state: >-
+        {{
+          is_state('binary_sensor.manolo_working_from_home', 'on')
+          or is_state('binary_sensor.manolo_working_from_office', 'on')
+          or is_state('binary_sensor.manolo_working_overtime', 'on')
+        }}
+
+    # ── Helper: está en horario laboral normal ─────────────────────
+    # Útil como dato independiente (ej. "es hora punta pero no trabaja")
+    - name: "Manolo - En horario laboral"
+      unique_id: manolo_in_working_hours
+      icon: mdi:clock-time-nine-outline
+      state: >-
+        {{
+          is_state('binary_sensor.workday_sensor', 'on') and
+          now().hour >= 9 and
+          (now().hour < 18 or (now().hour == 18 and now().minute < 30))
+        }}
