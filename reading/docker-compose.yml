@@ -69,7 +69,7 @@ services:
       # - "traefik.http.routers.wallabag.middlewares=wallabag-security-headers"
 
   readeck:
-    image: codeberg.org/readeck/readeck:0.21.6
+    image: codeberg.org/readeck/readeck:0.22.2
     restart: unless-stopped
     environment:
       # # Defines the application log level. Can be error, warn, info, debug.
