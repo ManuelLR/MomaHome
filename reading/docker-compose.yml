@@ -120,7 +120,7 @@ services:
       - "traefik.http.routers.miniflux.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
   calibre-web:
-    image: ghcr.io/crocodilestick/calibre-web-automated:V3.1.4
+    image: ghcr.io/crocodilestick/calibre-web-automated:v4.0.6
     restart: unless-stopped
     environment:
       - PUID=1000
