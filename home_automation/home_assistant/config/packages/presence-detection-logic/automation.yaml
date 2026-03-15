@@ -152,6 +152,46 @@
               {{next_home_occupancy.name}}
             {%- endif -%}
 
+  # After a full HA restart, person entities go 'unknown' before the tracker confirms their
+  # real state. The existing just_left/just_arrived automations use from:'home'/'not_home',
+  # so they miss the 'unknown → <state>' recovery transition, leaving the input_selects
+  # diverged from reality. This automation reconciles each person's dropdown as soon as the
+  # tracker reports a definitive state.
+  - alias: PTR-Restore person status after restart
+    id: 'ptr_restore_person_status_after_restart'
+    mode: queued
+    triggers:
+      - platform: state
+        entity_id:
+          - person.monica
+          - person.manolo
+        from: 'unknown'
+        to:
+          - 'home'
+          - 'not_home'
+    actions:
+      - service: input_select.select_option
+        data_template:
+          entity_id: >
+            {% if trigger.entity_id == 'person.manolo' %}
+              input_select.manolo_status_dropdown
+            {% else %}
+              input_select.monica_status_dropdown
+            {% endif %}
+          option: >
+            {% if trigger.entity_id == 'person.manolo' %}
+              {% set sel = states('input_select.manolo_status_dropdown') %}
+            {% else %}
+              {% set sel = states('input_select.monica_status_dropdown') %}
+            {% endif %}
+            {% if trigger.to_state.state == 'home' and sel in ['Just Left', 'Away', 'Extended Away'] %}
+              Home
+            {% elif trigger.to_state.state == 'not_home' and sel in ['Home', 'Just Arrived'] %}
+              Away
+            {% else %}
+              {{ sel }}
+            {% endif %}
+
   # After a full HA restart, sensors briefly go unknown/unavailable before recovering.
   # PTR-Update home occupancy blocks those recovery transitions (not_from: unknown/unavailable),
   # so this automation corrects home_occupancy once both sensors are back to a known state.
