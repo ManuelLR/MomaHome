@@ -116,6 +116,12 @@
         not_from:
           - 'unknown'
           - 'unavailable'
+        to:
+          - 'Home'
+          - 'Just Arrived'
+          - 'Just Left'
+          - 'Away'
+          - 'Extended Away'
         # Trigger on the sensors (not the input_selects) so the template sensors are
         # guaranteed to be up-to-date when the action reads them, eliminating a race
         # condition where the automation could fire before the sensors had re-evaluated.
@@ -139,9 +145,52 @@
                   "Extended Away": 4
               } -%}
               {%- set next_home_occupancy = namespace(value=status_json['Extended Away'],name='Extended Away') -%}
-              {%- for tracker in expand('group.people_status') if status_json[tracker.state] < next_home_occupancy.value -%}
+              {%- for tracker in expand('group.people_status') if tracker.state in status_json and status_json[tracker.state] < next_home_occupancy.value -%}
                   {%- set next_home_occupancy.value = status_json[tracker.state] -%}
                   {%- set next_home_occupancy.name = tracker.state -%}
               {%- endfor -%}
               {{next_home_occupancy.name}}
+            {%- endif -%}
+
+  # After a full HA restart, sensors briefly go unknown/unavailable before recovering.
+  # PTR-Update home occupancy blocks those recovery transitions (not_from: unknown/unavailable),
+  # so this automation corrects home_occupancy once both sensors are back to a known state.
+  - alias: PTR-Recover home occupancy after restart
+    id: 'ptr_recover_home_occupancy_after_restart'
+    mode: queued
+    triggers:
+      - platform: state
+        entity_id:
+          - sensor.manolo_status
+          - sensor.monica_status
+        from:
+          - 'unknown'
+          - 'unavailable'
+        to:
+          - 'Home'
+          - 'Just Arrived'
+          - 'Just Left'
+          - 'Away'
+          - 'Extended Away'
+    conditions:
+      # Wait until both sensors have recovered before acting, so we don't set
+      # home_occupancy based on only one person's state.
+      - condition: template
+        value_template: >
+          {% set valid = ['Home', 'Just Arrived', 'Just Left', 'Away', 'Extended Away'] %}
+          {{ states('sensor.manolo_status') in valid
+             and states('sensor.monica_status') in valid }}
+    actions:
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.home_occupancy_status_dropdown
+          option: >
+            {%- set manolo = states('sensor.manolo_status') -%}
+            {%- set monica = states('sensor.monica_status') -%}
+            {%- if manolo in ['Home', 'Just Arrived'] or monica in ['Home', 'Just Arrived'] -%}
+              Home
+            {%- elif manolo in ['Just Left', 'Away'] or monica in ['Just Left', 'Away'] -%}
+              Away
+            {%- else -%}
+              Extended Away
             {%- endif -%}
