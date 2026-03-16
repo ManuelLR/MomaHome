@@ -12,7 +12,8 @@
       - alias: "Filter by device"
         condition: template
         value_template: >
-          {{ trigger.event.data.entity_id is match ('binary_sensor.man_005') }}
+          {{ trigger.event.data.entity_id is match('binary_sensor.man_005')
+             and trigger.event.data.new_state.state in ['on', 'off'] }}
       ### ------- For Debugging -----------
       # - alias: "Not ourself"
       #   condition: template
@@ -46,3 +47,36 @@
               unknown
             {% endif %}
           source_type: "bluetooth_le"
+
+  # On HA restart, legacy device_trackers created by device_tracker.see lose their state
+  # (no persistence across restarts). This automation re-syncs them once ESPHome has
+  # reconnected and the binary sensors report a definitive state, so person entities
+  # recover quickly from unknown.
+  # If ESPHome takes longer than 2 min to connect, AUT-Update presence handles it
+  # automatically once automations are loaded and the next state_changed event fires.
+  - alias: AUT-Sync man-005 presence trackers on HA start
+    id: 'aut_sync_man005_presence_on_start'
+    mode: single
+    triggers:
+      - platform: homeassistant
+        event: started
+    actions:
+      - wait_template: >
+          {{ states('binary_sensor.man_005_tile_llaves_manolo') in ['on', 'off']
+             and states('binary_sensor.man_005_tile_llaves_monica') in ['on', 'off'] }}
+        timeout: "00:02:00"
+        continue_on_timeout: false
+      - service: device_tracker.see
+        data:
+          dev_id: man_005_tile_llaves_manolo
+          host_name: "{{ device_attr(device_id('binary_sensor.man_005_tile_llaves_manolo'), 'name') }}.binary_sensor.man_005_tile_llaves_manolo"
+          location_name: >
+            {{ 'home' if is_state('binary_sensor.man_005_tile_llaves_manolo', 'on') else 'not_home' }}
+          source_type: bluetooth_le
+      - service: device_tracker.see
+        data:
+          dev_id: man_005_tile_llaves_monica
+          host_name: "{{ device_attr(device_id('binary_sensor.man_005_tile_llaves_monica'), 'name') }}.binary_sensor.man_005_tile_llaves_monica"
+          location_name: >
+            {{ 'home' if is_state('binary_sensor.man_005_tile_llaves_monica', 'on') else 'not_home' }}
+          source_type: bluetooth_le
