@@ -179,18 +179,14 @@
               input_select.monica_status_dropdown
             {% endif %}
           option: >
-            {% if trigger.entity_id == 'person.manolo' %}
-              {% set sel = states('input_select.manolo_status_dropdown') %}
-            {% else %}
-              {% set sel = states('input_select.monica_status_dropdown') %}
-            {% endif %}
-            {% if trigger.to_state.state == 'home' and sel in ['Just Left', 'Away', 'Extended Away'] %}
+            {%- set sel = states('input_select.' + trigger.entity_id.split('.')[1] + '_status_dropdown') -%}
+            {%- if trigger.to_state.state == 'home' and sel in ['Just Left', 'Away', 'Extended Away'] -%}
               Home
-            {% elif trigger.to_state.state == 'not_home' and sel in ['Home', 'Just Arrived'] %}
+            {%- elif trigger.to_state.state == 'not_home' and sel in ['Home', 'Just Arrived'] -%}
               Away
-            {% else %}
+            {%- else -%}
               {{ sel }}
-            {% endif %}
+            {%- endif -%}
 
   # After a full HA restart, sensors briefly go unknown/unavailable before recovering.
   # PTR-Update home occupancy blocks those recovery transitions (not_from: unknown/unavailable),
