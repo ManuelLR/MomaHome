@@ -199,18 +199,18 @@
         entity_id: input_boolean.centinel_mode
         state: 'on'
     actions:
-      # Notificación inmediata (no bloquea la cámara)
+      # Immediate notification (does not block the camera)
       - service: script.telegram_notify
         data:
           title: 'Alert: Door Opened - Starting Video Recording'
           message: "The entrance door has been opened at `{{ trigger_time }}` and we are starting video recordings."
 
-      # camera.record NO puede ejecutarse en paralelo sobre la misma cámara:
-      # devuelve "Stream already recording" y falla silenciosamente.
-      # Las grabaciones deben ser secuenciales. continue_on_error: true garantiza
-      # que si una falla (cámara unavailable, error de stream), las siguientes continúan.
+      # camera.record cannot run in parallel on the same camera:
+      # it returns "Stream already recording" and fails silently.
+      # Recordings must be sequential. continue_on_error: true ensures
+      # that if one fails (camera unavailable, stream error), the next ones still run.
 
-      # Grabación 1: captura ANTES del evento mediante lookback
+      # Recording 1: captures BEFORE the event via lookback
       - continue_on_error: true
         service: camera.record
         target:
@@ -228,7 +228,7 @@
           video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
           media_caption: "Initial recording #{{ trigger_time }} (4s)"
 
-      # Grabación 2: captura INMEDIATAMENTE DESPUÉS del evento
+      # Recording 2: captures IMMEDIATELY AFTER the event
       - continue_on_error: true
         service: camera.record
         target:
@@ -245,7 +245,7 @@
           video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
           media_caption: "Continuation recording #{{ trigger_time }} (5s)"
 
-      # Grabación 3: vídeo largo completo del incidente
+      # Recording 3: full long video of the incident
       - continue_on_error: true
         service: camera.record
         target:
@@ -263,7 +263,7 @@
           video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_25s.mp4"
           media_caption: "Final recording #{{ trigger_time }} (25s)"
 
-      # Limpieza de grabaciones antiguas
+      # Clean up old recordings
       - service: shell_command.delete_old_camera_recordings
 
   # Simulate presence with light patterns
