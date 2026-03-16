@@ -59,7 +59,7 @@
     mode: single
     triggers:
       - platform: homeassistant
-        event: started
+        event: start
     actions:
       - wait_template: >
           {{ states('binary_sensor.man_005_tile_llaves_manolo') in ['on', 'off']
