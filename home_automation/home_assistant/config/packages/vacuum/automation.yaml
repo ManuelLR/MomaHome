@@ -9,6 +9,9 @@
         entity_id:
           - sensor.home_occupancy_status
         to: 'Home'
+        not_from:
+          - 'unknown'
+          - 'unavailable'
         for:
           minutes: 2
     conditions:
@@ -45,6 +48,9 @@
         entity_id:
           - sensor.home_occupancy_status
         to: "Away"
+        not_from:
+          - 'unknown'
+          - 'unavailable'
         for: "00:05:00"
     conditions:
       - condition: and
@@ -141,10 +147,14 @@
         entity_id: vacuum.valetudo_roborocks5
         to: returning
     actions:
-      - delay: '00:00:10'
-        # If we have the same total historic time than before obviously we are trying to update the same values
-      - condition: template
-        value_template: "{{ (states('input_number.vacuum_xiaomi_historic_cleaning_time')|int) != (states('sensor.valetudo_roborocks5_total_statistics_time')|int) }}"
+      # Wait until the robot reports updated total statistics. The robot typically updates
+      # total_statistics_time ~26s after transitioning to 'returning', so the old fixed 10s
+      # delay was not enough. wait_template blocks until the value actually changes (acting
+      # as dedup too) and stops cleanly on timeout if the robot never reports new stats
+      # (e.g. aborted clean or stuck before reaching dock).
+      - wait_template: "{{ (states('sensor.valetudo_roborocks5_total_statistics_time')|int) != (states('input_number.vacuum_xiaomi_historic_cleaning_time')|int) }}"
+        timeout: '00:02:00'
+        continue_on_timeout: false
       - service: input_number.set_value
         target:
           entity_id: input_number.vacuum_xiaomi_historic_cleaning_time

@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Self-hosted Renovate
-        uses: renovatebot/github-action@v43.0.13
+        uses: renovatebot/github-action@v43.0.20
         with:
           renovate-version: ${{ env.RENOVATE_VERSION }}
           # Use the global configuration file that it's going to load the specific repo config file.

@@ -56,9 +56,3 @@ binary_sensor:
     icon: "mdi:key-chain"
     mac_address: !secret ble_mac_tile_monica_keys
     name: "man_005 Tile llaves Monica"
-  - platform: ble_presence
-    id: man_005__miband_monica
-    device_class: presence
-    icon: "mdi:watch"
-    mac_address: !secret ble_mac_miband_monica
-    name: "man_005 MiBand Monica"
