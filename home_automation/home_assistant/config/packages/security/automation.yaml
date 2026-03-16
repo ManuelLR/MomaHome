@@ -209,6 +209,9 @@
       # it returns "Stream already recording" and fails silently.
       # Recordings must be sequential. continue_on_error: true ensures
       # that if one fails (camera unavailable, stream error), the next ones still run.
+      #
+      # However, Telegram notifications do not use the camera stream, so each send
+      # runs in parallel with the next recording to minimise total time.
 
       # Recording 1: captures BEFORE the event via lookback
       - continue_on_error: true
@@ -221,41 +224,51 @@
           filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
       - delay:
           seconds: 3
-      - continue_on_error: true
-        service: script.telegram_notify
-        data:
-          content_type: 'send_video'
-          video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
-          media_caption: "Initial recording #{{ trigger_time }} (4s)"
 
-      # Recording 2: captures IMMEDIATELY AFTER the event
-      - continue_on_error: true
-        service: camera.record
-        target:
-          entity_id: camera.entrance_camera
-        data:
-          duration: 5
-          filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
+      # Send recording 1 while recording 2 starts (camera and Telegram are independent)
+      - parallel:
+        - sequence:
+          - continue_on_error: true
+            service: script.telegram_notify
+            data:
+              content_type: 'send_video'
+              video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
+              media_caption: "Initial recording #{{ trigger_time }} (4s)"
+        - sequence:
+          # Recording 2: captures IMMEDIATELY AFTER the event
+          - continue_on_error: true
+            service: camera.record
+            target:
+              entity_id: camera.entrance_camera
+            data:
+              duration: 5
+              filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
       - delay:
           seconds: 3
-      - continue_on_error: true
-        service: script.telegram_notify
-        data:
-          content_type: 'send_video'
-          video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
-          media_caption: "Continuation recording #{{ trigger_time }} (5s)"
 
-      # Recording 3: full long video of the incident
-      - continue_on_error: true
-        service: camera.record
-        target:
-          entity_id: camera.entrance_camera
-        data:
-          duration: 25
-          lookback: 20
-          filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_25s.mp4"
+      # Send recording 2 while recording 3 starts
+      - parallel:
+        - sequence:
+          - continue_on_error: true
+            service: script.telegram_notify
+            data:
+              content_type: 'send_video'
+              video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
+              media_caption: "Continuation recording #{{ trigger_time }} (5s)"
+        - sequence:
+          # Recording 3: full long video of the incident
+          - continue_on_error: true
+            service: camera.record
+            target:
+              entity_id: camera.entrance_camera
+            data:
+              duration: 25
+              lookback: 20
+              filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_25s.mp4"
       - delay:
           seconds: 5
+
+      # Send recording 3 (nothing left to record in parallel)
       - continue_on_error: true
         service: script.telegram_notify
         data:
