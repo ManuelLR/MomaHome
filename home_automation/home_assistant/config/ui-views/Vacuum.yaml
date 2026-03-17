@@ -15,9 +15,9 @@
   entity: vacuum.valetudo_roborocks5
   vacuum_platform: Hypfer/Valetudo
   map_source:
-    camera: camera.roborocks5_map
+    camera: camera.valetudo_roborocks5_camera
   calibration_source:
-    identity: sensor.roborocks5_calibration
+    camera: true
   internal_variables:
     topic: valetudo/roborocks5
   map_locked: true
