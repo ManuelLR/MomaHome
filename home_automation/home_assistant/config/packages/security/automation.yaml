@@ -201,23 +201,19 @@
       trigger_time_unix: "{{ as_timestamp(now()) }}"
       notification_target_person: manolo
       # notification_target_person: auto
+
+      ## All the start/ends times are relative to the trigger time
       record1_start: -5
       record1_end: 4
-      record1_lookback: 4
-      record1_duration: 4
+      record1_process_time: 3
       record1_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_01.mp4"
-      record1_delay: 3
       record2_start: 4
       record2_end: 10
-      record2_lookback: 0
-      record2_duration: 6
-      record2_delay: 3
+      record2_process_time: 3
       record2_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_02.mp4"
       record3_start: -5
       record3_end: 60
-      record3_lookback: "{{ 4 + 4 + 6 }}"
-      record3_duration: 45
-      record3_delay: 7
+      record3_process_time: 7
       record3_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_03.mp4"
     actions:
       # Immediate notification (does not block the camera)
@@ -228,11 +224,11 @@
           target_person: '{{ notification_target_person }}'
 
       # Timeline:
-      #   record_1 (4s) 
-      #                ┌─ delay 3s → send_video_1
-      #                └─ record_2 (6s)
-      #                                ┌─ delay 3s → send_video_2
-      #                                └─ record_3 (45s) → delay 7s → send_video_3
+      #   record_1
+      #           ┌─ delay 3s → send_video_1
+      #           └─ record_2
+      #                       ┌─ delay 3s → send_video_2
+      #                       └─ record_3 → delay 7s → send_video_3
       #                                                             
 
       # Recording 1: captures BEFORE the event via lookback
@@ -248,13 +244,13 @@
       - parallel:
         - sequence:
           - delay:
-              seconds: '{{ record1_delay }}'  # file finalisation buffer for recording 1
+              seconds: '{{ record1_process_time }}'  # file finalisation buffer for recording 1
           - service: script.telegram_notify
             continue_on_error: true
             data:
               content_type: 'send_video'
               video_file: '{{ record1_filename }}'
-              media_caption: "Initial recording #{{ trigger_time }} ({{ 0 - record1_lookback }}s to {{ record1_duration }}s)"
+              media_caption: "Initial recording #{{ trigger_time }} ({{ record1_start }}s to {{ record1_end }}s)"
               target_person: '{{ notification_target_person }}'
         - sequence:
           # Recording 2 starts immediately — no reason to wait for Telegram
@@ -270,13 +266,13 @@
             - sequence:
               # Delay lives here so recording 3 is not held waiting for it
               - delay:
-                  seconds: '{{ record2_delay }}'  # file finalisation buffer for recording 2
+                  seconds: '{{ record2_process_time }}'  # file finalisation buffer for recording 2
               - service: script.telegram_notify
                 continue_on_error: true
                 data:
                   content_type: 'send_video'
                   video_file: '{{ record2_filename }}'
-                  media_caption: "Continuation recording #{{ trigger_time }} ({{ record1_duration - record2_lookback }}s to {{ record1_duration + record2_duration }}s)"
+                  media_caption: "Continuation recording #{{ trigger_time }} ({{ record2_start }}s to {{ record2_end }}s)"
                   target_person: '{{ notification_target_person }}'
             - sequence:
               # Recording 3 starts immediately after recording 2
@@ -289,13 +285,13 @@
                   duration: '{{ trigger_time_unix + record3_end - as_timestamp(now()) }}'
                   filename: '{{ record3_filename }}'
               - delay:
-                  seconds: '{{ record3_delay }}'  # file finalisation buffer for recording 3
+                  seconds: '{{ record3_process_time }}'  # file finalisation buffer for recording 3
               - service: script.telegram_notify
                 continue_on_error: true
                 data:
                   content_type: 'send_video'
                   video_file: '{{ record3_filename }}'
-                  media_caption: "Final recording #{{ trigger_time }} ({{ record1_duration + record2_duration - record3_lookback }}s to {{ record1_duration + record2_duration + record3_duration }}s)"
+                  media_caption: "Final recording #{{ trigger_time }} ({{ record3_start }}s to {{ record3_end }}s)"
                   target_person: '{{ notification_target_person }}'
               # Clean up old recordings
               - service: shell_command.delete_old_camera_recordings
