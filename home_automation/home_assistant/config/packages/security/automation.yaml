@@ -204,15 +204,15 @@
       ## All the start/ends times are relative to the trigger time
       record1_start: -5
       record1_end: 4
-      record1_process_time: 3
+      record1_processing_time: 3
       record1_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_01.mp4"
       record2_start: 4
       record2_end: 10
-      record2_process_time: 3
+      record2_processing_time: 3
       record2_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_02.mp4"
       record3_start: -5
       record3_end: 60
-      record3_process_time: 7
+      record3_processing_time: 7
       record3_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_03.mp4"
     actions:
       - alias: "Define target person"
@@ -234,7 +234,6 @@
       #                       └─ record_3 → delay 7s → send_video_3
       #                                                             
 
-      # Recording 1: captures BEFORE the event via lookback
       - service: camera.record
         continue_on_error: true
         target:
@@ -247,7 +246,7 @@
       - parallel:
         - sequence:
           - delay:
-              seconds: '{{ record1_process_time }}'  # file finalisation buffer for recording 1
+              seconds: '{{ record1_processing_time }}'  # file finalisation buffer for recording 1
           - service: script.telegram_notify
             continue_on_error: true
             data:
@@ -256,7 +255,6 @@
               media_caption: "Initial recording #{{ trigger_time }} ({{ record1_start }}s to {{ record1_end }}s)"
               target_person: '{{ notification_target_person }}'
         - sequence:
-          # Recording 2 starts immediately — no reason to wait for Telegram
           - service: camera.record
             continue_on_error: true
             target:
@@ -267,9 +265,8 @@
               filename: '{{ record2_filename }}'
           - parallel:
             - sequence:
-              # Delay lives here so recording 3 is not held waiting for it
               - delay:
-                  seconds: '{{ record2_process_time }}'  # file finalisation buffer for recording 2
+                  seconds: '{{ record2_processing_time }}'  # file finalisation buffer for recording 2
               - service: script.telegram_notify
                 continue_on_error: true
                 data:
@@ -278,7 +275,6 @@
                   media_caption: "Continuation recording #{{ trigger_time }} ({{ record2_start }}s to {{ record2_end }}s)"
                   target_person: '{{ notification_target_person }}'
             - sequence:
-              # Recording 3 starts immediately after recording 2
               - service: camera.record
                 continue_on_error: true
                 target:
@@ -288,7 +284,7 @@
                   duration: '{{ trigger_time_unix + record3_end - as_timestamp(now()) | round(0, "ceil") }}'
                   filename: '{{ record3_filename }}'
               - delay:
-                  seconds: '{{ record3_process_time }}'  # file finalisation buffer for recording 3
+                  seconds: '{{ record3_processing_time }}'  # file finalisation buffer for recording 3
               - service: script.telegram_notify
                 continue_on_error: true
                 data:
