@@ -217,8 +217,7 @@
     actions:
       - alias: "Define target person"
         variables:
-          # Auto if centinel mode is on, otherwise manolo
-          notification_target_person: "{{ 'manolo' if states('input_boolean.centinel_mode') == 'on' else 'auto' }}"
+          notification_target_person: "{{ 'auto' if states('input_boolean.centinel_mode') == 'on' else 'manolo' }}"
 
       # Immediate notification (does not block the camera)
       - service: script.telegram_notify
@@ -241,8 +240,8 @@
         target:
           entity_id: camera.entrance_camera
         data:
-          lookback: '{{ trigger_time_unix + record1_start - as_timestamp(now()) }}'
-          duration: '{{ trigger_time_unix + record1_end - as_timestamp(now()) }}'
+          lookback: '{{ trigger_time_unix + record1_start - as_timestamp(now()) | round(0, "floor") }}'
+          duration: '{{ trigger_time_unix + record1_end - as_timestamp(now()) | round(0, "ceil") }}'
           filename: '{{ record1_filename }}'
 
       - parallel:
@@ -263,8 +262,8 @@
             target:
               entity_id: camera.entrance_camera
             data:
-              lookback: '{{ trigger_time_unix + record2_start - as_timestamp(now()) }}'
-              duration: '{{ trigger_time_unix + record2_end - as_timestamp(now()) }}'
+              lookback: '{{ trigger_time_unix + record2_start - as_timestamp(now()) | round(0, "floor") }}'
+              duration: '{{ trigger_time_unix + record2_end - as_timestamp(now()) | round(0, "ceil") }}'
               filename: '{{ record2_filename }}'
           - parallel:
             - sequence:
@@ -285,8 +284,8 @@
                 target:
                   entity_id: camera.entrance_camera
                 data:
-                  lookback: '{{ trigger_time_unix + record3_start - as_timestamp(now()) }}'
-                  duration: '{{ trigger_time_unix + record3_end - as_timestamp(now()) }}'
+                  lookback: '{{ trigger_time_unix + record3_start - as_timestamp(now()) | round(0, "floor") }}'
+                  duration: '{{ trigger_time_unix + record3_end - as_timestamp(now()) | round(0, "ceil") }}'
                   filename: '{{ record3_filename }}'
               - delay:
                   seconds: '{{ record3_process_time }}'  # file finalisation buffer for recording 3
