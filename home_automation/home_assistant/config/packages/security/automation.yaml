@@ -198,16 +198,23 @@
     #     state: 'on'
     variables:
       trigger_time: "{{ now().strftime('%Y%m%d-%H%M%S') }}"
+      trigger_time_unix: "{{ as_timestamp(now()) }}"
       notification_target_person: manolo
       # notification_target_person: auto
+      record1_start: -5
+      record1_end: 4
       record1_lookback: 4
       record1_duration: 4
       record1_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_01.mp4"
       record1_delay: 3
+      record2_start: 4
+      record2_end: 10
       record2_lookback: 0
       record2_duration: 6
       record2_delay: 3
       record2_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_02.mp4"
+      record3_start: -5
+      record3_end: 60
       record3_lookback: "{{ 4 + 4 + 6 }}"
       record3_duration: 45
       record3_delay: 7
@@ -234,8 +241,8 @@
         target:
           entity_id: camera.entrance_camera
         data:
-          duration: '{{ record1_duration }}'
-          lookback: '{{ record1_lookback }}'
+          lookback: '{{ trigger_time_unix + record1_start - as_timestamp(now()) }}'
+          duration: '{{ trigger_time_unix + record1_end - as_timestamp(now()) }}'
           filename: '{{ record1_filename }}'
 
       - parallel:
@@ -256,8 +263,8 @@
             target:
               entity_id: camera.entrance_camera
             data:
-              duration: '{{ record2_duration }}'
-              lookback: '{{ record2_lookback }}'
+              lookback: '{{ trigger_time_unix + record2_start - as_timestamp(now()) }}'
+              duration: '{{ trigger_time_unix + record2_end - as_timestamp(now()) }}'
               filename: '{{ record2_filename }}'
           - parallel:
             - sequence:
@@ -278,8 +285,8 @@
                 target:
                   entity_id: camera.entrance_camera
                 data:
-                  duration: '{{ record3_duration }}'
-                  lookback: '{{ record3_lookback }}'
+                  lookback: '{{ trigger_time_unix + record3_start - as_timestamp(now()) }}'
+                  duration: '{{ trigger_time_unix + record3_end - as_timestamp(now()) }}'
                   filename: '{{ record3_filename }}'
               - delay:
                   seconds: '{{ record3_delay }}'  # file finalisation buffer for recording 3
