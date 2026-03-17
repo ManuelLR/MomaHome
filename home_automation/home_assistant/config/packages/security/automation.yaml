@@ -192,99 +192,106 @@
       - platform: state
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
+    # conditions:
+    #   - condition: state
+    #     entity_id: input_boolean.centinel_mode
+    #     state: 'on'
     variables:
       trigger_time: "{{ now().strftime('%Y%m%d-%H%M%S') }}"
-    conditions:
-      - condition: state
-        entity_id: input_boolean.centinel_mode
-        state: 'on'
+      notification_target_person: manolo
+      # notification_target_person: auto
+      record1_lookback: 4
+      record1_duration: 4
+      record1_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_01.mp4"
+      record1_delay: 3
+      record2_lookback: 0
+      record2_duration: 6
+      record2_delay: 3
+      record2_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_02.mp4"
+      record3_lookback: "{{ 4 + 4 + 6 }}"
+      record3_duration: 45
+      record3_delay: 7
+      record3_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_03.mp4"
     actions:
       # Immediate notification (does not block the camera)
       - service: script.telegram_notify
         data:
           title: 'Alert: Door Opened - Starting Video Recording'
           message: "The entrance door has been opened at `{{ trigger_time }}` and we are starting video recordings."
+          target_person: '{{ notification_target_person }}'
 
-      # camera.record cannot run in parallel on the same camera:
-      # it returns "Stream already recording" and fails silently.
-      # Recordings must be sequential. continue_on_error: true ensures
-      # that if one fails (camera unavailable, stream error), the next ones still run.
-      #
-      # Telegram sends don't use the camera stream, so they run in parallel with the
-      # next recording. The file finalisation delay belongs inside the Telegram sequence,
-      # not outside the parallel block, so the next recording is never held waiting for it.
-      #
       # Timeline:
-      #   record_1 (4s) → delay 3s
-      #                            ┌─ send_video_1
-      #                            └─ record_2 (5s)
-      #                                           ┌─ delay 3s → send_video_2
-      #                                           └─ record_3 (25s)
-      #                                                              → delay 5s → send_video_3
+      #   record_1 (4s) 
+      #                ┌─ delay 3s → send_video_1
+      #                └─ record_2 (6s)
+      #                                ┌─ delay 3s → send_video_2
+      #                                └─ record_3 (45s) → delay 7s → send_video_3
+      #                                                             
 
       # Recording 1: captures BEFORE the event via lookback
-      - continue_on_error: true
-        service: camera.record
+      - service: camera.record
+        continue_on_error: true
         target:
           entity_id: camera.entrance_camera
         data:
-          duration: 4
-          lookback: 4
-          filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
-      - delay:
-          seconds: 3  # file finalisation buffer for recording 1
+          duration: '{{ record1_duration }}'
+          lookback: '{{ record1_lookback }}'
+          filename: '{{ record1_filename }}'
 
       - parallel:
         - sequence:
-          # Send recording 1 (file is ready: delay already elapsed above)
-          - continue_on_error: true
-            service: script.telegram_notify
+          - delay:
+              seconds: '{{ record1_delay }}'  # file finalisation buffer for recording 1
+          - service: script.telegram_notify
+            continue_on_error: true
             data:
               content_type: 'send_video'
-              video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_4s.mp4"
-              media_caption: "Initial recording #{{ trigger_time }} (4s)"
+              video_file: '{{ record1_filename }}'
+              media_caption: "Initial recording #{{ trigger_time }} ({{ 0 - record1_lookback }}s to {{ record1_duration }}s)"
+              target_person: '{{ notification_target_person }}'
         - sequence:
           # Recording 2 starts immediately — no reason to wait for Telegram
-          - continue_on_error: true
-            service: camera.record
+          - service: camera.record
+            continue_on_error: true
             target:
               entity_id: camera.entrance_camera
             data:
-              duration: 5
-              filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
+              duration: '{{ record2_duration }}'
+              lookback: '{{ record2_lookback }}'
+              filename: '{{ record2_filename }}'
           - parallel:
             - sequence:
               # Delay lives here so recording 3 is not held waiting for it
               - delay:
-                  seconds: 3  # file finalisation buffer for recording 2
-              - continue_on_error: true
-                service: script.telegram_notify
+                  seconds: '{{ record2_delay }}'  # file finalisation buffer for recording 2
+              - service: script.telegram_notify
+                continue_on_error: true
                 data:
                   content_type: 'send_video'
-                  video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_5s.mp4"
-                  media_caption: "Continuation recording #{{ trigger_time }} (5s)"
+                  video_file: '{{ record2_filename }}'
+                  media_caption: "Continuation recording #{{ trigger_time }} ({{ record1_duration - record2_lookback }}s to {{ record1_duration + record2_duration }}s)"
+                  target_person: '{{ notification_target_person }}'
             - sequence:
               # Recording 3 starts immediately after recording 2
-              - continue_on_error: true
-                service: camera.record
+              - service: camera.record
+                continue_on_error: true
                 target:
                   entity_id: camera.entrance_camera
                 data:
-                  duration: 25
-                  lookback: 20
-                  filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_25s.mp4"
-
-      - delay:
-          seconds: 5  # file finalisation buffer for recording 3
-      - continue_on_error: true
-        service: script.telegram_notify
-        data:
-          content_type: 'send_video'
-          video_file: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_25s.mp4"
-          media_caption: "Final recording #{{ trigger_time }} (25s)"
-
-      # Clean up old recordings
-      - service: shell_command.delete_old_camera_recordings
+                  duration: '{{ record3_duration }}'
+                  lookback: '{{ record3_lookback }}'
+                  filename: '{{ record3_filename }}'
+              - delay:
+                  seconds: '{{ record3_delay }}'  # file finalisation buffer for recording 3
+              - service: script.telegram_notify
+                continue_on_error: true
+                data:
+                  content_type: 'send_video'
+                  video_file: '{{ record3_filename }}'
+                  media_caption: "Final recording #{{ trigger_time }} ({{ record1_duration + record2_duration - record3_lookback }}s to {{ record1_duration + record2_duration + record3_duration }}s)"
+                  target_person: '{{ notification_target_person }}'
+              # Clean up old recordings
+              - service: shell_command.delete_old_camera_recordings
 
   # Simulate presence with light patterns
   - alias: AUT-Centinel Mode Light Control - Sunset
