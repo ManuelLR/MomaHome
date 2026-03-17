@@ -70,5 +70,11 @@ services:
         volumes:
             - ./mosquitto-config/:/mosquitto/config/:ro
 
-    # vacuum_map service removed - replaced by mqtt_vacuum_camera HA custom component
-    # https://github.com/sca075/mqtt_vacuum_camera
+    vacuum_map:
+        # Valetudo PNG - KEPT while testing mqtt_vacuum_camera migration
+        # TODO: remove once mqtt_vacuum_camera (native HA component) is validated
+        # https://github.com/erkexzcx/valetudopng
+        image: ghcr.io/erkexzcx/valetudopng:v1.0.17
+        restart: unless-stopped
+        volumes:
+            - ./vacuum_map/config_01.yml:/config.yml:ro
