@@ -35,7 +35,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=sca075/mqtt_vacuum_camera
     CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.3.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
-    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.1 \
+    CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.2 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
     CUSTOM_CARD_VALETUDO_VACUUM_MAP_VERSION=v2023.04.0 \
       # renovatebot: datasource=github-releases depName=dylandoamaral/uptime-card
