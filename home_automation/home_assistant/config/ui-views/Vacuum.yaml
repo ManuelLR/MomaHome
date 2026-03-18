@@ -35,6 +35,95 @@
     #     - zones: [[31439,27363,33939,30413]]
     #     - zones: [[24507,25175,31207,28525]]
     - template: vacuum_clean_segment
+      # Permite seleccionar varias habitaciones a la vez
+      max_selections: 8
+      # Slider de pasadas visible en la tarjeta (1 a 3)
+      repeats_type: EXTERNAL
+      max_repeats: 3
+      # IDs de segmento de Valetudo: ver en la UI web de Valetudo > mapa, o en MQTT topic
+      # valetudo/roborocks5/MapData/map-data (campo "segments" o "entities" > type: segment)
+      # outline: coordenadas del polígono de cada habitación (del mismo topic MQTT)
+      predefined_selections:
+        - id: 1  # TODO: reemplaza con el ID real del segmento en Valetudo
+          label:
+            text: "Pasillo"
+            x: 27876  # TODO: coordenada central X de la habitación
+            y: 24622  # TODO: coordenada central Y de la habitación
+            offset_y: 35
+          icon:
+            name: "mdi:coat-rack"
+            x: 27876
+            y: 24622
+        - id: 2  # TODO
+          label:
+            text: "Comedor"
+            x: 26286
+            y: 26553
+            offset_y: 35
+          icon:
+            name: "mdi:table-chair"
+            x: 26286
+            y: 26553
+        - id: 3  # TODO
+          label:
+            text: "Estudio"
+            x: 30477
+            y: 23516
+            offset_y: 35
+          icon:
+            name: "mdi:desk"
+            x: 30477
+            y: 23516
+        - id: 4  # TODO
+          label:
+            text: "Baño"
+            x: 27861
+            y: 22965
+            offset_y: 35
+          icon:
+            name: "mdi:shower"
+            x: 27861
+            y: 22965
+        - id: 5  # TODO
+          label:
+            text: "Dormitorio"
+            x: 25127
+            y: 23208
+            offset_y: 35
+          icon:
+            name: "mdi:bed"
+            x: 25127
+            y: 23208
+        - id: 6  # TODO
+          label:
+            text: "Hall"
+            x: 30629
+            y: 29655
+            offset_y: 35
+          icon:
+            name: "mdi:door"
+            x: 30629
+            y: 29655
+        - id: 7  # TODO
+          label:
+            text: "Cocina"
+            x: 32689
+            y: 28888
+            offset_y: 35
+          icon:
+            name: "mdi:chef-hat"
+            x: 32689
+            y: 28888
+        - id: 8  # TODO
+          label:
+            text: "Salón"
+            x: 27857
+            y: 26850
+            offset_y: 35
+          icon:
+            name: "mdi:sofa"
+            x: 27857
+            y: 26850
   append_tiles: true
   tiles:
     - label: Bin dust left
