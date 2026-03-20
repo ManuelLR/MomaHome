@@ -32,6 +32,8 @@ ENV \
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
     CUSTOM_COMPONENT_GICISKY_VERSION=1.7.1 \
+      # renovatebot: datasource=github-releases depName=sca075/mqtt_vacuum_camera
+    CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.3.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.2 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
@@ -105,6 +107,10 @@ RUN \
     && git clone https://github.com/eigger/hass-gicisky.git /tmp/hass-gicisky \
     && cd /tmp/hass-gicisky && git checkout $CUSTOM_COMPONENT_GICISKY_VERSION \
     && cd - && cp -r /tmp/hass-gicisky/custom_components/gicisky /opt/HA/config/custom_components/ \
+    # mqtt_vacuum_camera (Valetudo map rendering nativo en HA)
+    && git clone https://github.com/sca075/mqtt_vacuum_camera.git /tmp/mqtt_vacuum_camera \
+    && cd /tmp/mqtt_vacuum_camera && git checkout $CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION \
+    && cd - && cp -r /tmp/mqtt_vacuum_camera/custom_components/mqtt_vacuum_camera /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
