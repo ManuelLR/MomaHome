@@ -35,95 +35,64 @@
     #     - zones: [[31439,27363,33939,30413]]
     #     - zones: [[24507,25175,31207,28525]]
     - template: vacuum_clean_segment
-      # Permite seleccionar varias habitaciones a la vez
       max_selections: 8
-      # Slider de pasadas visible en la tarjeta (1 a 3)
       repeats_type: EXTERNAL
       max_repeats: 3
-      # IDs de segmento de Valetudo: ver en la UI web de Valetudo > mapa, o en MQTT topic
-      # valetudo/roborocks5/MapData/map-data (campo "segments" o "entities" > type: segment)
-      # outline: coordenadas del polígono de cada habitación (del mismo topic MQTT)
       predefined_selections:
-        - id: 1  # TODO: reemplaza con el ID real del segmento en Valetudo
-          label:
-            text: "Pasillo"
-            x: 27876  # TODO: coordenada central X de la habitación
-            y: 24622  # TODO: coordenada central Y de la habitación
-            offset_y: 35
-          icon:
-            name: "mdi:coat-rack"
-            x: 27876
-            y: 24622
-        - id: 2  # TODO
-          label:
-            text: "Comedor"
-            x: 26286
-            y: 26553
-            offset_y: 35
-          icon:
-            name: "mdi:table-chair"
-            x: 26286
-            y: 26553
-        - id: 3  # TODO
-          label:
-            text: "Estudio"
-            x: 30477
-            y: 23516
-            offset_y: 35
-          icon:
-            name: "mdi:desk"
-            x: 30477
-            y: 23516
-        - id: 4  # TODO
-          label:
-            text: "Baño"
-            x: 27861
-            y: 22965
-            offset_y: 35
-          icon:
-            name: "mdi:shower"
-            x: 27861
-            y: 22965
-        - id: 5  # TODO
-          label:
-            text: "Dormitorio"
-            x: 25127
-            y: 23208
-            offset_y: 35
-          icon:
-            name: "mdi:bed"
-            x: 25127
-            y: 23208
-        - id: 6  # TODO
-          label:
-            text: "Hall"
-            x: 30629
-            y: 29655
-            offset_y: 35
+        - id: "1"
+          outline: [[2105, 2285], [2105, 2115], [2115, 2105], [2170, 2105], [2180, 2115], [2180, 2265], [2175, 2285], [2105, 2285]]
           icon:
             name: "mdi:door"
-            x: 30629
-            y: 29655
-        - id: 7  # TODO
-          label:
-            text: "Cocina"
-            x: 32689
-            y: 28888
-            offset_y: 35
+            x: 2142
+            y: 2195
+        - id: "2"
+          outline: [[2205, 2270], [2205, 2185], [2210, 2150], [2370, 2105], [2395, 2100], [2405, 2100], [2425, 2110], [2430, 2115], [2430, 2260], [2425, 2270], [2205, 2270]]
           icon:
-            name: "mdi:chef-hat"
-            x: 32689
-            y: 28888
-        - id: 8  # TODO
-          label:
-            text: "Salón"
-            x: 27857
-            y: 26850
-            offset_y: 35
+            name: "mdi:door"
+            x: 2317
+            y: 2185
+        - id: "16"
+          outline: [[2085, 2505], [2085, 2370], [2110, 2290], [2175, 2290], [2460, 2295], [2810, 2390], [2965, 2435], [2970, 2460], [2970, 2555], [2805, 2595], [2245, 2595], [2085, 2505]]
           icon:
             name: "mdi:sofa"
-            x: 27857
-            y: 26850
+            x: 2527
+            y: 2442
+        - id: "17"
+          outline: [[1685, 2280], [1685, 2250], [1695, 2245], [1815, 2200], [1880, 2195], [2005, 2195], [2050, 2215], [2055, 2220], [2090, 2280], [2100, 2300], [2100, 2360], [2080, 2455], [1990, 2470], [1945, 2470], [1935, 2465], [1695, 2290], [1685, 2280]]
+          icon:
+            name: "mdi:stove"
+            x: 1892
+            y: 2332
+        - id: "18"
+          outline: [[2100, 1860], [2100, 1820], [2120, 1710], [2130, 1700], [2255, 1695], [2310, 1695], [2330, 1700], [2335, 1720], [2335, 1895], [2330, 1935], [2195, 1990], [2175, 1995], [2120, 1995], [2100, 1860]]
+          icon:
+            name: "mdi:desk"
+            x: 2217
+            y: 1845
+        - id: "20"
+          outline: [[2465, 1755], [2495, 1800], [2495, 1810], [2465, 1890], [2420, 1900], [2380, 1900], [2355, 1890], [2350, 1845], [2350, 1760], [2360, 1755], [2465, 1755]]
+          icon:
+            name: "mdi:door"
+            x: 2422
+            y: 1827
+        - id: "21"
+          outline: [[2740, 2265], [2515, 2265], [2450, 2100], [2450, 2030], [2495, 2005], [2540, 2000], [2840, 2000], [2840, 2025], [2740, 2265]]
+          icon:
+            name: "mdi:desk"
+            x: 2645
+            y: 2132
+        - id: "22"
+          outline: [[2360, 1910], [2535, 1910], [2540, 1690], [2845, 1690], [2845, 1990], [2420, 2005], [2365, 2005], [2360, 1960]]
+          icon:
+            name: "mdi:bed"
+            x: 2695
+            y: 1850
+        - id: "23"
+          outline: [[2390, 2100], [2115, 2100], [2100, 2090], [2100, 2015], [2110, 2005], [2170, 2005], [2425, 2010], [2435, 2015], [2435, 2080], [2430, 2085], [2405, 2095], [2390, 2100]]
+          icon:
+            name: "mdi:door"
+            x: 2267
+            y: 2052
   append_tiles: true
   tiles:
     - label: Bin dust left
