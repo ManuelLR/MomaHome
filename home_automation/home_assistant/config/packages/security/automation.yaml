@@ -190,7 +190,12 @@
     initial_state: 'on'
     triggers:
       - platform: state
+        id: door_opened
         entity_id: binary_sensor.entrance_door_sensor_opened
+        to: 'on'
+      - platform: state
+        id: motion_detected
+        entity_id: binary_sensor.entrance_camera_movimiento
         to: 'on'
     # conditions:
     #   - condition: state
@@ -198,6 +203,7 @@
     #     state: 'on'
     variables:
       trigger_time: "{{ as_local(now()).strftime('%Y%m%d-%H%M%S') }}"
+      trigger_reason: "{{ 'Door Opened' if trigger.id == 'door_opened' else 'Motion Detected' }}"
       trigger_time_unix: "{{ as_timestamp(now()) }}"
       # notification_target_person: auto
 
@@ -222,8 +228,8 @@
       # Immediate notification (does not block the camera)
       - service: script.telegram_notify
         data:
-          title: 'Alert: Door Opened - Starting Video Recording'
-          message: "The entrance door has been opened at `{{ trigger_time }}` and we are starting video recordings."
+          title: 'Alert: {{ trigger_reason }} - Starting Video Recording'
+          message: "The entrance camera was triggered ({{ trigger_reason }}) at `{{ trigger_time }}` and we are starting video recordings."
           target_person: '{{ notification_target_person }}'
 
       # Timeline:
