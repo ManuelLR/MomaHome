@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2026.1.3
+FROM ghcr.io/home-assistant/home-assistant:2026.2.3
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -15,7 +15,7 @@ ENV \
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod versioning=semver
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.7.0 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.7.4 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.13.3 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
