@@ -63,7 +63,7 @@ services:
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
     mqtt:
-        image: eclipse-mosquitto:2.0.18
+        image: eclipse-mosquitto:2.0.22
         restart: unless-stopped
         ports:
             - 1883:1883
