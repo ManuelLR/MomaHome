@@ -56,12 +56,13 @@
           boolean:
       parse_mode:
         required: false
-        default: "Markdown"
+        default: "markdown"
         selector:
           select:
             options:
-              - "Markdown"
-              - "HTML"
+              - "markdown"
+              - "markdownv2"
+              - "html"
               - "plain_text"
     
     variables:
@@ -115,7 +116,7 @@
         {% set data = dict(data, **{'target': targets_to_notify}) %}
         
         {# Add parse_mode #}
-        {% set data = dict(data, **{'parse_mode': parse_mode | default('Markdown')}) %}
+        {% set data = dict(data, **{'parse_mode': parse_mode | default('markdown')}) %}
         
         {# Add disable_notification if true #}
         {% if disable_notification is defined and disable_notification %}
