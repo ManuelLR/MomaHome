@@ -1,9 +1,8 @@
-# Dishwasher (Lavavajillas) - Popup panel
+# Dishwasher (Lavavajillas) - Popup panel con Mushroom Cards
 # Triggered via browser_mod when tapping the lavavajillas entity in the main view.
 #
-# ⚠️  Entity IDs: rename the device in HA first, then replace the prefix
-#     "lavavajillas" with the alias que hayas puesto. Los marcados "# ?" hay
-#     que verificarlos en Developer Tools → States.
+# ⚠️  Los marcados "# ?" hay que verificarlos en Developer Tools → States
+#     tras renombrar el dispositivo.
 
 action: fire-dom-event
 browser_mod:
@@ -18,24 +17,57 @@ browser_mod:
       type: vertical-stack
       cards:
 
-        # ── Estado principal ────────────────────────────────────────────────
-        - type: tile
-          entity: sensor.lavavajillas_status_operationstate
+        # ── Estado principal con color y texto dinámico ─────────────────────
+        - type: custom:mushroom-template-card
+          primary: >
+            {% set s = states('sensor.lavavajillas_status_operationstate') %}
+            {% if   'Run'            in s %}En marcha
+            {% elif 'Finished'       in s %}¡Terminado! Puedes vaciarlo
+            {% elif 'Pause'          in s %}En pausa
+            {% elif 'ActionRequired' in s %}Acción requerida
+            {% elif 'Ready'          in s %}Listo
+            {% else %}{{ s }}{% endif %}
+          secondary: >
+            {% set prog = states('sensor.lavavajillas_program_selected') %}
+            {% set t    = states('sensor.lavavajillas_bsh_common_option_remainingprogramtime') %}
+            {% if prog not in ['unavailable','unknown',''] %}{{ prog }}{% endif %}
+            {%- if t not in ['unavailable','unknown','0',''] %} · termina {{ as_timestamp(t) | timestamp_custom('%H:%M') }}{% endif %}
           icon: mdi:dishwasher
+          icon_color: >
+            {% set s = states('sensor.lavavajillas_status_operationstate') %}
+            {% if   'Run'            in s %}blue
+            {% elif 'Finished'       in s %}green
+            {% elif 'Pause'          in s %}orange
+            {% elif 'ActionRequired' in s %}red
+            {% else %}disabled{% endif %}
+          tap_action:
+            action: none
 
-        # ── Info del ciclo ──────────────────────────────────────────────────
-        - type: entities
-          entities:
-            - entity: sensor.lavavajillas_bsh_common_option_remainingprogramtime
-              name: Tiempo restante
-              icon: mdi:timer-sand
-            - entity: sensor.lavavajillas_program_selected  # ?
-              name: Programa en curso
-              icon: mdi:format-list-bulleted
+        # ── Arrancar / Parar ────────────────────────────────────────────────
+        - type: custom:mushroom-chips-card
+          alignment: center
+          chips:
+            - type: template
+              icon: mdi:play-circle-outline
+              icon_color: green
+              content: Arrancar
+              tap_action:
+                action: call-service
+                service: button.press
+                target:
+                  entity_id: button.lavavajillas_start  # ?
+            - type: template
+              icon: mdi:stop-circle-outline
+              icon_color: red
+              content: Parar
+              tap_action:
+                action: call-service
+                service: button.press
+                target:
+                  entity_id: button.lavavajillas_stop  # ?
 
-        # ── Arrancar ────────────────────────────────────────────────────────
+        # ── Selección de programa e inicio retrasado ────────────────────────
         - type: entities
-          title: Arrancar
           entities:
             - entity: select.lavavajillas_programs  # ?
               name: Programa
@@ -44,43 +76,31 @@ browser_mod:
               name: Inicio retrasado
               icon: mdi:clock-start
 
+        # ── Opciones ────────────────────────────────────────────────────────
         - type: horizontal-stack
           cards:
-            - type: button
-              name: Arrancar
-              icon: mdi:play-circle-outline
-              tap_action:
-                action: call-service
-                service: button.press
-                target:
-                  entity_id: button.lavavajillas_start  # ?
-            - type: button
-              name: Parar
-              icon: mdi:stop-circle-outline
-              tap_action:
-                action: call-service
-                service: button.press
-                target:
-                  entity_id: button.lavavajillas_stop  # ?
-
-        # ── Opciones ────────────────────────────────────────────────────────
-        - type: entities
-          title: Opciones
-          entities:
-            - entity: switch.lavavajillas_setting_halfload  # ?  (media carga)
+            - type: custom:mushroom-entity-card
+              entity: switch.lavavajillas_setting_halfload  # ?
               name: Media carga
               icon: mdi:fraction-one-half
-            - entity: switch.lavavajillas_setting_variospeedplus  # ?
-              name: varioSpeed Plus
+              tap_action:
+                action: toggle
+            - type: custom:mushroom-entity-card
+              entity: switch.lavavajillas_setting_variospeedplus  # ?
+              name: varioSpeed+
               icon: mdi:speedometer
+              tap_action:
+                action: toggle
 
-        # ── Consumo previsto del ciclo ──────────────────────────────────────
-        - type: entities
-          title: Consumo del ciclo
-          entities:
-            - entity: sensor.lavavajillas_bsh_common_option_energyforecast
-              name: Energía prevista
+        # ── Consumo previsto ────────────────────────────────────────────────
+        - type: custom:mushroom-chips-card
+          alignment: justify
+          chips:
+            - type: template
               icon: mdi:lightning-bolt
-            - entity: sensor.lavavajillas_bsh_common_option_waterforecast
-              name: Agua prevista
+              icon_color: yellow
+              content: "Energía {{ states('sensor.lavavajillas_bsh_common_option_energyforecast') }}%"
+            - type: template
               icon: mdi:water
+              icon_color: blue
+              content: "Agua {{ states('sensor.lavavajillas_bsh_common_option_waterforecast') }}%"
