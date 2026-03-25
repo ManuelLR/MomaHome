@@ -60,19 +60,25 @@ browser_mod:
             - entity: select.dishwasher_programs
               name: Programa
               icon: mdi:format-list-bulleted
-            - entity: time.dishwasher_common_option_startinrelative
-              name: Inicio retrasado
-              icon: mdi:clock-start
             - entity: sensor.dishwasher_common_option_remainingprogramtime
               name: Termina a las
               icon: mdi:clock-end
               format: time
-            - entity: sensor.dishwasher_common_option_energyforecast
-              name: Energía prevista
+
+        - type: custom:mushroom-chips-card
+          alignment: justify
+          chips:
+            - type: template
               icon: mdi:lightning-bolt
-            - entity: sensor.dishwasher_common_option_waterforecast
-              name: Agua prevista
+              icon_color: yellow
+              content: "{{ states('sensor.dishwasher_common_option_energyforecast') }}%"
+            - type: template
               icon: mdi:water
+              icon_color: blue
+              content: "{{ states('sensor.dishwasher_common_option_waterforecast') }}%"
+            - type: template
+              icon: mdi:clock-start
+              content: "{{ states('time.dishwasher_common_option_startinrelative') }}"
 
         - type: horizontal-stack
           cards:
