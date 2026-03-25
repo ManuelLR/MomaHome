@@ -45,7 +45,7 @@ entities:
     tap_action: !include ../utils/tv-card.yaml
   - entity: media_player.mini
     name: Mini (cocina)
-  - entity: sensor.dishwasher_status_operationstate
+  - entity: sensor.dishwasher_common_status_operationstate
     name: Lavavajillas
     icon: mdi:dishwasher
     tap_action: !include ../utils/dishwasher-card.yaml

@@ -11,15 +11,15 @@ browser_mod:
       type: vertical-stack
       cards:
         - type: custom:mushroom-template-card
-          primary: "{{ states('sensor.dishwasher_status_operationstate') }}"
+          primary: "{{ states('sensor.dishwasher_common_status_operationstate') }}"
           secondary: >
-            {% set prog = states('sensor.dishwasher_selected_program') %}
+            {% set prog = states('sensor.dishwasher_elected_program') %}
             {% set t    = states('sensor.dishwasher_common_option_remainingprogramtime') %}
             {% if prog not in ['unavailable','unknown',''] %}{{ prog }}{% endif %}
             {%- if t not in ['unavailable','unknown','0',''] %} · termina {{ as_timestamp(t) | timestamp_custom('%H:%M') }}{% endif %}
           icon: mdi:dishwasher
           icon_color: >
-            {% set s = states('sensor.dishwasher_status_operationstate') %}
+            {% set s = states('sensor.dishwasher_common_status_operationstate') %}
             {% if   'Run'            in s %}blue
             {% elif 'Finished'       in s %}green
             {% elif 'Pause'          in s %}orange
@@ -33,19 +33,19 @@ browser_mod:
           chips:
             - type: template
               icon: >
-                {% if 'Run' in states('sensor.dishwasher_status_operationstate') %}
+                {% if 'Run' in states('sensor.dishwasher_common_status_operationstate') %}
                   mdi:pause-circle-outline
                 {% else %}
                   mdi:play-circle-outline
                 {% endif %}
               icon_color: >
-                {% if 'Run' in states('sensor.dishwasher_status_operationstate') %}
+                {% if 'Run' in states('sensor.dishwasher_common_status_operationstate') %}
                   orange
                 {% else %}
                   green
                 {% endif %}
               content: >
-                {% if 'Run' in states('sensor.dishwasher_status_operationstate') %}
+                {% if 'Run' in states('sensor.dishwasher_common_status_operationstate') %}
                   Pause
                 {% else %}
                   Start
