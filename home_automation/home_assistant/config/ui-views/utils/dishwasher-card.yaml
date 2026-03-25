@@ -1,0 +1,86 @@
+# Dishwasher (Lavavajillas) - Popup panel
+# Triggered via browser_mod when tapping the lavavajillas entity in the main view.
+#
+# ⚠️  Entity IDs: rename the device in HA first, then replace the prefix
+#     "lavavajillas" with the alias que hayas puesto. Los marcados "# ?" hay
+#     que verificarlos en Developer Tools → States.
+
+action: fire-dom-event
+browser_mod:
+  service: browser_mod.popup
+  style:
+    border-radius: 0px
+    '--ha-card-border-radius': 0px
+  data:
+    title: Lavavajillas
+    dismissable: true
+    content:
+      type: vertical-stack
+      cards:
+
+        # ── Estado principal ────────────────────────────────────────────────
+        - type: tile
+          entity: sensor.lavavajillas_status_operationstate
+          icon: mdi:dishwasher
+
+        # ── Info del ciclo ──────────────────────────────────────────────────
+        - type: entities
+          entities:
+            - entity: sensor.lavavajillas_bsh_common_option_remainingprogramtime
+              name: Tiempo restante
+              icon: mdi:timer-sand
+            - entity: sensor.lavavajillas_program_selected  # ?
+              name: Programa en curso
+              icon: mdi:format-list-bulleted
+
+        # ── Arrancar ────────────────────────────────────────────────────────
+        - type: entities
+          title: Arrancar
+          entities:
+            - entity: select.lavavajillas_programs  # ?
+              name: Programa
+              icon: mdi:format-list-bulleted
+            - entity: select.lavavajillas_bsh_common_option_startinrelative
+              name: Inicio retrasado
+              icon: mdi:clock-start
+
+        - type: horizontal-stack
+          cards:
+            - type: button
+              name: Arrancar
+              icon: mdi:play-circle-outline
+              tap_action:
+                action: call-service
+                service: button.press
+                target:
+                  entity_id: button.lavavajillas_start  # ?
+            - type: button
+              name: Parar
+              icon: mdi:stop-circle-outline
+              tap_action:
+                action: call-service
+                service: button.press
+                target:
+                  entity_id: button.lavavajillas_stop  # ?
+
+        # ── Opciones ────────────────────────────────────────────────────────
+        - type: entities
+          title: Opciones
+          entities:
+            - entity: switch.lavavajillas_setting_halfload  # ?  (media carga)
+              name: Media carga
+              icon: mdi:fraction-one-half
+            - entity: switch.lavavajillas_setting_variospeedplus  # ?
+              name: varioSpeed Plus
+              icon: mdi:speedometer
+
+        # ── Consumo previsto del ciclo ──────────────────────────────────────
+        - type: entities
+          title: Consumo del ciclo
+          entities:
+            - entity: sensor.lavavajillas_bsh_common_option_energyforecast
+              name: Energía prevista
+              icon: mdi:lightning-bolt
+            - entity: sensor.lavavajillas_bsh_common_option_waterforecast
+              name: Agua prevista
+              icon: mdi:water
