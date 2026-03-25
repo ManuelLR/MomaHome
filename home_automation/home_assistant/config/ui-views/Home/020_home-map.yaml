@@ -13,6 +13,14 @@ elements:
       left: 65%
       "--state-icon-color": blue
   - type: state-icon
+    tap_action: !include ../utils/dishwasher-card.yaml
+    entity: sensor.lavavajillas_status_operationstate
+    icon: mdi:dishwasher
+    style:
+      top: 53%
+      left: 72%
+      "--state-icon-color": blue
+  - type: state-icon
     tap_action:
       action: more-info
     entity: group.man_003
