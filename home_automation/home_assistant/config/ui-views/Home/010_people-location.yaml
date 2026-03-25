@@ -1,6 +1,14 @@
 type: horizontal-stack
 cards:
-  - type: tile
-    entity: sensor.manolo_status
-  - type: tile
-    entity: sensor.monica_status
+  - type: custom:mushroom-person-card
+    entity: person.manolo
+    icon: mdi:human-male
+    use_entity_picture: true
+    tap_action:
+      action: more-info
+  - type: custom:mushroom-person-card
+    entity: person.monica
+    icon: mdi:human-female
+    use_entity_picture: true
+    tap_action:
+      action: more-info
