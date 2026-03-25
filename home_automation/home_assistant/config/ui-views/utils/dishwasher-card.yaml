@@ -33,28 +33,34 @@ browser_mod:
           tap_action:
             action: none
 
-        # ── Arrancar / Parar ────────────────────────────────────────────────
+        # ── Arrancar / Pausar ───────────────────────────────────────────────
         - type: custom:mushroom-chips-card
           alignment: center
           chips:
             - type: template
-              icon: mdi:play-circle-outline
-              icon_color: green
-              content: Arrancar
+              icon: >
+                {% if 'Run' in states('sensor.dishwasher_status_operationstate') %}
+                  mdi:pause-circle-outline
+                {% else %}
+                  mdi:play-circle-outline
+                {% endif %}
+              icon_color: >
+                {% if 'Run' in states('sensor.dishwasher_status_operationstate') %}
+                  orange
+                {% else %}
+                  green
+                {% endif %}
+              content: >
+                {% if 'Run' in states('sensor.dishwasher_status_operationstate') %}
+                  Pause
+                {% else %}
+                  Start
+                {% endif %}
               tap_action:
                 action: call-service
                 service: button.press
                 target:
                   entity_id: button.dishwasher_start_pause
-            - type: template
-              icon: mdi:stop-circle-outline
-              icon_color: red
-              content: Parar
-              tap_action:
-                action: call-service
-                service: button.press
-                target:
-                  entity_id: button.dishwasher_stop
 
         # ── Selección de programa e inicio retrasado ────────────────────────
         - type: entities
