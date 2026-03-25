@@ -1,14 +1,61 @@
 type: horizontal-stack
 cards:
-  - type: custom:mushroom-person-card
-    entity: person.manolo
-    icon: mdi:human-male
-    use_entity_picture: true
+  - type: custom:mushroom-template-card
+    entity: sensor.manolo_status
+    primary: Manolo
+    secondary: >
+      {% set s = states('sensor.manolo_status') %}
+      {% if   s == 'Home'          %}En casa
+      {% elif s == 'Just Arrived'  %}Acaba de llegar
+      {% elif s == 'Just Left'     %}Acaba de salir
+      {% elif s == 'Away'          %}Fuera
+      {% elif s == 'Extended Away' %}Fuera hace tiempo
+      {% else %}Desconocido{% endif %}
+    icon: >
+      {% set s = states('sensor.manolo_status') %}
+      {% if   s == 'Home'          %}mdi:home
+      {% elif s == 'Just Arrived'  %}mdi:home-import-outline
+      {% elif s == 'Just Left'     %}mdi:home-export-outline
+      {% elif s == 'Away'          %}mdi:map-marker-outline
+      {% elif s == 'Extended Away' %}mdi:map-marker-off-outline
+      {% else %}mdi:help-circle-outline{% endif %}
+    icon_color: >
+      {% set s = states('sensor.manolo_status') %}
+      {% if   s == 'Home'          %}green
+      {% elif s == 'Just Arrived'  %}light-green
+      {% elif s == 'Just Left'     %}orange
+      {% elif s == 'Away'          %}red
+      {% elif s == 'Extended Away' %}deep-orange
+      {% else %}disabled{% endif %}
     tap_action:
       action: more-info
-  - type: custom:mushroom-person-card
-    entity: person.monica
-    icon: mdi:human-female
-    use_entity_picture: true
+
+  - type: custom:mushroom-template-card
+    entity: sensor.monica_status
+    primary: Mónica
+    secondary: >
+      {% set s = states('sensor.monica_status') %}
+      {% if   s == 'Home'          %}En casa
+      {% elif s == 'Just Arrived'  %}Acaba de llegar
+      {% elif s == 'Just Left'     %}Acaba de salir
+      {% elif s == 'Away'          %}Fuera
+      {% elif s == 'Extended Away' %}Fuera hace tiempo
+      {% else %}Desconocido{% endif %}
+    icon: >
+      {% set s = states('sensor.monica_status') %}
+      {% if   s == 'Home'          %}mdi:home
+      {% elif s == 'Just Arrived'  %}mdi:home-import-outline
+      {% elif s == 'Just Left'     %}mdi:home-export-outline
+      {% elif s == 'Away'          %}mdi:map-marker-outline
+      {% elif s == 'Extended Away' %}mdi:map-marker-off-outline
+      {% else %}mdi:help-circle-outline{% endif %}
+    icon_color: >
+      {% set s = states('sensor.monica_status') %}
+      {% if   s == 'Home'          %}green
+      {% elif s == 'Just Arrived'  %}light-green
+      {% elif s == 'Just Left'     %}orange
+      {% elif s == 'Away'          %}red
+      {% elif s == 'Extended Away' %}deep-orange
+      {% else %}disabled{% endif %}
     tap_action:
       action: more-info
