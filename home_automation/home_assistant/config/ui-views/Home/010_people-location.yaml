@@ -3,14 +3,7 @@ cards:
   - type: custom:mushroom-template-card
     entity: sensor.manolo_status
     primary: Manolo
-    secondary: >
-      {% set s = states('sensor.manolo_status') %}
-      {% if   s == 'Home'          %}En casa
-      {% elif s == 'Just Arrived'  %}Acaba de llegar
-      {% elif s == 'Just Left'     %}Acaba de salir
-      {% elif s == 'Away'          %}Fuera
-      {% elif s == 'Extended Away' %}Fuera hace tiempo
-      {% else %}Desconocido{% endif %}
+    secondary: "{{ states('sensor.manolo_status') }}"
     icon: >
       {% set s = states('sensor.manolo_status') %}
       {% if   s == 'Home'          %}mdi:home
@@ -33,14 +26,7 @@ cards:
   - type: custom:mushroom-template-card
     entity: sensor.monica_status
     primary: Mónica
-    secondary: >
-      {% set s = states('sensor.monica_status') %}
-      {% if   s == 'Home'          %}En casa
-      {% elif s == 'Just Arrived'  %}Acaba de llegar
-      {% elif s == 'Just Left'     %}Acaba de salir
-      {% elif s == 'Away'          %}Fuera
-      {% elif s == 'Extended Away' %}Fuera hace tiempo
-      {% else %}Desconocido{% endif %}
+    secondary: "{{ states('sensor.monica_status') }}"
     icon: >
       {% set s = states('sensor.monica_status') %}
       {% if   s == 'Home'          %}mdi:home

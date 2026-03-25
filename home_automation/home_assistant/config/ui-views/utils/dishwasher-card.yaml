@@ -19,14 +19,7 @@ browser_mod:
 
         # ── Estado principal con color y texto dinámico ─────────────────────
         - type: custom:mushroom-template-card
-          primary: >
-            {% set s = states('sensor.lavavajillas_status_operationstate') %}
-            {% if   'Run'            in s %}En marcha
-            {% elif 'Finished'       in s %}¡Terminado! Puedes vaciarlo
-            {% elif 'Pause'          in s %}En pausa
-            {% elif 'ActionRequired' in s %}Acción requerida
-            {% elif 'Ready'          in s %}Listo
-            {% else %}{{ s }}{% endif %}
+          primary: "{{ states('sensor.lavavajillas_status_operationstate') }}"
           secondary: >
             {% set prog = states('sensor.lavavajillas_program_selected') %}
             {% set t    = states('sensor.lavavajillas_bsh_common_option_remainingprogramtime') %}
