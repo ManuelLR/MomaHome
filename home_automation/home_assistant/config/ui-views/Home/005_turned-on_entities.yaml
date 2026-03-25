@@ -51,7 +51,7 @@ entities:
     tap_action: !include ../utils/dishwasher-card.yaml
     conditions:
       - condition: state
-        state_not: BSH.Common.EnumType.OperationState.Ready
+        state_not: Ready
   - entity: switch.adguard_protection
     name: AdGuard - Bloqueo de anuncios
     conditions:

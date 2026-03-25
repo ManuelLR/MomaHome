@@ -11,11 +11,8 @@ browser_mod:
       type: vertical-stack
       cards:
         - type: custom:mushroom-template-card
-          primary: >
-            {{ states('sensor.dishwasher_common_status_operationstate').split('.')[-1] }}
-          secondary: >
-            {% set prog = states('sensor.dishwasher_selected_program') %}
-            {% if prog not in ['unavailable','unknown',''] %}{{ prog.split('.')[-1] }}{% endif %}
+          primary: "{{ states('sensor.dishwasher_common_status_operationstate') }}"
+          secondary: "{{ states('sensor.dishwasher_selected_program') }}"
           icon: mdi:dishwasher
           icon_color: >
             {% set s = states('sensor.dishwasher_common_status_operationstate') %}
