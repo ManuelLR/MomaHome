@@ -47,7 +47,9 @@ ENV \
       # renovatebot: datasource=github-releases depName=marrobHD/tv-card
     CUSTOM_CARD_TV_REMOTE_VERSION=v0.2.1 \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
-    CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0 \
+      # renovatebot: datasource=github-releases depName=piitaya/lovelace-mushroom
+    CUSTOM_CARD_MUSHROOM_VERSION=v5.1.1
 
 ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
@@ -56,7 +58,8 @@ ENV \
     CUSTOM_CARD_MINI_GRAPH_PATH=/local/external-cards/mini-graph-card-bundle.js?version=${CUSTOM_CARD_MINI_GRAPH_VERSION} \
     CUSTOM_CARD_APEXCHARTS_PATH=/local/external-cards/apexcharts-card.js?version=${CUSTOM_CARD_APEXCHARTS_VERSION} \
     CUSTOM_CARD_TV_REMOTE_PATH=/local/external-cards/tv-card.js?version=${CUSTOM_CARD_TV_REMOTE_VERSION} \
-    CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION}
+    CUSTOM_CARD_GOOGLE_HOME_TIMERS_PATH=/local/external-cards/googletimers-card.js?version=${CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION} \
+    CUSTOM_CARD_MUSHROOM_PATH=/local/external-cards/mushroom.js?version=${CUSTOM_CARD_MUSHROOM_VERSION}
 
 RUN \
     set -ex \
@@ -136,6 +139,8 @@ RUN \
     && git clone https://github.com/DurgNomis-drol/google_home_timers_card.git /tmp/google_home_timers_card \
     && cd /tmp/google_home_timers_card && git checkout $CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION \
     && cd - && cp -r /tmp/google_home_timers_card/googletimers-card.js /HA-custom-www/external-cards/ \
+    # Mushroom Cards
+    && curl -fsSL "https://github.com/piitaya/lovelace-mushroom/releases/download/${CUSTOM_CARD_MUSHROOM_VERSION}/mushroom.js" -o /HA-custom-www/external-cards/mushroom.js \
     && apk del build-dep
 
 RUN \
