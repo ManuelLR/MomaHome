@@ -3,7 +3,3 @@
     name: Centinel Mode
     icon: mdi:shield-home
     initial: off
-  home_recently_extended_away:
-    name: Home Recently Extended Away
-    icon: mdi:home-alert
-    initial: off
