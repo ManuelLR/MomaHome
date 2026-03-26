@@ -110,15 +110,20 @@
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
     conditions:
-      # Use centinel_mode as the guard instead of the occupancy state directly.
-      # centinel_mode is auto-enabled when Extended Away is reached and is only
-      # disabled manually, so it stays ON even if the tracker (on the keyring)
-      # transitions the state to 'Just Arrived' due to stolen keys. This also
-      # prevents false alerts when arriving from a plain 'Away' state (centinel
-      # mode was never enabled in that case).
-      - condition: state
-        entity_id: input_boolean.centinel_mode
-        state: 'on'
+      - condition: or
+        conditions:
+          # Centinel Mode explicitly active (manually or auto-enabled).
+          - condition: state
+            entity_id: input_boolean.centinel_mode
+            state: 'on'
+          # House was in Extended Away before this door event. The boolean stays
+          # ON from when Extended Away was reached until the occupancy returns to
+          # Home, covering the stolen-keys scenario where the tracker transitions
+          # the state to 'Just Arrived' before the door opens. It does NOT fire
+          # for plain Away arrivals since the boolean was never set in that case.
+          - condition: state
+            entity_id: input_boolean.home_recently_extended_away
+            state: 'on'
     actions:
       - service: script.telegram_notify
         data:
@@ -138,6 +143,36 @@
         data:
           title: 'Alert: Door Left Open'
           message: 'The entrance door has been left open for more than 3 minutes.'
+
+  - alias: AUT-Mark Home Recently Extended Away
+    id: AUT-Mark_Home_Recently_Extended_Away
+    initial_state: 'on'
+    triggers:
+      - platform: state
+        entity_id: sensor.home_occupancy_status
+        to: 'Extended Away'
+        not_from:
+          - 'unknown'
+          - 'unavailable'
+    actions:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.home_recently_extended_away
+
+  - alias: AUT-Clear Home Recently Extended Away
+    id: AUT-Clear_Home_Recently_Extended_Away
+    initial_state: 'on'
+    triggers:
+      - platform: state
+        entity_id: sensor.home_occupancy_status
+        to: 'Home'
+        not_from:
+          - 'unknown'
+          - 'unavailable'
+    actions:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.home_recently_extended_away
 
   - alias: AUT-Notify Centinel Mode on Extended Away
     id: AUT-Notify_Centinel_Mode_On_Extended_Away
