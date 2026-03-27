@@ -13,9 +13,62 @@
     - sensor.router_ram_used
     - sensor.router_load_1min
     - sensor.router_uptime
+    - sensor.router_active_connections
+
+- type: entities
+  title: 'Internet Latency (FPing)'
+  entities:
+    - sensor.router_ping_google_avg
+    - sensor.router_ping_google_max
+    - sensor.router_ping_google_quality
+    - sensor.router_ping_cloudflare_avg
+    - sensor.router_ping_cloudflare_quality
 
 - type: history-graph
-  title: 'Net Speed'
+  title: 'Internet Latency'
+  hours_to_show: 24
+  entities:
+    - sensor.router_ping_google_avg
+    - sensor.router_ping_cloudflare_avg
+
+- type: entities
+  title: 'WAN Traffic'
+  entities:
+    - sensor.router_wan_received
+    - sensor.router_wan_sent
+
+- type: history-graph
+  title: 'WAN Bandwidth'
+  hours_to_show: 5
+  entities:
+    - sensor.router_wan_received
+    - sensor.router_wan_sent
+
+- type: entities
+  title: 'WiFi Traffic'
+  entities:
+    - sensor.router_wifi_5ghz_received
+    - sensor.router_wifi_5ghz_sent
+    - sensor.router_wifi_2_4ghz_received
+    - sensor.router_wifi_2_4ghz_sent
+
+- type: history-graph
+  title: 'WiFi Bandwidth'
+  hours_to_show: 5
+  entities:
+    - sensor.router_wifi_5ghz_received
+    - sensor.router_wifi_5ghz_sent
+    - sensor.router_wifi_2_4ghz_received
+    - sensor.router_wifi_2_4ghz_sent
+
+- type: entities
+  title: 'LAN Traffic'
+  entities:
+    - sensor.router_lan_received
+    - sensor.router_lan_sent
+
+- type: history-graph
+  title: 'Net Speed (Speedtest)'
   hours_to_show: 48
   entities:
     # - group.home_speed
@@ -24,7 +77,7 @@
     - sensor.speedtest_upload
 
 - type: history-graph
-  title: 'Router'
+  title: 'Router System'
   hours_to_show: 5
   entities:
     - sensor.router_cpu_usage

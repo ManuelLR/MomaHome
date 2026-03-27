@@ -15,3 +15,26 @@
       - sensor.router_ram_used
       - sensor.router_load_1min
       - sensor.router_uptime
+
+  netdata_router_fping:
+    name: Router FPing
+    entities:
+      - sensor.router_ping_google_avg
+      - sensor.router_ping_google_max
+      - sensor.router_ping_google_quality
+      - sensor.router_ping_cloudflare_avg
+      - sensor.router_ping_cloudflare_quality
+
+  netdata_router_wan:
+    name: Router WAN Traffic
+    entities:
+      - sensor.router_wan_received
+      - sensor.router_wan_sent
+
+  netdata_router_wifi:
+    name: Router WiFi Traffic
+    entities:
+      - sensor.router_wifi_5ghz_received
+      - sensor.router_wifi_5ghz_sent
+      - sensor.router_wifi_2_4ghz_received
+      - sensor.router_wifi_2_4ghz_sent
