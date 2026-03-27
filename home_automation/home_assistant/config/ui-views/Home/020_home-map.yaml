@@ -58,8 +58,8 @@ elements:
       navigation_path: /lovelace/1
     entity: vacuum.valetudo_roborocks5
     style:
-      top: 4%
-      left: 30%
+      top: 5%
+      left: 33%
       "--state-icon-color": blue
   - type: conditional
     tap_action:
