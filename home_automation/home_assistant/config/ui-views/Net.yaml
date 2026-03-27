@@ -7,10 +7,12 @@
     - sensor.adguard_dns_queries
 
 - type: entities
-  title: 'Router stats'
+  title: 'Router stats (Netdata)'
   entities:
+    - sensor.router_cpu_usage
+    - sensor.router_ram_used
+    - sensor.router_load_1min
     - sensor.router_uptime
-    - sensor.router_timestamp
 
 - type: history-graph
   title: 'Net Speed'
@@ -25,9 +27,9 @@
   title: 'Router'
   hours_to_show: 5
   entities:
-    # - group.net_router_statistics
-    - sensor.router_cpu_load
-    - sensor.router_ram_free
+    - sensor.router_cpu_usage
+    - sensor.router_ram_used
+    - sensor.router_load_1min
 # - type: history-graph
 #   title: 'PiHole'
 #   hours_to_show: 48

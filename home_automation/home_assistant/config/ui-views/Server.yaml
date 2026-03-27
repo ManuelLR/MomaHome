@@ -1,4 +1,21 @@
 - type: entities
+  title: 'Server stats (Netdata)'
+  entities:
+    - sensor.server_cpu_usage
+    - sensor.server_ram_used
+    - sensor.server_load_1min
+    - sensor.server_disk_used
+    - sensor.server_disk_available
+
+- type: history-graph
+  title: 'Server'
+  hours_to_show: 5
+  entities:
+    - sensor.server_cpu_usage
+    - sensor.server_ram_used
+    - sensor.server_load_1min
+
+- type: entities
   title: 'UPS Server'
   entities:
     - sensor.ups_battery
