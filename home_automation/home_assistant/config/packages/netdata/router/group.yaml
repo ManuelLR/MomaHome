@@ -1,13 +1,4 @@
 # group:
-  netdata_server:
-    name: Server Netdata
-    entities:
-      - sensor.server_cpu_usage
-      - sensor.server_ram_used
-      - sensor.server_load_1min
-      - sensor.server_disk_used
-      - sensor.server_disk_available
-
   netdata_router:
     name: Router Netdata
     entities:

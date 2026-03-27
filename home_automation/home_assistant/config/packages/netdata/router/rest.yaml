@@ -1,12 +1,11 @@
 # rest:
   ##
-  # Netdata Integration
+  # Netdata Integration - Router (OpenWrt)
   # https://learn.netdata.cloud/docs/netdata-agent/api
   #
-  # Metrics are obtained from the local Netdata parent instance (localhost:19999).
-  # Router metrics come from the Netdata child agent that streams data to the parent.
+  # Metrics obtained from the Netdata child agent that streams data to the parent.
+  # Router child URL: http://localhost:19999/host/OpenWrt/api/v1/...
   #
-  # Router child URL pattern: http://localhost:19999/host/<ROUTER_HOSTNAME>/api/v1/...
   # NOTE: Replace "OpenWrt" below with your router's actual hostname in Netdata
   #       if it differs. You can check available hosts at:
   #       http://localhost:19999/api/v1/info  (look for "mirrored_hosts")
@@ -20,52 +19,7 @@
   #   Cloudflare => Cloudflare tunnel
   ##
 
-  ### ==================== ###
-  ###    Server Metrics     ###
-  ### ==================== ###
-
-  - resource: "http://localhost:19999/api/v1/data?chart=system.cpu&dimensions=idle&after=-1&points=1&format=json&options=percentage"
-    scan_interval: 30
-    sensor:
-      - name: "Server CPU Usage"
-        value_template: "{{ (100 - value_json.data[0][1]) | round(1) }}"
-        unit_of_measurement: "%"
-        state_class: measurement
-
-  - resource: "http://localhost:19999/api/v1/data?chart=system.ram&dimensions=used&after=-1&points=1&format=json"
-    scan_interval: 60
-    sensor:
-      - name: "Server RAM Used"
-        value_template: "{{ value_json.data[0][1] | round(0) }}"
-        unit_of_measurement: "MiB"
-        state_class: measurement
-
-  - resource: "http://localhost:19999/api/v1/data?chart=system.load&dimensions=load1&after=-1&points=1&format=json"
-    scan_interval: 60
-    sensor:
-      - name: "Server Load 1min"
-        value_template: "{{ value_json.data[0][1] | round(2) }}"
-        state_class: measurement
-
-  - resource: "http://localhost:19999/api/v1/data?chart=disk_space._&dimensions=used&after=-1&points=1&format=json"
-    scan_interval: 300
-    sensor:
-      - name: "Server Disk Used"
-        value_template: "{{ (value_json.data[0][1] / 1024) | round(1) }}"
-        unit_of_measurement: "GiB"
-        state_class: measurement
-
-  - resource: "http://localhost:19999/api/v1/data?chart=disk_space._&dimensions=avail&after=-1&points=1&format=json"
-    scan_interval: 300
-    sensor:
-      - name: "Server Disk Available"
-        value_template: "{{ (value_json.data[0][1] / 1024) | round(1) }}"
-        unit_of_measurement: "GiB"
-        state_class: measurement
-
-  ### ======================== ###
-  ###    Router System Metrics  ###
-  ### ======================== ###
+  ### System ###
 
   - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=system.cpu&dimensions=idle&after=-1&points=1&format=json&options=percentage"
     scan_interval: 30
@@ -98,9 +52,7 @@
         unit_of_measurement: "days"
         state_class: measurement
 
-  ### ======================== ###
-  ###    Router FPing (WAN)    ###
-  ### ======================== ###
+  ### FPing ###
 
   # Latency to Google DNS (8.8.8.8)
   - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=fping.8_8_8_8_latency&dimensions=avg&after=-1&points=1&format=json"
@@ -144,11 +96,8 @@
         unit_of_measurement: "%"
         state_class: measurement
 
-  ### ======================== ###
-  ###    Router Network WAN    ###
-  ### ======================== ###
+  ### Network WAN (PPPoE) ###
 
-  # PPPoE WAN - actual internet traffic
   - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.pppoe_wan&dimensions=received&after=-1&points=1&format=json"
     scan_interval: 30
     sensor:
@@ -166,9 +115,7 @@
         unit_of_measurement: "Mbit/s"
         state_class: measurement
 
-  ### ======================== ###
-  ###    Router Network LAN    ###
-  ### ======================== ###
+  ### Network LAN (br-lan) ###
 
   - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.br_lan&dimensions=received&after=-1&points=1&format=json"
     scan_interval: 30
@@ -186,11 +133,8 @@
         unit_of_measurement: "Mbit/s"
         state_class: measurement
 
-  ### ======================== ###
-  ###    Router WiFi Traffic   ###
-  ### ======================== ###
+  ### WiFi 5GHz (wl0-ap0, mt7915e) ###
 
-  # WiFi 5GHz (wl0-ap0, mt7915e)
   - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.wl0_ap0&dimensions=received&after=-1&points=1&format=json"
     scan_interval: 30
     sensor:
@@ -207,7 +151,8 @@
         unit_of_measurement: "Mbit/s"
         state_class: measurement
 
-  # WiFi 2.4GHz (wl1-ap0, mt7615e)
+  ### WiFi 2.4GHz (wl1-ap0, mt7615e) ###
+
   - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.wl1_ap0&dimensions=received&after=-1&points=1&format=json"
     scan_interval: 30
     sensor:
@@ -224,9 +169,7 @@
         unit_of_measurement: "Mbit/s"
         state_class: measurement
 
-  ### ======================== ###
-  ###  Router Firewall/Conntrack ###
-  ### ======================== ###
+  ### Firewall / Conntrack ###
 
   - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=netfilter.conntrack_sockets&dimensions=connections&after=-1&points=1&format=json"
     scan_interval: 60
