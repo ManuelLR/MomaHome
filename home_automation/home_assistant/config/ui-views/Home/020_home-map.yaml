@@ -59,7 +59,7 @@ elements:
     entity: vacuum.valetudo_roborocks5
     style:
       top: 4%
-      left: 18%
+      left: 30%
       "--state-icon-color": blue
   - type: conditional
     tap_action:
