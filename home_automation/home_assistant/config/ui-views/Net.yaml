@@ -7,13 +7,68 @@
     - sensor.adguard_dns_queries
 
 - type: entities
-  title: 'Router stats'
+  title: 'Router stats (Netdata)'
   entities:
+    - sensor.router_cpu_usage
+    - sensor.router_ram_used
+    - sensor.router_load_1min
     - sensor.router_uptime
-    - sensor.router_timestamp
+    - sensor.router_active_connections
+
+- type: entities
+  title: 'Internet Latency (FPing)'
+  entities:
+    - sensor.router_ping_google_avg
+    - sensor.router_ping_google_max
+    - sensor.router_ping_google_quality
+    - sensor.router_ping_cloudflare_avg
+    - sensor.router_ping_cloudflare_quality
 
 - type: history-graph
-  title: 'Net Speed'
+  title: 'Internet Latency'
+  hours_to_show: 24
+  entities:
+    - sensor.router_ping_google_avg
+    - sensor.router_ping_cloudflare_avg
+
+- type: entities
+  title: 'WAN Traffic'
+  entities:
+    - sensor.router_wan_received
+    - sensor.router_wan_sent
+
+- type: history-graph
+  title: 'WAN Bandwidth'
+  hours_to_show: 5
+  entities:
+    - sensor.router_wan_received
+    - sensor.router_wan_sent
+
+- type: entities
+  title: 'WiFi Traffic'
+  entities:
+    - sensor.router_wifi_5ghz_received
+    - sensor.router_wifi_5ghz_sent
+    - sensor.router_wifi_2_4ghz_received
+    - sensor.router_wifi_2_4ghz_sent
+
+- type: history-graph
+  title: 'WiFi Bandwidth'
+  hours_to_show: 5
+  entities:
+    - sensor.router_wifi_5ghz_received
+    - sensor.router_wifi_5ghz_sent
+    - sensor.router_wifi_2_4ghz_received
+    - sensor.router_wifi_2_4ghz_sent
+
+- type: entities
+  title: 'LAN Traffic'
+  entities:
+    - sensor.router_lan_received
+    - sensor.router_lan_sent
+
+- type: history-graph
+  title: 'Net Speed (Speedtest)'
   hours_to_show: 48
   entities:
     # - group.home_speed
@@ -22,12 +77,21 @@
     - sensor.speedtest_upload
 
 - type: history-graph
-  title: 'Router'
+  title: 'Router System'
   hours_to_show: 5
   entities:
-    # - group.net_router_statistics
-    - sensor.router_cpu_load
-    - sensor.router_ram_free
+    - sensor.router_cpu_usage
+    - sensor.router_ram_used
+    - sensor.router_load_1min
+
+- type: entities
+  title: 'UPS Network'
+  entities:
+    - sensor.network_ups_carga_de_la_bateria
+    - sensor.network_ups_carga
+    - sensor.network_ups_estado
+    - sensor.network_ups_datos_de_estado
+    - sensor.network_ups_autonomia_de_la_bateria
 # - type: history-graph
 #   title: 'PiHole'
 #   hours_to_show: 48

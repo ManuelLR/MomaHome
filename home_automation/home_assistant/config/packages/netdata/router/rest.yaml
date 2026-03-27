@@ -1,0 +1,180 @@
+# rest:
+  ##
+  # Netdata Integration - Router (OpenWrt)
+  # https://learn.netdata.cloud/docs/netdata-agent/api
+  #
+  # Metrics obtained from the Netdata child agent that streams data to the parent.
+  # Router child URL: http://localhost:19999/host/OpenWrt/api/v1/...
+  #
+  # NOTE: Replace "OpenWrt" below with your router's actual hostname in Netdata
+  #       if it differs. You can check available hosts at:
+  #       http://localhost:19999/api/v1/info  (look for "mirrored_hosts")
+  #
+  # Network interfaces on the router:
+  #   pppoe_wan  => Internet (PPPoE)
+  #   br_lan     => LAN bridge (all wired + wireless)
+  #   wl0_ap0    => WiFi 5GHz (mt7915e)
+  #   wl1_ap0    => WiFi 2.4GHz (mt7615e)
+  #   wan        => Physical WAN port
+  #   Cloudflare => Cloudflare tunnel
+  ##
+
+  ### System ###
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=system.cpu&dimensions=idle&after=-1&points=1&format=json&options=percentage"
+    scan_interval: 30
+    sensor:
+      - name: "Router CPU Usage"
+        value_template: "{{ (100 - value_json.data[0][1]) | round(1) }}"
+        unit_of_measurement: "%"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=system.ram&dimensions=used&after=-1&points=1&format=json"
+    scan_interval: 60
+    sensor:
+      - name: "Router RAM Used"
+        value_template: "{{ value_json.data[0][1] | round(0) }}"
+        unit_of_measurement: "MiB"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=system.load&dimensions=load1&after=-1&points=1&format=json"
+    scan_interval: 60
+    sensor:
+      - name: "Router Load 1min"
+        value_template: "{{ value_json.data[0][1] | round(2) }}"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=system.uptime&dimensions=uptime&after=-1&points=1&format=json"
+    scan_interval: 300
+    sensor:
+      - name: "Router Uptime"
+        value_template: "{{ (value_json.data[0][1] / 86400) | round(1) }}"
+        unit_of_measurement: "days"
+        state_class: measurement
+
+  ### FPing ###
+
+  # Latency to Google DNS (8.8.8.8)
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=fping.8_8_8_8_latency&dimensions=avg&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router Ping Google Avg"
+        value_template: "{{ value_json.data[0][1] | round(1) }}"
+        unit_of_measurement: "ms"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=fping.8_8_8_8_latency&dimensions=max&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router Ping Google Max"
+        value_template: "{{ value_json.data[0][1] | round(1) }}"
+        unit_of_measurement: "ms"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=fping.8_8_8_8_quality&dimensions=returned&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router Ping Google Quality"
+        value_template: "{{ value_json.data[0][1] | round(0) }}"
+        unit_of_measurement: "%"
+        state_class: measurement
+
+  # Latency to Cloudflare DNS (1.1.1.1)
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=fping.1_1_1_1_latency&dimensions=avg&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router Ping Cloudflare Avg"
+        value_template: "{{ value_json.data[0][1] | round(1) }}"
+        unit_of_measurement: "ms"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=fping.1_1_1_1_quality&dimensions=returned&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router Ping Cloudflare Quality"
+        value_template: "{{ value_json.data[0][1] | round(0) }}"
+        unit_of_measurement: "%"
+        state_class: measurement
+
+  ### Network WAN (PPPoE) ###
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.pppoe_wan&dimensions=received&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router WAN Received"
+        value_template: "{{ (value_json.data[0][1] / 1000) | round(2) }}"
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.pppoe_wan&dimensions=sent&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router WAN Sent"
+        # sent is negative in Netdata, so we use abs
+        value_template: "{{ ((value_json.data[0][1] | abs) / 1000) | round(2) }}"
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+
+  ### Network LAN (br-lan) ###
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.br_lan&dimensions=received&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router LAN Received"
+        value_template: "{{ (value_json.data[0][1] / 1000) | round(2) }}"
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.br_lan&dimensions=sent&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router LAN Sent"
+        value_template: "{{ ((value_json.data[0][1] | abs) / 1000) | round(2) }}"
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+
+  ### WiFi 5GHz (wl0-ap0, mt7915e) ###
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.wl0_ap0&dimensions=received&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router WiFi 5GHz Received"
+        value_template: "{{ (value_json.data[0][1] / 1000) | round(2) }}"
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.wl0_ap0&dimensions=sent&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router WiFi 5GHz Sent"
+        value_template: "{{ ((value_json.data[0][1] | abs) / 1000) | round(2) }}"
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+
+  ### WiFi 2.4GHz (wl1-ap0, mt7615e) ###
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.wl1_ap0&dimensions=received&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router WiFi 2.4GHz Received"
+        value_template: "{{ (value_json.data[0][1] / 1000) | round(2) }}"
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=net.wl1_ap0&dimensions=sent&after=-1&points=1&format=json"
+    scan_interval: 30
+    sensor:
+      - name: "Router WiFi 2.4GHz Sent"
+        value_template: "{{ ((value_json.data[0][1] | abs) / 1000) | round(2) }}"
+        unit_of_measurement: "Mbit/s"
+        state_class: measurement
+
+  ### Firewall / Conntrack ###
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=netfilter.conntrack_sockets&dimensions=connections&after=-1&points=1&format=json"
+    scan_interval: 60
+    sensor:
+      - name: "Router Active Connections"
+        value_template: "{{ value_json.data[0][1] | round(0) }}"
+        unit_of_measurement: "connections"
+        state_class: measurement
