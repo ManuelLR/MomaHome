@@ -87,21 +87,6 @@
               message: "Unbanned and restarting HomeAssistant"
       - service: homeassistant.restart
 
-  - alias: AUT-Notify Entrance Door Opened
-    id: AUT-Notify_Entrance_Door_Opened
-    initial_state: 'on'
-    triggers:
-      - platform: state
-        entity_id: binary_sensor.entrance_door_sensor_opened
-        to: 'on'
-    actions:
-      - service: script.telegram_notify
-        data:
-          target_person: manolo
-          title: '[Debug] *Door Opened*'
-          message: 'The entrance door has been opened.'
-          disable_notification: true
-
   - alias: AUT-Notify Entrance Door Opened Extended Away
     id: AUT-Notify_Entrance_Door_Opened_Extended_Away
     initial_state: 'on'
