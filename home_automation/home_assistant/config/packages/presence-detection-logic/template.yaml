@@ -16,3 +16,21 @@
       unique_id: home_occupancy_status
       default_entity_id: sensor.home_occupancy_status
       state: '{{ states.input_select.home_occupancy_status_dropdown.state }}'
+
+  # Trigger-based sensor that captures the previous home occupancy state on every
+  # transition. Unlike state-based sensors it retains its last value across reloads
+  # (no 'unknown' flash). unknown/unavailable transitions are intentionally ignored
+  # so restarts do not overwrite a meaningful previous state.
+  - trigger:
+      - platform: state
+        entity_id: sensor.home_occupancy_status
+        not_from:
+          - unknown
+          - unavailable
+        not_to:
+          - unknown
+          - unavailable
+    sensor:
+      - name: Home Occupancy Previous Status
+        unique_id: home_occupancy_previous_status
+        state: "{{ trigger.from_state.state }}"

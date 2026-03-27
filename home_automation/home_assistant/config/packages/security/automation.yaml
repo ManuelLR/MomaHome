@@ -110,12 +110,28 @@
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
     conditions:
-      - condition: state
-        entity_id: sensor.home_occupancy_status
-        state:
-          - 'Extended Away'
-          # Some times after 'Extended Away', we have race condition so temporarily we should add that state
-          - 'Just Arrived'
+      - condition: or
+        conditions:
+          # Explicit security mode (auto-enabled at Extended Away, manual disable).
+          - condition: state
+            entity_id: input_boolean.centinel_mode
+            state: 'on'
+          # House is currently Extended Away.
+          - condition: state
+            entity_id: sensor.home_occupancy_status
+            state: 'Extended Away'
+          # Tracker (on keyring) already transitioned to Just Arrived before the
+          # door opened — fire only if the previous state was Extended Away, not
+          # plain Away. This covers the stolen-keys scenario without triggering
+          # on normal short-trip returns.
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: sensor.home_occupancy_status
+                state: 'Just Arrived'
+              - condition: state
+                entity_id: sensor.home_occupancy_previous_status
+                state: 'Extended Away'
     actions:
       - service: script.telegram_notify
         data:
