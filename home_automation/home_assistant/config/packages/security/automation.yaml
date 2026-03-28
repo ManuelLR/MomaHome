@@ -214,7 +214,9 @@
       trigger_time_unix: "{{ as_timestamp(now()) }}"
       # notification_target_person: auto
 
-      ## All the start/ends times are relative to the trigger time
+      ## All start/end times are relative to the trigger time.
+      ## lookback = now() - T - record_start  (positive value → HA looks back in the ring buffer)
+      ## duration = T + record_end - now()    (positive value → HA records forward from now)
       record1_start: -13
       record1_end: 4
       record1_processing_time: 3
@@ -254,7 +256,7 @@
             target:
               entity_id: camera.entrance_camera
             data:
-              lookback: '{{ trigger_time_unix + record1_start - as_timestamp(now()) | round(0, "floor") }}'
+              lookback: '{{ [as_timestamp(now()) - trigger_time_unix - record1_start, 0] | max | round(0, "ceil") }}'
               duration: '{{ trigger_time_unix + record1_end - as_timestamp(now()) | round(0, "ceil") }}'
               filename: '{{ record1_filename }}'
           - parallel:
@@ -274,7 +276,7 @@
                 target:
                   entity_id: camera.entrance_camera
                 data:
-                  lookback: '{{ trigger_time_unix + record2_start - as_timestamp(now()) | round(0, "floor") }}'
+                  lookback: '{{ [as_timestamp(now()) - trigger_time_unix - record2_start, 0] | max | round(0, "ceil") }}'
                   duration: '{{ trigger_time_unix + record2_end - as_timestamp(now()) | round(0, "ceil") }}'
                   filename: '{{ record2_filename }}'
               - parallel:
@@ -294,7 +296,7 @@
                     target:
                       entity_id: camera.entrance_camera
                     data:
-                      lookback: '{{ trigger_time_unix + record3_start - as_timestamp(now()) | round(0, "floor") }}'
+                      lookback: '{{ [as_timestamp(now()) - trigger_time_unix - record3_start, 0] | max | round(0, "ceil") }}'
                       duration: '{{ trigger_time_unix + record3_end - as_timestamp(now()) | round(0, "ceil") }}'
                       filename: '{{ record3_filename }}'
                   - delay:
