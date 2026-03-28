@@ -230,7 +230,7 @@
     actions:
       - alias: "Define target person"
         variables:
-          notification_target_person: "{{ 'auto' if states('input_boolean.centinel_mode') == 'on' else 'manolo' }}"
+          notification_target_person: "{{ 'auto' if states('input_boolean.centinel_mode') == 'on' else ('manolo' if states('sensor.home_occupancy_status') in ['Away', 'Extended Away', 'Just Arrived'] else 'none') }}"
 
       # Immediate notification (does not block the camera)
       - service: script.telegram_notify
