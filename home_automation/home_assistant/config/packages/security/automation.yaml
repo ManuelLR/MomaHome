@@ -215,7 +215,7 @@
       # notification_target_person: auto
 
       ## All the start/ends times are relative to the trigger time
-      record1_start: -5
+      record1_start: -13
       record1_end: 4
       record1_processing_time: 3
       record1_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_01.mp4"
@@ -223,7 +223,7 @@
       record2_end: 10
       record2_processing_time: 3
       record2_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_02.mp4"
-      record3_start: -5
+      record3_start: -13
       record3_end: 60
       record3_processing_time: 7
       record3_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_03.mp4"
