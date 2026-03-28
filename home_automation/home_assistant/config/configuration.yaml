@@ -88,6 +88,11 @@ recorder:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
+# Increase the stream buffer to ~30s (3 segments × 10s) to support 13s lookback in camera.record
+# https://www.home-assistant.io/integrations/stream/
+stream:
+  segment_duration: 10
+
 # # Info about updates: Deprecated in > 2022.03
 # updater:
 #   include_used_components: true
