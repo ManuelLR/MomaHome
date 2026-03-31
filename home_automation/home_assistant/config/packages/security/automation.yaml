@@ -8,13 +8,9 @@
         event_type: device_tracker_new_device
     actions:
       - service: script.telegram_notify
-        data: &data-alert-new-device
+        data:
           title: 'ALERT: New device found !'
           message: 'New device called `{{ trigger.event.data.host_name }}` with MAC `{{ trigger.event.data.mac }}` found'
-      - service: script.telegram_notify
-        data:
-          target_person: manolo
-          <<: *data-alert-new-device
 
   - alias: AUT-Notify failed login attempt
     id: AUT-Notify_Failed_Login_Attempt
@@ -30,7 +26,6 @@
     actions:
       service: script.telegram_notify
       data:
-        target_person: manolo
         title: "*{{ trigger.notification.title }} !*"
         message: "{{ trigger.notification.message }}"
 
@@ -212,7 +207,7 @@
       trigger_time: "{{ as_local(now()).strftime('%Y%m%d-%H%M%S') }}"
       trigger_reason: "{{ 'Door Opened' if trigger.id == 'door_opened' else ('Person Detected' if trigger.id == 'person_detected' else 'Motion Detected') }}"
       trigger_time_unix: "{{ as_timestamp(now()) }}"
-      # notification_target_person: auto
+      notification_target_person: auto
 
       ## All start/end times are relative to the trigger time.
       ## lookback = now() - T - record_start  (positive value → HA looks back in the ring buffer)
@@ -230,10 +225,6 @@
       record3_processing_time: 7
       record3_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_03.mp4"
     actions:
-      - alias: "Define target person"
-        variables:
-          notification_target_person: "{{ 'auto' if states('input_boolean.centinel_mode') == 'on' else ('manolo' if states('sensor.home_occupancy_status') in ['Away', 'Extended Away', 'Just Arrived'] else 'none') }}"
-
       # Timeline:
       #   initial_telegram ─┐ (parallel, does not delay camera recording)
       #   record_1          ┘
