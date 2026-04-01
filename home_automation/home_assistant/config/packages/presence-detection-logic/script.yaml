@@ -10,6 +10,8 @@
             options:
               - label: "Auto (in home or all)"
                 value: "auto"
+              - label: "All (regardless of presence)"
+                value: "all"
               - label: "Manolo"
                 value: "manolo"
               - label: "Monica"
@@ -83,7 +85,10 @@
       
       # Build target list dynamically based on target_person or presence
       targets_to_notify: >
-        {% if target_person is defined and target_person and target_person != 'auto' %}
+        {% if target_person is defined and target_person == 'all' %}
+          {# All mode: notify everyone regardless of presence #}
+          {{ people.values() | map(attribute='chat_id') | list }}
+        {% elif target_person is defined and target_person and target_person != 'auto' %}
           {# Specific person requested #}
           {% if target_person in people %}
             {{ [people[target_person].chat_id] }}

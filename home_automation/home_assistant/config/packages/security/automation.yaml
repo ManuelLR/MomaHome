@@ -9,6 +9,7 @@
     actions:
       - service: script.telegram_notify
         data:
+          target_person: all
           title: 'ALERT: New device found !'
           message: 'New device called `{{ trigger.event.data.host_name }}` with MAC `{{ trigger.event.data.mac }}` found'
 
@@ -26,6 +27,7 @@
     actions:
       service: script.telegram_notify
       data:
+        target_person: all
         title: "*{{ trigger.notification.title }} !*"
         message: "{{ trigger.notification.message }}"
 
@@ -199,15 +201,15 @@
         to: 'on'
         for:
           seconds: 3
-    # conditions:
-    #   - condition: state
-    #     entity_id: input_boolean.centinel_mode
-    #     state: 'on'
+    conditions:
+      - condition: state
+        entity_id: input_boolean.centinel_mode
+        state: 'on'
     variables:
       trigger_time: "{{ as_local(now()).strftime('%Y%m%d-%H%M%S') }}"
       trigger_reason: "{{ 'Door Opened' if trigger.id == 'door_opened' else ('Person Detected' if trigger.id == 'person_detected' else 'Motion Detected') }}"
       trigger_time_unix: "{{ as_timestamp(now()) }}"
-      notification_target_person: auto
+      notification_target_person: all
 
       ## All start/end times are relative to the trigger time.
       ## lookback = now() - T - record_start  (positive value → HA looks back in the ring buffer)
