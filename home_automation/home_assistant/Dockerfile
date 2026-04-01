@@ -31,7 +31,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
-    CUSTOM_COMPONENT_GICISKY_VERSION=2.0.0 \
+    CUSTOM_COMPONENT_GICISKY_VERSION=2.1.0 \
       # renovatebot: datasource=github-releases depName=sca075/mqtt_vacuum_camera
     CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.3.1 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
