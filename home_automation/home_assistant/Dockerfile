@@ -33,7 +33,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
     CUSTOM_COMPONENT_GICISKY_VERSION=2.1.0 \
       # renovatebot: datasource=github-releases depName=sca075/mqtt_vacuum_camera
-    CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.3.1 \
+    CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.5.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.2 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
