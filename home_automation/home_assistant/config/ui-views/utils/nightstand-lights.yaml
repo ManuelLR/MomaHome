@@ -38,7 +38,7 @@ browser_mod:
                     light.bedroom_nightstand_lights:
                       state: "on"
                       brightness: 3
-                      color_temp: 454
+                      color_temp_kelvin: 2203
               icon_tap_action: *tap_action_min
             - name: Read
               type: tile
@@ -56,7 +56,7 @@ browser_mod:
                     light.bedroom_nightstand_lights:
                       state: "on"
                       brightness: 180
-                      color_temp: 285
+                      color_temp_kelvin: 3509
               icon_tap_action: *tap_action_read
             - name: Max
               type: tile
@@ -74,7 +74,7 @@ browser_mod:
                     light.bedroom_nightstand_lights:
                       state: "on"
                       brightness: 255
-                      color_temp: 250
+                      color_temp_kelvin: 4000
               icon_tap_action: *tap_action_max
         - type: horizontal-stack
           cards:
