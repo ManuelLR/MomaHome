@@ -1,0 +1,70 @@
+# rest:
+  ##
+  # Río Guadaira - River Level Monitoring
+  # Data source: Confederación Hidrográfica del Guadalquivir (SAIH)
+  ##
+
+  - resource: "https://www.chguadalquivir.es/saih/saihhist4.aspx?b=QTU1XzEwNywxLDA=?k=0x7"
+    method: GET
+    scan_interval: 600
+    headers:
+      Content-Type: "application/json"
+    sensor:
+      - name: "Río Guadaira Nivel Último"
+        unique_id: rio_guadaira_nivel_ultimo
+        value_template: >-
+          {% set y_values = value_json.datos.sen.y.split(';') %}
+          {{ y_values[-1] | float }}
+        unit_of_measurement: "m"
+        device_class: distance
+        state_class: measurement
+        icon: mdi:waves
+        json_attributes_path: "$.datos.sen"
+        json_attributes:
+          - descr
+          - uni
+          - tag
+      - name: "Río Guadaira Timestamp Último"
+        unique_id: rio_guadaira_timestamp_ultimo
+        value_template: >-
+          {% set x_values = value_json.datos.sen.x.split(';') %}
+          {% set timestamp = x_values[-1] | int %}
+          {{ timestamp | timestamp_local }}
+        icon: mdi:clock-outline
+      - name: "Río Guadaira Aviso 1"
+        unique_id: rio_guadaira_aviso_1
+        value_template: >-
+          {% set avisos = value_json.datos.sen.avisos.split(';') %}
+          {{ avisos[0] if avisos | length > 0 else 'none' }}
+        icon: mdi:alert-circle
+      - name: "Río Guadaira Aviso 2"
+        unique_id: rio_guadaira_aviso_2
+        value_template: >-
+          {% set avisos = value_json.datos.sen.avisos.split(';') %}
+          {{ avisos[1] if avisos | length > 1 else 'none' }}
+        icon: mdi:alert-circle
+      - name: "Río Guadaira Aviso 3"
+        unique_id: rio_guadaira_aviso_3
+        value_template: >-
+          {% set avisos = value_json.datos.sen.avisos.split(';') %}
+          {{ avisos[2] if avisos | length > 2 else 'none' }}
+        icon: mdi:alert-circle
+      - name: "Río Guadaira Avisos Total"
+        unique_id: rio_guadaira_avisos_todos
+        value_template: >-
+          {% set avisos = value_json.datos.sen.avisos.split(';') %}
+          {{ avisos | length }}
+        unit_of_measurement: "avisos"
+        icon: mdi:alert-multiple
+        json_attributes_path: "$.datos.sen"
+        json_attributes:
+          - avisos
+      - name: "Río Guadaira Período"
+        unique_id: rio_guadaira_periodo
+        value_template: "{{ value_json.datos.per }}"
+        icon: mdi:information
+        json_attributes_path: "$.datos"
+        json_attributes:
+          - ini
+          - fin
+          - per

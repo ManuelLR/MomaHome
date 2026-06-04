@@ -13,6 +13,14 @@ elements:
       left: 65%
       "--state-icon-color": blue
   - type: state-icon
+    tap_action: !include ../utils/dishwasher-card.yaml
+    entity: sensor.dishwasher_common_status_operationstate
+    icon: mdi:dishwasher
+    style:
+      top: 53%
+      left: 72%
+      "--state-icon-color": blue
+  - type: state-icon
     tap_action:
       action: more-info
     entity: group.man_003
@@ -46,11 +54,12 @@ elements:
       "--state-icon-color": blue
   - type: state-icon
     tap_action:
-      action: more-info
+      action: navigate
+      navigation_path: /lovelace/1
     entity: vacuum.valetudo_roborocks5
     style:
-      top: 4%
-      left: 18%
+      top: 5%
+      left: 33%
       "--state-icon-color": blue
   - type: conditional
     tap_action:

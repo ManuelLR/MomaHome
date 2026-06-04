@@ -8,13 +8,10 @@
         event_type: device_tracker_new_device
     actions:
       - service: script.telegram_notify
-        data: &data-alert-new-device
+        data:
+          target_person: all
           title: 'ALERT: New device found !'
           message: 'New device called `{{ trigger.event.data.host_name }}` with MAC `{{ trigger.event.data.mac }}` found'
-      - service: script.telegram_notify
-        data:
-          target_person: manolo
-          <<: *data-alert-new-device
 
   - alias: AUT-Notify failed login attempt
     id: AUT-Notify_Failed_Login_Attempt
@@ -30,7 +27,7 @@
     actions:
       service: script.telegram_notify
       data:
-        target_person: manolo
+        target_person: all
         title: "*{{ trigger.notification.title }} !*"
         message: "{{ trigger.notification.message }}"
 
@@ -87,21 +84,6 @@
               message: "Unbanned and restarting HomeAssistant"
       - service: homeassistant.restart
 
-  - alias: AUT-Notify Entrance Door Opened
-    id: AUT-Notify_Entrance_Door_Opened
-    initial_state: 'on'
-    triggers:
-      - platform: state
-        entity_id: binary_sensor.entrance_door_sensor_opened
-        to: 'on'
-    actions:
-      - service: script.telegram_notify
-        data:
-          target_person: manolo
-          title: '[Debug] *Door Opened*'
-          message: 'The entrance door has been opened.'
-          disable_notification: true
-
   - alias: AUT-Notify Entrance Door Opened Extended Away
     id: AUT-Notify_Entrance_Door_Opened_Extended_Away
     initial_state: 'on'
@@ -110,12 +92,28 @@
         entity_id: binary_sensor.entrance_door_sensor_opened
         to: 'on'
     conditions:
-      - condition: state
-        entity_id: sensor.home_occupancy_status
-        state:
-          - 'Extended Away'
-          # Some times after 'Extended Away', we have race condition so temporarily we should add that state
-          - 'Just Arrived'
+      - condition: or
+        conditions:
+          # Explicit security mode (auto-enabled at Extended Away, manual disable).
+          - condition: state
+            entity_id: input_boolean.centinel_mode
+            state: 'on'
+          # House is currently Extended Away.
+          - condition: state
+            entity_id: sensor.home_occupancy_status
+            state: 'Extended Away'
+          # Tracker (on keyring) already transitioned to Just Arrived before the
+          # door opened — fire only if the previous state was Extended Away, not
+          # plain Away. This covers the stolen-keys scenario without triggering
+          # on normal short-trip returns.
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: sensor.home_occupancy_status
+                state: 'Just Arrived'
+              - condition: state
+                entity_id: sensor.home_occupancy_previous_status
+                state: 'Extended Away'
     actions:
       - service: script.telegram_notify
         data:
@@ -203,18 +201,20 @@
         to: 'on'
         for:
           seconds: 3
-    # conditions:
-    #   - condition: state
-    #     entity_id: input_boolean.centinel_mode
-    #     state: 'on'
+    conditions:
+      - condition: state
+        entity_id: input_boolean.centinel_mode
+        state: 'on'
     variables:
       trigger_time: "{{ as_local(now()).strftime('%Y%m%d-%H%M%S') }}"
       trigger_reason: "{{ 'Door Opened' if trigger.id == 'door_opened' else ('Person Detected' if trigger.id == 'person_detected' else 'Motion Detected') }}"
       trigger_time_unix: "{{ as_timestamp(now()) }}"
-      # notification_target_person: auto
+      notification_target_person: all
 
-      ## All the start/ends times are relative to the trigger time
-      record1_start: -5
+      ## All start/end times are relative to the trigger time.
+      ## lookback = now() - T - record_start  (positive value → HA looks back in the ring buffer)
+      ## duration = T + record_end - now()    (positive value → HA records forward from now)
+      record1_start: -13
       record1_end: 4
       record1_processing_time: 3
       record1_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_01.mp4"
@@ -222,49 +222,26 @@
       record2_end: 10
       record2_processing_time: 3
       record2_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_02.mp4"
-      record3_start: -5
+      record3_start: -13
       record3_end: 60
       record3_processing_time: 7
       record3_filename: "/tmp/homeassistant/camera_recordings/entrance_{{ trigger_time }}_03.mp4"
     actions:
-      - alias: "Define target person"
-        variables:
-          notification_target_person: "{{ 'auto' if states('input_boolean.centinel_mode') == 'on' else 'manolo' }}"
-
-      # Immediate notification (does not block the camera)
-      - service: script.telegram_notify
-        data:
-          title: 'Alert: {{ trigger_reason }} - Starting Video Recording'
-          message: "The entrance camera was triggered ({{ trigger_reason }}) at `{{ trigger_time }}` and we are starting video recordings."
-          target_person: '{{ notification_target_person }}'
-
       # Timeline:
-      #   record_1
+      #   initial_telegram ─┐ (parallel, does not delay camera recording)
+      #   record_1          ┘
       #           ┌─ delay 3s → send_video_1
       #           └─ record_2
       #                       ┌─ delay 3s → send_video_2
       #                       └─ record_3 → delay 7s → send_video_3
-      #                                                             
-
-      - service: camera.record
-        continue_on_error: true
-        target:
-          entity_id: camera.entrance_camera
-        data:
-          lookback: '{{ trigger_time_unix + record1_start - as_timestamp(now()) | round(0, "floor") }}'
-          duration: '{{ trigger_time_unix + record1_end - as_timestamp(now()) | round(0, "ceil") }}'
-          filename: '{{ record1_filename }}'
 
       - parallel:
         - sequence:
-          - delay:
-              seconds: '{{ record1_processing_time }}'  # file finalisation buffer for recording 1
+          # Initial notification in parallel so it does not delay camera.record
           - service: script.telegram_notify
-            continue_on_error: true
             data:
-              content_type: 'send_video'
-              video_file: '{{ record1_filename }}'
-              media_caption: "Initial recording #{{ trigger_time }} ({{ record1_start }}s to {{ record1_end }}s)"
+              title: 'Alert: {{ trigger_reason }} - Starting Video Recording'
+              message: "The entrance camera was triggered ({{ trigger_reason }}) at `{{ trigger_time }}` and we are starting video recordings."
               target_person: '{{ notification_target_person }}'
         - sequence:
           - service: camera.record
@@ -272,19 +249,19 @@
             target:
               entity_id: camera.entrance_camera
             data:
-              lookback: '{{ trigger_time_unix + record2_start - as_timestamp(now()) | round(0, "floor") }}'
-              duration: '{{ trigger_time_unix + record2_end - as_timestamp(now()) | round(0, "ceil") }}'
-              filename: '{{ record2_filename }}'
+              lookback: '{{ [as_timestamp(now()) - trigger_time_unix - record1_start, 0] | max | round(0, "ceil") }}'
+              duration: '{{ trigger_time_unix + record1_end - as_timestamp(now()) | round(0, "ceil") }}'
+              filename: '{{ record1_filename }}'
           - parallel:
             - sequence:
               - delay:
-                  seconds: '{{ record2_processing_time }}'  # file finalisation buffer for recording 2
+                  seconds: '{{ record1_processing_time }}'  # file finalisation buffer for recording 1
               - service: script.telegram_notify
                 continue_on_error: true
                 data:
                   content_type: 'send_video'
-                  video_file: '{{ record2_filename }}'
-                  media_caption: "Continuation recording #{{ trigger_time }} ({{ record2_start }}s to {{ record2_end }}s)"
+                  video_file: '{{ record1_filename }}'
+                  media_caption: "Initial recording #{{ trigger_time }} ({{ record1_start }}s to {{ record1_end }}s)"
                   target_person: '{{ notification_target_person }}'
             - sequence:
               - service: camera.record
@@ -292,20 +269,40 @@
                 target:
                   entity_id: camera.entrance_camera
                 data:
-                  lookback: '{{ trigger_time_unix + record3_start - as_timestamp(now()) | round(0, "floor") }}'
-                  duration: '{{ trigger_time_unix + record3_end - as_timestamp(now()) | round(0, "ceil") }}'
-                  filename: '{{ record3_filename }}'
-              - delay:
-                  seconds: '{{ record3_processing_time }}'  # file finalisation buffer for recording 3
-              - service: script.telegram_notify
-                continue_on_error: true
-                data:
-                  content_type: 'send_video'
-                  video_file: '{{ record3_filename }}'
-                  media_caption: "Final recording #{{ trigger_time }} ({{ record3_start }}s to {{ record3_end }}s)"
-                  target_person: '{{ notification_target_person }}'
-              # Clean up old recordings
-              - service: shell_command.delete_old_camera_recordings
+                  lookback: '{{ [as_timestamp(now()) - trigger_time_unix - record2_start, 0] | max | round(0, "ceil") }}'
+                  duration: '{{ trigger_time_unix + record2_end - as_timestamp(now()) | round(0, "ceil") }}'
+                  filename: '{{ record2_filename }}'
+              - parallel:
+                - sequence:
+                  - delay:
+                      seconds: '{{ record2_processing_time }}'  # file finalisation buffer for recording 2
+                  - service: script.telegram_notify
+                    continue_on_error: true
+                    data:
+                      content_type: 'send_video'
+                      video_file: '{{ record2_filename }}'
+                      media_caption: "Continuation recording #{{ trigger_time }} ({{ record2_start }}s to {{ record2_end }}s)"
+                      target_person: '{{ notification_target_person }}'
+                - sequence:
+                  - service: camera.record
+                    continue_on_error: true
+                    target:
+                      entity_id: camera.entrance_camera
+                    data:
+                      lookback: '{{ [as_timestamp(now()) - trigger_time_unix - record3_start, 0] | max | round(0, "ceil") }}'
+                      duration: '{{ trigger_time_unix + record3_end - as_timestamp(now()) | round(0, "ceil") }}'
+                      filename: '{{ record3_filename }}'
+                  - delay:
+                      seconds: '{{ record3_processing_time }}'  # file finalisation buffer for recording 3
+                  - service: script.telegram_notify
+                    continue_on_error: true
+                    data:
+                      content_type: 'send_video'
+                      video_file: '{{ record3_filename }}'
+                      media_caption: "Final recording #{{ trigger_time }} ({{ record3_start }}s to {{ record3_end }}s)"
+                      target_person: '{{ notification_target_person }}'
+                  # Clean up old recordings
+                  - service: shell_command.delete_old_camera_recordings
 
   # Simulate presence with light patterns
   - alias: AUT-Centinel Mode Light Control - Sunset
