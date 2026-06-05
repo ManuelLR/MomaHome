@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2026.2.3
+FROM ghcr.io/home-assistant/home-assistant:2026.5.4
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -15,7 +15,7 @@ ENV \
     #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
     # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod versioning=semver
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.7.4 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v2.13.5 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
     CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.13.3 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
@@ -27,13 +27,13 @@ ENV \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
     CUSTOM_COMPONENT_EDATA_VERSION=2025.11.3 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
-    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.3.6 \
+    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.4.1 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
     CUSTOM_COMPONENT_GICISKY_VERSION=2.1.0 \
       # renovatebot: datasource=github-releases depName=sca075/mqtt_vacuum_camera
-    CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.3.1 \
+    CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.5.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.3.2 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
