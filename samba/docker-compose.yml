@@ -1,0 +1,36 @@
+version: "2.4"
+services:
+    samba:
+        container_name: samba
+        # Maintained, SMB3-capable image. Renovate keeps the pin updated.
+        image: ghcr.io/servercontainers/samba:a3.22.1-s4.21.4-r4
+        # Crude LAN-only "network drive" to quickly drop phone photos for a
+        # temporary backup. It is NOT exposed through Traefik nor to the
+        # internet: the ports below are bound to the LAN IP only. To reach it
+        # from outside home, connect through WireGuard first.
+        ports:
+            # SMB over TCP. Modern clients use this one:
+            #   - iOS:     Files app -> Connect to Server -> smb://192.168.200.7
+            #   - Android: a file explorer with SMB (CX File Explorer, Solid Explorer)
+            #   - Desktop: \\192.168.200.7 (Windows) / smb://192.168.200.7 (macOS/Linux)
+            - 192.168.200.7:445:445
+            # NetBIOS session service, kept as a fallback for older clients.
+            - 192.168.200.7:139:139
+        environment:
+            - TZ=Europe/Madrid
+            # We connect by IP, so keep discovery broadcasting off and stay quiet
+            # on the LAN.
+            - AVAHI_DISABLE=1
+            - WSDD2_DISABLE=1
+            - NETBIOS_DISABLE=1
+            # Credentials. Define SAMBA_USER and SAMBA_PASSWORD in .env
+            - ACCOUNT_${SAMBA_USER:?Define SAMBA_USER in .env}=${SAMBA_PASSWORD:?Define SAMBA_PASSWORD in .env}
+            # Write files as 1000:1000 to match the rest of the stack (id $USER).
+            - UID_${SAMBA_USER}=1000
+            # Single writable share, mapped to the data folder below. Auth
+            # required (no guest access).
+            - SAMBA_VOLUME_CONFIG_backup=path=/shares/backup; browseable = yes; writable = yes; valid users = ${SAMBA_USER}; force user = ${SAMBA_USER}
+        volumes:
+            # All data together, same convention as syncthing-data
+            - /data/samba-backup:/shares/backup
+        restart: unless-stopped
