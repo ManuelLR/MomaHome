@@ -1,0 +1,20 @@
+# Copy this file to config.yml and set your own password.
+# config.yml is gitignored so credentials are never committed.
+#
+# Reference: https://github.com/crazy-max/docker-samba
+
+auth:
+  - user: moma
+    group: moma
+    uid: 1000          # matches the rest of the stack (id $USER)
+    gid: 1000
+    password: change-me
+
+share:
+  - name: backup
+    path: /samba/backup
+    browsable: yes
+    readonly: no
+    guestok: no        # authentication required, no guest access
+    validusers: moma
+    writelist: moma
