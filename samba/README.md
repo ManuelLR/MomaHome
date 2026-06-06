@@ -46,8 +46,18 @@ Replace `<ip>` with your `SAMBA_BIND_IP`.
   It mounts as a drive. To upload photos: Photos → select → Share → *Save to
   Files* → pick the share. Originals are uploaded as-is (HEIC stays HEIC, full
   quality and metadata).
-- **Android**: a file explorer with SMB support — e.g. **Amaze** (SMB / CIFS
-  connection), CX File Explorer or Solid Explorer → host `<ip>`, share `backup`.
+- **Android**:
+  - *Browse / drop a few files manually*: any SMB-capable file explorer
+    (Amaze, CX File Explorer, Solid Explorer) → host `<ip>`, share `backup`.
+    Note these do foreground transfers, so a big upload can be interrupted if
+    the screen goes off.
+  - *Reliable background backup (recommended)*: a real sync app with a
+    background service — **[SMBSync2](https://github.com/Sentaroh/SMBSync2)**
+    (open source, SMB-native, scheduling + retries) or
+    **[Round Sync](https://github.com/newhinton/Round-Sync)** (open source,
+    rclone-based). Set the app's battery usage to **Unrestricted**
+    (Settings → Apps → [app] → Battery), otherwise Android's Doze mode kills
+    the transfer when the screen is off.
 - **Windows**: `\\<ip>\backup`
 - **macOS / Linux**: `smb://<ip>/backup`
 
