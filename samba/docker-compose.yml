@@ -3,7 +3,7 @@ services:
     samba:
         # crazymax/samba: actively maintained, lightweight Alpine SMB server.
         # Renovate keeps the pin updated.
-        image: crazymax/samba:4.22.8-r1
+        image: crazymax/samba:4.22.8
         # Crude LAN-only "network drive" to quickly drop files (e.g. phone
         # photos) for a temporary backup. It is NOT exposed through Traefik nor
         # to the internet: the port is bound to the IP you set in SAMBA_BIND_IP
