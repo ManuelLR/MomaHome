@@ -1,0 +1,28 @@
+version: "2.4"
+services:
+    samba:
+        # crazymax/samba: actively maintained, lightweight Alpine SMB server.
+        # Renovate keeps the pin updated.
+        image: crazymax/samba:4.22.8
+        # Crude LAN-only "network drive" to quickly drop files (e.g. phone
+        # photos) for a temporary backup. It is NOT exposed through Traefik nor
+        # to the internet: the port is bound to the IP you set in SAMBA_BIND_IP
+        # (use your LAN IP). To reach it from outside home, connect through
+        # WireGuard first.
+        ports:
+            # SMB over TCP only. This is what every modern client uses:
+            #   - iOS:     Files app -> Connect to Server -> smb://<SAMBA_BIND_IP>
+            #   - Android: a file explorer with SMB (Amaze, CX File Explorer...)
+            #   - Desktop: \\<ip> (Windows) / smb://<ip> (macOS/Linux)
+            # No NetBIOS (139) nor discovery: we connect by IP and stay quiet.
+            - ${SAMBA_BIND_IP:?Define SAMBA_BIND_IP in .env (e.g. your LAN IP)}:445:445
+        environment:
+            - TZ=Europe/Madrid
+            - CONFIG_FILE=/data/config.yml
+        volumes:
+            # Users and shares definition. Copy config.example.yml to config.yml
+            # and set your own password (config.yml is gitignored).
+            - ./config.yml:/data/config.yml:ro
+            # Actual storage for the share, same convention as syncthing-data.
+            - /data/samba-backup:/samba/backup
+        restart: unless-stopped
