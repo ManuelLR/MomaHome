@@ -1,5 +1,6 @@
 # automation:
   - alias: AUT-Notify Vacuum Error
+    id: aut_notify_vacuum_error
     initial_state: 'on'
     triggers:
       - platform: state
@@ -34,6 +35,7 @@
             Error was: `{{states("sensor.valetudo_roborocks5_error")}}`
 
   - alias: AUT-Vacuum
+    id: aut_vacuum
     initial_state: 'on'
     triggers:
       - platform: time
@@ -126,6 +128,7 @@
             - '🚫 Stop it 🚫:/vacuum_stop, ✅ Start now:/vacuum_start'
 
   - alias: AUT-Vacuum start
+    id: aut_vacuum_start
     initial_state: 'on'
     triggers:
       - platform: event
@@ -148,6 +151,7 @@
         entity_id: vacuum.valetudo_roborocks5
 
   - alias: AUT-Vacuum update statistics
+    id: aut_vacuum_update_statistics
     mode: queued
     initial_state: 'on'
     triggers:
@@ -193,6 +197,7 @@
             `{{(states('sensor.valetudo_roborocks5_current_statistics_area')|int // 10000)}}` square meters have been cleaned
 
   - alias: AUT-Notify Vacuum maintenance
+    id: aut_notify_vacuum_maintenance
     mode: restart
     initial_state: 'on'
     triggers:
@@ -228,6 +233,7 @@
               - 'Vacuum already cleaned:/vacuum_cleaned'
 
   - alias: AUT-Telegram reset Vacuum meters
+    id: aut_telegram_reset_vacuum_meters
     mode: restart
     initial_state: 'on'
     triggers:
@@ -253,6 +259,7 @@
           message: "Done!"
 
   - alias: AUT-Telegram stop Vacuum
+    id: aut_telegram_stop_vacuum
     mode: restart
     initial_state: 'on'
     triggers:
