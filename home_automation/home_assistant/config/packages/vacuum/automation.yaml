@@ -78,6 +78,14 @@
                   - condition: time
                     after: "11:30:00"
                     before: "22:30:00"
+            # Fallback when workday_sensor is unavailable: use conservative window
+              - condition: and
+                conditions:
+                  - condition: template
+                    value_template: "{{ states('binary_sensor.workday_sensor') in ['unavailable', 'unknown'] }}"
+                  - condition: time
+                    after: "11:30:00"
+                    before: "22:30:00"
       # Not cleaning just now
           - condition: template
             value_template: '{{ states("vacuum.valetudo_roborocks5") == "docked" }}'
