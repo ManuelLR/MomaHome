@@ -45,7 +45,7 @@
             {% set H = 300 %}{% set MID = 200 %}
             {% set LX = 8 %}{% set LVX = 30 %}{% set LTRUNC = 24 %}
             {% set RX = MID + 8 %}{% set RTX = MID + 26 %}
-            {% set SVX = 322 %}{% set C2X = 362 %}{% set RTRUNC = 15 %}
+            {% set SVX = 314 %}{% set C2X = 338 %}{% set RTRUNC = 13 %}
             {% set RH = 20 %}{% set BAR = 22 %}{% set HGAP = 3 %}{% set SGAP = 5 %}
             {% set micons = {'breakfast':'mdi:food-croissant','lunch':'mdi:weather-sunny','snack':'mdi:food-apple','dinner':'mdi:weather-night','cook':'mdi:pot-steam-outline','buy':'mdi:cart-outline'} %}
             {% set p = namespace(el=[]) %}
