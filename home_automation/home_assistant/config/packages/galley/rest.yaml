@@ -80,7 +80,9 @@
     sensor:
       - name: "Galley Meals Raw"
         unique_id: galley_meals_raw
-        value_template: "{{ value_json.items | length }}"
+        # NB: value_json['items'] (bracket), NOT value_json.items — the latter
+        # resolves to the dict.items() METHOD in Jinja, not the "items" key.
+        value_template: "{{ value_json['items'] | length }}"
         unit_of_measurement: "meals"
         icon: mdi:silverware-fork-knife
         json_attributes:
