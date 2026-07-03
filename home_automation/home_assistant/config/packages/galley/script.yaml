@@ -9,10 +9,14 @@
   #
   # Layout (two columns split at x=200):
   #   Left  = meal plan, one black-bar-headed block per day (today .. +4), as
-  #           many days as vertically fit. Slot shown as an MDI icon (sun/moon/
-  #           coffee/apple/pot/cart) instead of a text label. cook/buy in red.
-  #   Right = NEVERA (all rows) then CONGELADOR (oldest-first, tail truncates
-  #           with "… (+N)"); headers carry a fridge/snowflake icon; fossils red.
+  #           many days as vertically fit. Slot shown as an MDI icon
+  #           (croissant/sun/apple/moon/knife/cart). cook/buy in red. Meal text
+  #           is hard-clipped only at the column edge (no ellipsis).
+  #   Right = NEVERA then CONGELADOR (headers carry a fridge/snowflake icon, no
+  #           totals). Each row: name + servings (fork/knife icon). Then the
+  #           fridge shows AGE (eaten soon → freshness matters); the freezer
+  #           shows the TAPER count (box icon). Oldest-first; fossils in red;
+  #           freezer tail truncates with "+N más".
   #   anchor 'lm' = x is left edge, y is vertical center (crisp icon+text align).
   ##
   galley_panel_preview:
@@ -38,10 +42,11 @@
           payload: >-
             {# ---- layout constants (400x300 landscape) ---- #}
             {% set H = 300 %}{% set MID = 200 %}
-            {% set LX = 8 %}{% set LVX = 30 %}{% set LTRUNC = 19 %}
-            {% set RX = MID + 8 %}{% set RVX = MID + 26 %}{% set RMX = 350 %}{% set RTRUNC = 14 %}
+            {% set LX = 8 %}{% set LVX = 30 %}{% set LTRUNC = 24 %}
+            {% set RX = MID + 8 %}{% set RSVI = 312 %}{% set RSVN = 328 %}
+            {% set RC2I = 356 %}{% set RC2N = 372 %}{% set RAGE = 350 %}{% set RTRUNC = 14 %}
             {% set RH = 20 %}{% set BAR = 22 %}{% set HGAP = 3 %}{% set SGAP = 5 %}
-            {% set micons = {'breakfast':'mdi:coffee','lunch':'mdi:weather-sunny','snack':'mdi:food-apple','dinner':'mdi:weather-night','cook':'mdi:pot-steam-outline','buy':'mdi:cart-outline'} %}
+            {% set micons = {'breakfast':'mdi:food-croissant','lunch':'mdi:weather-sunny','snack':'mdi:food-apple','dinner':'mdi:weather-night','cook':'mdi:knife','buy':'mdi:cart-outline'} %}
             {% set p = namespace(el=[]) %}
 
             {# ---------------- LEFT COLUMN: meal plan (multi-day) ---------------- #}
@@ -54,10 +59,9 @@
                 {% set ly.y = ly.y + BAR + HGAP %}
                 {% for r in day.rows %}
                   {% if ly.y + RH <= H %}
-                    {% set tx = (r.text | string) %}
                     {% set p.el = p.el + [
                       {'type':'icon','value':micons[r.slot],'x':LX,'y':ly.y+(RH//2),'anchor':'lm','size':15,'color':('red' if r.red else 'black')},
-                      {'type':'text','value':(tx[:LTRUNC] ~ ('…' if tx|length>LTRUNC else '')),'x':LVX,'y':ly.y+(RH//2),'anchor':'lm','size':14,'color':('red' if r.red else 'black')}] %}
+                      {'type':'text','value':((r.text | string)[:LTRUNC]),'x':LVX,'y':ly.y+(RH//2),'anchor':'lm','size':14,'color':('red' if r.red else 'black')}] %}
                     {% set ly.y = ly.y + RH %}
                   {% endif %}
                 {% endfor %}
@@ -70,24 +74,26 @@
             {% set p.el = p.el + [
               {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
               {'type':'icon','value':'mdi:fridge','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
-              {'type':'text','value':('NEVERA · ' ~ (i.fridge_containers|default(0))),'x':RVX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'}] %}
+              {'type':'text','value':'NEVERA','x':MID+26,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'}] %}
             {% set ry.y = ry.y + BAR + HGAP %}
             {% set fr = i.fridge | default([]) %}
             {% if fr | length == 0 %}
               {% set p.el = p.el + [{'type':'text','value':'Nevera vacía','x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% set ry.y = ry.y + RH %}
             {% endif %}
             {% for g in fr %}
-              {% set nm = (g.name | string) %}
+              {% set col = 'red' if g.fossil else 'black' %}
               {% set p.el = p.el + [
-                {'type':'text','value':(nm[:RTRUNC] ~ ('…' if nm|length>RTRUNC else '')),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':('red' if g.fossil else 'black')},
-                {'type':'text','value':(g.age ~ ' ·' ~ g.count),'x':RMX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':('red' if g.fossil else 'black')}] %}
+                {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
+                {'type':'icon','value':'mdi:silverware-fork-knife','x':RSVI,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
+                {'type':'text','value':(g.servings|string),'x':RSVN,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
+                {'type':'text','value':(g.age|string),'x':RAGE,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
             {% set ry.y = ry.y + SGAP %}
             {% set p.el = p.el + [
               {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
               {'type':'icon','value':'mdi:snowflake','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
-              {'type':'text','value':('CONGELADOR · ' ~ (i.freezer_servings|default(0)) ~ ' rac · ' ~ (i.freezer_containers|default(0))),'x':RVX,'y':ry.y+(BAR//2),'anchor':'lm','size':13,'color':'white'}] %}
+              {'type':'text','value':'CONGELADOR','x':MID+26,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'}] %}
             {% set ry.y = ry.y + BAR + HGAP %}
             {% set flist = i.freezer | default([]) %}
             {% if flist | length == 0 %}
@@ -96,13 +102,16 @@
             {% set fcap = ((H - ry.y) // RH) %}
             {% set ftrunc = flist | length > fcap %}
             {% for g in (flist[:fcap-1] if ftrunc else flist) %}
-              {% set nm = (g.name | string) %}
+              {% set col = 'red' if g.fossil else 'black' %}
               {% set p.el = p.el + [
-                {'type':'text','value':(nm[:RTRUNC] ~ ('…' if nm|length>RTRUNC else '')),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':('red' if g.fossil else 'black')},
-                {'type':'text','value':(g.age ~ ' ·' ~ g.count),'x':RMX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':('red' if g.fossil else 'black')}] %}
+                {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
+                {'type':'icon','value':'mdi:silverware-fork-knife','x':RSVI,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
+                {'type':'text','value':(g.servings|string),'x':RSVN,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
+                {'type':'icon','value':'mdi:package-variant-closed','x':RC2I,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
+                {'type':'text','value':(g.count|string),'x':RC2N,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
-            {% if ftrunc %}{% set p.el = p.el + [{'type':'text','value':'… (+' ~ (flist | length - (fcap-1)) ~ ')','x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% endif %}
+            {% if ftrunc %}{% set p.el = p.el + [{'type':'text','value':('+' ~ (flist | length - (fcap-1)) ~ ' más'),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% endif %}
 
             {{ p.el }}
         target:
