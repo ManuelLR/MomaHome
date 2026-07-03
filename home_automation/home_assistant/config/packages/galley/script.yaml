@@ -9,15 +9,16 @@
   #
   # Layout (two columns split at x=200):
   #   Left  = meal plan, one black-bar-headed block per day (today .. +4), as
-  #           many days as vertically fit. Slot shown as an MDI icon
-  #           (croissant/sun/apple/moon/knife/cart). cook/buy in red. Meal text
-  #           is hard-clipped only at the column edge (no ellipsis).
-  #   Right = NEVERA then CONGELADOR (headers carry a fridge/snowflake icon, no
-  #           totals). Each row: name + servings (fork/knife icon). Then the
-  #           fridge shows AGE (eaten soon → freshness matters); the freezer
-  #           shows the TAPER count (box icon). Oldest-first; fossils in red;
-  #           freezer tail truncates with "+N más".
-  #   anchor 'lm' = x is left edge, y is vertical center (crisp icon+text align).
+  #           many days as vertically fit. Slot = MDI icon (croissant/sun/apple/
+  #           moon/pot/cart). cook/buy in red. Meal text hard-clipped only at the
+  #           column edge (no ellipsis).
+  #   Right = NEVERA then CONGELADOR. Column icons live ONCE in the black header
+  #           bar (fork/knife = servings; clock = age; box = tapers); the rows
+  #           below carry just the aligned numbers under each icon:
+  #             fridge  = name | servings | AGE     (eaten soon → freshness)
+  #             freezer = name | servings | tapers
+  #           Oldest-first; fossils in red; freezer tail truncates with "+N más".
+  #   anchor 'lm' = x is left edge, y is vertical center (crisp alignment).
   ##
   galley_panel_preview:
     alias: "Galley · preview panel tinta"
@@ -43,10 +44,10 @@
             {# ---- layout constants (400x300 landscape) ---- #}
             {% set H = 300 %}{% set MID = 200 %}
             {% set LX = 8 %}{% set LVX = 30 %}{% set LTRUNC = 24 %}
-            {% set RX = MID + 8 %}{% set RSVI = 312 %}{% set RSVN = 328 %}
-            {% set RC2I = 356 %}{% set RC2N = 372 %}{% set RAGE = 350 %}{% set RTRUNC = 14 %}
+            {% set RX = MID + 8 %}{% set RTX = MID + 26 %}
+            {% set SVX = 322 %}{% set C2X = 362 %}{% set RTRUNC = 15 %}
             {% set RH = 20 %}{% set BAR = 22 %}{% set HGAP = 3 %}{% set SGAP = 5 %}
-            {% set micons = {'breakfast':'mdi:food-croissant','lunch':'mdi:weather-sunny','snack':'mdi:food-apple','dinner':'mdi:weather-night','cook':'mdi:knife','buy':'mdi:cart-outline'} %}
+            {% set micons = {'breakfast':'mdi:food-croissant','lunch':'mdi:weather-sunny','snack':'mdi:food-apple','dinner':'mdi:weather-night','cook':'mdi:pot-steam-outline','buy':'mdi:cart-outline'} %}
             {% set p = namespace(el=[]) %}
 
             {# ---------------- LEFT COLUMN: meal plan (multi-day) ---------------- #}
@@ -71,10 +72,13 @@
 
             {# ---------------- RIGHT COLUMN: inventory ---------------- #}
             {% set ry = namespace(y=0) %}
+            {# --- NEVERA header: icon + name, plus column icons (servings, age) --- #}
             {% set p.el = p.el + [
               {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
               {'type':'icon','value':'mdi:fridge','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
-              {'type':'text','value':'NEVERA','x':MID+26,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'}] %}
+              {'type':'text','value':'NEVERA','x':RTX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'},
+              {'type':'icon','value':'mdi:silverware-fork-knife','x':SVX,'y':ry.y+(BAR//2),'anchor':'lm','size':13,'color':'white'},
+              {'type':'icon','value':'mdi:clock-outline','x':C2X,'y':ry.y+(BAR//2),'anchor':'lm','size':13,'color':'white'}] %}
             {% set ry.y = ry.y + BAR + HGAP %}
             {% set fr = i.fridge | default([]) %}
             {% if fr | length == 0 %}
@@ -84,16 +88,18 @@
               {% set col = 'red' if g.fossil else 'black' %}
               {% set p.el = p.el + [
                 {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
-                {'type':'icon','value':'mdi:silverware-fork-knife','x':RSVI,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
-                {'type':'text','value':(g.servings|string),'x':RSVN,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
-                {'type':'text','value':(g.age|string),'x':RAGE,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col}] %}
+                {'type':'text','value':(g.servings|string),'x':SVX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
+                {'type':'text','value':(g.age|string),'x':C2X,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
             {% set ry.y = ry.y + SGAP %}
+            {# --- CONGELADOR header: icon + name, plus column icons (servings, tapers) --- #}
             {% set p.el = p.el + [
               {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
               {'type':'icon','value':'mdi:snowflake','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
-              {'type':'text','value':'CONGELADOR','x':MID+26,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'}] %}
+              {'type':'text','value':'CONGELADOR','x':RTX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'},
+              {'type':'icon','value':'mdi:silverware-fork-knife','x':SVX,'y':ry.y+(BAR//2),'anchor':'lm','size':13,'color':'white'},
+              {'type':'icon','value':'mdi:package-variant-closed','x':C2X,'y':ry.y+(BAR//2),'anchor':'lm','size':13,'color':'white'}] %}
             {% set ry.y = ry.y + BAR + HGAP %}
             {% set flist = i.freezer | default([]) %}
             {% if flist | length == 0 %}
@@ -105,10 +111,8 @@
               {% set col = 'red' if g.fossil else 'black' %}
               {% set p.el = p.el + [
                 {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
-                {'type':'icon','value':'mdi:silverware-fork-knife','x':RSVI,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
-                {'type':'text','value':(g.servings|string),'x':RSVN,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
-                {'type':'icon','value':'mdi:package-variant-closed','x':RC2I,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
-                {'type':'text','value':(g.count|string),'x':RC2N,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col}] %}
+                {'type':'text','value':(g.servings|string),'x':SVX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col},
+                {'type':'text','value':(g.count|string),'x':C2X,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':col}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
             {% if ftrunc %}{% set p.el = p.el + [{'type':'text','value':('+' ~ (flist | length - (fcap-1)) ~ ' más'),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% endif %}
