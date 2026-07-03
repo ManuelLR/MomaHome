@@ -8,13 +8,12 @@
   # (meal-slot hiding) re-evaluate every 5 min regardless of data changes.
   #
   #   sensor.galley_panel_meals.data:
-  #     { today_label, tomorrow_label,
-  #       today:    [ {slot, label, text, red} ],   # ordered, rules applied
-  #       tomorrow: [ {slot, label, text, red} ] }
-  #     Rules: comida/cena always present (text '—' if empty); the rest only
-  #     if they have data; for TODAY a slot is dropped once its cut-off time
-  #     (input_datetime.galley_cutoff_*) has passed. Tomorrow is never hidden.
-  #     `red` flags cook/buy (render them in the red channel).
+  #     { days: [ {header, today, rows:[{slot, text, red}]} ] }   # today .. +4
+  #     Rules per day: comida/cena always present (text '—' if empty); the rest
+  #     only if they have data; for TODAY only, a slot is dropped once its
+  #     cut-off time (input_datetime.galley_cutoff_*) has passed. `red` flags
+  #     cook/buy. `header` is a ready string ("HOY · 3 jul", "DOMINGO · 5 jul").
+  #     The render draws as many days as fit and maps slot -> MDI icon.
   #
   #   sensor.galley_panel_inventory.data:
   #     { fridge:[grp], freezer:[grp],
@@ -43,7 +42,7 @@
         event: start
 
     sensor:
-      # -------------------- MEAL PLAN (today + tomorrow) --------------------
+      # -------------------- MEAL PLAN (today .. +4 days) --------------------
       - name: "Galley Panel Meals"
         unique_id: galley_panel_meals
         icon: mdi:calendar-today
@@ -53,46 +52,42 @@
           data: >-
             {% set meals = state_attr('sensor.galley_meals_raw','items') or [] %}
             {% set td = now() %}
-            {% set today = td.strftime('%Y-%m-%d') %}
-            {% set tomorrow = (td + timedelta(days=1)).strftime('%Y-%m-%d') %}
             {% set now_secs = td.hour*3600 + td.minute*60 + td.second %}
-            {% set dias = ['lun','mar','mié','jue','vie','sáb','dom'] %}
             {% set meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'] %}
+            {% set wdays = ['LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO','DOMINGO'] %}
             {% set slot_order = ['breakfast','lunch','snack','dinner','cook','buy'] %}
-            {% set labels = {'breakfast':'Desayuno','lunch':'Comida','snack':'Merienda','dinner':'Cena','cook':'🍳 Cocinar','buy':'🛒 Comprar'} %}
             {% set always = ['lunch','dinner'] %}
             {% set redslots = ['cook','buy'] %}
             {% set cutoffs = {'breakfast':'input_datetime.galley_cutoff_breakfast','lunch':'input_datetime.galley_cutoff_lunch','snack':'input_datetime.galley_cutoff_snack','dinner':'input_datetime.galley_cutoff_dinner'} %}
-            {% set ns = namespace(today=[], tomorrow=[]) %}
-            {% for slot in slot_order %}
-              {% set t = namespace(text=none) %}
-              {% set m = namespace(text=none) %}
-              {% for meal in meals %}
-                {% set d = (meal.date | string)[:10] %}
-                {% set pot = meal.expand.pot if (meal.expand is defined and meal.expand.pot is defined and meal.expand.pot) else none %}
-                {% set txt = pot.name if pot else meal.text %}
-                {% set lbl = (txt ~ (' (' ~ pot.code ~ ')' if pot and pot.code else '')) if txt else none %}
-                {% if meal.slot == slot and d == today %}{% set t.text = lbl %}{% endif %}
-                {% if meal.slot == slot and d == tomorrow %}{% set m.text = lbl %}{% endif %}
+            {% set ns = namespace(days=[]) %}
+            {% for off in range(5) %}
+              {% set dd = td + timedelta(days=off) %}
+              {% set ds = dd.strftime('%Y-%m-%d') %}
+              {% set rows = namespace(list=[]) %}
+              {% for slot in slot_order %}
+                {% set e = namespace(text=none) %}
+                {% for meal in meals %}
+                  {% if meal.slot == slot and (meal.date | string)[:10] == ds %}
+                    {% set pot = meal.expand.pot if (meal.expand is defined and meal.expand.pot is defined and meal.expand.pot) else none %}
+                    {% set txt = pot.name if pot else meal.text %}
+                    {% set e.text = (txt ~ (' (' ~ pot.code ~ ')' if pot and pot.code else '')) if txt else none %}
+                  {% endif %}
+                {% endfor %}
+                {% set hidden = false %}
+                {% if off == 0 and slot in cutoffs %}
+                  {% set cut = state_attr(cutoffs[slot], 'timestamp') %}
+                  {% if cut is not none and now_secs > (cut | int) %}{% set hidden = true %}{% endif %}
+                {% endif %}
+                {% set has = e.text is not none and (e.text | trim) != '' %}
+                {% if (slot in always or has) and not hidden %}
+                  {% set rows.list = rows.list + [{'slot': slot, 'text': (e.text if has else '—'), 'red': slot in redslots}] %}
+                {% endif %}
               {% endfor %}
-              {% set hidden = false %}
-              {% if slot in cutoffs %}
-                {% set cut = state_attr(cutoffs[slot], 'timestamp') %}
-                {% if cut is not none and now_secs > (cut | int) %}{% set hidden = true %}{% endif %}
-              {% endif %}
-              {% set has_t = t.text is not none and (t.text | trim) != '' %}
-              {% set has_m = m.text is not none and (m.text | trim) != '' %}
-              {% if (slot in always or has_t) and not hidden %}
-                {% set ns.today = ns.today + [{'slot': slot, 'label': labels[slot], 'text': (t.text if has_t else '—'), 'red': slot in redslots}] %}
-              {% endif %}
-              {% if (slot in always or has_m) %}
-                {% set ns.tomorrow = ns.tomorrow + [{'slot': slot, 'label': labels[slot], 'text': (m.text if has_m else '—'), 'red': slot in redslots}] %}
-              {% endif %}
+              {% set tag = 'HOY' if off == 0 else ('MAÑANA' if off == 1 else wdays[dd.weekday()]) %}
+              {% set header = tag ~ ' · ' ~ dd.day ~ ' ' ~ meses[dd.month-1] %}
+              {% set ns.days = ns.days + [{'header': header, 'today': off == 0, 'rows': rows.list}] %}
             {% endfor %}
-            {% set tl = dias[td.weekday()] ~ ' ' ~ td.day ~ ' ' ~ meses[td.month-1] %}
-            {% set nx = td + timedelta(days=1) %}
-            {% set ml = dias[nx.weekday()] ~ ' ' ~ nx.day ~ ' ' ~ meses[nx.month-1] %}
-            {{ {'today_label': tl, 'tomorrow_label': ml, 'today': ns.today, 'tomorrow': ns.tomorrow} }}
+            {{ {'days': ns.days} }}
 
       # -------------------- INVENTORY (fridge + freezer) --------------------
       - name: "Galley Panel Inventory"

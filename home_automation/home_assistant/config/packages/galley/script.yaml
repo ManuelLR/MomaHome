@@ -5,17 +5,15 @@
   # Composes the 400x300 BWR layout from sensor.galley_panel_meals /
   # sensor.galley_panel_inventory and calls `gicisky.write` with dry_run: true,
   # so it renders to the integration's PREVIEW camera WITHOUT sending anything to
-  # the physical panel over BLE.
+  # the physical panel over BLE. Flip gicisky_write_dry_run to false to push.
   #
-  # To actually push to the panel later: change `dry_run: true` -> false (or use
-  # gicisky.write_guarded to add dedup/debounce). Set the target device in
-  # secrets.yaml as `galley_panel_device_id` (HA device_id of the Gicisky panel).
-  #
-  # Layout: two columns split by a vertical line at x=200.
-  #   Left  = plan (HOY then MAÑANA); tomorrow truncates with "…".
+  # Layout (two columns split at x=200):
+  #   Left  = meal plan, one black-bar-headed block per day (today .. +4), as
+  #           many days as vertically fit. Slot shown as an MDI icon (sun/moon/
+  #           coffee/apple/pot/cart) instead of a text label. cook/buy in red.
   #   Right = NEVERA (all rows) then CONGELADOR (oldest-first, tail truncates
-  #           with "… (+N)"). Red channel: cook/buy slots and fossil groups.
-  #   Emoji are stripped for the panel font; the red colour carries the accent.
+  #           with "… (+N)"); headers carry a fridge/snowflake icon; fossils red.
+  #   anchor 'lm' = x is left edge, y is vertical center (crisp icon+text align).
   ##
   galley_panel_preview:
     alias: "Galley · preview panel tinta"
@@ -24,8 +22,7 @@
     sequence:
       - variables:
           # PREVIEW ONLY. Flip to false (or call gicisky.write_guarded) to push
-          # the render to the physical panel over BLE. Same idiom as the working
-          # packages/gicisky/automation.yaml.
+          # the render to the physical panel over BLE.
           gicisky_write_dry_run: true
           m: "{{ state_attr('sensor.galley_panel_meals','data') or {} }}"
           i: "{{ state_attr('sensor.galley_panel_inventory','data') or {} }}"
@@ -41,70 +38,71 @@
           payload: >-
             {# ---- layout constants (400x300 landscape) ---- #}
             {% set H = 300 %}{% set MID = 200 %}
-            {% set LX = 8 %}{% set LTX = 66 %}{% set LTRUNC = 15 %}
-            {% set RX = 208 %}{% set RMX = 348 %}{% set RTRUNC = 15 %}
-            {% set RH = 21 %}{% set BAR = 24 %}{% set HADV = 28 %}{% set GAP = 6 %}
-            {% set plabels = {'breakfast':'Desayuno','lunch':'Comida','snack':'Merienda','dinner':'Cena','cook':'Cocinar','buy':'Comprar'} %}
+            {% set LX = 8 %}{% set LVX = 30 %}{% set LTRUNC = 19 %}
+            {% set RX = MID + 8 %}{% set RVX = MID + 26 %}{% set RMX = 350 %}{% set RTRUNC = 14 %}
+            {% set RH = 20 %}{% set BAR = 22 %}{% set HGAP = 3 %}{% set SGAP = 5 %}
+            {% set micons = {'breakfast':'mdi:coffee','lunch':'mdi:weather-sunny','snack':'mdi:food-apple','dinner':'mdi:weather-night','cook':'mdi:pot-steam-outline','buy':'mdi:cart-outline'} %}
             {% set p = namespace(el=[]) %}
 
-            {# ---------------- LEFT COLUMN: plan ---------------- #}
+            {# ---------------- LEFT COLUMN: meal plan (multi-day) ---------------- #}
             {% set ly = namespace(y=0) %}
-            {% set p.el = p.el + [{'type':'rectangle','x_start':0,'y_start':ly.y,'x_end':MID,'y_end':ly.y+BAR,'fill':'black','outline':'black'},{'type':'text','value':('HOY · ' ~ (m.today_label|default(''))),'x':6,'y':ly.y+5,'size':15,'color':'white'}] %}{% set ly.y = ly.y + HADV %}
-            {% set tod = m.today | default([]) %}
-            {% if tod | length == 0 %}
-              {% set p.el = p.el + [{'type':'text','value':'— sin plan —','x':LX,'y':ly.y,'size':14,'color':'black'}] %}{% set ly.y = ly.y + RH %}
-            {% endif %}
-            {% for r in tod[:6] %}
-              {% set tx = (r.text | string) %}
-              {% set p.el = p.el + [
-                {'type':'text','value':(plabels[r.slot] | default(r.label)),'x':LX,'y':ly.y,'size':15,'color':('red' if r.red else 'black')},
-                {'type':'text','value':(tx[:LTRUNC] ~ ('…' if tx|length>LTRUNC else '')),'x':LTX,'y':ly.y,'size':15,'color':('red' if r.red else 'black')}] %}
-              {% set ly.y = ly.y + RH %}
+            {% for day in (m.days | default([])) %}
+              {% if ly.y + BAR + RH <= H %}
+                {% set p.el = p.el + [
+                  {'type':'rectangle','x_start':0,'y_start':ly.y,'x_end':MID,'y_end':ly.y+BAR,'fill':'black','outline':'black'},
+                  {'type':'text','value':day.header,'x':LX,'y':ly.y+(BAR//2),'anchor':'lm','size':14,'color':'white'}] %}
+                {% set ly.y = ly.y + BAR + HGAP %}
+                {% for r in day.rows %}
+                  {% if ly.y + RH <= H %}
+                    {% set tx = (r.text | string) %}
+                    {% set p.el = p.el + [
+                      {'type':'icon','value':micons[r.slot],'x':LX,'y':ly.y+(RH//2),'anchor':'lm','size':15,'color':('red' if r.red else 'black')},
+                      {'type':'text','value':(tx[:LTRUNC] ~ ('…' if tx|length>LTRUNC else '')),'x':LVX,'y':ly.y+(RH//2),'anchor':'lm','size':14,'color':('red' if r.red else 'black')}] %}
+                    {% set ly.y = ly.y + RH %}
+                  {% endif %}
+                {% endfor %}
+                {% set ly.y = ly.y + SGAP %}
+              {% endif %}
             {% endfor %}
-            {% set ly.y = ly.y + GAP %}
-            {% set p.el = p.el + [{'type':'rectangle','x_start':0,'y_start':ly.y,'x_end':MID,'y_end':ly.y+BAR,'fill':'black','outline':'black'},{'type':'text','value':('MAÑANA · ' ~ (m.tomorrow_label|default(''))),'x':6,'y':ly.y+5,'size':15,'color':'white'}] %}{% set ly.y = ly.y + HADV %}
-            {% set tlist = m.tomorrow | default([]) %}
-            {% set cap = ((H - ly.y) // RH) %}
-            {% set trunc = tlist | length > cap %}
-            {% for r in (tlist[:cap-1] if trunc else tlist) %}
-              {% set tx = (r.text | string) %}
-              {% set p.el = p.el + [
-                {'type':'text','value':(plabels[r.slot] | default(r.label)),'x':LX,'y':ly.y,'size':15,'color':('red' if r.red else 'black')},
-                {'type':'text','value':(tx[:LTRUNC] ~ ('…' if tx|length>LTRUNC else '')),'x':LTX,'y':ly.y,'size':15,'color':('red' if r.red else 'black')}] %}
-              {% set ly.y = ly.y + RH %}
-            {% endfor %}
-            {% if trunc %}{% set p.el = p.el + [{'type':'text','value':'…','x':LX,'y':ly.y,'size':15,'color':'black'}] %}{% endif %}
 
             {# ---------------- RIGHT COLUMN: inventory ---------------- #}
             {% set ry = namespace(y=0) %}
-            {% set p.el = p.el + [{'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},{'type':'text','value':('NEVERA · ' ~ (i.fridge_containers|default(0))),'x':MID+7,'y':ry.y+5,'size':15,'color':'white'}] %}{% set ry.y = ry.y + HADV %}
+            {% set p.el = p.el + [
+              {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
+              {'type':'icon','value':'mdi:fridge','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
+              {'type':'text','value':('NEVERA · ' ~ (i.fridge_containers|default(0))),'x':RVX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'}] %}
+            {% set ry.y = ry.y + BAR + HGAP %}
             {% set fr = i.fridge | default([]) %}
             {% if fr | length == 0 %}
-              {% set p.el = p.el + [{'type':'text','value':'Nevera vacía','x':RX,'y':ry.y,'size':14,'color':'black'}] %}{% set ry.y = ry.y + RH %}
+              {% set p.el = p.el + [{'type':'text','value':'Nevera vacía','x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% set ry.y = ry.y + RH %}
             {% endif %}
             {% for g in fr %}
               {% set nm = (g.name | string) %}
               {% set p.el = p.el + [
-                {'type':'text','value':(nm[:RTRUNC] ~ ('…' if nm|length>RTRUNC else '')),'x':RX,'y':ry.y,'size':15,'color':('red' if g.fossil else 'black')},
-                {'type':'text','value':(g.age ~ ' ·' ~ g.count),'x':RMX,'y':ry.y,'size':13,'color':('red' if g.fossil else 'black')}] %}
+                {'type':'text','value':(nm[:RTRUNC] ~ ('…' if nm|length>RTRUNC else '')),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':('red' if g.fossil else 'black')},
+                {'type':'text','value':(g.age ~ ' ·' ~ g.count),'x':RMX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':('red' if g.fossil else 'black')}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
-            {% set ry.y = ry.y + GAP %}
-            {% set p.el = p.el + [{'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},{'type':'text','value':('CONGELADOR · ' ~ (i.freezer_servings|default(0)) ~ ' rac · ' ~ (i.freezer_containers|default(0))),'x':MID+7,'y':ry.y+5,'size':15,'color':'white'}] %}{% set ry.y = ry.y + HADV %}
+            {% set ry.y = ry.y + SGAP %}
+            {% set p.el = p.el + [
+              {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
+              {'type':'icon','value':'mdi:snowflake','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
+              {'type':'text','value':('CONGELADOR · ' ~ (i.freezer_servings|default(0)) ~ ' rac · ' ~ (i.freezer_containers|default(0))),'x':RVX,'y':ry.y+(BAR//2),'anchor':'lm','size':13,'color':'white'}] %}
+            {% set ry.y = ry.y + BAR + HGAP %}
             {% set flist = i.freezer | default([]) %}
             {% if flist | length == 0 %}
-              {% set p.el = p.el + [{'type':'text','value':'Congelador vacío','x':RX,'y':ry.y,'size':14,'color':'black'}] %}{% set ry.y = ry.y + RH %}
+              {% set p.el = p.el + [{'type':'text','value':'Congelador vacío','x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% set ry.y = ry.y + RH %}
             {% endif %}
             {% set fcap = ((H - ry.y) // RH) %}
             {% set ftrunc = flist | length > fcap %}
             {% for g in (flist[:fcap-1] if ftrunc else flist) %}
               {% set nm = (g.name | string) %}
               {% set p.el = p.el + [
-                {'type':'text','value':(nm[:RTRUNC] ~ ('…' if nm|length>RTRUNC else '')),'x':RX,'y':ry.y,'size':15,'color':('red' if g.fossil else 'black')},
-                {'type':'text','value':(g.age ~ ' ·' ~ g.count),'x':RMX,'y':ry.y,'size':13,'color':('red' if g.fossil else 'black')}] %}
+                {'type':'text','value':(nm[:RTRUNC] ~ ('…' if nm|length>RTRUNC else '')),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':('red' if g.fossil else 'black')},
+                {'type':'text','value':(g.age ~ ' ·' ~ g.count),'x':RMX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':('red' if g.fossil else 'black')}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
-            {% if ftrunc %}{% set p.el = p.el + [{'type':'text','value':'… (+' ~ (flist | length - (fcap-1)) ~ ')','x':RX,'y':ry.y,'size':13,'color':'black'}] %}{% endif %}
+            {% if ftrunc %}{% set p.el = p.el + [{'type':'text','value':'… (+' ~ (flist | length - (fcap-1)) ~ ')','x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% endif %}
 
             {{ p.el }}
         target:
