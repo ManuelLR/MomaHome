@@ -1,0 +1,141 @@
+# template:
+  ##
+  # galley e-ink panel - derived data for the Gicisky display.
+  #
+  # Consumes the raw REST sensors (rest.yaml) and exposes two panel-ready
+  # sensors, each with a single `data` attribute (a structured object the
+  # Gicisky render binds to). Trigger-based so the time-of-day rules
+  # (meal-slot hiding) re-evaluate every 5 min regardless of data changes.
+  #
+  #   sensor.galley_panel_meals.data:
+  #     { today_label, tomorrow_label,
+  #       today:    [ {slot, label, text, red} ],   # ordered, rules applied
+  #       tomorrow: [ {slot, label, text, red} ] }
+  #     Rules: comida/cena always present (text '—' if empty); the rest only
+  #     if they have data; for TODAY a slot is dropped once its cut-off time
+  #     (input_datetime.galley_cutoff_*) has passed. Tomorrow is never hidden.
+  #     `red` flags cook/buy (render them in the red channel).
+  #
+  #   sensor.galley_panel_inventory.data:
+  #     { fridge:[grp], freezer:[grp],
+  #       fridge_containers, fridge_servings,
+  #       freezer_containers, freezer_servings }
+  #     grp = {name, code, count, servings, days, age, fossil}
+  #     Groups containers by pot (standalone -> its own row), oldest first.
+  #     `fossil` (>6 months) -> render in the red channel.
+  #     Render note: fridge is always shown in full; freezer is oldest-first
+  #     so truncating its tail (with an ellipsis / "+N") keeps the urgent ones.
+  ##
+
+  - trigger:
+      - platform: state
+        entity_id:
+          - sensor.galley_freezer_raw
+          - sensor.galley_fridge_raw
+          - sensor.galley_meals_raw
+          - input_datetime.galley_cutoff_breakfast
+          - input_datetime.galley_cutoff_lunch
+          - input_datetime.galley_cutoff_snack
+          - input_datetime.galley_cutoff_dinner
+      - platform: time_pattern
+        minutes: "/5"
+      - platform: homeassistant
+        event: start
+
+    sensor:
+      # -------------------- MEAL PLAN (today + tomorrow) --------------------
+      - name: "Galley Panel Meals"
+        unique_id: galley_panel_meals
+        icon: mdi:calendar-today
+        state: >-
+          {{ (state_attr('sensor.galley_meals_raw','items') or []) | length }}
+        attributes:
+          data: >-
+            {% set meals = state_attr('sensor.galley_meals_raw','items') or [] %}
+            {% set td = now() %}
+            {% set today = td.strftime('%Y-%m-%d') %}
+            {% set tomorrow = (td + timedelta(days=1)).strftime('%Y-%m-%d') %}
+            {% set now_secs = td.hour*3600 + td.minute*60 + td.second %}
+            {% set dias = ['lun','mar','mié','jue','vie','sáb','dom'] %}
+            {% set meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'] %}
+            {% set slot_order = ['breakfast','lunch','snack','dinner','cook','buy'] %}
+            {% set labels = {'breakfast':'Desayuno','lunch':'Comida','snack':'Merienda','dinner':'Cena','cook':'🍳 Cocinar','buy':'🛒 Comprar'} %}
+            {% set always = ['lunch','dinner'] %}
+            {% set redslots = ['cook','buy'] %}
+            {% set cutoffs = {'breakfast':'input_datetime.galley_cutoff_breakfast','lunch':'input_datetime.galley_cutoff_lunch','snack':'input_datetime.galley_cutoff_snack','dinner':'input_datetime.galley_cutoff_dinner'} %}
+            {% set ns = namespace(today=[], tomorrow=[]) %}
+            {% for slot in slot_order %}
+              {% set t = namespace(text=none) %}
+              {% set m = namespace(text=none) %}
+              {% for meal in meals %}
+                {% set d = (meal.date | string)[:10] %}
+                {% set pot = meal.expand.pot if (meal.expand is defined and meal.expand.pot is defined and meal.expand.pot) else none %}
+                {% set txt = pot.name if pot else meal.text %}
+                {% set lbl = (txt ~ (' (' ~ pot.code ~ ')' if pot and pot.code else '')) if txt else none %}
+                {% if meal.slot == slot and d == today %}{% set t.text = lbl %}{% endif %}
+                {% if meal.slot == slot and d == tomorrow %}{% set m.text = lbl %}{% endif %}
+              {% endfor %}
+              {% set hidden = false %}
+              {% if slot in cutoffs %}
+                {% set cut = state_attr(cutoffs[slot], 'timestamp') %}
+                {% if cut is not none and now_secs > (cut | int) %}{% set hidden = true %}{% endif %}
+              {% endif %}
+              {% set has_t = t.text is not none and (t.text | trim) != '' %}
+              {% set has_m = m.text is not none and (m.text | trim) != '' %}
+              {% if (slot in always or has_t) and not hidden %}
+                {% set ns.today = ns.today + [{'slot': slot, 'label': labels[slot], 'text': (t.text if has_t else '—'), 'red': slot in redslots}] %}
+              {% endif %}
+              {% if (slot in always or has_m) %}
+                {% set ns.tomorrow = ns.tomorrow + [{'slot': slot, 'label': labels[slot], 'text': (m.text if has_m else '—'), 'red': slot in redslots}] %}
+              {% endif %}
+            {% endfor %}
+            {% set tl = dias[td.weekday()] ~ ' ' ~ td.day ~ ' ' ~ meses[td.month-1] %}
+            {% set nx = td + timedelta(days=1) %}
+            {% set ml = dias[nx.weekday()] ~ ' ' ~ nx.day ~ ' ' ~ meses[nx.month-1] %}
+            {{ {'today_label': tl, 'tomorrow_label': ml, 'today': ns.today, 'tomorrow': ns.tomorrow} }}
+
+      # -------------------- INVENTORY (fridge + freezer) --------------------
+      - name: "Galley Panel Inventory"
+        unique_id: galley_panel_inventory
+        icon: mdi:fridge-outline
+        unit_of_measurement: "tapers"
+        state: >-
+          {{ (states('sensor.galley_freezer_raw') | int(0)) + (states('sensor.galley_fridge_raw') | int(0)) }}
+        attributes:
+          data: >-
+            {% set out = namespace(freezer=[], fridge=[]) %}
+            {% for bucket in [('freezer','sensor.galley_freezer_raw'), ('fridge','sensor.galley_fridge_raw')] %}
+              {% set items = state_attr(bucket[1], 'items') or [] %}
+              {% set rws = namespace(rows=[]) %}
+              {% for it in items %}
+                {% set pot = it.expand.pot if (it.expand is defined and it.expand.pot is defined and it.expand.pot) else none %}
+                {% set key = ('p_' ~ pot.id) if pot else ('c_' ~ it.id) %}
+                {% set nm = pot.name if (pot and pot.name) else 'Suelto' %}
+                {% set cd = pot.code if pot else it.code %}
+                {% set rws.rows = rws.rows + [{'key': key, 'name': nm, 'code': cd, 'date': (it.freeze_date | string), 'serv': it.servings | float(0)}] %}
+              {% endfor %}
+              {% set rows = rws.rows | sort(attribute='date') %}
+              {% set seen = namespace(keys=[], out=[]) %}
+              {% for r in rows %}
+                {% if r.key not in seen.keys %}
+                  {% set members = rows | selectattr('key','eq',r.key) | list %}
+                  {% set oldest = members | map(attribute='date') | min %}
+                  {% set ts = as_timestamp(oldest | replace(' ', 'T'), none) %}
+                  {% set days = ((now().timestamp() - ts) / 86400) | int if ts else 0 %}
+                  {% set age = 'hoy' if days < 1 else ((days ~ ' d') if days < 14 else (((days // 7) ~ ' sem') if days < 56 else ((days // 30) ~ ' mes'))) %}
+                  {% set seen.keys = seen.keys + [r.key] %}
+                  {% set seen.out = seen.out + [{'name': r.name, 'code': r.code, 'count': members | length, 'servings': (members | map(attribute='serv') | sum) | round(0) | int, 'days': days, 'age': age, 'fossil': days >= 182}] %}
+                {% endif %}
+              {% endfor %}
+              {% if bucket[0] == 'freezer' %}{% set out.freezer = seen.out %}{% else %}{% set out.fridge = seen.out %}{% endif %}
+            {% endfor %}
+            {% set fz = state_attr('sensor.galley_freezer_raw','items') or [] %}
+            {% set fr = state_attr('sensor.galley_fridge_raw','items') or [] %}
+            {{ {
+              'freezer': out.freezer,
+              'fridge': out.fridge,
+              'freezer_containers': fz | length,
+              'freezer_servings': (fz | map(attribute='servings') | map('float', 0) | sum) | round(0) | int,
+              'fridge_containers': fr | length,
+              'fridge_servings': (fr | map(attribute='servings') | map('float', 0) | sum) | round(0) | int
+            } }}

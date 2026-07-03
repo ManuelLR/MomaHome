@@ -1,0 +1,87 @@
+# rest:
+  ##
+  # galley - freezer / diet app backed by PocketBase
+  # https://github.com/ManuelLR/galley
+  #
+  # Reads raw data from galley's PocketBase REST API. These sensors ONLY carry
+  # the raw `items` list (as an attribute) + total count as state; all the panel
+  # logic (grouping, ages, meal-slot rules, time-hiding) lives in template.yaml.
+  #
+  # Auth: a long-lived service token, stored in secrets.yaml as `galley_api_token`.
+  # The endpoint host+path lives in secrets (`galley_*_resource`); the query
+  # (filters/sort/expand) stays here in git via `params:`.
+  # See ./README.md for how to create the service user and mint the token.
+  #
+  # PocketBase datetime filter macros are UTC-based, so we fetch meals from
+  # @yesterday onward (a bit wide) and pick exactly today/tomorrow by local date
+  # in template.yaml.
+  ##
+
+  # --- Containers currently in the FREEZER (oldest first) ---
+  - resource: !secret galley_container_resource
+    method: GET
+    scan_interval: 300
+    timeout: 20
+    headers:
+      Content-Type: "application/json"
+      Authorization: !secret galley_api_token
+    params:
+      filter: "(status='freezer')"
+      sort: "freeze_date"
+      expand: "pot"
+      perPage: "200"
+      skipTotal: "false"
+    sensor:
+      - name: "Galley Freezer Raw"
+        unique_id: galley_freezer_raw
+        value_template: "{{ value_json.totalItems }}"
+        unit_of_measurement: "tapers"
+        icon: mdi:snowflake
+        json_attributes:
+          - items
+
+  # --- Containers currently in the FRIDGE (oldest first) ---
+  - resource: !secret galley_container_resource
+    method: GET
+    scan_interval: 300
+    timeout: 20
+    headers:
+      Content-Type: "application/json"
+      Authorization: !secret galley_api_token
+    params:
+      filter: "(status='fridge')"
+      sort: "freeze_date"
+      expand: "pot"
+      perPage: "100"
+      skipTotal: "false"
+    sensor:
+      - name: "Galley Fridge Raw"
+        unique_id: galley_fridge_raw
+        value_template: "{{ value_json.totalItems }}"
+        unit_of_measurement: "tapers"
+        icon: mdi:fridge
+        json_attributes:
+          - items
+
+  # --- Meals from yesterday onward (template picks today + tomorrow) ---
+  - resource: !secret galley_meal_resource
+    method: GET
+    scan_interval: 300
+    timeout: 20
+    headers:
+      Content-Type: "application/json"
+      Authorization: !secret galley_api_token
+    params:
+      filter: "(date>=@yesterday)"
+      sort: "date,slot"
+      expand: "pot"
+      perPage: "60"
+      skipTotal: "true"
+    sensor:
+      - name: "Galley Meals Raw"
+        unique_id: galley_meals_raw
+        value_template: "{{ value_json.items | length }}"
+        unit_of_measurement: "meals"
+        icon: mdi:silverware-fork-knife
+        json_attributes:
+          - items
