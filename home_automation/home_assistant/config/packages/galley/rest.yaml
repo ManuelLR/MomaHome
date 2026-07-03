@@ -12,9 +12,10 @@
   # (filters/sort/expand) stays here in git via `params:`.
   # See ./README.md for how to create the service user and mint the token.
   #
-  # PocketBase datetime filter macros are UTC-based, so we fetch meals from
-  # @yesterday onward (a bit wide) and pick exactly today/tomorrow by local date
-  # in template.yaml.
+  # Meals: we do NOT filter by date in the query (the @yesterday/@tomorrow
+  # macros aren't supported on older PocketBase builds and would 400). We just
+  # fetch the most recent meals (sort=-date) and template.yaml picks exactly
+  # today/tomorrow by local date. Keeps the query macro-free and version-proof.
   ##
 
   # --- Containers currently in the FREEZER (oldest first) ---
@@ -72,8 +73,7 @@
       Content-Type: "application/json"
       Authorization: !secret galley_api_token
     params:
-      filter: "(date>=@yesterday)"
-      sort: "date,slot"
+      sort: "-date"
       expand: "pot"
       perPage: "60"
       skipTotal: "true"
