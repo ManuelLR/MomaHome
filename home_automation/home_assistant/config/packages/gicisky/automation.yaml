@@ -421,7 +421,7 @@
                 "value": "{{ (weather_forecasts_10h[9].datetime| as_datetime + timedelta(hours=1))| as_timestamp |timestamp_custom('%H', local=true) }}"
               }
             ]
-      - action: gicisky.write
+      - action: gicisky.write_guarded
         target:
           device_id: >
             {{ gicisky_device_id }}
