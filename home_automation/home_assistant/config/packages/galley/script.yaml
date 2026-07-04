@@ -1,11 +1,13 @@
 # script:
   ##
-  # galley e-ink panel - PREVIEW ONLY renderer.
+  # galley e-ink panel renderer.
   #
   # Composes the 400x300 BWR layout from sensor.galley_panel_meals /
-  # sensor.galley_panel_inventory and calls `gicisky.write_guarded` with dry_run: true,
-  # so it renders to the integration's PREVIEW camera WITHOUT sending anything to
-  # the physical panel over BLE. Flip gicisky_write_dry_run to false to push.
+  # sensor.galley_panel_inventory and calls `gicisky.write_guarded`. The `dry_run`
+  # field defaults to true: running it by hand only renders to the integration's
+  # PREVIEW camera (no BLE). The refresh automation (automation.yaml) calls it with
+  # dry_run: false to push to the physical panel; write_guarded de-dupes so the
+  # e-ink is only written when the content actually changed.
   #
   # Layout (two columns split at x=200):
   #   Left  = meal plan, one black-bar-headed block per day (today .. +4), as
@@ -21,15 +23,22 @@
   #           Oldest-first; fossils in red; freezer tail truncates with "+N más".
   #   anchor 'lm' = x is left edge / 'rm' = x is right edge (y = vertical center).
   ##
-  galley_panel_preview:
-    alias: "Galley · preview panel tinta"
+  galley_panel_render:
+    alias: "Galley · render panel tinta"
     icon: mdi:image-text
     mode: single
+    fields:
+      dry_run:
+        name: Solo preview
+        description: "true = solo previsualiza en la cámara; false = envía al panel por BLE"
+        default: true
+        selector:
+          boolean:
     sequence:
       - variables:
-          # PREVIEW ONLY. Flip to false (or call gicisky.write_guarded) to push
-          # the render to the physical panel over BLE.
-          gicisky_write_dry_run: true
+          # dry_run defaults to true, so running this by hand only PREVIEWS
+          # (camera) and never touches the panel. The refresh automation calls
+          # it with dry_run: false to actually push over BLE.
           m: "{{ state_attr('sensor.galley_panel_meals','data') or {} }}"
           i: "{{ state_attr('sensor.galley_panel_inventory','data') or {} }}"
       - action: gicisky.write_guarded
@@ -39,8 +48,7 @@
           # on the real device and swap if the layout comes out rotated.
           rotate: 0
           background: white
-          dry_run: >
-            {{ gicisky_write_dry_run }}
+          dry_run: "{{ dry_run }}"
           payload: >-
             {# ---- layout constants (400x300 landscape) ---- #}
             {% set H = 300 %}{% set MID = 200 %}
