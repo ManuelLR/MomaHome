@@ -54,7 +54,7 @@
             {% set H = 300 %}{% set MID = 200 %}
             {% set LX = 8 %}{% set LVX = 30 %}{% set LTRUNC = 24 %}
             {% set RX = MID + 8 %}{% set RTX = MID + 26 %}
-            {% set RSV = 352 %}{% set RAGE = 396 %}{% set RCNT = 374 %}{% set RTRUNC = 18 %}
+            {% set RSV = 356 %}{% set REDGE = 394 %}{% set RTRUNC = 18 %}
             {% set RH = 20 %}{% set BAR = 22 %}{% set HGAP = 3 %}{% set SGAP = 5 %}
             {% set micons = {'breakfast':'mdi:food-croissant','lunch':'mdi:weather-sunny','snack':'mdi:food-apple','dinner':'mdi:weather-night','cook':'mdi:pot-steam-outline','buy':'mdi:cart-outline'} %}
             {% set p = namespace(el=[]) %}
@@ -87,7 +87,7 @@
               {'type':'icon','value':'mdi:fridge','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
               {'type':'text','value':'NEVERA','x':RTX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'},
               {'type':'icon','value':'mdi:silverware-fork-knife','x':RSV,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'},
-              {'type':'icon','value':'mdi:clock-outline','x':RAGE,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'}] %}
+              {'type':'icon','value':'mdi:clock-outline','x':REDGE,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'}] %}
             {% set ry.y = ry.y + BAR + HGAP %}
             {% set fr = i.fridge | default([]) %}
             {% if fr | length == 0 %}
@@ -98,7 +98,7 @@
               {% set p.el = p.el + [
                 {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
                 {'type':'text','value':(g.servings|string),'x':RSV,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col},
-                {'type':'text','value':(g.age|string),'x':RAGE,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col}] %}
+                {'type':'text','value':(g.age|string),'x':REDGE,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
             {% set ry.y = ry.y + SGAP %}
@@ -108,7 +108,7 @@
               {'type':'icon','value':'mdi:snowflake','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
               {'type':'text','value':'CONGELADOR','x':RTX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'},
               {'type':'icon','value':'mdi:silverware-fork-knife','x':RSV,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'},
-              {'type':'icon','value':'mdi:package-variant-closed','x':RCNT,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'}] %}
+              {'type':'icon','value':'mdi:package-variant-closed','x':REDGE,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'}] %}
             {% set ry.y = ry.y + BAR + HGAP %}
             {% set flist = i.freezer | default([]) %}
             {% if flist | length == 0 %}
@@ -121,7 +121,7 @@
               {% set p.el = p.el + [
                 {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
                 {'type':'text','value':(g.servings|string),'x':RSV,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col},
-                {'type':'text','value':(g.count|string),'x':RCNT,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col}] %}
+                {'type':'text','value':(g.count|string),'x':REDGE,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
             {% if ftrunc %}{% set p.el = p.el + [{'type':'text','value':('+' ~ (flist | length - (fcap-1)) ~ ' más'),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% endif %}
