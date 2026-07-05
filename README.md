@@ -14,6 +14,7 @@ This repository contains information and settings used in a home.
 ├── reverse-proxy      => Proxy used to route all public incoming http/tcp/udp traffic to each container.
 ├── samba              => LAN-only network drive to quickly drop phone photos for a temporary backup
 ├── syncthing          => Tool to sync folders and also create history of files
+├── travel             => Self-hosted TREK collaborative travel planner (LAN-only)
 ├── wireguard          => VPN to access home from outside
 └── README.md
 ```
