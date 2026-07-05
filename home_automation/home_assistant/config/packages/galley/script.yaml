@@ -1,0 +1,131 @@
+# script:
+  ##
+  # galley e-ink panel renderer.
+  #
+  # Composes the 400x300 BWR layout from sensor.galley_panel_meals /
+  # sensor.galley_panel_inventory and calls `gicisky.write_guarded`. The `dry_run`
+  # field defaults to true: running it by hand only renders to the integration's
+  # PREVIEW camera (no BLE). The refresh automation (automation.yaml) calls it with
+  # dry_run: false to push to the physical panel; write_guarded de-dupes so the
+  # e-ink is only written when the content actually changed.
+  #
+  # Layout (two columns split at x=200):
+  #   Left  = meal plan, one black-bar-headed block per day (today .. +4), as
+  #           many days as vertically fit. Slot = MDI icon (croissant/sun/apple/
+  #           moon/pot/cart). cook/buy in red. Meal text hard-clipped only at the
+  #           column edge (no ellipsis).
+  #   Right = NEVERA then CONGELADOR. Column icons live ONCE in the black header
+  #           bar (fork/knife = servings; clock = age; box = tapers). The number
+  #           columns are RIGHT-aligned to the panel edge so the recipe name can
+  #           run as far right as possible:
+  #             fridge  = name .......... servings   age
+  #             freezer = name .......... servings   tapers
+  #           Oldest-first; fossils in red; freezer tail truncates with "+N más".
+  #   anchor 'lm' = x is left edge / 'rm' = x is right edge (y = vertical center).
+  ##
+  galley_panel_render:
+    alias: "Galley · render panel tinta"
+    icon: mdi:image-text
+    mode: single
+    fields:
+      dry_run:
+        name: Solo preview
+        description: "true = solo previsualiza en la cámara; false = envía al panel por BLE"
+        default: true
+        selector:
+          boolean:
+    sequence:
+      - variables:
+          # dry_run defaults to true, so running this by hand only PREVIEWS
+          # (camera) and never touches the panel. The refresh automation calls
+          # it with dry_run: false to actually push over BLE.
+          m: "{{ state_attr('sensor.galley_panel_meals','data') or {} }}"
+          i: "{{ state_attr('sensor.galley_panel_inventory','data') or {} }}"
+      - action: gicisky.write_guarded
+        data:
+          # rotate 0 = landscape 400x300 (this panel). The other Gicisky here
+          # (packages/gicisky) uses 270 because it's mounted portrait — confirm
+          # on the real device and swap if the layout comes out rotated.
+          rotate: 0
+          background: white
+          dry_run: "{{ dry_run }}"
+          payload: >-
+            {# ---- layout constants (400x300 landscape) ---- #}
+            {% set H = 300 %}{% set MID = 200 %}
+            {% set LX = 8 %}{% set LVX = 30 %}{% set LTRUNC = 24 %}
+            {% set RX = MID + 8 %}{% set RTX = MID + 26 %}
+            {% set RSV = 356 %}{% set REDGE = 394 %}{% set RTRUNC = 18 %}
+            {% set RH = 20 %}{% set BAR = 22 %}{% set HGAP = 3 %}{% set SGAP = 5 %}
+            {% set micons = {'breakfast':'mdi:food-croissant','lunch':'mdi:weather-sunny','snack':'mdi:food-apple','dinner':'mdi:weather-night','cook':'mdi:pot-steam-outline','buy':'mdi:cart-outline'} %}
+            {% set p = namespace(el=[]) %}
+
+            {# ---------------- LEFT COLUMN: meal plan (multi-day) ---------------- #}
+            {% set ly = namespace(y=0) %}
+            {% for day in (m.days | default([])) %}
+              {% if ly.y + BAR + RH <= H %}
+                {% set p.el = p.el + [
+                  {'type':'rectangle','x_start':0,'y_start':ly.y,'x_end':MID,'y_end':ly.y+BAR,'fill':'black','outline':'black'},
+                  {'type':'text','value':day.header,'x':LX,'y':ly.y+(BAR//2),'anchor':'lm','size':14,'color':'white'}] %}
+                {% set ly.y = ly.y + BAR + HGAP %}
+                {% for r in day.rows %}
+                  {% if ly.y + RH <= H %}
+                    {% set p.el = p.el + [
+                      {'type':'icon','value':micons[r.slot],'x':LX,'y':ly.y+(RH//2),'anchor':'lm','size':15,'color':('red' if r.red else 'black')},
+                      {'type':'text','value':((r.text | string)[:LTRUNC]),'x':LVX,'y':ly.y+(RH//2),'anchor':'lm','size':14,'color':('red' if r.red else 'black')}] %}
+                    {% set ly.y = ly.y + RH %}
+                  {% endif %}
+                {% endfor %}
+                {% set ly.y = ly.y + SGAP %}
+              {% endif %}
+            {% endfor %}
+
+            {# ---------------- RIGHT COLUMN: inventory (numbers right-aligned) ---------------- #}
+            {% set ry = namespace(y=0) %}
+            {# --- NEVERA header: name + column icons (servings, age) --- #}
+            {% set p.el = p.el + [
+              {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
+              {'type':'icon','value':'mdi:fridge','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
+              {'type':'text','value':'NEVERA','x':RTX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'},
+              {'type':'icon','value':'mdi:silverware-fork-knife','x':RSV,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'},
+              {'type':'icon','value':'mdi:clock-outline','x':REDGE,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'}] %}
+            {% set ry.y = ry.y + BAR + HGAP %}
+            {% set fr = i.fridge | default([]) %}
+            {% if fr | length == 0 %}
+              {% set p.el = p.el + [{'type':'text','value':'Nevera vacía','x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% set ry.y = ry.y + RH %}
+            {% endif %}
+            {% for g in fr %}
+              {% set col = 'red' if g.fossil else 'black' %}
+              {% set p.el = p.el + [
+                {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
+                {'type':'text','value':(g.servings|string),'x':RSV,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col},
+                {'type':'text','value':(g.age|string),'x':REDGE,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col}] %}
+              {% set ry.y = ry.y + RH %}
+            {% endfor %}
+            {% set ry.y = ry.y + SGAP %}
+            {# --- CONGELADOR header: name + column icons (servings, tapers) --- #}
+            {% set p.el = p.el + [
+              {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
+              {'type':'icon','value':'mdi:snowflake','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
+              {'type':'text','value':'CONGELADOR','x':RTX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'},
+              {'type':'icon','value':'mdi:silverware-fork-knife','x':RSV,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'},
+              {'type':'icon','value':'mdi:package-variant-closed','x':REDGE,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'}] %}
+            {% set ry.y = ry.y + BAR + HGAP %}
+            {% set flist = i.freezer | default([]) %}
+            {% if flist | length == 0 %}
+              {% set p.el = p.el + [{'type':'text','value':'Congelador vacío','x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% set ry.y = ry.y + RH %}
+            {% endif %}
+            {% set fcap = ((H - ry.y) // RH) %}
+            {% set ftrunc = flist | length > fcap %}
+            {% for g in (flist[:fcap-1] if ftrunc else flist) %}
+              {% set col = 'red' if g.fossil else 'black' %}
+              {% set p.el = p.el + [
+                {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
+                {'type':'text','value':(g.servings|string),'x':RSV,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col},
+                {'type':'text','value':(g.count|string),'x':REDGE,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col}] %}
+              {% set ry.y = ry.y + RH %}
+            {% endfor %}
+            {% if ftrunc %}{% set p.el = p.el + [{'type':'text','value':('+' ~ (flist | length - (fcap-1)) ~ ' más'),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% endif %}
+
+            {{ p.el }}
+        target:
+          device_id: !secret galley_panel_device_id
