@@ -1,8 +1,9 @@
 version: "2.4"
 services:
-  travel:
+  trek:
     # TREK: self-hosted collaborative travel planner (SQLite, single container).
     # Published image, pinned so Renovate can track new releases.
+    # This "travel" folder groups travel-related services; add more as siblings.
     image: mauriceboe/trek:v3.2.0
     restart: unless-stopped
     # Hardening recommended by upstream.
@@ -20,19 +21,19 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - ENCRYPTION_KEY=${TREK_ENCRYPTION_KEY}
       - TZ=${TZ:-Europe/Madrid}
       # Behind a TLS-terminating proxy: force HTTPS, secure cookies and HSTS.
       - FORCE_HTTPS=true
-      - APP_URL=https://${TRAVEL_EXTERNAL_DOMAIN}
-      - ALLOWED_ORIGINS=https://${TRAVEL_EXTERNAL_DOMAIN}
+      - APP_URL=https://${TREK_EXTERNAL_DOMAIN}
+      - ALLOWED_ORIGINS=https://${TREK_EXTERNAL_DOMAIN}
       # First admin, created on the very first boot only.
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=${TREK_ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${TREK_ADMIN_PASSWORD}
     volumes:
       # Persistent app data (host path, like syncthing and samba).
-      - /data/travel/data:/app/data
-      - /data/travel/uploads:/app/uploads
+      - /data/travel/trek/data:/app/data
+      - /data/travel/trek/uploads:/app/uploads
     networks:
       - reverse-proxy
     healthcheck:
@@ -43,14 +44,14 @@ services:
       start_period: 15s
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.travel.loadbalancer.server.port=3000"
-      - "traefik.http.routers.travel.rule=Host(`${TRAVEL_EXTERNAL_DOMAIN}`)"
-      - "traefik.http.routers.travel.entrypoints=websecure"
-      - "traefik.http.routers.travel.tls.certresolver=principal"
-      - "traefik.http.routers.travel.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      - "traefik.http.services.trek.loadbalancer.server.port=3000"
+      - "traefik.http.routers.trek.rule=Host(`${TREK_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.trek.entrypoints=websecure"
+      - "traefik.http.routers.trek.tls.certresolver=principal"
+      - "traefik.http.routers.trek.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
       # LAN-only: reachable only from the home network (from outside use WireGuard).
-      - "traefik.http.middlewares.travel-lan-only.ipallowlist.sourcerange=192.168.200.0/24"
-      - "traefik.http.routers.travel.middlewares=travel-lan-only"
+      - "traefik.http.middlewares.trek-lan-only.ipallowlist.sourcerange=192.168.200.0/24"
+      - "traefik.http.routers.trek.middlewares=trek-lan-only"
 
 networks:
   reverse-proxy:
