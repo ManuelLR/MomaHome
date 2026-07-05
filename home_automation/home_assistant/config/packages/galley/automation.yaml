@@ -1,20 +1,28 @@
 # automation:
   ##
   # Pushes the galley render to the physical Gicisky panel over BLE.
-  # Fires on a 10-min tick + HA start; gicisky.write_guarded de-dupes, so the
-  # e-ink is only physically written when the rendered content actually changed
-  # (protects battery / BLE writes). The condition skips pushing an empty panel
+  #
+  # Event-driven: fires only when the panel sensors actually change (new meals,
+  # containers in/out, a meal-slot passing its cut-off, age rolling over a day)
+  # plus once on HA start. The panel sensors (template.yaml) re-render on a 5-min
+  # tick for the time-of-day rules, but HA only emits a state_changed event when
+  # the rendered content is genuinely different, so this stays quiet while nothing
+  # changes instead of pushing on a blind timer. gicisky.write_guarded de-dupes
+  # downstream as a second safety net. The condition skips pushing an empty panel
   # while the source sensors are still unavailable (e.g. right after a restart).
   #
-  # Cadence: bump the time_pattern down for faster updates, or add a time
-  # condition for quiet hours (the panel refresh is cheap thanks to de-dupe).
+  # If a BLE write ever silently fails, add a slow time_pattern trigger (e.g.
+  # hours: "/3") as a retry net — write_guarded keeps it invisible unless the
+  # content differs.
   ##
   - id: galley_panel_refresh
-    alias: "Galley · refrescar panel tinta"
+    alias: "AUT-Galley e-ink panel refresh"
     mode: single
     trigger:
-      - platform: time_pattern
-        minutes: "/10"
+      - platform: state
+        entity_id:
+          - sensor.galley_panel_meals
+          - sensor.galley_panel_inventory
       - platform: homeassistant
         event: start
     condition:
