@@ -1,0 +1,59 @@
+version: "2.4"
+services:
+  trek:
+    # TREK: self-hosted collaborative travel planner (SQLite, single container).
+    # Published image, pinned so Renovate can track new releases.
+    # This "travel" folder groups travel-related services; add more as siblings.
+    image: mauriceboe/trek:3.2.0
+    restart: unless-stopped
+    # Hardening recommended by upstream.
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - ENCRYPTION_KEY=${TREK_ENCRYPTION_KEY}
+      - TZ=${TZ:-Europe/Madrid}
+      # Behind a TLS-terminating proxy: force HTTPS, secure cookies and HSTS.
+      - FORCE_HTTPS=true
+      - APP_URL=https://${TREK_EXTERNAL_DOMAIN}
+      - ALLOWED_ORIGINS=https://${TREK_EXTERNAL_DOMAIN}
+      # First admin, created on the very first boot only.
+      - ADMIN_EMAIL=${TREK_ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${TREK_ADMIN_PASSWORD}
+    volumes:
+      # Persistent app data (host path, like syncthing and samba).
+      - /data/travel/trek/data:/app/data
+      - /data/travel/trek/uploads:/app/uploads
+    networks:
+      - reverse-proxy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.trek.loadbalancer.server.port=3000"
+      - "traefik.http.routers.trek.rule=Host(`${TREK_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.trek.entrypoints=websecure"
+      - "traefik.http.routers.trek.tls.certresolver=principal"
+      - "traefik.http.routers.trek.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      # LAN-only: reachable only from the home network (from outside use WireGuard).
+      - "traefik.http.middlewares.trek-lan-only.ipallowlist.sourcerange=192.168.200.0/24"
+      - "traefik.http.routers.trek.middlewares=trek-lan-only"
+
+networks:
+  reverse-proxy:
+    # External network created by reverse-proxy setup
+    external: true

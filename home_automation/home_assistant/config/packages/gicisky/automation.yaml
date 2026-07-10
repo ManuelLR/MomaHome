@@ -57,7 +57,7 @@
           - alias: "Last update is more than 4 hours ago"
             condition: template
             value_template: >
-              {% set last_update = states('sensor.gicisky_92975006_last_update_time') %}
+              {% set last_update = states('image.gicisky_92975006_last_updated_content') %}
               {% if last_update == 'unavailable' or last_update == 'unknown' %}
                 {{ true }}
               {% else %}

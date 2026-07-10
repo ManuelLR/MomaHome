@@ -9,19 +9,23 @@
   # dry_run: false to push to the physical panel; write_guarded de-dupes so the
   # e-ink is only written when the content actually changed.
   #
-  # Layout (two columns split at x=200):
+  # Layout (two columns split at x=192):
   #   Left  = meal plan, one black-bar-headed block per day (today .. +4), as
   #           many days as vertically fit. Slot = MDI icon (croissant/sun/apple/
-  #           moon/pot/cart). cook/buy in red. Meal text hard-clipped only at the
-  #           column edge (no ellipsis).
+  #           moon/pot/cart). cook/buy in red.
   #   Right = NEVERA then CONGELADOR. Column icons live ONCE in the black header
-  #           bar (fork/knife = servings; clock = age; box = tapers). The number
-  #           columns are RIGHT-aligned to the panel edge so the recipe name can
-  #           run as far right as possible:
-  #             fridge  = name .......... servings   age
-  #             freezer = name .......... servings   tapers
+  #           bar (fork/knife = servings; clock = age; box = tapers). Numeric
+  #           columns are CENTERED under their header icon:
+  #             fridge  = name ....... age    servings
+  #             freezer = name ....... tapers servings
   #           Oldest-first; fossils in red; freezer tail truncates with "+N más".
-  #   anchor 'lm' = x is left edge / 'rm' = x is right edge (y = vertical center).
+  #           The age column width is measured from the data (fixed vocabulary,
+  #           tabular digits); the tapers/servings columns are two digits wide.
+  #   Names run FULL length; the overflow is clipped by an opaque white chip
+  #   painted on top (draw-order masking) -> no ellipsis, no per-character
+  #   measuring. A white rectangle over the whole right half also erases any
+  #   left-column name that spilled past the divider.
+  #   anchor 'lm' = x is left edge / 'mm' = centered on x (y = vertical center).
   ##
   galley_panel_render:
     alias: "Galley · render panel tinta"
@@ -51,11 +55,17 @@
           dry_run: "{{ dry_run }}"
           payload: >-
             {# ---- layout constants (400x300 landscape) ---- #}
-            {% set H = 300 %}{% set MID = 200 %}
-            {% set LX = 8 %}{% set LVX = 30 %}{% set LTRUNC = 24 %}
-            {% set RX = MID + 8 %}{% set RTX = MID + 26 %}
-            {% set RSV = 356 %}{% set REDGE = 394 %}{% set RTRUNC = 18 %}
+            {% set H = 300 %}{% set MID = 192 %}
+            {% set LX = 8 %}{% set LVX = 30 %}
+            {% set RX = MID + 4 %}{% set RTX = MID + 22 %}
             {% set RH = 20 %}{% set BAR = 22 %}{% set HGAP = 3 %}{% set SGAP = 5 %}
+            {% set GAP = 8 %}{% set RMARGIN = 4 %}{% set DIGIT = 7.22 %}{% set ICON = 13 %}
+            {# WNUM: width of a 2-digit / icon numeric column (servings, tapers).
+               Numeric columns are CENTERED under their header icon; serv_cx is the
+               rightmost column centre, mid_right the right edge of the middle one. #}
+            {% set WNUM = ([2*DIGIT, ICON]|max) + 4 %}
+            {% set serv_cx = 400 - RMARGIN - WNUM/2 %}
+            {% set mid_right = serv_cx - WNUM/2 - GAP %}
             {% set micons = {'breakfast':'mdi:food-croissant','lunch':'mdi:weather-sunny','snack':'mdi:food-apple','dinner':'mdi:weather-night','cook':'mdi:pot-steam-outline','buy':'mdi:cart-outline'} %}
             {% set p = namespace(el=[]) %}
 
@@ -71,7 +81,7 @@
                   {% if ly.y + RH <= H %}
                     {% set p.el = p.el + [
                       {'type':'icon','value':micons[r.slot],'x':LX,'y':ly.y+(RH//2),'anchor':'lm','size':15,'color':('red' if r.red else 'black')},
-                      {'type':'text','value':((r.text | string)[:LTRUNC]),'x':LVX,'y':ly.y+(RH//2),'anchor':'lm','size':14,'color':('red' if r.red else 'black')}] %}
+                      {'type':'text','value':(r.text | string),'x':LVX,'y':ly.y+(RH//2),'anchor':'lm','size':14,'color':('red' if r.red else 'black')}] %}
                     {% set ly.y = ly.y + RH %}
                   {% endif %}
                 {% endfor %}
@@ -79,36 +89,56 @@
               {% endif %}
             {% endfor %}
 
-            {# ---------------- RIGHT COLUMN: inventory (numbers right-aligned) ---------------- #}
+            {# erase any left-column name that spilled past the divider #}
+            {% set p.el = p.el + [{'type':'rectangle','x_start':MID+1,'y_start':0,'x_end':400,'y_end':H,'fill':'white','outline':'white'}] %}
+
+            {# ---------------- RIGHT COLUMN: inventory (centered numeric cols) ---------------- #}
             {% set ry = namespace(y=0) %}
-            {# --- NEVERA header: name + column icons (servings, age) --- #}
+            {# --- NEVERA middle column = age; width measured from the data
+                   (vocabulary: 'hoy', 'N d', 'N sem', 'N mes'; tabular digits),
+                   floored at WNUM so a lone 'hoy' still reads as a column. --- #}
+            {% set fr = i.fridge | default([]) %}
+            {% set aw = namespace(m=WNUM) %}
+            {% for g in fr %}
+              {% set a = g.age | string %}
+              {% if a == 'hoy' %}{% set w = 22.44 %}
+              {% elif ' ' in a %}{% set parts = a.split() %}{% set sw = 10.97 if parts[1] == 'd' else 28.22 %}{% set w = (parts[0]|length)*DIGIT + sw %}
+              {% else %}{% set w = 22.44 %}{% endif %}
+              {% set aw.m = [aw.m, w]|max %}
+            {% endfor %}
+            {% set fr_mid = aw.m %}
+            {% set fr_mid_cx = mid_right - fr_mid/2 %}
+            {% set fr_mask_x = mid_right - fr_mid - GAP %}
             {% set p.el = p.el + [
               {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
               {'type':'icon','value':'mdi:fridge','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
               {'type':'text','value':'NEVERA','x':RTX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'},
-              {'type':'icon','value':'mdi:silverware-fork-knife','x':RSV,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'},
-              {'type':'icon','value':'mdi:clock-outline','x':REDGE,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'}] %}
+              {'type':'icon','value':'mdi:clock-outline','x':fr_mid_cx,'y':ry.y+(BAR//2),'anchor':'mm','size':13,'color':'white'},
+              {'type':'icon','value':'mdi:silverware-fork-knife','x':serv_cx,'y':ry.y+(BAR//2),'anchor':'mm','size':13,'color':'white'}] %}
             {% set ry.y = ry.y + BAR + HGAP %}
-            {% set fr = i.fridge | default([]) %}
             {% if fr | length == 0 %}
               {% set p.el = p.el + [{'type':'text','value':'Nevera vacía','x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% set ry.y = ry.y + RH %}
             {% endif %}
             {% for g in fr %}
               {% set col = 'red' if g.fossil else 'black' %}
               {% set p.el = p.el + [
-                {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
-                {'type':'text','value':(g.servings|string),'x':RSV,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col},
-                {'type':'text','value':(g.age|string),'x':REDGE,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col}] %}
+                {'type':'text','value':(g.name|string),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
+                {'type':'rectangle','x_start':fr_mask_x,'y_start':ry.y,'x_end':400,'y_end':ry.y+RH,'fill':'white','outline':'white'},
+                {'type':'text','value':(g.age|string),'x':fr_mid_cx,'y':ry.y+(RH//2),'anchor':'mm','size':13,'color':col},
+                {'type':'text','value':(g.servings|string),'x':serv_cx,'y':ry.y+(RH//2),'anchor':'mm','size':13,'color':col}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
             {% set ry.y = ry.y + SGAP %}
-            {# --- CONGELADOR header: name + column icons (servings, tapers) --- #}
+            {# --- CONGELADOR middle column = tapers (fixed WNUM width) --- #}
+            {% set fz_mid = WNUM %}
+            {% set fz_mid_cx = mid_right - fz_mid/2 %}
+            {% set fz_mask_x = mid_right - fz_mid - GAP %}
             {% set p.el = p.el + [
               {'type':'rectangle','x_start':MID+1,'y_start':ry.y,'x_end':400,'y_end':ry.y+BAR,'fill':'black','outline':'black'},
               {'type':'icon','value':'mdi:snowflake','x':RX,'y':ry.y+(BAR//2),'anchor':'lm','size':15,'color':'white'},
               {'type':'text','value':'CONGELADOR','x':RTX,'y':ry.y+(BAR//2),'anchor':'lm','size':14,'color':'white'},
-              {'type':'icon','value':'mdi:silverware-fork-knife','x':RSV,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'},
-              {'type':'icon','value':'mdi:package-variant-closed','x':REDGE,'y':ry.y+(BAR//2),'anchor':'rm','size':13,'color':'white'}] %}
+              {'type':'icon','value':'mdi:package-variant-closed','x':fz_mid_cx,'y':ry.y+(BAR//2),'anchor':'mm','size':13,'color':'white'},
+              {'type':'icon','value':'mdi:silverware-fork-knife','x':serv_cx,'y':ry.y+(BAR//2),'anchor':'mm','size':13,'color':'white'}] %}
             {% set ry.y = ry.y + BAR + HGAP %}
             {% set flist = i.freezer | default([]) %}
             {% if flist | length == 0 %}
@@ -119,9 +149,10 @@
             {% for g in (flist[:fcap-1] if ftrunc else flist) %}
               {% set col = 'red' if g.fossil else 'black' %}
               {% set p.el = p.el + [
-                {'type':'text','value':((g.name|string)[:RTRUNC]),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
-                {'type':'text','value':(g.servings|string),'x':RSV,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col},
-                {'type':'text','value':(g.count|string),'x':REDGE,'y':ry.y+(RH//2),'anchor':'rm','size':13,'color':col}] %}
+                {'type':'text','value':(g.name|string),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':14,'color':col},
+                {'type':'rectangle','x_start':fz_mask_x,'y_start':ry.y,'x_end':400,'y_end':ry.y+RH,'fill':'white','outline':'white'},
+                {'type':'text','value':(g.count|string),'x':fz_mid_cx,'y':ry.y+(RH//2),'anchor':'mm','size':13,'color':col},
+                {'type':'text','value':(g.servings|string),'x':serv_cx,'y':ry.y+(RH//2),'anchor':'mm','size':13,'color':col}] %}
               {% set ry.y = ry.y + RH %}
             {% endfor %}
             {% if ftrunc %}{% set p.el = p.el + [{'type':'text','value':('+' ~ (flist | length - (fcap-1)) ~ ' más'),'x':RX,'y':ry.y+(RH//2),'anchor':'lm','size':13,'color':'black'}] %}{% endif %}
