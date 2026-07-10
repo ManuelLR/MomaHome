@@ -52,6 +52,29 @@
       versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}loose{{/if}}'
     },
     {
+      // Generic comment-based manager for docker-compose images that Renovate
+      // can't auto-resolve to a source repo (so PRs get changelog/release notes).
+      // Annotate the image with a comment on the line above, e.g.:
+      //   # renovatebot: datasource=github-releases depName=owner/Repo [packageName=...] [registryUrl=https://codeberg.org] [versioning=semver] [extractVersion=^v(?<version>.+)$]
+      //   image: owner/image:1.2.3
+      // Keep the fields in that order. registryUrl is needed e.g. for gitea-releases (Codeberg).
+      // Defaults: versioning=semver-coerced, extractVersion strips an optional leading 'v'.
+      // No need to disable the built-in docker manager: Renovate dedupes updates
+      // that touch the same file line (same as the traefik/calibre setups).
+      customType: 'regex',
+      managerFilePatterns: [
+        '/(^|/)docker-compose\\.ya?ml$/'
+      ],
+      matchStrings: [
+        '# renovate(?:bot)?: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+?)(?: (?:packageName|lookupName)=(?<packageName>\\S+?))?(?: registryUrl=(?<registryUrl>\\S+?))?(?: versioning=(?<versioning>\\S+?))?(?: extractVersion=(?<extractVersion>\\S+?))?\\s*?\\n\\s*image: [^\\s:]+:(?<currentValue>[^\\s@]+)'
+      ],
+      datasourceTemplate: '{{{datasource}}}',
+      depNameTemplate: '{{{depName}}}',
+      packageNameTemplate: '{{#if packageName}}{{{packageName}}}{{else}}{{{depName}}}{{/if}}',
+      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}',
+      extractVersionTemplate: '{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}'
+    },
+    {
       // Custom regex for Traefik (using GitHub releases instead of Docker)
       customType: 'regex',
       managerFilePatterns: [
