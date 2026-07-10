@@ -1,0 +1,19 @@
+{
+  "ffmpeg": {
+    "accel": "vaapi",
+    "accelDecode": true,
+    "targetVideoCodec": "h264",
+    "acceptedVideoCodecs": ["h264"],
+    "transcode": "required"
+  },
+  "job": {
+    "faceDetection": { "concurrency": 1 },
+    "smartSearch": { "concurrency": 1 },
+    "thumbnailGeneration": { "concurrency": 2 },
+    "videoConversion": { "concurrency": 1 }
+  },
+  "storageTemplate": {
+    "enabled": true,
+    "template": "{{y}}/{{y}}-{{MM}}/{{filename}}"
+  }
+}
