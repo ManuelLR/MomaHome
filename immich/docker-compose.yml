@@ -85,7 +85,7 @@ services:
     # (PG >=14 <20, VectorChord >=0.3 <2.0, pgvector >=0.7 <0.9), and picking the
     # newest supported PG major avoids a major DB migration down the line.
     # NOTE: not a plain postgres image — needs the vector extensions to boot.
-    # renovatebot: datasource=docker depName=immich-app/postgres registryUrl=https://ghcr.io
+    # renovatebot: datasource=docker depName=immich-app/postgres registryUrl=https://ghcr.io versioning=loose
     image: ghcr.io/immich-app/postgres:18-vectorchord1.1.1-pgvector0.8.5@sha256:e0b09660f2848fc32b5fa4a58936ddf1991efa7d03b9f043ff426a39f480ab47
     container_name: immich_postgres
     restart: unless-stopped
@@ -95,6 +95,8 @@ services:
       - POSTGRES_USER=${DB_USERNAME:?Define DB_USERNAME en .env}
       - POSTGRES_DB=${DB_DATABASE_NAME:?Define DB_DATABASE_NAME en .env}
       - POSTGRES_INITDB_ARGS=--data-checksums
+      # Uncomment if the database lives on HDDs (not SSDs) to tune random I/O.
+      # - DB_STORAGE_TYPE=HDD
     volumes:
       # Postgres data dir MUST be local storage (it is: LVM on /data). Do NOT back
       # this up hot; use the logical dumps Immich writes to library/backups.
