@@ -14,12 +14,18 @@
   },
   "job": {
     "backgroundTask":     { "concurrency": 2 },
-    "faceDetection":      { "concurrency": 1 },
+    "faceDetection":      { "concurrency": 3 },
     "library":            { "concurrency": 2 },
     "metadataExtraction": { "concurrency": 2 },
-    "smartSearch":        { "concurrency": 1 },
+    "smartSearch":        { "concurrency": 3 },
     "thumbnailGeneration":{ "concurrency": 2 },
     "videoConversion":    { "concurrency": 1 }
+  },
+  "machineLearning": {
+    "urls": [
+      "http://192.168.200.174:3003",
+      "http://immich-machine-learning:3003"
+    ]
   },
   "storageTemplate": {
     "enabled": true,

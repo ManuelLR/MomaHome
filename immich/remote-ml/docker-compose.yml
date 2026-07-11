@@ -1,0 +1,39 @@
+# Immich Remote Machine Learning — runs on the ThinkPad T14 Gen 5, NOT on woody.
+# Offloads CLIP smart search + facial recognition from woody's weak Athlon 200GE
+# to this laptop's Ryzen 7 8840U + Radeon 780M (RDNA3, gfx1103) via ROCm.
+# woody's immich-server points machineLearning.urls here (http://<this-host>:3003).
+#
+# This laptop uses a modern Docker Compose (v2), so this file uses the current
+# schema (top-level `name:`, no `version:`) unlike the woody services.
+name: immich_remote_ml
+services:
+  immich-machine-learning:
+    # ROCm (GPU) build. MUST stay on the same Immich version as woody's
+    # immich-server. Renovate's built-in docker manager tracks the "-rocm" tag
+    # (it keeps the suffix and bumps the version part).
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.2-rocm
+    container_name: immich_machine_learning
+    restart: unless-stopped
+    ports:
+      # Reachable from woody over the LAN. The ML container has NO authentication,
+      # so keep it on the trusted home network only (LAN / WireGuard), never public.
+      - "3003:3003"
+    devices:
+      # ROCm needs the compute node (/dev/kfd) plus the render node (/dev/dri).
+      - /dev/dri:/dev/dri
+      - /dev/kfd:/dev/kfd
+    group_add:
+      # GIDs on this ThinkPad (getent group render video): render=989, video=985.
+      - "989"
+      - "985"
+    environment:
+      # Radeon 780M is RDNA3 gfx1103, which ROCm has no native kernels for, so we
+      # present it as gfx1100 (RDNA3 discrete). Standard override for 7x0M iGPUs.
+      # If inference still fails to init, try HSA_USE_SVM=0 and/or the
+      # seccomp:unconfined workaround (see README).
+      - HSA_OVERRIDE_GFX_VERSION=11.0.0
+    volumes:
+      # Downloaded ML models (regenerable). Named volume — this laptop has no /data.
+      - model-cache:/cache
+volumes:
+  model-cache:
