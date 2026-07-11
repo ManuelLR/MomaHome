@@ -95,8 +95,7 @@ services:
       - POSTGRES_USER=${DB_USERNAME:?Define DB_USERNAME en .env}
       - POSTGRES_DB=${DB_DATABASE_NAME:?Define DB_DATABASE_NAME en .env}
       - POSTGRES_INITDB_ARGS=--data-checksums
-      # Uncomment if the database lives on HDDs (not SSDs) to tune random I/O.
-      # - DB_STORAGE_TYPE=HDD
+      - DB_STORAGE_TYPE=HDD
     volumes:
       # Postgres data dir MUST be local storage (it is: LVM on /data). Do NOT back
       # this up hot; use the logical dumps Immich writes to library/backups.
