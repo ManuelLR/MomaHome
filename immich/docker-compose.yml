@@ -7,7 +7,6 @@ services:
     # network. Pinned to a release tag so Renovate tracks new Immich releases.
     # renovatebot: datasource=github-releases depName=immich-app/immich
     image: ghcr.io/immich-app/immich-server:v3.0.2
-    container_name: immich_server
     restart: unless-stopped
     env_file:
       - .env
@@ -53,7 +52,6 @@ services:
     # OOM the rest of the shared server.
     # renovatebot: datasource=github-releases depName=immich-app/immich
     image: ghcr.io/immich-app/immich-machine-learning:v3.0.2
-    container_name: immich_machine_learning
     restart: unless-stopped
     env_file:
       - .env
@@ -68,7 +66,6 @@ services:
     # Valkey (Redis-compatible) for the job queue. Image + digest copied verbatim
     # from the official Immich release compose so it moves in lockstep with Immich.
     image: docker.io/valkey/valkey:9@sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9
-    container_name: immich_redis
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping || exit 1"]
@@ -87,7 +84,6 @@ services:
     # NOTE: not a plain postgres image — needs the vector extensions to boot.
     # renovatebot: datasource=docker depName=immich-app/postgres registryUrl=https://ghcr.io versioning=loose
     image: ghcr.io/immich-app/postgres:18-vectorchord1.1.1-pgvector0.8.5@sha256:e0b09660f2848fc32b5fa4a58936ddf1991efa7d03b9f043ff426a39f480ab47
-    container_name: immich_postgres
     restart: unless-stopped
     shm_size: 128mb
     environment:
@@ -97,9 +93,11 @@ services:
       - POSTGRES_INITDB_ARGS=--data-checksums
       - DB_STORAGE_TYPE=HDD
     volumes:
-      # Postgres data dir MUST be local storage (it is: LVM on /data). Do NOT back
-      # this up hot; use the logical dumps Immich writes to library/backups.
-      - /data/immich/postgres:/var/lib/postgresql/data
+      # PG18+ stores data in a major-version subdir, so the mount goes at
+      # /var/lib/postgresql (NOT .../data) — data lands in .../postgres/18/docker.
+      # Local storage only (LVM on /data). Don't back this up hot; use the logical
+      # dumps Immich writes to library/backups.
+      - /data/immich/postgres:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\" || exit 1"]
       interval: 30s
