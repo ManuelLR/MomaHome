@@ -34,6 +34,53 @@
         'docker'
       ],
       enabled: false
+    },
+    {
+      // Immich ships as a single release and running mixed versions is
+      // unsupported, so everything under immich/ lands in one PR merged as a
+      // unit. separateMajorMinor stays at its default (true) on purpose: a
+      // major goes to renovate_cron/major-immich and does not block the
+      // minor/patch PRs for the current major.
+      matchFileNames: [
+        'immich/**'
+      ],
+      groupName: 'immich stack',
+      groupSlug: 'immich',
+      // Immich ships hotfixes quickly; wait before proposing a release.
+      minimumReleaseAge: '3 days',
+      prBodyNotes: [
+        ':warning: Read the Immich release notes before merging: releases can ship breaking changes and database migrations, and downgrading is not supported. Merge the PR whole or not at all — server and machine-learning must run the same version.'
+      ]
+    },
+    {
+      // Postgres/Valkey digests are copied from the Immich release compose, so a
+      // standalone digest refresh carries no compatibility guarantee and is not
+      // worth a PR. Tag changes still open one. Sync digests by hand from
+      // https://github.com/immich-app/immich/blob/main/docker/docker-compose.yml
+      matchFileNames: [
+        'immich/**'
+      ],
+      matchPackageNames: [
+        'ghcr.io/immich-app/postgres',
+        'ghcr.io/valkey-io/valkey'
+      ],
+      matchUpdateTypes: [
+        'digest'
+      ],
+      enabled: false
+    },
+    {
+      // Tracked through github-releases (see custom managers) so the PR carries
+      // release notes and every image resolves to the same version. Drop the
+      // duplicate deps the built-in docker manager finds on those lines.
+      matchDatasources: [
+        'docker'
+      ],
+      matchPackageNames: [
+        'ghcr.io/immich-app/immich-server',
+        'ghcr.io/immich-app/immich-machine-learning'
+      ],
+      enabled: false
     }
   ],
   
@@ -97,6 +144,21 @@
         'image: ghcr.io/crocodilestick/calibre-web-automated:(?<currentValue>[^ ]*)\\n'
       ],
       depNameTemplate: 'crocodilestick/calibre-web-automated',
+      datasourceTemplate: 'github-releases',
+      versioningTemplate: 'semver-coerced'
+    },
+    {
+      // Remote ROCm image: same github-releases entry as immich-server. The
+      // generic manager above can't be used because it would capture "-rocm" as
+      // part of the version; here only the version part is captured.
+      customType: 'regex',
+      managerFilePatterns: [
+        '/immich/remote-ml/docker-compose.yml/'
+      ],
+      matchStrings: [
+        'image: ghcr\\.io/immich-app/immich-machine-learning:(?<currentValue>[^\\s@-]+)-rocm'
+      ],
+      depNameTemplate: 'immich-app/immich',
       datasourceTemplate: 'github-releases',
       versioningTemplate: 'semver-coerced'
     },
