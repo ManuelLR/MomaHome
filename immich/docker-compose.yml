@@ -1,0 +1,114 @@
+version: "2.4"
+services:
+  immich-server:
+    # Immich: self-hosted photo & video management. API + web + jobs in a single
+    # container (v3 merged the old "microservices" service into the server).
+    # Only this service is routed through Traefik; the rest stay on the internal
+    # network. Pinned to a release tag so Renovate tracks new Immich releases.
+    # renovatebot: datasource=github-releases depName=immich-app/immich
+    image: ghcr.io/immich-app/immich-server:v3.0.2
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Declarative, version-controlled config (transcoding, storage template,
+      # job concurrency...). NOTE: settings defined here become read-only in the
+      # admin UI. See immich-config.json.
+      - IMMICH_CONFIG_FILE=/config/immich-config.json
+    volumes:
+      # Whole library on the LVM RAID1 pool (originals, thumbs, encoded video,
+      # profile, and Immich's own DB backups under library/backups).
+      - /data/immich/library:/data
+      - ./immich-config.json:/config/immich-config.json:ro
+      - /etc/localtime:/etc/localtime:ro
+    # Hardware transcoding via VAAPI on the AMD Raven Ridge iGPU (renderD128).
+    # The GPU does H.264/HEVC decode and H.264 encode; ML stays on CPU.
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      # GID of the host "render" group that owns /dev/dri/renderD128 on woody
+      # (getent group render -> 113). Needed if the container ever runs non-root.
+      - "113"
+    depends_on:
+      - redis
+      - database
+    networks:
+      - reverse-proxy
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.immich.loadbalancer.server.port=2283"
+      - "traefik.http.routers.immich.rule=Host(`${IMMICH_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.immich.entrypoints=websecure"
+      - "traefik.http.routers.immich.tls.certresolver=principal"
+      - "traefik.http.routers.immich.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      # LAN-only: reachable only from the home network (from outside use WireGuard).
+      - "traefik.http.middlewares.immich-lan-only.ipallowlist.sourcerange=192.168.200.0/24"
+      - "traefik.http.routers.immich.middlewares=immich-lan-only"
+
+  immich-machine-learning:
+    # CLIP smart search + facial recognition. Runs on CPU (the AMD Vega gfx902
+    # iGPU is not supported by ROCm). Memory-capped so a processing spike can't
+    # OOM the rest of the shared server.
+    # renovatebot: datasource=github-releases depName=immich-app/immich
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.2
+    restart: unless-stopped
+    env_file:
+      - .env
+    mem_limit: 2g
+    volumes:
+      # Downloaded ML models (regenerable) as a bind-mount, per repo convention.
+      - /data/immich/model-cache:/cache
+    networks:
+      - internal
+
+  redis:
+    # Valkey (Redis-compatible) for the job queue. Image + digest copied verbatim
+    # from the official Immich release compose so it moves in lockstep with Immich.
+    image: docker.io/valkey/valkey:9@sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  database:
+    # Postgres 18 + VectorChord (vector search / face embeddings). Immich dropped
+    # pgvecto.rs in 3.0; VectorChord is the supported path. PG18 + vectorchord
+    # 1.1.1 + pgvector 0.8.5 all fall within Immich's supported ranges
+    # (PG >=14 <20, VectorChord >=0.3 <2.0, pgvector >=0.7 <0.9), and picking the
+    # newest supported PG major avoids a major DB migration down the line.
+    # NOTE: not a plain postgres image — needs the vector extensions to boot.
+    # renovatebot: datasource=docker depName=immich-app/postgres registryUrl=https://ghcr.io versioning=loose
+    image: ghcr.io/immich-app/postgres:18-vectorchord1.1.1-pgvector0.8.5@sha256:e0b09660f2848fc32b5fa4a58936ddf1991efa7d03b9f043ff426a39f480ab47
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD:?Define DB_PASSWORD en .env}
+      - POSTGRES_USER=${DB_USERNAME:?Define DB_USERNAME en .env}
+      - POSTGRES_DB=${DB_DATABASE_NAME:?Define DB_DATABASE_NAME en .env}
+      - POSTGRES_INITDB_ARGS=--data-checksums
+      - DB_STORAGE_TYPE=HDD
+    volumes:
+      # PG18+ stores data in a major-version subdir, so the mount goes at
+      # /var/lib/postgresql (NOT .../data) — data lands in .../postgres/18/docker.
+      # Local storage only (LVM on /data). Don't back this up hot; use the logical
+      # dumps Immich writes to library/backups.
+      - /data/immich/postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\" || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - internal
+
+networks:
+  reverse-proxy:
+    # External network created by the reverse-proxy setup.
+    external: true
+  internal:

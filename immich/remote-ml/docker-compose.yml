@@ -1,0 +1,39 @@
+# Optional Immich remote machine learning — runs on a spare machine, NOT on the
+# server. Offloads CLIP smart search + facial recognition to an AMD RDNA3 iGPU
+# via ROCm. Point immich-server at it through machineLearning.urls in
+# ../immich-config.json.
+#
+# Uses the current Compose schema (top-level `name:`, no `version:`), unlike the
+# server-side files.
+name: immich_remote_ml
+services:
+  immich-machine-learning:
+    # ROCm (GPU) build. MUST stay on the same Immich version as the
+    # immich-server. Renovate's built-in docker manager tracks the "-rocm" tag
+    # (it keeps the suffix and bumps the version part).
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.2-rocm
+    restart: unless-stopped
+    ports:
+      # Reachable from the server over the LAN. The ML container has NO
+      # authentication, so keep it on the trusted home network only
+      # (LAN / WireGuard), never public.
+      - "3003:3003"
+    devices:
+      # ROCm needs the compute node (/dev/kfd) plus the render node (/dev/dri).
+      - /dev/dri:/dev/dri
+      - /dev/kfd:/dev/kfd
+    group_add:
+      # Host render/video GIDs — check with `getent group render video`.
+      - "989"
+      - "985"
+    environment:
+      # RDNA3 integrated GPUs (gfx110x) have no native ROCm kernels, so present
+      # them as gfx1100 (RDNA3 discrete). Standard override for these iGPUs.
+      # If inference still fails to init, try HSA_USE_SVM=0 and/or
+      # security_opt: ["seccomp:unconfined"].
+      - HSA_OVERRIDE_GFX_VERSION=11.0.0
+    volumes:
+      # Downloaded ML models (regenerable). Named volume — this host has no /data.
+      - model-cache:/cache
+volumes:
+  model-cache:
