@@ -10,6 +10,7 @@ This repository contains information and settings used in a home.
 ├── adguardhome        => Folder that contain the DNS used in home
 ├── home_automation    => Folder that contain home_automation devices, configuration and deploy tools
 │   └── *
+├── immich             => Self-hosted photo & video management (LAN-only)
 ├── monitoring         => [WIP] Basic monitoring for the server and other elements.
 ├── reverse-proxy      => Proxy used to route all public incoming http/tcp/udp traffic to each container.
 ├── samba              => LAN-only network drive to quickly drop phone photos for a temporary backup
