@@ -7,8 +7,8 @@
     }
   },
   "ffmpeg": {
-    "accel": "vaapi",
-    "accelDecode": true,
+    "accel": "disabled",
+    "accelDecode": false,
     "targetVideoCodec": "h264",
     "transcode": "required"
   },
