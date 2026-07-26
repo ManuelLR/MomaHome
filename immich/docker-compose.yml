@@ -22,8 +22,14 @@ services:
       - /data/immich/library:/data
       - ./immich-config.json:/config/immich-config.json:ro
       - /etc/localtime:/etc/localtime:ro
-    # Hardware transcoding via VAAPI on the AMD Raven Ridge iGPU (renderD128).
-    # The GPU does H.264/HEVC decode and H.264 encode; ML stays on CPU.
+    # /dev/dri is still passed through, but hardware transcoding is OFF:
+    # immich-config.json sets ffmpeg.accel=disabled. The h264_vaapi encoder on
+    # this Raven Ridge iGPU hangs at 100% CPU on the first frame instead of
+    # failing, and since videoConversion runs with concurrency 1 that wedges the
+    # whole queue for as long as the container stays up (it did, for 15 days).
+    # Reproduce before re-enabling: encoding a 664x486 clip with h264_vaapi
+    # produces a 48-byte file and never returns; the same clip on libx264 takes
+    # under a second. The device stays mapped so re-enabling is a config change.
     devices:
       - /dev/dri:/dev/dri
     group_add:

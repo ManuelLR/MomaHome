@@ -26,6 +26,12 @@ before `immich-server` answers. The first account registered becomes the admin.
   cannot be reused.
 - **`immich-config.json`** is a partial, version-controlled config. The keys it
   defines become read-only in the admin UI.
+- **Video transcoding runs on CPU, not the iGPU.** `h264_vaapi` hangs on this
+  hardware (see the comment in `docker-compose.yml`), and a hung ffmpeg blocks
+  the `videoConversion` queue indefinitely because Immich never times it out.
+  If the queue ever shows a job stuck as *Active* for hours, check for a
+  long-running ffmpeg with `docker top immich-immich-server-1` and kill it —
+  the job then moves to *failed* and the queue drains.
 - **Back up `/data/immich/library`**: it holds the originals *and* the daily
   database dumps Immich writes to `library/backups`. Never copy
   `/data/immich/postgres` hot. RAID1 is redundancy, not a backup.
