@@ -45,10 +45,6 @@ services:
             # Use local time for logging timestamps
             - /etc/localtime:/etc/localtime:ro
         environment:
-            ## Since 2026.6.0 the image ships Device Builder as the dashboard, which
-            ## reads ESPHOME_USERNAME/ESPHOME_PASSWORD. The bare USERNAME/PASSWORD are
-            ## ignored, and this service is on host network, so the old names would
-            ## leave the dashboard unauthenticated on the LAN.
             - ESPHOME_USERNAME=${ESPHOME_DASHBOARD_USERNAME}
             - ESPHOME_PASSWORD=${ESPHOME_DASHBOARD_PASSWORD}
 
