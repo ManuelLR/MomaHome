@@ -30,3 +30,9 @@ before `immich-server` answers. The first account registered becomes the admin.
   database dumps Immich writes to `library/backups`. Never copy
   `/data/immich/postgres` hot. RAID1 is redundancy, not a backup.
 - **Merge Immich updates by hand** — releases can ship breaking changes.
+  Renovate opens one grouped PR covering the server and both machine-learning
+  images; a major release gets its own PR, so patches for the current major keep
+  flowing while it waits.
+- **Postgres and Valkey digests are pinned, not tracked.** Copy them from the
+  [Immich release compose](https://github.com/immich-app/immich/blob/main/docker/docker-compose.yml)
+  when a release changes them.

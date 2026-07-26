@@ -21,13 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Validate repository config (renovate.json5)
         run: |
           echo "🔍 Validating repository configuration file..."
           docker run --rm -v "$PWD":/tmp -w /tmp \
-            renovate/renovate:41 \
+            renovate/renovate:43 \
             renovate-config-validator \
             --strict \
             .github/renovate.json5
@@ -54,7 +54,7 @@ jobs:
             -e RENOVATE_CONFIG_FILE="/tmp/.github/renovate.global.js" \
             -v "$PWD":/tmp \
             -w /tmp \
-            renovate/renovate:41 \
+            renovate/renovate:43 \
             --platform=github \
             --dry-run=full \
             ManuelLR/MomaHome || {

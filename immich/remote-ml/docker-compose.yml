@@ -9,8 +9,9 @@ name: immich_remote_ml
 services:
   immich-machine-learning:
     # ROCm (GPU) build. MUST stay on the same Immich version as the
-    # immich-server. Renovate's built-in docker manager tracks the "-rocm" tag
-    # (it keeps the suffix and bumps the version part).
+    # immich-server. A custom manager in .github/renovate.json5 bumps only the
+    # version part from the same github-releases entry as the server, inside the
+    # grouped "immich stack" PR.
     image: ghcr.io/immich-app/immich-machine-learning:v3.0.2-rocm
     restart: unless-stopped
     ports:

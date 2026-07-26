@@ -5,7 +5,8 @@ services:
     # container (v3 merged the old "microservices" service into the server).
     # Only this service is routed through Traefik; the rest stay on the internal
     # network. Pinned to a release tag so Renovate tracks new Immich releases.
-    # renovatebot: datasource=github-releases depName=immich-app/immich
+    # extractVersion keeps the leading "v": Immich only publishes v-prefixed tags.
+    # renovatebot: datasource=github-releases depName=immich-app/immich extractVersion=^(?<version>.+)$
     image: ghcr.io/immich-app/immich-server:v3.0.2
     restart: unless-stopped
     env_file:
@@ -50,7 +51,7 @@ services:
     # CLIP smart search + facial recognition. Runs on CPU (the AMD Vega gfx902
     # iGPU is not supported by ROCm). Memory-capped so a processing spike can't
     # OOM the rest of the shared server.
-    # renovatebot: datasource=github-releases depName=immich-app/immich
+    # renovatebot: datasource=github-releases depName=immich-app/immich extractVersion=^(?<version>.+)$
     image: ghcr.io/immich-app/immich-machine-learning:v3.0.2
     restart: unless-stopped
     env_file:
@@ -63,9 +64,11 @@ services:
       - internal
 
   redis:
-    # Valkey (Redis-compatible) for the job queue. Image + digest copied verbatim
-    # from the official Immich release compose so it moves in lockstep with Immich.
-    image: docker.io/valkey/valkey:9@sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9
+    # Valkey (Redis-compatible) for the job queue. Digest copied verbatim from the
+    # official Immich release compose so it moves in lockstep with Immich. Pulled
+    # from GHCR instead of upstream's Docker Hub reference (same manifest, same
+    # digest) to keep the stack on one registry, off Docker Hub's pull limits.
+    image: ghcr.io/valkey-io/valkey:9@sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping || exit 1"]
@@ -82,7 +85,10 @@ services:
     # (PG >=14 <20, VectorChord >=0.3 <2.0, pgvector >=0.7 <0.9), and picking the
     # newest supported PG major avoids a major DB migration down the line.
     # NOTE: not a plain postgres image — needs the vector extensions to boot.
-    # renovatebot: datasource=docker depName=immich-app/postgres registryUrl=https://ghcr.io versioning=loose
+    # No renovatebot annotation: no GitHub release feed, and the built-in docker
+    # manager already treats "-vectorchord…-pgvector…" as a suffix and only offers
+    # tags with the same extension combination. Digest updates are disabled in
+    # .github/renovate.json5; sync the digest by hand from the Immich release compose.
     image: ghcr.io/immich-app/postgres:18-vectorchord1.1.1-pgvector0.8.5@sha256:e0b09660f2848fc32b5fa4a58936ddf1991efa7d03b9f043ff426a39f480ab47
     restart: unless-stopped
     shm_size: 128mb
