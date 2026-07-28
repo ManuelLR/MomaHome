@@ -117,8 +117,8 @@
         {% set data = {} %}
         {% set service = content_type | default('send_message') %}
         
-        {# Always include target #}
-        {% set data = dict(data, **{'target': targets_to_notify}) %}
+        {# Always include chat_id (replaces the deprecated 'target') #}
+        {% set data = dict(data, **{'chat_id': targets_to_notify}) %}
         
         {# Add parse_mode #}
         {% set data = dict(data, **{'parse_mode': parse_mode | default('markdown')}) %}
