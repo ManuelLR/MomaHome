@@ -9,7 +9,9 @@
     mode: queued
     triggers:
       - platform: template
-        value_template: "{{ states('binary_sensor.environment_001_temperature_rising') and states('binary_sensor.dyson_01_temperature_rising') }}"
+        value_template: >
+          {{ is_state('binary_sensor.environment_001_temperature_rising', 'on')
+             and is_state('binary_sensor.dyson_01_temperature_rising', 'on') }}
         # for: "00:10:00"
         for: "01:30:00"
     actions:
@@ -22,7 +24,10 @@
     mode: queued
     triggers:
       - platform: template
-        value_template: "{{ states('binary_sensor.environment_001_temperature_falling') and (states('sensor.xiaomi_lywsd03mmc_z_01_temperatura') < states('sensor.dyson_01_temperature')) }}"
+        value_template: >
+          {{ is_state('binary_sensor.environment_001_temperature_falling', 'on')
+             and states('sensor.xiaomi_lywsd03mmc_z_01_temperatura') | float(-999)
+                 < state_attr('sensor.dyson_01_temperature', 'current_temperature') | float(999) }}
         for: "00:10:00"
     # conditions:
     #   - platform: template
