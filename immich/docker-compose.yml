@@ -7,7 +7,7 @@ services:
     # network. Pinned to a release tag so Renovate tracks new Immich releases.
     # extractVersion keeps the leading "v": Immich only publishes v-prefixed tags.
     # renovatebot: datasource=github-releases depName=immich-app/immich extractVersion=^(?<version>.+)$
-    image: ghcr.io/immich-app/immich-server:v3.0.2
+    image: ghcr.io/immich-app/immich-server:v3.0.3
     restart: unless-stopped
     env_file:
       - .env
@@ -58,7 +58,7 @@ services:
     # iGPU is not supported by ROCm). Memory-capped so a processing spike can't
     # OOM the rest of the shared server.
     # renovatebot: datasource=github-releases depName=immich-app/immich extractVersion=^(?<version>.+)$
-    image: ghcr.io/immich-app/immich-machine-learning:v3.0.2
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.3
     restart: unless-stopped
     env_file:
       - .env
