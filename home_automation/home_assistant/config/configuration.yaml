@@ -28,6 +28,7 @@ homeassistant:
 logger:
   default: info
   logs:
+    homeassistant.components.nmap_tracker.device_tracker: warn
     homeassistant.components.ddwrt.device_tracker: warn
     homeassistant.components.discovery: warn
     homeassistant.components.upnp: warn
