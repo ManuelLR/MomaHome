@@ -139,7 +139,10 @@ binary_sensor: !include_dir_merge_list __auto_generated-config/binary_sensor/
 
 google_assistant: !include_dir_merge_named __auto_generated-config/google_assistant/
 
-device_tracker: !include_dir_merge_list __auto_generated-config/device_tracker/
+# Dropped along with the last YAML platform (bluetooth_le_tracker). Presence now
+# comes from the ESPHome ble_presence sensors on man-005--esphome, which feed
+# device_tracker.see from packages/esphome/automation.yaml.
+# device_tracker: !include_dir_merge_list __auto_generated-config/device_tracker/
 
 input_select: !include_dir_merge_named __auto_generated-config/input_select/
 
