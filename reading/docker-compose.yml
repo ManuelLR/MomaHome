@@ -26,7 +26,7 @@ services:
     # 3. Fix permissions: docker-compose exec wallabag chown -R nobody:nobody /var/www/wallabag
     environment:
       - SYMFONY__ENV__DOMAIN_NAME=https://${WALLABAG_EXTERNAL_DOMAIN}
-      - SYMFONY__ENV__SERVER_NAME="MoMa's Wallabag"
+      - SYMFONY__ENV__SERVER_NAME=MoMa's Wallabag
       - SYMFONY__ENV__FOSUSER_REGISTRATION=false
       - SYMFONY__ENV__FOSUSER_CONFIRMATION=false
       - POPULATE_DATABASE=false

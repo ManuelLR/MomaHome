@@ -13,17 +13,20 @@ services:
             # Config files
             - ./home_assistant/config/:/config/
             - ./home_assistant/HA-custom-www/my-config/:/HA-custom-www/my-config/
-            - /run/dbus:/run/dbus:ro
+            # /run/dbus was mounted here to reach BlueZ on the host. The local
+            # adapter is gone: BLE goes through the bluetooth_proxy on
+            # man-005--esphome over the network.
         devices:
             # Zigbee dongle
             - /dev/ttyUSB0:/dev/ttyUSB0
         environment:
-            - TZ="Europe/Madrid"
+            - TZ=Europe/Madrid
                 # Reduce logging verbosity caused by ddwrt recurrent requests
             - PYTHONWARNINGS=ignore:Unverified HTTPS request is being made to host '192.168.200.1'
         restart: unless-stopped
         stop_grace_period: 5m
-        # That it's useful to use bluetooth devices in server
+        # Needed for network discovery (mDNS/SSDP): ESPHome, Cast, upnp,
+        # nmap_tracker. Nothing to do with bluetooth, despite the old comment.
         network_mode: "host"
         labels:
             - "traefik.enable=true"

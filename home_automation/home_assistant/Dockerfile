@@ -12,8 +12,6 @@ FROM ghcr.io/home-assistant/home-assistant:2026.7.4
 
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
-    #   # renovatebot: datasource=github-releases depName=custom-components/ble_monitor
-    # CUSTOM_COMPONENT_BLE_MONITOR_VERSION=9.2.0 \
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod versioning=semver
     CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v3.1.0 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
@@ -70,10 +68,6 @@ RUN \
     && apk add --no-cache --virtual build-dep \
       git \
     && mkdir -p /opt/HA/config/custom_components/ \
-    # # ble_monitor
-    # && git clone https://github.com/custom-components/ble_monitor.git /tmp/ble_monitor \
-    # && cd /tmp/ble_monitor && git checkout $CUSTOM_COMPONENT_BLE_MONITOR_VERSION \
-    # && cd - && cp -r /tmp/ble_monitor/custom_components/* /opt/HA/config/custom_components/ \
     # browser_mod
     && git clone https://github.com/thomasloven/hass-browser_mod.git /tmp/browser_mod \
     && cd /tmp/browser_mod && git checkout $CUSTOM_COMPONENT_BROWSER_MOD_VERSION \
