@@ -35,17 +35,16 @@ logger:
     homeassistant.components.shell_command: debug
 
 lovelace:
-  mode: yaml
+  # Keeps loading the resources below from YAML instead of the UI
+  resource_mode: yaml
   # Add more dashboards
-  ### Default continue in ui-lovelace.yaml
   dashboards:
-    # lovelace-overview: # Needs to contain a hyphen (-)
-    #   mode: yaml
-    #   filename: ui-lovelace.yaml
-    #   title: Overview
-    #   icon: mdi:tools
-    #   show_in_sidebar: true
-    #   require_admin: true
+    lovelace: # The default dashboard, the only key exempt from the hyphen (-)
+      mode: yaml
+      filename: ui-lovelace.yaml
+      title: Overview
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
     lovelace-generated: # Needs to contain a hyphen (-)
       mode: yaml
       filename: notexist.yaml
