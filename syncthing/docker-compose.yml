@@ -14,7 +14,7 @@ services:
             # All data together
             - /data/syncthing-data:/var/syncthing
         environment:
-            - TZ="Europe/Madrid"
+            - TZ=Europe/Madrid
             # id $USER
             - PUID=1000
             - PGID=1000

@@ -20,7 +20,7 @@ services:
             # Zigbee dongle
             - /dev/ttyUSB0:/dev/ttyUSB0
         environment:
-            - TZ="Europe/Madrid"
+            - TZ=Europe/Madrid
                 # Reduce logging verbosity caused by ddwrt recurrent requests
             - PYTHONWARNINGS=ignore:Unverified HTTPS request is being made to host '192.168.200.1'
         restart: unless-stopped
