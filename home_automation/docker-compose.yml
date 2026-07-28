@@ -25,6 +25,13 @@ services:
             - PYTHONWARNINGS=ignore:Unverified HTTPS request is being made to host '192.168.200.1'
         restart: unless-stopped
         stop_grace_period: 5m
+        security_opt:
+            # Blocks privilege gain through setuid/file-capability binaries.
+            # Safe here: the container runs as plain root (no userns-remap, no
+            # PUID/PGID), so s6-overlay never needs to gain anything, and
+            # prepare.sh only shells out to hass. Marginal on its own though:
+            # see the note on network_mode below for where the real exposure is.
+            - "no-new-privileges:true"
         # Needed for network discovery (mDNS/SSDP): ESPHome, Cast, upnp,
         # nmap_tracker. Nothing to do with bluetooth, despite the old comment.
         network_mode: "host"
