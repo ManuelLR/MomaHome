@@ -12,7 +12,7 @@ services:
     # immich-server. A custom manager in .github/renovate.json5 bumps only the
     # version part from the same github-releases entry as the server, inside the
     # grouped "immich stack" PR.
-    image: ghcr.io/immich-app/immich-machine-learning:v3.0.3-rocm
+    image: ghcr.io/immich-app/immich-machine-learning:v3.1.0-rocm
     restart: unless-stopped
     ports:
       # Reachable from the server over the LAN. The ML container has NO
