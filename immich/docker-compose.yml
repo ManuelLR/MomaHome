@@ -74,7 +74,7 @@ services:
     # official Immich release compose so it moves in lockstep with Immich. Pulled
     # from GHCR instead of upstream's Docker Hub reference (same manifest, same
     # digest) to keep the stack on one registry, off Docker Hub's pull limits.
-    image: ghcr.io/valkey-io/valkey:9@sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9
+    image: ghcr.io/valkey-io/valkey:9
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping || exit 1"]

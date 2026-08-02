@@ -13,13 +13,52 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.galley.loadbalancer.server.port=8090"
-      - "traefik.http.routers.galley.rule=Host(`${GALLEY_EXTERNAL_DOMAIN}`)"
+
+      # --- App on the current domain: reachable from the internet ---
+      # Everything except PocketBase's admin dashboard, which the router below
+      # keeps on the LAN. The two rules are mutually exclusive on purpose, so
+      # matching never depends on Traefik's rule-length priority heuristic.
+      - "traefik.http.routers.galley.rule=Host(`${GALLEY_EXTERNAL_DOMAIN}`) && !PathPrefix(`/_/`)"
       - "traefik.http.routers.galley.entrypoints=websecure"
       - "traefik.http.routers.galley.tls.certresolver=principal"
       - "traefik.http.routers.galley.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
-      # LAN-only: reachable only from the home network.
+      - "traefik.http.routers.galley.service=galley"
+
+      # --- PocketBase admin dashboard (/_/): LAN-only ---
+      # Same host, complementary path rule. This hides the admin UI from the
+      # internet, nothing more: the superuser REST endpoints stay public and are
+      # reachable by collection name or by collection id, so no path filter here
+      # would be a real boundary. PocketBase's own auth is what guards the data.
+      - "traefik.http.routers.galley-admin.rule=Host(`${GALLEY_EXTERNAL_DOMAIN}`) && PathPrefix(`/_/`)"
+      - "traefik.http.routers.galley-admin.entrypoints=websecure"
+      - "traefik.http.routers.galley-admin.tls.certresolver=principal"
+      - "traefik.http.routers.galley-admin.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      - "traefik.http.routers.galley-admin.middlewares=galley-lan-only"
+      - "traefik.http.routers.galley-admin.service=galley"
+
+      # --- Legacy domain: LAN-only, redirects to the current one ---
+      # Keeps the old bookmarks working from home. Its certificate must stay
+      # renewable while this router exists: with sniStrict the TLS handshake
+      # fails before the redirect ever runs.
+      - "traefik.http.routers.galley-legacy.rule=Host(`${GALLEY_LEGACY_DOMAIN}`)"
+      - "traefik.http.routers.galley-legacy.entrypoints=websecure"
+      - "traefik.http.routers.galley-legacy.tls.certresolver=principal"
+      - "traefik.http.routers.galley-legacy.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      - "traefik.http.routers.galley-legacy.service=galley"
+      # Order matters: deny anything off-LAN first, only then redirect. A request
+      # from the internet gets a 403 and never learns the new domain.
+      - "traefik.http.routers.galley-legacy.middlewares=galley-lan-only,galley-legacy-redirect"
+
+      # --- Middlewares ---
       - "traefik.http.middlewares.galley-lan-only.ipallowlist.sourcerange=192.168.200.0/24"
-      - "traefik.http.routers.galley.middlewares=galley-lan-only"
+      # `$$` escapes compose interpolation; a bare ${1} would expand to an empty
+      # string and drop the path. The regex runs against the full RequestURI, so
+      # path and query string are preserved.
+      - "traefik.http.middlewares.galley-legacy-redirect.redirectregex.regex=^https://[^/]+/(.*)"
+      - "traefik.http.middlewares.galley-legacy-redirect.redirectregex.replacement=https://${GALLEY_EXTERNAL_DOMAIN}/$${1}"
+      # 302 while the move settles; flip to true (301) once it is proven, keeping
+      # in mind browsers cache permanent redirects very aggressively.
+      - "traefik.http.middlewares.galley-legacy-redirect.redirectregex.permanent=false"
 
 networks:
   reverse-proxy:
