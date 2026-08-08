@@ -24,6 +24,8 @@ ENV \
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
     CUSTOM_COMPONENT_EDATA_VERSION=2025.11.3 \
+      # renovatebot: datasource=github-releases depName=badbugssoftware/ha-emasesa versioning=semver
+    CUSTOM_COMPONENT_EMASESA_VERSION=v0.7.0 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.4.2 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
@@ -92,6 +94,10 @@ RUN \
     && git clone https://github.com/uvejota/homeassistant-edata.git /tmp/homeassistant-edata \
     && cd /tmp/homeassistant-edata && git checkout $CUSTOM_COMPONENT_EDATA_VERSION \
     && cd - && cp -r /tmp/homeassistant-edata/custom_components/* /opt/HA/config/custom_components/ \
+    # emasesa (Aguas de Sevilla)
+    && git clone https://github.com/badbugssoftware/ha-emasesa.git /tmp/ha-emasesa \
+    && cd /tmp/ha-emasesa && git checkout $CUSTOM_COMPONENT_EMASESA_VERSION \
+    && cd - && cp -r /tmp/ha-emasesa/custom_components/emasesa /opt/HA/config/custom_components/ \
     # HomeConnect (Bosh/Balay/Siemens)
     && git clone https://github.com/ekutner/home-connect-hass /tmp/home-connect-hass \
     && cd /tmp/home-connect-hass && git checkout $CUSTOM_COMPONENT_HOME_CONNECT_VERSION \
