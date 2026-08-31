@@ -70,7 +70,7 @@ services:
 
   readeck:
     # renovatebot: datasource=gitea-releases depName=readeck/readeck registryUrl=https://codeberg.org
-    image: codeberg.org/readeck/readeck:0.22.3
+    image: codeberg.org/readeck/readeck:0.23.1
     restart: unless-stopped
     environment:
       # # Defines the application log level. Can be error, warn, info, debug.
