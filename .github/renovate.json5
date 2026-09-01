@@ -81,6 +81,26 @@
         'ghcr.io/immich-app/immich-machine-learning'
       ],
       enabled: false
+    },
+    {
+      // These images are tracked via a github/gitea-releases custom manager so
+      // their PRs carry release notes. The built-in docker manager fires on the
+      // same image line with a DIFFERENT depName, so Renovate can't dedupe them
+      // and opens a second, changelog-less PR for every bump. Disable that
+      // docker duplicate here (same as immich/traefik above). This bites when
+      // the docker depName can't match the custom depName:
+      //   - registry host baked into the name: codeberg.org/readeck/readeck
+      //     vs depName readeck/readeck. (ghcr.io images dedupe fine, e.g. calibre.)
+      //   - image published under a different org than the source repo:
+      //     mauriceboe/trek (Docker Hub) vs depName liketrek/TREK (source).
+      matchDatasources: [
+        'docker'
+      ],
+      matchPackageNames: [
+        'codeberg.org/readeck/readeck',
+        'mauriceboe/trek'
+      ],
+      enabled: false
     }
   ],
   
@@ -106,8 +126,12 @@
       //   image: owner/image:1.2.3
       // Keep the fields in that order. registryUrl is needed e.g. for gitea-releases (Codeberg).
       // Defaults: versioning=semver-coerced, extractVersion strips an optional leading 'v'.
-      // No need to disable the built-in docker manager: Renovate dedupes updates
-      // that touch the same file line (same as the traefik/calibre setups).
+      // Renovate usually dedupes the built-in docker manager against this one
+      // when both resolve to the same package (traefik/calibre/ghcr.io setups).
+      // BUT if the image carries a registry host the custom depName omits (e.g.
+      // codeberg.org/readeck/readeck vs depName readeck/readeck), the docker
+      // depName differs and dedup fails -> two PRs. For those, disable the docker
+      // manager per-package in packageRules above (see readeck/immich).
       customType: 'regex',
       managerFilePatterns: [
         '/(^|/)docker-compose\\.ya?ml$/'
