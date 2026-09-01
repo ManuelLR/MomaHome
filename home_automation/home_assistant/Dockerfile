@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2026.7.4
+FROM ghcr.io/home-assistant/home-assistant:2026.8.3
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -49,7 +49,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
     CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0 \
       # renovatebot: datasource=github-releases depName=piitaya/lovelace-mushroom
-    CUSTOM_CARD_MUSHROOM_VERSION=v5.1.1
+    CUSTOM_CARD_MUSHROOM_VERSION=v5.2.2
 
 ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
