@@ -4,9 +4,17 @@ header:
   title: Precio luz (PVPC)
   show_states: true
   colorize_states: true
-graph_span: 48h
+# Brush shows the whole range below; the main chart shows a 12h window.
+# The brush selection always starts at the end of the span, so the span ends
+# 12h from now: by default you see the next 12 hours and can drag back.
+graph_span: 36h
 span:
-  start: day
+  end: hour
+  offset: +12h
+experimental:
+  brush: true
+brush:
+  selection_span: 12h
 now:
   show: true
   label: Ahora
@@ -19,14 +27,14 @@ all_series_config:
   unit: €/kWh
   float_precision: 3
 series:
-  # Each day is its own series so min/max (extremas) are computed per day.
+  # One series per day, so each day gets its own min/max.
   - entity: sensor.pvpc
     name: Hoy
     color: '#ff9800'
     show:
       in_header: raw
+      in_brush: true
       legend_value: false
-      extremas: true
     data_generator: |
       const day0 = new Date();
       day0.setHours(0, 0, 0, 0);
@@ -44,6 +52,59 @@ series:
     color: '#2196f3'
     show:
       in_header: false
+      in_brush: true
+      legend_value: false
+    data_generator: |
+      const day0 = new Date();
+      day0.setHours(0, 0, 0, 0);
+      day0.setDate(day0.getDate() + 1);
+      const points = [];
+      for (let h = 0; h < 24; h++) {
+        const price = entity.attributes['price_next_day_' + String(h).padStart(2, '0') + 'h'];
+        if (price === undefined || price === null) continue;
+        points.push([day0.getTime() + h * 3600 * 1000, price]);
+      }
+      // Close the last step so 23h is drawn as a full hour.
+      if (points.length) points.push([points[points.length - 1][0] + 3600 * 1000, points[points.length - 1][1]]);
+      return points;
+  # Invisible series holding only each day's min/max, so the extremas
+  # labels sit in the middle of the hour instead of at the step start.
+  - entity: sensor.pvpc
+    name: Hoy
+    color: '#ff9800'
+    type: line
+    stroke_width: 0
+    show:
+      in_header: false
+      in_brush: false
+      in_legend: false
+      legend_value: false
+      extremas: true
+    data_generator: |
+      const day0 = new Date();
+      day0.setHours(0, 0, 0, 0);
+      const points = [];
+      for (let h = 0; h < 24; h++) {
+        const price = entity.attributes['price_' + String(h).padStart(2, '0') + 'h'];
+        if (price === undefined || price === null) continue;
+        points.push([day0.getTime() + h * 3600 * 1000, price]);
+      }
+      if (!points.length) return [];
+      // Only min and max, placed at the middle of their hour.
+      const min = points.reduce((a, b) => (b[1] < a[1] ? b : a));
+      const max = points.reduce((a, b) => (b[1] > a[1] ? b : a));
+      return [min, max]
+        .map(([t, v]) => [t + 1800 * 1000, v])
+        .sort((a, b) => a[0] - b[0]);
+  - entity: sensor.pvpc
+    name: Mañana
+    color: '#2196f3'
+    type: line
+    stroke_width: 0
+    show:
+      in_header: false
+      in_brush: false
+      in_legend: false
       legend_value: false
       extremas: true
     data_generator: |
@@ -56,8 +117,13 @@ series:
         if (price === undefined || price === null) continue;
         points.push([day0.getTime() + h * 3600 * 1000, price]);
       }
-      if (points.length) points.push([points[points.length - 1][0] + 3600 * 1000, points[points.length - 1][1]]);
-      return points;
+      if (!points.length) return [];
+      // Only min and max, placed at the middle of their hour.
+      const min = points.reduce((a, b) => (b[1] < a[1] ? b : a));
+      const max = points.reduce((a, b) => (b[1] > a[1] ? b : a));
+      return [min, max]
+        .map(([t, v]) => [t + 1800 * 1000, v])
+        .sort((a, b) => a[0] - b[0]);
 yaxis:
   - min: 0
     decimals: 2
@@ -73,5 +139,6 @@ apex_config:
         day: ddd dd
         hour: 'HH:mm'
   tooltip:
+    enabledOnSeries: [0, 1]
     x:
       format: ddd dd, HH:mm
