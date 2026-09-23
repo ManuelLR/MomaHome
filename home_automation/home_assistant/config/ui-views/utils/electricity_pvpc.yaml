@@ -14,6 +14,7 @@ span:
   offset: +24h
 experimental:
   brush: true
+  color_threshold: true
 brush:
   selection_span: 28h
 now:
@@ -23,7 +24,7 @@ all_series_config:
   type: area
   curve: stepline
   stroke_width: 2
-  opacity: 0.25
+  opacity: 0.4
   extend_to: false
   unit: €/kWh
   float_precision: 3
@@ -33,6 +34,18 @@ series:
   - entity: sensor.pvpc
     name: Anterior
     color: '#9e9e9e'
+    # Area fill coloured by price level; the line keeps the day colour.
+    color_threshold: &thresholds
+      - value: 0
+        color: '#2e7d32'
+      - value: 0.10
+        color: '#9ccc65'
+      - value: 0.15
+        color: '#fbc02d'
+      - value: 0.20
+        color: '#ef6c00'
+      - value: 0.25
+        color: '#c62828'
     show:
       in_brush: true
       in_header: false
@@ -51,11 +64,15 @@ series:
         .filter((p) => !isNaN(p[1]));
       // Close the last step at midnight.
       if (points.length) points.push([day0.getTime(), points[points.length - 1][1]]);
+      // Start from 0 (1 ms earlier) so the colour gradient is scaled from 0,
+      // like the y axis; otherwise the colours don't match the price levels.
+      if (points.length) points.unshift([points[0][0] - 1, 0]);
       return points;
   # One series per day, so each day gets its own min/max.
   - entity: sensor.pvpc
     name: Hoy
     color: '#ff9800'
+    color_threshold: *thresholds
     show:
       in_brush: true
       in_header: raw
@@ -71,10 +88,14 @@ series:
       }
       // Close the last step so 23h is drawn as a full hour.
       if (points.length) points.push([points[points.length - 1][0] + 3600 * 1000, points[points.length - 1][1]]);
+      // Start from 0 (1 ms earlier) so the colour gradient is scaled from 0,
+      // like the y axis; otherwise the colours don't match the price levels.
+      if (points.length) points.unshift([points[0][0] - 1, 0]);
       return points;
   - entity: sensor.pvpc
     name: Mañana
     color: '#2196f3'
+    color_threshold: *thresholds
     show:
       in_brush: true
       in_header: false
@@ -91,6 +112,9 @@ series:
       }
       // Close the last step so 23h is drawn as a full hour.
       if (points.length) points.push([points[points.length - 1][0] + 3600 * 1000, points[points.length - 1][1]]);
+      // Start from 0 (1 ms earlier) so the colour gradient is scaled from 0,
+      // like the y axis; otherwise the colours don't match the price levels.
+      if (points.length) points.unshift([points[0][0] - 1, 0]);
       return points;
   # Invisible series holding only each day's min/max, so the extremas
   # labels sit in the middle of the hour instead of at the step start.
