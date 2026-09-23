@@ -4,12 +4,17 @@ header:
   title: Precio luz (PVPC)
   show_states: true
   colorize_states: true
-# 28h window: the last 4 hours plus the next 24 (covers all published prices
-# except the last hours of tomorrow when viewed late in the evening).
-graph_span: 28h
+# Brush below covers the last 48h plus the next 24h (so yesterday is always
+# included). The brush selection always sits at the end of the span, so the
+# default 28h view is the last 4 hours plus the next 24; drag it to go back.
+graph_span: 72h
 span:
-  start: hour
-  offset: -4h
+  end: hour
+  offset: +24h
+experimental:
+  brush: true
+brush:
+  selection_span: 28h
 now:
   show: true
   label: Ahora
@@ -22,18 +27,19 @@ all_series_config:
   unit: €/kWh
   float_precision: 3
 series:
-  # Yesterday comes from the sensor's own recorded history (its state is the
+  # Past days come from the sensor's own recorded history (its state is the
   # price of the current hour).
   - entity: sensor.pvpc
     name: Ayer
     color: '#9e9e9e'
     show:
+      in_brush: true
       in_header: false
       legend_value: false
     data_generator: |
       const day0 = new Date();
       day0.setHours(0, 0, 0, 0);
-      const from = new Date(day0.getTime() - 24 * 3600 * 1000);
+      const from = new Date(start);
       const history = await hass.callApi('GET',
         'history/period/' + from.toISOString() +
         '?filter_entity_id=' + entity.entity_id +
@@ -50,6 +56,7 @@ series:
     name: Hoy
     color: '#ff9800'
     show:
+      in_brush: true
       in_header: raw
       legend_value: false
     data_generator: |
@@ -68,6 +75,7 @@ series:
     name: Mañana
     color: '#2196f3'
     show:
+      in_brush: true
       in_header: false
       legend_value: false
     data_generator: |
