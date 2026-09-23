@@ -80,7 +80,7 @@ apex_config:
       datetimeUTC: false
       datetimeFormatter:
         day: ddd dd
-        hour: HH'h'
+        hour: 'HH:mm'
   tooltip:
     x:
       format: ddd dd, HH:mm
