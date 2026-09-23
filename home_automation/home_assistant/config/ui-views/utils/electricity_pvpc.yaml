@@ -38,13 +38,13 @@ series:
       legend_value: false
       extremas: true
     data_generator: |
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
+      const day0 = new Date();
+      day0.setHours(0, 0, 0, 0);
       const points = [];
       for (let h = 0; h < 24; h++) {
         const price = entity.attributes['price_' + String(h).padStart(2, '0') + 'h'];
         if (price === undefined || price === null) continue;
-        points.push([start.getTime() + h * 3600 * 1000, price]);
+        points.push([day0.getTime() + h * 3600 * 1000, price]);
       }
       // Close the last step so 23h is drawn as a full hour.
       if (points.length) points.push([points[points.length - 1][0] + 3600 * 1000, points[points.length - 1][1]]);
@@ -56,14 +56,14 @@ series:
       legend_value: false
       extremas: true
     data_generator: |
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
-      start.setDate(start.getDate() + 1);
+      const day0 = new Date();
+      day0.setHours(0, 0, 0, 0);
+      day0.setDate(day0.getDate() + 1);
       const points = [];
       for (let h = 0; h < 24; h++) {
         const price = entity.attributes['price_next_day_' + String(h).padStart(2, '0') + 'h'];
         if (price === undefined || price === null) continue;
-        points.push([start.getTime() + h * 3600 * 1000, price]);
+        points.push([day0.getTime() + h * 3600 * 1000, price]);
       }
       if (points.length) points.push([points[points.length - 1][0] + 3600 * 1000, points[points.length - 1][1]]);
       return points;
