@@ -145,7 +145,6 @@ series:
     data_generator: |
       const to = new Date();
       to.setHours(0, 0, 0, 0);
-      to.setDate(to.getDate() - 0);
       const from = new Date(to);
       from.setDate(from.getDate() - 1);
       const history = await hass.callApi('GET',
