@@ -10,31 +10,21 @@ span:
 now:
   show: true
   label: Ahora
-experimental:
-  color_threshold: true
 all_series_config:
-  type: line
+  type: area
   curve: stepline
   stroke_width: 2
+  opacity: 0.25
+  extend_to: false
   unit: €/kWh
   float_precision: 3
-  color_threshold:
-    - value: 0
-      color: '#2e7d32'
-    - value: 0.10
-      color: '#9ccc65'
-    - value: 0.15
-      color: '#fbc02d'
-    - value: 0.20
-      color: '#ef6c00'
-    - value: 0.25
-      color: '#c62828'
 series:
   # Each day is its own series so min/max (extremas) are computed per day.
   - entity: sensor.pvpc
     name: Hoy
+    color: '#ff9800'
     show:
-      in_header: true
+      in_header: raw
       legend_value: false
       extremas: true
     data_generator: |
@@ -51,6 +41,7 @@ series:
       return points;
   - entity: sensor.pvpc
     name: Mañana
+    color: '#2196f3'
     show:
       in_header: false
       legend_value: false
