@@ -23,8 +23,8 @@ now:
 all_series_config:
   type: area
   curve: stepline
-  stroke_width: 2
-  opacity: 0.4
+  stroke_width: 0
+  opacity: 0.85
   extend_to: false
   unit: €/kWh
   float_precision: 3
@@ -34,7 +34,7 @@ series:
   - entity: sensor.pvpc
     name: Anterior
     color: '#9e9e9e'
-    # Area fill coloured by price level; the line keeps the day colour.
+    # Area fill coloured by price level (no line, only the fill).
     color_threshold: &thresholds
       - value: 0
         color: '#2e7d32'
