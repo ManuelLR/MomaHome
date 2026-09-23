@@ -6,7 +6,7 @@ header:
   colorize_states: true
 # Brush below covers the last 72h plus the next 24h (so the two previous
 # days are always included). The brush selection always sits at the end of
-# the span, so the default 28h view is the last 4 hours plus the next 24;
+# the span, so the default 26h view is the last 2 hours plus the next 24;
 # drag it to go back.
 graph_span: 96h
 span:
@@ -16,7 +16,7 @@ experimental:
   brush: true
   color_threshold: true
 brush:
-  selection_span: 28h
+  selection_span: 26h
 now:
   show: true
   label: Ahora
@@ -118,17 +118,19 @@ series:
       return points;
   # Invisible series holding only each day's min/max, so the extremas
   # labels sit in the middle of the hour instead of at the step start.
+  # Each day has a min series (green) and a max series (red) sharing the
+  # same generator (YAML anchor).
   - entity: sensor.pvpc
-    name: Anteayer
-    color: '#9e9e9e'
+    name: Anteayer mín
+    color: '#43a047'
     type: line
     stroke_width: 0
     show:
       in_header: false
       in_legend: false
       legend_value: false
-      extremas: true
-    data_generator: |
+      extremas: min
+    data_generator: &anteayer_extremas |
       const to = new Date();
       to.setHours(0, 0, 0, 0);
       to.setDate(to.getDate() - 1);
@@ -157,16 +159,27 @@ series:
         .map(([t, v]) => [t + 1800 * 1000, v])
         .sort((a, b) => a[0] - b[0]);
   - entity: sensor.pvpc
-    name: Ayer
-    color: '#9e9e9e'
+    name: Anteayer máx
+    color: '#e53935'
     type: line
     stroke_width: 0
     show:
       in_header: false
       in_legend: false
       legend_value: false
-      extremas: true
-    data_generator: |
+      extremas: max
+    data_generator: *anteayer_extremas
+  - entity: sensor.pvpc
+    name: Ayer mín
+    color: '#43a047'
+    type: line
+    stroke_width: 0
+    show:
+      in_header: false
+      in_legend: false
+      legend_value: false
+      extremas: min
+    data_generator: &ayer_extremas |
       const to = new Date();
       to.setHours(0, 0, 0, 0);
       const from = new Date(to);
@@ -194,16 +207,27 @@ series:
         .map(([t, v]) => [t + 1800 * 1000, v])
         .sort((a, b) => a[0] - b[0]);
   - entity: sensor.pvpc
-    name: Hoy
-    color: '#ff9800'
+    name: Ayer máx
+    color: '#e53935'
     type: line
     stroke_width: 0
     show:
       in_header: false
       in_legend: false
       legend_value: false
-      extremas: true
-    data_generator: |
+      extremas: max
+    data_generator: *ayer_extremas
+  - entity: sensor.pvpc
+    name: Hoy mín
+    color: '#43a047'
+    type: line
+    stroke_width: 0
+    show:
+      in_header: false
+      in_legend: false
+      legend_value: false
+      extremas: min
+    data_generator: &hoy_extremas |
       const day0 = new Date();
       day0.setHours(0, 0, 0, 0);
       const points = [];
@@ -220,16 +244,27 @@ series:
         .map(([t, v]) => [t + 1800 * 1000, v])
         .sort((a, b) => a[0] - b[0]);
   - entity: sensor.pvpc
-    name: Mañana
-    color: '#2196f3'
+    name: Hoy máx
+    color: '#e53935'
     type: line
     stroke_width: 0
     show:
       in_header: false
       in_legend: false
       legend_value: false
-      extremas: true
-    data_generator: |
+      extremas: max
+    data_generator: *hoy_extremas
+  - entity: sensor.pvpc
+    name: Mañana mín
+    color: '#43a047'
+    type: line
+    stroke_width: 0
+    show:
+      in_header: false
+      in_legend: false
+      legend_value: false
+      extremas: min
+    data_generator: &manana_extremas |
       const day0 = new Date();
       day0.setHours(0, 0, 0, 0);
       day0.setDate(day0.getDate() + 1);
@@ -246,6 +281,17 @@ series:
       return [min, max]
         .map(([t, v]) => [t + 1800 * 1000, v])
         .sort((a, b) => a[0] - b[0]);
+  - entity: sensor.pvpc
+    name: Mañana máx
+    color: '#e53935'
+    type: line
+    stroke_width: 0
+    show:
+      in_header: false
+      in_legend: false
+      legend_value: false
+      extremas: max
+    data_generator: *manana_extremas
 yaxis:
   - min: 0
     decimals: 2
