@@ -4,17 +4,12 @@ header:
   title: Precio luz (PVPC)
   show_states: true
   colorize_states: true
-# Brush shows the whole range below; the main chart shows a 12h window.
-# The brush selection always starts at the end of the span, so the span ends
-# 12h from now: by default you see the next 12 hours and can drag back.
-graph_span: 36h
+# 28h window: the last 4 hours plus the next 24 (covers all published prices
+# except the last hours of tomorrow when viewed late in the evening).
+graph_span: 28h
 span:
-  end: hour
-  offset: +12h
-experimental:
-  brush: true
-brush:
-  selection_span: 12h
+  start: hour
+  offset: -4h
 now:
   show: true
   label: Ahora
@@ -27,13 +22,35 @@ all_series_config:
   unit: €/kWh
   float_precision: 3
 series:
+  # Yesterday comes from the sensor's own recorded history (its state is the
+  # price of the current hour).
+  - entity: sensor.pvpc
+    name: Ayer
+    color: '#9e9e9e'
+    show:
+      in_header: false
+      legend_value: false
+    data_generator: |
+      const day0 = new Date();
+      day0.setHours(0, 0, 0, 0);
+      const from = new Date(day0.getTime() - 24 * 3600 * 1000);
+      const history = await hass.callApi('GET',
+        'history/period/' + from.toISOString() +
+        '?filter_entity_id=' + entity.entity_id +
+        '&end_time=' + day0.toISOString() +
+        '&minimal_response&no_attributes');
+      const points = (history[0] || [])
+        .map((s) => [Math.max(new Date(s.last_changed).getTime(), from.getTime()), parseFloat(s.state)])
+        .filter((p) => !isNaN(p[1]));
+      // Close the last step at midnight.
+      if (points.length) points.push([day0.getTime(), points[points.length - 1][1]]);
+      return points;
   # One series per day, so each day gets its own min/max.
   - entity: sensor.pvpc
     name: Hoy
     color: '#ff9800'
     show:
       in_header: raw
-      in_brush: true
       legend_value: false
     data_generator: |
       const day0 = new Date();
@@ -52,7 +69,6 @@ series:
     color: '#2196f3'
     show:
       in_header: false
-      in_brush: true
       legend_value: false
     data_generator: |
       const day0 = new Date();
@@ -76,7 +92,6 @@ series:
     stroke_width: 0
     show:
       in_header: false
-      in_brush: false
       in_legend: false
       legend_value: false
       extremas: true
@@ -103,7 +118,6 @@ series:
     stroke_width: 0
     show:
       in_header: false
-      in_brush: false
       in_legend: false
       legend_value: false
       extremas: true
@@ -139,6 +153,6 @@ apex_config:
         day: ddd dd
         hour: 'HH:mm'
   tooltip:
-    enabledOnSeries: [0, 1]
+    enabledOnSeries: [0, 1, 2]
     x:
       format: ddd dd, HH:mm
