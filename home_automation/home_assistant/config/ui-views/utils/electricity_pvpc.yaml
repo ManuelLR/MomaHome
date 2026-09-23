@@ -1,34 +1,86 @@
 type: custom:apexcharts-card
 header:
   show: true
-  title: Electricity Prices Today
+  title: Precio luz (PVPC)
   show_states: true
-  standard_format: true
-graph_span: 24h
+  colorize_states: true
+graph_span: 48h
 span:
   start: day
-series:
-  - entity: sensor.pvpc
-    type: column
-    unit: €/kWh
-    float_precision: 3
-    show:
-      extremas: true
-    data_generator: >
-      const hours = ['00h', '01h', '02h', '03h', '04h', '05h', '06h', '07h',
-      '08h', '09h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h',
-      '18h', '19h', '20h', '21h', '22h', '23h'];
-
-      return hours.map(hour => {
-        const price = entity.attributes['price_' + hour] || 0;
-        const hourInt = parseInt(hour.slice(0, -1), 10); // Correctly parse the hour integer, removing the 'h'
-        const date = new Date();
-        date.setHours(hourInt, 0, 0, 0); // Sets the hour for the current date
-        return [date.getTime(), price];
-      });
 now:
   show: true
-  label: Now
+  label: Ahora
+experimental:
+  color_threshold: true
+all_series_config:
+  type: line
+  curve: stepline
+  stroke_width: 2
+  unit: €/kWh
+  float_precision: 3
+  color_threshold:
+    - value: 0
+      color: '#2e7d32'
+    - value: 0.10
+      color: '#9ccc65'
+    - value: 0.15
+      color: '#fbc02d'
+    - value: 0.20
+      color: '#ef6c00'
+    - value: 0.25
+      color: '#c62828'
+series:
+  # Each day is its own series so min/max (extremas) are computed per day.
+  - entity: sensor.pvpc
+    name: Hoy
+    show:
+      in_header: true
+      legend_value: false
+      extremas: true
+    data_generator: |
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+      const points = [];
+      for (let h = 0; h < 24; h++) {
+        const price = entity.attributes['price_' + String(h).padStart(2, '0') + 'h'];
+        if (price === undefined || price === null) continue;
+        points.push([start.getTime() + h * 3600 * 1000, price]);
+      }
+      // Close the last step so 23h is drawn as a full hour.
+      if (points.length) points.push([points[points.length - 1][0] + 3600 * 1000, points[points.length - 1][1]]);
+      return points;
+  - entity: sensor.pvpc
+    name: Mañana
+    show:
+      in_header: false
+      legend_value: false
+      extremas: true
+    data_generator: |
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+      start.setDate(start.getDate() + 1);
+      const points = [];
+      for (let h = 0; h < 24; h++) {
+        const price = entity.attributes['price_next_day_' + String(h).padStart(2, '0') + 'h'];
+        if (price === undefined || price === null) continue;
+        points.push([start.getTime() + h * 3600 * 1000, price]);
+      }
+      if (points.length) points.push([points[points.length - 1][0] + 3600 * 1000, points[points.length - 1][1]]);
+      return points;
 yaxis:
-  - decimals: 2
-    min: ~0
+  - min: 0
+    decimals: 2
+    apex_config:
+      tickAmount: 5
+apex_config:
+  legend:
+    show: false
+  xaxis:
+    labels:
+      datetimeUTC: false
+      datetimeFormatter:
+        day: ddd dd
+        hour: HH'h'
+  tooltip:
+    x:
+      format: ddd dd, HH:mm
