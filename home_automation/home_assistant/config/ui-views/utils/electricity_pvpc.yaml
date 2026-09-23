@@ -4,10 +4,11 @@ header:
   title: Precio luz (PVPC)
   show_states: true
   colorize_states: true
-# Brush below covers the last 48h plus the next 24h (so yesterday is always
-# included). The brush selection always sits at the end of the span, so the
-# default 28h view is the last 4 hours plus the next 24; drag it to go back.
-graph_span: 72h
+# Brush below covers the last 72h plus the next 24h (so the two previous
+# days are always included). The brush selection always sits at the end of
+# the span, so the default 28h view is the last 4 hours plus the next 24;
+# drag it to go back.
+graph_span: 96h
 span:
   end: hour
   offset: +24h
@@ -30,7 +31,7 @@ series:
   # Past days come from the sensor's own recorded history (its state is the
   # price of the current hour).
   - entity: sensor.pvpc
-    name: Ayer
+    name: Anterior
     color: '#9e9e9e'
     show:
       in_brush: true
@@ -93,6 +94,82 @@ series:
       return points;
   # Invisible series holding only each day's min/max, so the extremas
   # labels sit in the middle of the hour instead of at the step start.
+  - entity: sensor.pvpc
+    name: Anteayer
+    color: '#9e9e9e'
+    type: line
+    stroke_width: 0
+    show:
+      in_header: false
+      in_legend: false
+      legend_value: false
+      extremas: true
+    data_generator: |
+      const to = new Date();
+      to.setHours(0, 0, 0, 0);
+      to.setDate(to.getDate() - 1);
+      const from = new Date(to);
+      from.setDate(from.getDate() - 1);
+      const history = await hass.callApi('GET',
+        'history/period/' + from.toISOString() +
+        '?filter_entity_id=' + entity.entity_id +
+        '&end_time=' + to.toISOString() +
+        '&minimal_response&no_attributes');
+      const changes = (history[0] || [])
+        .map((s) => [new Date(s.last_changed).getTime(), parseFloat(s.state)])
+        .filter((p) => !isNaN(p[1]));
+      // Rebuild the hourly prices (the state changes a few seconds after o'clock).
+      const points = [];
+      let i = 0;
+      let value = null;
+      for (let t = from.getTime(); t < to.getTime(); t += 3600 * 1000) {
+        while (i < changes.length && changes[i][0] < t + 5 * 60 * 1000) value = changes[i++][1];
+        if (value !== null) points.push([t, value]);
+      }
+      if (!points.length) return [];
+      const min = points.reduce((a, b) => (b[1] < a[1] ? b : a));
+      const max = points.reduce((a, b) => (b[1] > a[1] ? b : a));
+      return [min, max]
+        .map(([t, v]) => [t + 1800 * 1000, v])
+        .sort((a, b) => a[0] - b[0]);
+  - entity: sensor.pvpc
+    name: Ayer
+    color: '#9e9e9e'
+    type: line
+    stroke_width: 0
+    show:
+      in_header: false
+      in_legend: false
+      legend_value: false
+      extremas: true
+    data_generator: |
+      const to = new Date();
+      to.setHours(0, 0, 0, 0);
+      to.setDate(to.getDate() - 0);
+      const from = new Date(to);
+      from.setDate(from.getDate() - 1);
+      const history = await hass.callApi('GET',
+        'history/period/' + from.toISOString() +
+        '?filter_entity_id=' + entity.entity_id +
+        '&end_time=' + to.toISOString() +
+        '&minimal_response&no_attributes');
+      const changes = (history[0] || [])
+        .map((s) => [new Date(s.last_changed).getTime(), parseFloat(s.state)])
+        .filter((p) => !isNaN(p[1]));
+      // Rebuild the hourly prices (the state changes a few seconds after o'clock).
+      const points = [];
+      let i = 0;
+      let value = null;
+      for (let t = from.getTime(); t < to.getTime(); t += 3600 * 1000) {
+        while (i < changes.length && changes[i][0] < t + 5 * 60 * 1000) value = changes[i++][1];
+        if (value !== null) points.push([t, value]);
+      }
+      if (!points.length) return [];
+      const min = points.reduce((a, b) => (b[1] < a[1] ? b : a));
+      const max = points.reduce((a, b) => (b[1] > a[1] ? b : a));
+      return [min, max]
+        .map(([t, v]) => [t + 1800 * 1000, v])
+        .sort((a, b) => a[0] - b[0]);
   - entity: sensor.pvpc
     name: Hoy
     color: '#ff9800'
