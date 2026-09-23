@@ -6,7 +6,7 @@ header:
   colorize_states: true
 # Brush below covers the last 72h plus the next 24h (so the two previous
 # days are always included). The brush selection always sits at the end of
-# the span, so the default 26h view is the last 2 hours plus the next 24;
+# the span, so the default 27h view is the last 3 hours plus the next 24;
 # drag it to go back.
 graph_span: 96h
 span:
@@ -16,7 +16,7 @@ experimental:
   brush: true
   color_threshold: true
 brush:
-  selection_span: 26h
+  selection_span: 27h
 now:
   show: true
   label: Ahora
