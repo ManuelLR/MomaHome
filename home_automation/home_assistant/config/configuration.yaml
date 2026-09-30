@@ -91,15 +91,9 @@ default_config:
 # updater:
 #   include_used_components: true
 
-http:
-  server_port: 8123
-  ## Configuration to use behind a proxy
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 172.0.0.0/8
-  ## Auto ban IPs based in failed logins attemps
-  ip_ban_enabled: true
-  login_attempts_threshold: 10
+# http: migrated to the UI (Settings > System > Network) in 2026.x; the core
+# ignores this block and stops accepting it in 2027.2. Proxy (x-forwarded-for,
+# trusted_proxies 172.0.0.0/8) and IP ban (threshold 10) live there now.
 
 mqtt:
   ## Deprecated in 2022.3.xx
