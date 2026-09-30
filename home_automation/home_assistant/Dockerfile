@@ -30,8 +30,8 @@ ENV \
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.4.2 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
-      # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
-    CUSTOM_COMPONENT_GICISKY_VERSION=5.5.0 \
+      # renovatebot: datasource=github-releases depName=eigger/hass-ble-esl
+    CUSTOM_COMPONENT_BLE_ESL_VERSION=0.13.0 \
       # renovatebot: datasource=github-releases depName=sca075/mqtt_vacuum_camera
     CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.8.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
@@ -106,10 +106,10 @@ RUN \
     && git clone https://github.com/smartHomeHub/SmartIR.git /tmp/smartir \
     && cd /tmp/smartir && git checkout $CUSTOM_COMPONENT_SMARTIR_VERSION \
     && cd - && cp -r /tmp/smartir/custom_components/smartir /opt/HA/config/custom_components/ \
-    # gicisky
-    && git clone https://github.com/eigger/hass-gicisky.git /tmp/hass-gicisky \
-    && cd /tmp/hass-gicisky && git checkout $CUSTOM_COMPONENT_GICISKY_VERSION \
-    && cd - && cp -r /tmp/hass-gicisky/custom_components/gicisky /opt/HA/config/custom_components/ \
+    # BLE ESL (Gicisky e-ink labels; successor of the archived hass-gicisky)
+    && git clone https://github.com/eigger/hass-ble-esl.git /tmp/hass-ble-esl \
+    && cd /tmp/hass-ble-esl && git checkout $CUSTOM_COMPONENT_BLE_ESL_VERSION \
+    && cd - && cp -r /tmp/hass-ble-esl/custom_components/ble_esl /opt/HA/config/custom_components/ \
     # mqtt_vacuum_camera (Valetudo map rendering nativo en HA)
     && git clone https://github.com/sca075/mqtt_vacuum_camera.git /tmp/mqtt_vacuum_camera \
     && cd /tmp/mqtt_vacuum_camera && git checkout $CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION \
