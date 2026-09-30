@@ -126,7 +126,7 @@
                  | map(attribute='0') | join(', ') }}
           updated: "{{ states('sensor.saih_gauges_raw') }}"
 
-      - name: "SAIH E58 Melonares %"
+      - name: "SAIH E58 Melonares"
         unique_id: saih_e58_melonares_percent
         icon: mdi:water-percent
         unit_of_measurement: "%"
@@ -145,7 +145,7 @@
         availability: "{{ 'E58' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].release }}"
 
-      - name: "SAIH E61 Aracena %"
+      - name: "SAIH E61 Aracena"
         unique_id: saih_e61_aracena_percent
         icon: mdi:water-percent
         unit_of_measurement: "%"
@@ -164,7 +164,7 @@
         availability: "{{ 'E61' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].release }}"
 
-      - name: "SAIH E62 Zufre %"
+      - name: "SAIH E62 Zufre"
         unique_id: saih_e62_zufre_percent
         icon: mdi:water-percent
         unit_of_measurement: "%"
@@ -183,7 +183,7 @@
         availability: "{{ 'E62' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].release }}"
 
-      - name: "SAIH E63 La Minilla %"
+      - name: "SAIH E63 La Minilla"
         unique_id: saih_e63_la_minilla_percent
         icon: mdi:water-percent
         unit_of_measurement: "%"
@@ -202,7 +202,7 @@
         availability: "{{ 'E63' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].release }}"
 
-      - name: "SAIH E64 Cala %"
+      - name: "SAIH E64 Cala"
         unique_id: saih_e64_cala_percent
         icon: mdi:water-percent
         unit_of_measurement: "%"
@@ -221,7 +221,7 @@
         availability: "{{ 'E64' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].release }}"
 
-      - name: "SAIH E65 El Gergal %"
+      - name: "SAIH E65 El Gergal"
         unique_id: saih_e65_el_gergal_percent
         icon: mdi:water-percent
         unit_of_measurement: "%"

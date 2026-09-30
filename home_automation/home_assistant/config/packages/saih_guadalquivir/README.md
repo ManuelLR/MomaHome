@@ -41,7 +41,7 @@ So the least-bad option is reading the **public HTML tables** a citizen sees:
 | `command_line.yaml` | Runs the script every 10 min → `sensor.saih_gauges_raw`, `sensor.saih_reservoirs_raw` (state = SAIH update time, all data in the `data` attribute) |
 | `template.yaml` | One sensor per station / reservoir, plus `sensor.saih_worst_river_alert` |
 
-Dashboard cards are in `ui-views/Water.yaml`.
+Dashboard: the **Rivers** view, `ui-views/Rivers.yaml`.
 
 ## Debugging
 
