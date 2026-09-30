@@ -1,0 +1,241 @@
+# template:
+  ##
+  # SAIH Guadalquivir - one sensor per station / reservoir (see ./README.md)
+  #
+  # Everything comes from the raw sensors in command_line.yaml. The script
+  # already works out `value` (what the official thresholds apply to) and
+  # `alert` (green / yellow / orange / red), so these are plain lookups.
+  #
+  # Station order: Guadaíra (home, then upstream for early warning),
+  # Guadalquivir in Sevilla, and upstream of La Algaba.
+  ##
+
+  - sensor:
+      - name: "SAIH A55 Guadaíra Sevilla"
+        unique_id: saih_a55_guadaira_sevilla
+        icon: mdi:waves
+        unit_of_measurement: "m"
+        state_class: measurement
+        availability: "{{ 'A55' in (state_attr('sensor.saih_gauges_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A55'].value }}"
+        attributes:
+          alert: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A55'].alert }}"
+          threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A55'].threshold_yellow }}"
+          threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A55'].threshold_orange }}"
+          threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A55'].threshold_red }}"
+          flow_m3s: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A55'].flow }}"
+      - name: "SAIH A19 Guadaíra Alcalá"
+        unique_id: saih_a19_guadaira_alcala
+        icon: mdi:waves
+        unit_of_measurement: "m"
+        state_class: measurement
+        availability: "{{ 'A19' in (state_attr('sensor.saih_gauges_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A19'].value }}"
+        attributes:
+          alert: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A19'].alert }}"
+          threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A19'].threshold_yellow }}"
+          threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A19'].threshold_orange }}"
+          threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A19'].threshold_red }}"
+          flow_m3s: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A19'].flow }}"
+      - name: "SAIH M54 Guadaíra Alcalá 2"
+        unique_id: saih_m54_guadaira_alcala_2
+        icon: mdi:waves
+        unit_of_measurement: "m"
+        state_class: measurement
+        availability: "{{ 'M54' in (state_attr('sensor.saih_gauges_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M54'].value }}"
+        attributes:
+          alert: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M54'].alert }}"
+          threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M54'].threshold_yellow }}"
+          threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M54'].threshold_orange }}"
+          threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M54'].threshold_red }}"
+      - name: "SAIH M07 Guadaíra Arahal"
+        unique_id: saih_m07_guadaira_arahal
+        icon: mdi:waves
+        unit_of_measurement: "m"
+        state_class: measurement
+        availability: "{{ 'M07' in (state_attr('sensor.saih_gauges_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M07'].value }}"
+        attributes:
+          alert: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M07'].alert }}"
+          threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M07'].threshold_yellow }}"
+          threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M07'].threshold_orange }}"
+          threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M07'].threshold_red }}"
+      - name: "SAIH M09 Guadalquivir Sevilla"
+        unique_id: saih_m09_guadalquivir_sevilla
+        icon: mdi:waves
+        unit_of_measurement: "m"
+        state_class: measurement
+        availability: "{{ 'M09' in (state_attr('sensor.saih_gauges_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M09'].value }}"
+        attributes:
+          alert: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M09'].alert }}"
+          threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M09'].threshold_yellow }}"
+          threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M09'].threshold_orange }}"
+          threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M09'].threshold_red }}"
+      - name: "SAIH H09 Alcalá del Río dam"
+        unique_id: saih_h09_alcala_del_rio_dam
+        icon: mdi:waves
+        unit_of_measurement: "m³/s"
+        state_class: measurement
+        availability: "{{ 'H09' in (state_attr('sensor.saih_gauges_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H09'].value }}"
+        attributes:
+          alert: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H09'].alert }}"
+          threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H09'].threshold_yellow }}"
+          threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H09'].threshold_orange }}"
+          threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H09'].threshold_red }}"
+      - name: "SAIH H08 Cantillana dam"
+        unique_id: saih_h08_cantillana_dam
+        icon: mdi:waves
+        unit_of_measurement: "m³/s"
+        state_class: measurement
+        availability: "{{ 'H08' in (state_attr('sensor.saih_gauges_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H08'].value }}"
+        attributes:
+          alert: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H08'].alert }}"
+          threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H08'].threshold_yellow }}"
+          threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H08'].threshold_orange }}"
+          threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H08'].threshold_red }}"
+      - name: "SAIH A33 Rivera de Huelva Guillena"
+        unique_id: saih_a33_rivera_de_huelva_guillena
+        icon: mdi:waves
+        unit_of_measurement: "m"
+        state_class: measurement
+        availability: "{{ 'A33' in (state_attr('sensor.saih_gauges_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A33'].value }}"
+        attributes:
+          alert: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A33'].alert }}"
+          threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A33'].threshold_yellow }}"
+          threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A33'].threshold_orange }}"
+          threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A33'].threshold_red }}"
+          flow_m3s: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A33'].flow }}"
+
+      # Worst alert across all the stations above: green / yellow / orange / red.
+      # `stations` lists the codes that are not green.
+      - name: "SAIH worst river alert"
+        unique_id: saih_worst_river_alert
+        icon: mdi:alert-decagram
+        availability: "{{ state_attr('sensor.saih_gauges_raw', 'data') is mapping }}"
+        state: >-
+          {% set alerts = state_attr('sensor.saih_gauges_raw', 'data').values() | map(attribute='alert') | list %}
+          {{ ['red', 'orange', 'yellow', 'green'] | select('in', alerts) | first | default('unknown') }}
+        attributes:
+          stations: >-
+            {{ state_attr('sensor.saih_gauges_raw', 'data').items() | selectattr('1.alert', 'ne', 'green')
+                 | map(attribute='0') | join(', ') }}
+          updated: "{{ states('sensor.saih_gauges_raw') }}"
+
+      - name: "SAIH E58 Melonares %"
+        unique_id: saih_e58_melonares_percent
+        icon: mdi:water-percent
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: "{{ 'E58' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].percent }}"
+        attributes:
+          volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].volume }}"
+          capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].capacity }}"
+          level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].level }}"
+      - name: "SAIH E58 Melonares release"
+        unique_id: saih_e58_melonares_release
+        icon: mdi:waves-arrow-right
+        unit_of_measurement: "m³/s"
+        state_class: measurement
+        availability: "{{ 'E58' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].release }}"
+
+      - name: "SAIH E61 Aracena %"
+        unique_id: saih_e61_aracena_percent
+        icon: mdi:water-percent
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: "{{ 'E61' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].percent }}"
+        attributes:
+          volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].volume }}"
+          capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].capacity }}"
+          level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].level }}"
+      - name: "SAIH E61 Aracena release"
+        unique_id: saih_e61_aracena_release
+        icon: mdi:waves-arrow-right
+        unit_of_measurement: "m³/s"
+        state_class: measurement
+        availability: "{{ 'E61' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].release }}"
+
+      - name: "SAIH E62 Zufre %"
+        unique_id: saih_e62_zufre_percent
+        icon: mdi:water-percent
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: "{{ 'E62' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].percent }}"
+        attributes:
+          volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].volume }}"
+          capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].capacity }}"
+          level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].level }}"
+      - name: "SAIH E62 Zufre release"
+        unique_id: saih_e62_zufre_release
+        icon: mdi:waves-arrow-right
+        unit_of_measurement: "m³/s"
+        state_class: measurement
+        availability: "{{ 'E62' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].release }}"
+
+      - name: "SAIH E63 La Minilla %"
+        unique_id: saih_e63_la_minilla_percent
+        icon: mdi:water-percent
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: "{{ 'E63' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].percent }}"
+        attributes:
+          volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].volume }}"
+          capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].capacity }}"
+          level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].level }}"
+      - name: "SAIH E63 La Minilla release"
+        unique_id: saih_e63_la_minilla_release
+        icon: mdi:waves-arrow-right
+        unit_of_measurement: "m³/s"
+        state_class: measurement
+        availability: "{{ 'E63' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].release }}"
+
+      - name: "SAIH E64 Cala %"
+        unique_id: saih_e64_cala_percent
+        icon: mdi:water-percent
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: "{{ 'E64' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].percent }}"
+        attributes:
+          volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].volume }}"
+          capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].capacity }}"
+          level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].level }}"
+      - name: "SAIH E64 Cala release"
+        unique_id: saih_e64_cala_release
+        icon: mdi:waves-arrow-right
+        unit_of_measurement: "m³/s"
+        state_class: measurement
+        availability: "{{ 'E64' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].release }}"
+
+      - name: "SAIH E65 El Gergal %"
+        unique_id: saih_e65_el_gergal_percent
+        icon: mdi:water-percent
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: "{{ 'E65' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E65'].percent }}"
+        attributes:
+          volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E65'].volume }}"
+          capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E65'].capacity }}"
+          level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E65'].level }}"
+      - name: "SAIH E65 El Gergal release"
+        unique_id: saih_e65_el_gergal_release
+        icon: mdi:waves-arrow-right
+        unit_of_measurement: "m³/s"
+        state_class: measurement
+        availability: "{{ 'E65' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E65'].release }}"

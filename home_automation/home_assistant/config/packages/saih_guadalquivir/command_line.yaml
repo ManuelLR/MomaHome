@@ -1,0 +1,43 @@
+# command_line:
+  ##
+  # SAIH Guadalquivir - raw data (see ./README.md)
+  #
+  # Runs saih_guadalquivir.py, which reads the public SAIH tables and prints
+  # JSON. State = SAIH update time; everything else goes in the `data`
+  # attribute, keyed by station code. The per-station sensors live in
+  # template.yaml.
+  #
+  # To add a station: append its code here and add a sensor in template.yaml.
+  # Codes: https://www.chguadalquivir.es/saih/Doc/Listado_puntos_de_control.pdf
+  ##
+
+  - sensor:
+      name: "SAIH gauges raw"
+      unique_id: saih_gauges_raw
+      icon: mdi:waves
+      # A55 Guadaíra Sevilla · A19/M54 Guadaíra Alcalá · M07 Guadaíra Arahal
+      # M09 Guadalquivir Sevilla · H09 Alcalá del Río dam · H08 Cantillana dam
+      # A33 Rivera de Huelva Guillena
+      command: >-
+        python3 /config/packages/saih_guadalquivir/saih_guadalquivir.py gauges
+        A55 A19 M54 M07 M09 H09 H08 A33
+      command_timeout: 60
+      scan_interval: 600
+      value_template: "{{ value_json.updated }}"
+      json_attributes:
+        - data
+
+  - sensor:
+      name: "SAIH reservoirs raw"
+      unique_id: saih_reservoirs_raw
+      icon: mdi:waves-arrow-up
+      # Sevilla water supply: E58 Melonares · E61 Aracena · E62 Zufre
+      # E63 La Minilla · E64 Cala · E65 El Gergal
+      command: >-
+        python3 /config/packages/saih_guadalquivir/saih_guadalquivir.py reservoirs
+        E58 E61 E62 E63 E64 E65
+      command_timeout: 60
+      scan_interval: 600
+      value_template: "{{ value_json.updated }}"
+      json_attributes:
+        - data

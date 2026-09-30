@@ -1,0 +1,98 @@
+# SAIH Guadalquivir → Home Assistant
+
+River levels (flood watch around Bellavista / Jardines de Hércules and La Algaba)
+and the reservoirs that supply Sevilla, in near real time (~10 min).
+
+Replaces the old `rio_guadaira` package, which called the SAIH's internal chart
+endpoint (`saihhist4.aspx`) and broke when the CHG changed it.
+
+## Source and why this one
+
+**SAIH Guadalquivir**, run by the Confederación Hidrográfica del Guadalquivir (CHG):
+<https://www.chguadalquivir.es/saih/>. Its legal notice says: *"Salvo que se indique
+lo contrario, la reproducción queda autorizada siempre que se cite su origen"*,
+so cite the source. The CHG flags the data as real-time and not validated.
+
+There is **no official API** for real-time river data in this basin. As of 2026-09,
+these were checked and found not to provide it:
+
+| Source | What it has |
+|---|---|
+| CHG IDE WFS (`idechg.chguadalquivir.es/geoserver`, `explotacion_saih`, `aforos`) | Station catalogue only, no measurements |
+| MITECO ArcGIS (`services-eu1.arcgis.com/RvnYk1PBUJ9rrAuT`) `Embalses_Mapa`, `Caudales_Mapa` | Official JSON, but **weekly** (hydrological bulletin), 6 Guadalquivir flow stations |
+| MITECO SAIH WMS (`wms.mapama.gob.es/sig/agua/saih/...`) | Station locations only, returns errors |
+| datos.gob.es (SAIH Guadalquivir entries) | Portal under maintenance, contents unknown |
+| embalses.net, estadoembalses.es | Scrape SAIH themselves, no public API |
+| Junta de Andalucía, Ayto. Sevilla / Alcalá / La Algaba | No level sensors of their own published |
+| Open-Meteo Flood API (GloFAS) | Documented API but modelled, daily, ~5 km: useless for local level |
+
+So the least-bad option is reading the **public HTML tables** a citizen sees:
+
+- `AforosTabla.aspx`: every river gauge with level, flow and the **official
+  yellow / orange / red thresholds**.
+- `EmbalSE.aspx`: Sevilla-zone reservoirs with level, volume, % and the flow
+  being **released** right now.
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `saih_guadalquivir.py` | Downloads one table and prints JSON. Standard library only. |
+| `command_line.yaml` | Runs the script every 10 min → `sensor.saih_gauges_raw`, `sensor.saih_reservoirs_raw` (state = SAIH update time, all data in the `data` attribute) |
+| `template.yaml` | One sensor per station / reservoir, plus `sensor.saih_worst_river_alert` |
+
+Dashboard cards are in `ui-views/Water.yaml`.
+
+## Debugging
+
+Run the script by hand, on the host or inside the container:
+
+```bash
+python3 saih_guadalquivir.py gauges A55 M09
+python3 saih_guadalquivir.py reservoirs E61 E62
+docker compose exec home-assistant python3 /config/packages/saih_guadalquivir/saih_guadalquivir.py gauges A55
+```
+
+- A code missing from the output prints `Warning: not found in SAIH: ...` on stderr.
+  Either the code is wrong or the CHG renamed or changed the table.
+- A network or HTTP error shows up as a traceback in the Home Assistant log
+  (`homeassistant.components.command_line`).
+- Values are identified by the SAIH **signal code** that follows each value on
+  the page (`IniciaCurva('A55_107')`), not by column position. The meaning of
+  each suffix is in `SIGNALS` in the script.
+
+## Stations
+
+| Code | Where | Why | Measures (thresholds Y / O / R) |
+|---|---|---|---|
+| A55 | Guadaíra, Sevilla | Next to home | level m (2 / 3 / 4) |
+| A19 | Guadaíra, Alcalá (Pte. Sifón) | Upstream, early warning | level m (2.6 / 3.9 / 5.2) |
+| M54 | Guadaíra, Alcalá | Upstream | level m (6 / 7.5 / 9) |
+| M07 | Guadaíra, Arahal | Far upstream, earliest warning | level m (2 / 3 / 4) |
+| M09 | Guadalquivir, Sevilla | City (tidal) | m a.s.l. (3 / 3.6 / 4.5) |
+| H09 | Alcalá del Río dam | Just upstream of La Algaba | flow m³/s (1500 / 2300 / 3000) |
+| H08 | Cantillana dam | Further upstream | flow m³/s (1000 / 1700 / 2300) |
+| A33 | Rivera de Huelva, Guillena | Joins the Guadalquivir near La Algaba | level m (3 / 4.2 / 4.8) |
+
+Thresholds are read live from the page, not hard-coded. Reservoirs: E58 Melonares,
+E61 Aracena, E62 Zufre, E63 La Minilla, E64 Cala, E65 El Gergal.
+
+**To add a station:** find its code in the
+[list of control points](https://www.chguadalquivir.es/saih/Doc/Listado_puntos_de_control.pdf)
+(the code must appear on `AforosTabla.aspx`), add it to the command in
+`command_line.yaml`, and copy a sensor block in `template.yaml`.
+
+## Ideas for later
+
+- **Telegram alert** when `sensor.saih_worst_river_alert` leaves `green`
+  (`script.telegram_notify`, as in `packages/emasesa`).
+- **EMASESA**: the integration already has one sensor per reservoir (daily, no
+  releases), disabled by default. Enable them from the device page as a backup source.
+- **Rain warnings**: the AEMET / Meteoalarm core integrations.
+- **Small web / map**: MITECO publishes the official flood zones (SNCZI) as
+  `Zonas_de_Inundacion` on the same ArcGIS server. That is useful to show
+  "how far the water could reach" next to the gauges.
+- **Ask for a real API**: request the SAIH real-time data as open data through
+  datos.gob.es ("solicitud de datos") or the CHG. The EU Open Data Directive
+  (2019/1024) asks for dynamic data to be offered through an API.
+- The CHG also has an official Telegram bot, `@chgsaih_bot`, for manual queries.
