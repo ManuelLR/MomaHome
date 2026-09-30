@@ -90,7 +90,9 @@
       // docker duplicate here (same as immich/traefik above). This bites when
       // the docker depName can't match the custom depName:
       //   - registry host baked into the name: codeberg.org/readeck/readeck
-      //     vs depName readeck/readeck. (ghcr.io images dedupe fine, e.g. calibre.)
+      //     vs depName readeck/readeck, and the same for ghcr.io images:
+      //     ghcr.io/crocodilestick/calibre-web-automated vs depName
+      //     crocodilestick/calibre-web-automated (#551/#552).
       //   - image published under a different org than the source repo:
       //     mauriceboe/trek (Docker Hub) vs depName liketrek/TREK (source).
       matchDatasources: [
@@ -98,6 +100,7 @@
       ],
       matchPackageNames: [
         'codeberg.org/readeck/readeck',
+        'ghcr.io/crocodilestick/calibre-web-automated',
         'mauriceboe/trek'
       ],
       enabled: false
@@ -126,12 +129,12 @@
       //   image: owner/image:1.2.3
       // Keep the fields in that order. registryUrl is needed e.g. for gitea-releases (Codeberg).
       // Defaults: versioning=semver-coerced, extractVersion strips an optional leading 'v'.
-      // Renovate usually dedupes the built-in docker manager against this one
-      // when both resolve to the same package (traefik/calibre/ghcr.io setups).
-      // BUT if the image carries a registry host the custom depName omits (e.g.
-      // codeberg.org/readeck/readeck vs depName readeck/readeck), the docker
-      // depName differs and dedup fails -> two PRs. For those, disable the docker
-      // manager per-package in packageRules above (see readeck/immich).
+      // Renovate only dedupes against the built-in docker manager when both end
+      // up with the same depName. If the image carries a registry host the
+      // custom depName omits (codeberg.org/..., ghcr.io/...) or lives under a
+      // different org, the names differ and you get two PRs per bump. For those,
+      // disable the docker manager per-package in packageRules above
+      // (see readeck/calibre/trek/immich).
       customType: 'regex',
       managerFilePatterns: [
         '/(^|/)docker-compose\\.ya?ml$/'
