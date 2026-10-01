@@ -1,8 +1,14 @@
 # Rivers & reservoirs — data from packages/saih_guadalquivir (SAIH Guadalquivir).
-# Alert colours come from the `alert` attribute (official CHG thresholds), and the
-# dashed threshold lines are the threshold_* attributes, so nothing is hard-coded here.
+#
+# Levels are NOT comparable between stations: each point has its own channel and
+# its own official thresholds (set where that point overflows). So every station
+# gets its own chart and scale; what can be compared is each station's trend
+# (sensor.saih_*_trend) and the flow in m³/s where it is measured.
+#
+# Alert colours come from the `alert` attribute and the dashed threshold lines from
+# the threshold_* attributes, so nothing is hard-coded here.
 
-# ── Status ───────────────────────────────────────────────────────────────────
+# ── Status + schematic ───────────────────────────────────────────────────────
 - type: vertical-stack
   cards:
     - type: custom:mushroom-template-card
@@ -16,195 +22,297 @@
         {{ 'Stations: ' ~ st if st else 'All gauges below the yellow threshold' }}
         · SAIH {{ states('sensor.saih_gauges_raw') | replace('T', ' ') }}
       icon: mdi:alert-decagram
-      icon_color: &alert_color >
-        {% set s = states(entity) if entity.startswith('sensor.saih_worst') else state_attr(entity, 'alert') %}
-        {{ {'green': 'green', 'yellow': 'yellow', 'orange': 'orange', 'red': 'red'}.get(s, 'disabled') }}
+      icon_color: >
+        {{ {'green': 'green', 'yellow': 'yellow', 'orange': 'orange', 'red': 'red'}
+           .get(states('sensor.saih_worst_river_alert'), 'disabled') }}
       tap_action:
         action: more-info
 
-    - type: grid
-      columns: 2
-      square: false
-      cards:
-        - type: custom:mushroom-template-card
-          entity: sensor.saih_a55_guadaira_sevilla
-          primary: Guadaíra · Sevilla (home)
-          secondary: &gauge_secondary >
-            {{ states(entity) }} {{ state_attr(entity, 'unit_of_measurement') }}
-            · yellow at {{ state_attr(entity, 'threshold_yellow') }}
-          icon: mdi:home-flood
-          icon_color: *alert_color
-          tap_action: {action: more-info}
-        - type: custom:mushroom-template-card
-          entity: sensor.saih_a19_guadaira_alcala
-          primary: Guadaíra · Alcalá
-          secondary: *gauge_secondary
-          icon: mdi:waves
-          icon_color: *alert_color
-          tap_action: {action: more-info}
-        - type: custom:mushroom-template-card
-          entity: sensor.saih_m54_guadaira_alcala_2
-          primary: Guadaíra · Alcalá 2
-          secondary: *gauge_secondary
-          icon: mdi:waves
-          icon_color: *alert_color
-          tap_action: {action: more-info}
-        - type: custom:mushroom-template-card
-          entity: sensor.saih_m07_guadaira_arahal
-          primary: Guadaíra · Arahal
-          secondary: *gauge_secondary
-          icon: mdi:waves
-          icon_color: *alert_color
-          tap_action: {action: more-info}
-        - type: custom:mushroom-template-card
-          entity: sensor.saih_m09_guadalquivir_sevilla
-          primary: Guadalquivir · Sevilla
-          secondary: *gauge_secondary
-          icon: mdi:waves
-          icon_color: *alert_color
-          tap_action: {action: more-info}
-        - type: custom:mushroom-template-card
-          entity: sensor.saih_a33_rivera_de_huelva_guillena
-          primary: Rivera de Huelva · Guillena
-          secondary: *gauge_secondary
-          icon: mdi:waves
-          icon_color: *alert_color
-          tap_action: {action: more-info}
-        - type: custom:mushroom-template-card
-          entity: sensor.saih_h09_alcala_del_rio_dam
-          primary: Alcalá del Río dam
-          secondary: *gauge_secondary
-          icon: mdi:dam
-          icon_color: *alert_color
-          tap_action: {action: more-info}
-        - type: custom:mushroom-template-card
+    # Schematic, not to scale. The SVG (HA-custom-www/my_config/saih_rivers.svg)
+    # draws the rivers; the badges on top are the live gauges (colour = alert,
+    # ▲/▼ = rising/falling over the last hour) and rain gauges (blue = raining now).
+    - type: picture-elements
+      image: /local/my_config/saih_rivers.svg
+      elements:
+        # Guadalquivir and La Algaba
+        - type: custom:mushroom-template-badge
           entity: sensor.saih_h08_cantillana_dam
-          primary: Cantillana dam
-          secondary: *gauge_secondary
+          label: H08 Cantillana dam
           icon: mdi:dam
-          icon_color: *alert_color
+          color: &alert_color >
+            {{ {'green': 'green', 'yellow': 'yellow', 'orange': 'orange', 'red': 'red'}
+               .get(state_attr(entity, 'alert'), 'disabled') }}
+          content: &gauge_content >
+            {% set u = state_attr(entity, 'unit_of_measurement') %}
+            {% set t = states('sensor.saih_' ~ entity.split('_')[1] ~ '_trend') | float(0) %}
+            {% set eps = 1 if u == 'm³/s' else 0.01 %}
+            {{ states(entity) }} {{ u }} {{ '▲' if t > eps else '▼' if t < -eps else '' }}
           tap_action: {action: more-info}
+          style: {left: 85%, top: 8%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_h09_alcala_del_rio_dam
+          label: H09 Alcalá del Río dam
+          icon: mdi:dam
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 62%, top: 28%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_a33_rivera_de_huelva_guillena
+          label: A33 Guillena
+          icon: mdi:waves
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 30%, top: 8%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_m09_guadalquivir_sevilla
+          label: M09 Sevilla
+          icon: mdi:waves
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 14%, top: 47%}
+        # Guadaíra, upstream → home
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_m07_guadaira_arahal
+          label: M07 Arahal
+          icon: mdi:waves
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 88%, top: 80%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_m54_guadaira_alcala_2
+          label: M54 Alcalá (upstream)
+          icon: mdi:waves
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 70%, top: 64%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_a19_guadaira_alcala
+          label: A19 Alcalá
+          icon: mdi:waves
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 52%, top: 80%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_a55_guadaira_sevilla
+          label: A55 Home
+          icon: mdi:home-flood
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 34%, top: 64%}
+        # Rain gauges
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_m25_rain_almaden_de_la_plata
+          label: Almadén (rain)
+          icon: mdi:weather-pouring
+          color: &rain_color >
+            {{ 'blue' if state_attr(entity, 'current_hour') | float(0) > 0 else 'disabled' }}
+          content: &rain_content >
+            {{ state_attr(entity, 'current_hour') }} mm/h · {{ states(entity) }} today
+          tap_action: {action: more-info}
+          style: {left: 10%, top: 22%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_m09_rain_sevilla
+          label: Sevilla (rain)
+          icon: mdi:weather-pouring
+          color: *rain_color
+          content: *rain_content
+          tap_action: {action: more-info}
+          style: {left: 11%, top: 72%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_p28_rain_el_viso_del_alcor
+          label: El Viso (rain)
+          icon: mdi:weather-pouring
+          color: *rain_color
+          content: *rain_content
+          tap_action: {action: more-info}
+          style: {left: 80%, top: 45%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_p67_rain_marchena
+          label: Marchena (rain)
+          icon: mdi:weather-pouring
+          color: *rain_color
+          content: *rain_content
+          tap_action: {action: more-info}
+          style: {left: 89%, top: 60%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_p65_rain_utrera
+          label: Utrera (rain)
+          icon: mdi:weather-pouring
+          color: *rain_color
+          content: *rain_content
+          tap_action: {action: more-info}
+          style: {left: 66%, top: 95%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_p31_rain_moron
+          label: Morón (rain)
+          icon: mdi:weather-pouring
+          color: *rain_color
+          content: *rain_content
+          tap_action: {action: more-info}
+          style: {left: 89%, top: 95%}
 
-# ── Guadaíra next to home, with the official thresholds ──────────────────────
+# ── Rain: radar (what is coming) + SAIH gauges (what fell) ───────────────────
+# The radar is the AEMET integration's image entity. Enable it in
+# Settings → Devices & services → AEMET → Configure → "Gather data from AEMET weather radar".
+- type: picture-entity
+  entity: image.aemet_weather_radar
+  name: AEMET radar
+  show_state: false
+
 - type: custom:apexcharts-card
   graph_span: 48h
   header:
     show: true
-    title: Guadaíra · Sevilla (home) — level
-    show_states: true
-    colorize_states: true
-  yaxis:
-    - min: 0
-      decimals: 1
+    title: Rain — Guadaíra basin (mm per hour)
   all_series_config:
-    stroke_width: 2
+    type: column
+    attribute: current_hour
+    group_by:
+      func: max
+      duration: 1h
   series:
-    - entity: sensor.saih_a55_guadaira_sevilla
-      name: Level
-      color: '#1e88e5'
-      type: area
-      opacity: 0.25
-    - entity: sensor.saih_a55_guadaira_sevilla
-      attribute: threshold_yellow
-      name: Yellow
-      color: '#fbc02d'
-      stroke_width: 1
-      stroke_dash: 4
-      curve: stepline
-      show: {in_header: false, legend_value: false}
-    - entity: sensor.saih_a55_guadaira_sevilla
-      attribute: threshold_orange
-      name: Orange
-      color: '#fb8c00'
-      stroke_width: 1
-      stroke_dash: 4
-      curve: stepline
-      show: {in_header: false, legend_value: false}
-    - entity: sensor.saih_a55_guadaira_sevilla
-      attribute: threshold_red
-      name: Red
-      color: '#e53935'
-      stroke_width: 1
-      stroke_dash: 4
-      curve: stepline
-      show: {in_header: false, legend_value: false}
+    - entity: sensor.saih_p31_rain_moron
+      name: Morón
+    - entity: sensor.saih_p67_rain_marchena
+      name: Marchena
+    - entity: sensor.saih_m07_rain_arahal
+      name: Arahal
+    - entity: sensor.saih_p65_rain_utrera
+      name: Utrera
+    - entity: sensor.saih_p28_rain_el_viso_del_alcor
+      name: El Viso
+    - entity: sensor.saih_m09_rain_sevilla
+      name: Sevilla
 
-# ── Guadaíra upstream: rises here arrive at home hours later ────────────────
+- type: custom:apexcharts-card
+  graph_span: 48h
+  header:
+    show: true
+    title: Rain — Rivera de Huelva basin, above La Algaba (mm per hour)
+  all_series_config:
+    type: column
+    attribute: current_hour
+    group_by:
+      func: max
+      duration: 1h
+  series:
+    - entity: sensor.saih_m25_rain_almaden_de_la_plata
+      name: Almadén
+    - entity: sensor.saih_e64_rain_cala
+      name: Cala
+    - entity: sensor.saih_e63_rain_la_minilla
+      name: La Minilla
+
+# ── Guadaíra, upstream → home: one chart per station, each with its own thresholds ──
+- type: vertical-stack
+  cards:
+    - type: custom:apexcharts-card
+      graph_span: 72h
+      header: {show: true, title: M07 Guadaíra · Arahal (m), show_states: true, colorize_states: true}
+      apex_config: {chart: {height: 170}}
+      series:
+        - {entity: sensor.saih_m07_guadaira_arahal, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
+        - {entity: sensor.saih_m07_guadaira_arahal, attribute: threshold_yellow, name: Yellow, color: '#fbc02d', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+        - {entity: sensor.saih_m07_guadaira_arahal, attribute: threshold_red, name: Red, color: '#e53935', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+    - type: custom:apexcharts-card
+      graph_span: 72h
+      header: {show: true, title: M54 Guadaíra · Alcalá upstream (m), show_states: true, colorize_states: true}
+      apex_config: {chart: {height: 170}}
+      series:
+        - {entity: sensor.saih_m54_guadaira_alcala_2, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
+        - {entity: sensor.saih_m54_guadaira_alcala_2, attribute: threshold_yellow, name: Yellow, color: '#fbc02d', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+        - {entity: sensor.saih_m54_guadaira_alcala_2, attribute: threshold_red, name: Red, color: '#e53935', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+    - type: custom:apexcharts-card
+      graph_span: 72h
+      header: {show: true, title: A19 Guadaíra · Alcalá (m), show_states: true, colorize_states: true}
+      apex_config: {chart: {height: 170}}
+      series:
+        - {entity: sensor.saih_a19_guadaira_alcala, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
+        - {entity: sensor.saih_a19_guadaira_alcala, attribute: threshold_yellow, name: Yellow, color: '#fbc02d', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+        - {entity: sensor.saih_a19_guadaira_alcala, attribute: threshold_red, name: Red, color: '#e53935', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+    - type: custom:apexcharts-card
+      graph_span: 72h
+      header: {show: true, title: A55 Guadaíra · Sevilla, home (m), show_states: true, colorize_states: true}
+      apex_config: {chart: {height: 170}}
+      series:
+        - {entity: sensor.saih_a55_guadaira_sevilla, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
+        - {entity: sensor.saih_a55_guadaira_sevilla, attribute: threshold_yellow, name: Yellow, color: '#fbc02d', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+        - {entity: sensor.saih_a55_guadaira_sevilla, attribute: threshold_orange, name: Orange, color: '#fb8c00', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+        - {entity: sensor.saih_a55_guadaira_sevilla, attribute: threshold_red, name: Red, color: '#e53935', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+
+# Flow is the one measure that IS comparable along the river, but on the
+# Guadaíra only Alcalá (A19) and home (A55) measure it.
 - type: custom:apexcharts-card
   graph_span: 72h
   header:
     show: true
-    title: Guadaíra — upstream to home (level, m)
+    title: Guadaíra flow — Alcalá → home (m³/s)
     show_states: true
-  yaxis:
-    - min: 0
-      decimals: 1
   series:
-    - entity: sensor.saih_m07_guadaira_arahal
-      name: Arahal
     - entity: sensor.saih_a19_guadaira_alcala
-      name: Alcalá
+      attribute: flow_m3s
+      name: A19 Alcalá
     - entity: sensor.saih_a55_guadaira_sevilla
-      name: Sevilla (home)
+      attribute: flow_m3s
+      name: A55 Home
 
-# ── Guadalquivir in Sevilla (tidal), with the official thresholds ────────────
+# ── Guadalquivir: Sevilla (tidal) and what comes down to La Algaba ───────────
 - type: custom:apexcharts-card
   graph_span: 48h
-  header:
-    show: true
-    title: Guadalquivir · Sevilla — m above sea level
-    show_states: true
-    colorize_states: true
-  yaxis:
-    - decimals: 1
+  header: {show: true, title: M09 Guadalquivir · Sevilla (m above sea level), show_states: true, colorize_states: true}
   series:
-    - entity: sensor.saih_m09_guadalquivir_sevilla
-      name: Level
-      color: '#1e88e5'
-      type: area
-      opacity: 0.25
-    - entity: sensor.saih_m09_guadalquivir_sevilla
-      attribute: threshold_yellow
-      name: Yellow
-      color: '#fbc02d'
-      stroke_width: 1
-      stroke_dash: 4
-      curve: stepline
-      show: {in_header: false, legend_value: false}
-    - entity: sensor.saih_m09_guadalquivir_sevilla
-      attribute: threshold_orange
-      name: Orange
-      color: '#fb8c00'
-      stroke_width: 1
-      stroke_dash: 4
-      curve: stepline
-      show: {in_header: false, legend_value: false}
-    - entity: sensor.saih_m09_guadalquivir_sevilla
-      attribute: threshold_red
-      name: Red
-      color: '#e53935'
-      stroke_width: 1
-      stroke_dash: 4
-      curve: stepline
-      show: {in_header: false, legend_value: false}
+    - {entity: sensor.saih_m09_guadalquivir_sevilla, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
+    - {entity: sensor.saih_m09_guadalquivir_sevilla, attribute: threshold_yellow, name: Yellow, color: '#fbc02d', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+    - {entity: sensor.saih_m09_guadalquivir_sevilla, attribute: threshold_orange, name: Orange, color: '#fb8c00', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
+    - {entity: sensor.saih_m09_guadalquivir_sevilla, attribute: threshold_red, name: Red, color: '#e53935', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
 
-# ── Dams upstream of La Algaba ───────────────────────────────────────────────
-# Thresholds (1000–3000 m³/s) are left out on purpose: they would flatten the
-# normal flow into a line at zero. The status cards above show the alert.
+# All three are flows (m³/s), so they can share a chart. Dam thresholds
+# (1000–3000 m³/s) are left out: they would flatten normal flow to zero.
 - type: custom:apexcharts-card
   graph_span: 7d
   header:
     show: true
-    title: Guadalquivir dams upstream of La Algaba — flow (m³/s)
+    title: Flow towards La Algaba (m³/s)
     show_states: true
   series:
     - entity: sensor.saih_h08_cantillana_dam
-      name: Cantillana
+      name: H08 Cantillana
     - entity: sensor.saih_h09_alcala_del_rio_dam
-      name: Alcalá del Río
+      name: H09 Alcalá del Río
     - entity: sensor.saih_a33_rivera_de_huelva_guillena
       attribute: flow_m3s
-      name: Rivera de Huelva
+      name: A33 Rivera de Huelva
+
+# ── Map (official CHG coordinates) ───────────────────────────────────────────
+- type: map
+  title: Stations
+  default_zoom: 9
+  theme_mode: auto
+  entities:
+    - sensor.saih_a55_guadaira_sevilla
+    - sensor.saih_a19_guadaira_alcala
+    - sensor.saih_m54_guadaira_alcala_2
+    - sensor.saih_m07_guadaira_arahal
+    - sensor.saih_m09_guadalquivir_sevilla
+    - sensor.saih_h09_alcala_del_rio_dam
+    - sensor.saih_h08_cantillana_dam
+    - sensor.saih_a33_rivera_de_huelva_guillena
+    - sensor.saih_p31_rain_moron
+    - sensor.saih_p67_rain_marchena
+    - sensor.saih_m07_rain_arahal
+    - sensor.saih_p65_rain_utrera
+    - sensor.saih_p28_rain_el_viso_del_alcor
+    - sensor.saih_m09_rain_sevilla
+    - sensor.saih_m25_rain_almaden_de_la_plata
+    - sensor.saih_e64_rain_cala
+    - sensor.saih_e63_rain_la_minilla
 
 # ── Reservoirs supplying Sevilla ─────────────────────────────────────────────
 - type: vertical-stack
@@ -311,3 +419,4 @@
     Confederación Hidrográfica del Guadalquivir. Real-time data, not validated.
     Official thresholds from
     [AforosTabla](https://www.chguadalquivir.es/saih/AforosTabla.aspx).
+    Radar: AEMET.

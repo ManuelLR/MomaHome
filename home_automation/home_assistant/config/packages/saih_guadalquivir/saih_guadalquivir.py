@@ -9,6 +9,7 @@ Standard library only. To debug, run it by hand:
 
     python3 saih_guadalquivir.py gauges A55 M09
     python3 saih_guadalquivir.py reservoirs E61 E62
+    python3 saih_guadalquivir.py rain P31 M07
 
 If the CHG changes its website, expect stations to go missing (a warning is
 printed to stderr) or a clear error in the Home Assistant log.
@@ -23,6 +24,7 @@ import urllib.request
 BASE_URL = "https://www.chguadalquivir.es/saih/"
 GAUGES_URL = BASE_URL + "AforosTabla.aspx"    # river level/flow + official thresholds
 RESERVOIRS_URL = BASE_URL + "EmbalSE.aspx"    # reservoirs of the Sevilla zone
+RAIN_URL = BASE_URL + "LluviaTabla.aspx"      # rain gauges, l/m² (= mm)
 
 # Meaning of each SAIH signal suffix (e.g. "A55_107"). It is the same code the
 # website uses to draw the chart of each value.
@@ -55,11 +57,11 @@ def number(value):
 
 def updated_at(page):
     """'Actualizados: 30/09/2026 20:33:07' -> '2026-09-30T20:33:07' (local time)."""
-    found = re.search(r"Actualizados:\s*(\d\d)/(\d\d)/(\d{4})\s+(\d\d:\d\d:\d\d)", page)
+    found = re.search(r"Actualizados:\s*(\d\d)/(\d\d)/(\d{4})\s+(\d{1,2}):(\d\d:\d\d)", page)
     if not found:
         return None
-    day, month, year, time = found.groups()
-    return f"{year}-{month}-{day}T{time}"
+    day, month, year, hour, minutes = found.groups()
+    return f"{year}-{month}-{day}T{int(hour):02d}:{minutes}"
 
 
 def alert(station):
@@ -147,15 +149,40 @@ def read_reservoirs(codes):
     return updated_at(page), data
 
 
+def read_rain(codes):
+    page = download(RAIN_URL)
+    data = {}
+    for row in re.findall(r"<tr[\s\S]*?</tr>", page):
+        # Cells: chart icon, name, current hour, previous hour, last 12 h,
+        # today, yesterday, unit.
+        cells = [text(c) for c in re.findall(r"<td[^>]*>([\s\S]*?)</td>", row)]
+        if len(cells) < 8:
+            continue
+        code = cells[1].split(" ")[0]
+        if code not in codes:
+            continue
+        data[code] = {
+            "name": cells[1],
+            "current_hour": number(cells[2]),
+            "previous_hour": number(cells[3]),
+            "last_12h": number(cells[4]),
+            "today": number(cells[5]),
+            "yesterday": number(cells[6]),
+        }
+    return updated_at(page), data
+
+
 def main():
-    if len(sys.argv) < 3 or sys.argv[1] not in ("gauges", "reservoirs"):
-        sys.exit("Usage: saih_guadalquivir.py gauges|reservoirs CODE [CODE...]")
+    if len(sys.argv) < 3 or sys.argv[1] not in ("gauges", "reservoirs", "rain"):
+        sys.exit("Usage: saih_guadalquivir.py gauges|reservoirs|rain CODE [CODE...]")
 
     kind, codes = sys.argv[1], sys.argv[2:]
     if kind == "gauges":
         updated, data = read_gauges(codes)
-    else:
+    elif kind == "reservoirs":
         updated, data = read_reservoirs(codes)
+    else:
+        updated, data = read_rain(codes)
 
     missing = [c for c in codes if c not in data]
     if missing:

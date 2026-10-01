@@ -7,6 +7,9 @@
   # attribute, keyed by station code. The per-station sensors live in
   # template.yaml.
   #
+  # Rivers and rain every 5 min (what matters during a flood); reservoirs
+  # move slowly, so every 10 min.
+  #
   # To add a station: append its code here and add a sensor in template.yaml.
   # Codes: https://www.chguadalquivir.es/saih/Doc/Listado_puntos_de_control.pdf
   ##
@@ -15,14 +18,31 @@
       name: "SAIH gauges raw"
       unique_id: saih_gauges_raw
       icon: mdi:waves
-      # A55 Guadaíra Sevilla · A19/M54 Guadaíra Alcalá · M07 Guadaíra Arahal
-      # M09 Guadalquivir Sevilla · H09 Alcalá del Río dam · H08 Cantillana dam
-      # A33 Rivera de Huelva Guillena
+      # Guadaíra, upstream to home: M07 Arahal · M54 Alcalá (upstream)
+      #   · A19 Alcalá (town) · A55 Sevilla (home)
+      # Guadalquivir: H08 Cantillana dam · H09 Alcalá del Río dam
+      #   · A33 Rivera de Huelva Guillena · M09 Sevilla
       command: >-
         python3 /config/packages/saih_guadalquivir/saih_guadalquivir.py gauges
         A55 A19 M54 M07 M09 H09 H08 A33
       command_timeout: 60
-      scan_interval: 600
+      scan_interval: 300
+      value_template: "{{ value_json.updated }}"
+      json_attributes:
+        - data
+
+  - sensor:
+      name: "SAIH rain raw"
+      unique_id: saih_rain_raw
+      icon: mdi:weather-pouring
+      # Guadaíra basin: P31 Morón · P67 Marchena · M07 Arahal · P65 Utrera
+      #   · P28 El Viso del Alcor · M09 Sevilla
+      # Rivera de Huelva basin (La Algaba): M25 Almadén · E64 Cala · E63 La Minilla
+      command: >-
+        python3 /config/packages/saih_guadalquivir/saih_guadalquivir.py rain
+        P31 P67 M07 P65 P28 M09 M25 E64 E63
+      command_timeout: 60
+      scan_interval: 300
       value_template: "{{ value_json.updated }}"
       json_attributes:
         - data

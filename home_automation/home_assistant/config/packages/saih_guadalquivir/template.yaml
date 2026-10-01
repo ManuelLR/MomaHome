@@ -1,16 +1,19 @@
 # template:
   ##
-  # SAIH Guadalquivir - one sensor per station / reservoir (see ./README.md)
+  # SAIH Guadalquivir - one sensor per station / rain gauge / reservoir
+  # (see ./README.md)
   #
   # Everything comes from the raw sensors in command_line.yaml. The script
   # already works out `value` (what the official thresholds apply to) and
   # `alert` (green / yellow / orange / red), so these are plain lookups.
   #
-  # Station order: Guadaíra (home, then upstream for early warning),
-  # Guadalquivir in Sevilla, and upstream of La Algaba.
+  # latitude / longitude are the official station coordinates from the CHG
+  # catalogue (WFS ggiscloud_root:explotacion_saih), so the sensors show up on
+  # a map card.
   ##
 
   - sensor:
+      # ── River gauges: Guadaíra (home, then upstream), Guadalquivir, La Algaba ──
       - name: "SAIH A55 Guadaíra Sevilla"
         unique_id: saih_a55_guadaira_sevilla
         icon: mdi:waves
@@ -24,6 +27,8 @@
           threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A55'].threshold_orange }}"
           threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A55'].threshold_red }}"
           flow_m3s: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A55'].flow }}"
+          latitude: 37.353099
+          longitude: -5.959296
       - name: "SAIH A19 Guadaíra Alcalá"
         unique_id: saih_a19_guadaira_alcala
         icon: mdi:waves
@@ -37,6 +42,8 @@
           threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A19'].threshold_orange }}"
           threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A19'].threshold_red }}"
           flow_m3s: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A19'].flow }}"
+          latitude: 37.361206
+          longitude: -5.904187
       - name: "SAIH M54 Guadaíra Alcalá 2"
         unique_id: saih_m54_guadaira_alcala_2
         icon: mdi:waves
@@ -49,6 +56,8 @@
           threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M54'].threshold_yellow }}"
           threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M54'].threshold_orange }}"
           threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M54'].threshold_red }}"
+          latitude: 37.308117
+          longitude: -5.802103
       - name: "SAIH M07 Guadaíra Arahal"
         unique_id: saih_m07_guadaira_arahal
         icon: mdi:waves
@@ -61,6 +70,8 @@
           threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M07'].threshold_yellow }}"
           threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M07'].threshold_orange }}"
           threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M07'].threshold_red }}"
+          latitude: 37.229718
+          longitude: -5.617041
       - name: "SAIH M09 Guadalquivir Sevilla"
         unique_id: saih_m09_guadalquivir_sevilla
         icon: mdi:waves
@@ -73,6 +84,8 @@
           threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M09'].threshold_yellow }}"
           threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M09'].threshold_orange }}"
           threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['M09'].threshold_red }}"
+          latitude: 37.392164
+          longitude: -6.016171
       - name: "SAIH H09 Alcalá del Río dam"
         unique_id: saih_h09_alcala_del_rio_dam
         icon: mdi:waves
@@ -85,6 +98,8 @@
           threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H09'].threshold_yellow }}"
           threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H09'].threshold_orange }}"
           threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H09'].threshold_red }}"
+          latitude: 37.518541
+          longitude: -5.976185
       - name: "SAIH H08 Cantillana dam"
         unique_id: saih_h08_cantillana_dam
         icon: mdi:waves
@@ -97,6 +112,8 @@
           threshold_yellow: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H08'].threshold_yellow }}"
           threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H08'].threshold_orange }}"
           threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['H08'].threshold_red }}"
+          latitude: 37.591488
+          longitude: -5.81175
       - name: "SAIH A33 Rivera de Huelva Guillena"
         unique_id: saih_a33_rivera_de_huelva_guillena
         icon: mdi:waves
@@ -110,8 +127,10 @@
           threshold_orange: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A33'].threshold_orange }}"
           threshold_red: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A33'].threshold_red }}"
           flow_m3s: "{{ state_attr('sensor.saih_gauges_raw', 'data')['A33'].flow }}"
+          latitude: 37.668743
+          longitude: -6.133157
 
-      # Worst alert across all the stations above: green / yellow / orange / red.
+      # Worst alert across all the gauges above: green / yellow / orange / red.
       # `stations` lists the codes that are not green.
       - name: "SAIH worst river alert"
         unique_id: saih_worst_river_alert
@@ -126,6 +145,135 @@
                  | map(attribute='0') | join(', ') }}
           updated: "{{ states('sensor.saih_gauges_raw') }}"
 
+      # ── Rain gauges: state = rain today (mm = l/m²) ──
+      - name: "SAIH P31 rain Morón"
+        unique_id: saih_p31_rain_moron
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'P31' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['P31'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P31'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P31'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['P31'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['P31'].yesterday }}"
+          latitude: 37.123722
+          longitude: -5.446799
+      - name: "SAIH P67 rain Marchena"
+        unique_id: saih_p67_rain_marchena
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'P67' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['P67'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P67'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P67'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['P67'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['P67'].yesterday }}"
+          latitude: 37.329221
+          longitude: -5.409815
+      - name: "SAIH M07 rain Arahal"
+        unique_id: saih_m07_rain_arahal
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'M07' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['M07'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['M07'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['M07'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['M07'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['M07'].yesterday }}"
+          latitude: 37.229718
+          longitude: -5.617041
+      - name: "SAIH P65 rain Utrera"
+        unique_id: saih_p65_rain_utrera
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'P65' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['P65'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P65'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P65'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['P65'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['P65'].yesterday }}"
+          latitude: 37.179698
+          longitude: -5.787641
+      - name: "SAIH P28 rain El Viso del Alcor"
+        unique_id: saih_p28_rain_el_viso_del_alcor
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'P28' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['P28'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P28'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P28'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['P28'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['P28'].yesterday }}"
+          latitude: 37.382221
+          longitude: -5.72517
+      - name: "SAIH M09 rain Sevilla"
+        unique_id: saih_m09_rain_sevilla
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'M09' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['M09'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['M09'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['M09'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['M09'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['M09'].yesterday }}"
+          latitude: 37.392164
+          longitude: -6.016171
+      - name: "SAIH M25 rain Almadén de la Plata"
+        unique_id: saih_m25_rain_almaden_de_la_plata
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'M25' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['M25'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['M25'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['M25'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['M25'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['M25'].yesterday }}"
+          latitude: 37.880278
+          longitude: -6.147499
+      - name: "SAIH E64 rain Cala"
+        unique_id: saih_e64_rain_cala
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'E64' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['E64'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['E64'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['E64'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['E64'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['E64'].yesterday }}"
+          latitude: 37.718004
+          longitude: -6.088137
+      - name: "SAIH E63 rain La Minilla"
+        unique_id: saih_e63_rain_la_minilla
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'E63' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['E63'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['E63'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['E63'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['E63'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['E63'].yesterday }}"
+          latitude: 37.664702
+          longitude: -6.185449
+
+      # ── Reservoirs supplying Sevilla ──
       - name: "SAIH E58 Melonares"
         unique_id: saih_e58_melonares_percent
         icon: mdi:water-percent
@@ -137,6 +285,8 @@
           volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].volume }}"
           capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].capacity }}"
           level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].level }}"
+          latitude: 37.723174
+          longitude: -5.883501
       - name: "SAIH E58 Melonares release"
         unique_id: saih_e58_melonares_release
         icon: mdi:waves-arrow-right
@@ -144,7 +294,6 @@
         state_class: measurement
         availability: "{{ 'E58' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E58'].release }}"
-
       - name: "SAIH E61 Aracena"
         unique_id: saih_e61_aracena_percent
         icon: mdi:water-percent
@@ -156,6 +305,8 @@
           volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].volume }}"
           capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].capacity }}"
           level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].level }}"
+          latitude: 37.907782
+          longitude: -6.451803
       - name: "SAIH E61 Aracena release"
         unique_id: saih_e61_aracena_release
         icon: mdi:waves-arrow-right
@@ -163,7 +314,6 @@
         state_class: measurement
         availability: "{{ 'E61' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E61'].release }}"
-
       - name: "SAIH E62 Zufre"
         unique_id: saih_e62_zufre_percent
         icon: mdi:water-percent
@@ -175,6 +325,8 @@
           volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].volume }}"
           capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].capacity }}"
           level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].level }}"
+          latitude: 37.797894
+          longitude: -6.27875
       - name: "SAIH E62 Zufre release"
         unique_id: saih_e62_zufre_release
         icon: mdi:waves-arrow-right
@@ -182,7 +334,6 @@
         state_class: measurement
         availability: "{{ 'E62' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E62'].release }}"
-
       - name: "SAIH E63 La Minilla"
         unique_id: saih_e63_la_minilla_percent
         icon: mdi:water-percent
@@ -194,6 +345,8 @@
           volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].volume }}"
           capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].capacity }}"
           level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].level }}"
+          latitude: 37.664702
+          longitude: -6.185449
       - name: "SAIH E63 La Minilla release"
         unique_id: saih_e63_la_minilla_release
         icon: mdi:waves-arrow-right
@@ -201,7 +354,6 @@
         state_class: measurement
         availability: "{{ 'E63' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E63'].release }}"
-
       - name: "SAIH E64 Cala"
         unique_id: saih_e64_cala_percent
         icon: mdi:water-percent
@@ -213,6 +365,8 @@
           volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].volume }}"
           capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].capacity }}"
           level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].level }}"
+          latitude: 37.718004
+          longitude: -6.088137
       - name: "SAIH E64 Cala release"
         unique_id: saih_e64_cala_release
         icon: mdi:waves-arrow-right
@@ -220,7 +374,6 @@
         state_class: measurement
         availability: "{{ 'E64' in (state_attr('sensor.saih_reservoirs_raw', 'data') or {}) }}"
         state: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E64'].release }}"
-
       - name: "SAIH E65 El Gergal"
         unique_id: saih_e65_el_gergal_percent
         icon: mdi:water-percent
@@ -232,6 +385,8 @@
           volume_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E65'].volume }}"
           capacity_hm3: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E65'].capacity }}"
           level_msnm: "{{ state_attr('sensor.saih_reservoirs_raw', 'data')['E65'].level }}"
+          latitude: 37.5671
+          longitude: -6.049148
       - name: "SAIH E65 El Gergal release"
         unique_id: saih_e65_el_gergal_release
         icon: mdi:waves-arrow-right

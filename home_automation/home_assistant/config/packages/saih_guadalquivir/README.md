@@ -32,16 +32,41 @@ So the least-bad option is reading the **public HTML tables** a citizen sees:
   yellow / orange / red thresholds**.
 - `EmbalSE.aspx`: Sevilla-zone reservoirs with level, volume, % and the flow
   being **released** right now.
+- `LluviaTabla.aspx`: every rain gauge, rain in the current hour, previous hour,
+  last 12 h, today and yesterday (l/m² = mm).
 
 ## Files
 
 | File | Purpose |
 |---|---|
 | `saih_guadalquivir.py` | Downloads one table and prints JSON. Standard library only. |
-| `command_line.yaml` | Runs the script every 10 min → `sensor.saih_gauges_raw`, `sensor.saih_reservoirs_raw` (state = SAIH update time, all data in the `data` attribute) |
-| `template.yaml` | One sensor per station / reservoir, plus `sensor.saih_worst_river_alert` |
+| `command_line.yaml` | Runs the script → `sensor.saih_gauges_raw` and `sensor.saih_rain_raw` every 5 min, `sensor.saih_reservoirs_raw` every 10 min (state = SAIH update time, all data in the `data` attribute) |
+| `template.yaml` | One sensor per gauge / rain gauge / reservoir (with official coordinates for the map), plus `sensor.saih_worst_river_alert` |
+| `sensor.yaml` | `sensor.saih_*_trend`: rise/fall of each gauge over the last hour (core `derivative`) |
 
-Dashboard: the **Rivers** view, `ui-views/Rivers.yaml`.
+Dashboard: the **Rivers** view, `ui-views/Rivers.yaml`. Its schematic background is
+`HA-custom-www/my_config/saih_rivers.svg` (served as `/local/my_config/saih_rivers.svg`);
+the live values are mushroom template badges placed on top of it.
+
+The radar is the AEMET integration's `image.aemet_weather_radar`. It only exists
+after enabling Settings → Devices & services → AEMET → Configure →
+"Gather data from AEMET weather radar".
+
+### Reading the data
+
+Levels are **not comparable between stations**: each point has its own channel and
+its own official thresholds, set where that point overflows. An upstream gauge far
+above its red while home is at red is normal. So:
+
+- each station is judged only against its own thresholds (`alert`);
+- what travels downstream shows as the **trend** of the upstream gauges (rising
+  fast = a wave is coming), not as their absolute value;
+- **flow** (m³/s) is the one comparable measure, but on the Guadaíra only A19 and
+  A55 measure it.
+
+The Guadaíra has **no reservoir** regulating it (Torre del Águila, in Utrera, is
+on the Salado de Morón, which drains towards Lebrija), so it rises with rain in
+its basin: watch the rain gauges and the radar.
 
 ## Debugging
 
@@ -50,6 +75,7 @@ Run the script by hand, on the host or inside the container:
 ```bash
 python3 saih_guadalquivir.py gauges A55 M09
 python3 saih_guadalquivir.py reservoirs E61 E62
+python3 saih_guadalquivir.py rain P31 M07
 docker compose exec home-assistant python3 /config/packages/saih_guadalquivir/saih_guadalquivir.py gauges A55
 ```
 
@@ -77,10 +103,16 @@ docker compose exec home-assistant python3 /config/packages/saih_guadalquivir/sa
 Thresholds are read live from the page, not hard-coded. Reservoirs: E58 Melonares,
 E61 Aracena, E62 Zufre, E63 La Minilla, E64 Cala, E65 El Gergal.
 
+Rain gauges: Guadaíra basin P31 Morón, P67 Marchena, M07 Arahal, P65 Utrera,
+P28 El Viso del Alcor, M09 Sevilla; Rivera de Huelva basin (La Algaba) M25 Almadén
+de la Plata, E64 Cala, E63 La Minilla.
+
 **To add a station:** find its code in the
 [list of control points](https://www.chguadalquivir.es/saih/Doc/Listado_puntos_de_control.pdf)
-(the code must appear on `AforosTabla.aspx`), add it to the command in
-`command_line.yaml`, and copy a sensor block in `template.yaml`.
+(the code must appear on `AforosTabla.aspx` or `LluviaTabla.aspx`), add it to the
+command in `command_line.yaml`, and copy a sensor block in `template.yaml`, with
+its coordinates from the CHG catalogue:
+`https://idechg.chguadalquivir.es/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ggiscloud_root:explotacion_saih`.
 
 ## Ideas for later
 
@@ -88,6 +120,9 @@ E61 Aracena, E62 Zufre, E63 La Minilla, E64 Cala, E65 El Gergal.
   (`script.telegram_notify`, as in `packages/emasesa`).
 - **EMASESA**: the integration already has one sensor per reservoir (daily, no
   releases), disabled by default. Enable them from the device page as a backup source.
+- **Faster rain, less reliable**: the core Meteoclimatic integration (amateur
+  stations, every few minutes, daily total only). There are stations in Morón,
+  Arahal, Alcalá de Guadaíra, El Viso del Alcor, Cantillana and Sevilla.
 - **Rain warnings**: the AEMET / Meteoalarm core integrations.
 - **Small web / map**: MITECO publishes the official flood zones (SNCZI) as
   `Zonas_de_Inundacion` on the same ArcGIS server. That is useful to show
