@@ -160,9 +160,9 @@ smartir:
   # Home Assistant integration to manage climate systems, TVs, fans and lights using IR/RF controllers
   check_updates: false
 
-# gicisky:
-  # https://github.com/eigger/hass-gicisky
-  # Gicisky BLE Label Home Assistant Integration
+# ble_esl:
+  # https://github.com/eigger/hass-ble-esl (successor of the archived hass-gicisky)
+  # BLE e-ink label integration (Gicisky/PickSmart tags)
 
 # Text to speech
 tts:
