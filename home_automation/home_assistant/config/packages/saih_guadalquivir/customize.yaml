@@ -77,3 +77,6 @@
     sensor.saih_e64_cala_release:
       latitude: 37.5671
       longitude: -6.049148
+    sensor.saih_e61_rain_aracena:
+      latitude: 37.907782
+      longitude: -6.451803
