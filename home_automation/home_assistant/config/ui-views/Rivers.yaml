@@ -29,12 +29,12 @@
         action: more-info
 
     # Schematic, not to scale, portrait so it fits a phone. The SVG
-    # (HA-custom-www/my_config/saih_rivers.svg) draws the rivers; on top:
+    # (HA-custom-www/public/saih_rivers.svg) draws the rivers; on top:
     # - a badge per gauge: value, ▲/▼ rising/falling over the last hour, colour = alert
     # - rain gauges as small labels: mm in the current hour
     # Positions: left/top % here = x/6, y/9 in the SVG viewBox (600 × 900).
     - type: picture-elements
-      image: /local/my_config/saih_rivers.svg
+      image: /local/public/saih_rivers.svg
       elements:
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h08_cantillana_dam

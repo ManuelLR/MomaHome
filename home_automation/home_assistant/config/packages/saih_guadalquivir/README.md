@@ -46,8 +46,10 @@ So the least-bad option is reading the **public HTML tables** a citizen sees:
 | `sensor.yaml` | `sensor.saih_*_trend`: rise/fall of each gauge over the last hour (core `derivative`) |
 
 Dashboard: the **Rivers** view, `ui-views/Rivers.yaml`. Its schematic background is
-`HA-custom-www/my_config/saih_rivers.svg` (served as `/local/my_config/saih_rivers.svg`
-through the `HA-custom-www/my_config` volume in `docker-compose.yml`); the live values
+`HA-custom-www/public/saih_rivers.svg`, served as `/local/public/saih_rivers.svg`
+through the read-only `HA-custom-www/public` volume in `docker-compose.yml`.
+Anything under `/local/` is reachable **without login**, so that folder must only
+hold files that can be public. The live values
 are mushroom template badges placed on top of it. It is portrait so it fits a phone.
 
 The radar is the AEMET integration's `image.aemet_weather_radar`. It only exists
