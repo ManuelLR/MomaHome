@@ -1,0 +1,79 @@
+# homeassistant:
+#   customize:
+    ##
+    # SAIH Guadalquivir - official station coordinates (see ./README.md), so
+    # the sensors show up on the map card in the Rivers view.
+    #
+    # Here and not as template attributes: the map card only draws entities
+    # whose latitude/longitude are numbers, and customize keeps the YAML type.
+    # Source: CHG catalogue, WFS ggiscloud_root:explotacion_saih.
+    ##
+    sensor.saih_a55_guadaira_sevilla:
+      latitude: 37.353099
+      longitude: -5.959296
+    sensor.saih_a19_guadaira_alcala:
+      latitude: 37.361206
+      longitude: -5.904187
+    sensor.saih_m54_guadaira_alcala_2:
+      latitude: 37.308117
+      longitude: -5.802103
+    sensor.saih_m07_guadaira_arahal:
+      latitude: 37.229718
+      longitude: -5.617041
+    sensor.saih_m09_guadalquivir_sevilla:
+      latitude: 37.392164
+      longitude: -6.016171
+    sensor.saih_h09_alcala_del_rio_dam:
+      latitude: 37.518541
+      longitude: -5.976185
+    sensor.saih_h08_cantillana_dam:
+      latitude: 37.591488
+      longitude: -5.81175
+    sensor.saih_a33_rivera_de_huelva_guillena:
+      latitude: 37.668743
+      longitude: -6.133157
+    sensor.saih_p31_rain_moron:
+      latitude: 37.123722
+      longitude: -5.446799
+    sensor.saih_p67_rain_marchena:
+      latitude: 37.329221
+      longitude: -5.409815
+    sensor.saih_m07_rain_arahal:
+      latitude: 37.229718
+      longitude: -5.617041
+    sensor.saih_p65_rain_utrera:
+      latitude: 37.179698
+      longitude: -5.787641
+    sensor.saih_p28_rain_el_viso_del_alcor:
+      latitude: 37.382221
+      longitude: -5.72517
+    sensor.saih_m09_rain_sevilla:
+      latitude: 37.392164
+      longitude: -6.016171
+    sensor.saih_m25_rain_almaden_de_la_plata:
+      latitude: 37.880278
+      longitude: -6.147499
+    sensor.saih_e64_rain_cala:
+      latitude: 37.718004
+      longitude: -6.088137
+    sensor.saih_e63_rain_la_minilla:
+      latitude: 37.664702
+      longitude: -6.185449
+    sensor.saih_e58_melonares:
+      latitude: 37.723174
+      longitude: -5.883501
+    sensor.saih_e58_melonares_release:
+      latitude: 37.907782
+      longitude: -6.451803
+    sensor.saih_e61_aracena_release:
+      latitude: 37.797894
+      longitude: -6.27875
+    sensor.saih_e62_zufre_release:
+      latitude: 37.664702
+      longitude: -6.185449
+    sensor.saih_e63_la_minilla_release:
+      latitude: 37.718004
+      longitude: -6.088137
+    sensor.saih_e64_cala_release:
+      latitude: 37.5671
+      longitude: -6.049148

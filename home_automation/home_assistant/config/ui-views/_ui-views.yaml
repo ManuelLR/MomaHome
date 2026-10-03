@@ -25,6 +25,9 @@
 - title: Server
   icon: mdi:server
   cards: !include Server.yaml
+- title: Rivers
+  icon: mdi:waves
+  cards: !include Rivers.yaml
 # - title: Flora
 #   icon: mdi:flower
 #   cards: !include Flora.yaml

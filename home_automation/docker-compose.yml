@@ -13,6 +13,9 @@ services:
             # Config files
             - ./home_assistant/config/:/config/
             - ./home_assistant/HA-custom-www/my-config/:/HA-custom-www/my-config/
+            # Served as /local/public/ WITHOUT login: only files that can be public
+            # (e.g. the SAIH rivers schematic). Never config or home plans.
+            - ./home_assistant/HA-custom-www/public/:/HA-custom-www/public/:ro
             # /run/dbus was mounted here to reach BlueZ on the host. The local
             # adapter is gone: BLE goes through the bluetooth_proxy on
             # man-005--esphome over the network.
