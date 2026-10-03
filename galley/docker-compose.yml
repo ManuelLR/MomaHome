@@ -16,9 +16,10 @@ services:
 
       # --- App on the current domain: reachable from the internet ---
       # Everything except PocketBase's admin dashboard, which the router below
-      # keeps on the LAN. The two rules are mutually exclusive on purpose, so
-      # matching never depends on Traefik's rule-length priority heuristic.
-      - "traefik.http.routers.galley.rule=Host(`${GALLEY_EXTERNAL_DOMAIN}`) && !PathPrefix(`/_/`)"
+      # keeps on the LAN, and the MCP paths, which go to galley-mcp. The rules
+      # are mutually exclusive on purpose, so matching never depends on
+      # Traefik's rule-length priority heuristic.
+      - "traefik.http.routers.galley.rule=Host(`${GALLEY_EXTERNAL_DOMAIN}`) && !PathPrefix(`/_/`) && !Path(`/mcp`) && !PathPrefix(`/oauth/`) && !PathPrefix(`/.well-known/oauth-`)"
       - "traefik.http.routers.galley.entrypoints=websecure"
       - "traefik.http.routers.galley.tls.certresolver=principal"
       - "traefik.http.routers.galley.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
@@ -59,6 +60,35 @@ services:
       # 302 while the move settles; flip to true (301) once it is proven, keeping
       # in mind browsers cache permanent redirects very aggressively.
       - "traefik.http.middlewares.galley-legacy-redirect.redirectregex.permanent=false"
+
+  galley-mcp:
+    # MCP server through which claude.ai plans meals (custom connector). Built
+    # from the same submodule; see src/docs/mcp.md. No volume, no pb_data: it
+    # reaches PocketBase over the network as the signed-in user.
+    build: ./src/mcp
+    restart: unless-stopped
+    environment:
+      PUBLIC_URL: https://${GALLEY_EXTERNAL_DOMAIN}
+      POCKETBASE_URL: http://galley:8090
+      GALLEY_TZ: Europe/Madrid
+      # Seals clients, codes and tokens. Rotating it disconnects every client.
+      MCP_SECRET: ${GALLEY_MCP_SECRET:?set GALLEY_MCP_SECRET in .env}
+    depends_on:
+      - galley
+    networks:
+      - reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.galley-mcp.loadbalancer.server.port=8091"
+      # Same host as the app; the galley router above excludes exactly these
+      # paths. Public on purpose: claude.ai connects from the internet. The
+      # login rate limit keys on X-Real-IP, which Traefik sets from the
+      # connection (no trusted forwardedHeaders on websecure).
+      - "traefik.http.routers.galley-mcp.rule=Host(`${GALLEY_EXTERNAL_DOMAIN}`) && (Path(`/mcp`) || PathPrefix(`/oauth/`) || PathPrefix(`/.well-known/oauth-`))"
+      - "traefik.http.routers.galley-mcp.entrypoints=websecure"
+      - "traefik.http.routers.galley-mcp.tls.certresolver=principal"
+      - "traefik.http.routers.galley-mcp.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      - "traefik.http.routers.galley-mcp.service=galley-mcp"
 
 networks:
   reverse-proxy:
