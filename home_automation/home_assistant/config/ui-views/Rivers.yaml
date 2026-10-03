@@ -31,15 +31,15 @@
     # Schematic, not to scale, portrait so it fits a phone. The SVG
     # (HA-custom-www/public/saih_rivers.svg) draws the rivers; on top:
     # - a badge per gauge: value, ▲/▼ rising/falling over the last hour, colour = alert
-    # - rain gauges as small labels: mm in the current hour
+    # - rain gauges: mm in the current hour, under the town name drawn in the SVG
     # Positions: left/top % here = x/6, y/9 in the SVG viewBox (600 × 900).
     - type: picture-elements
       image: /local/public/saih_rivers.svg
       elements:
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h08_cantillana_dam
-          label: Cantillana dam
-          icon: mdi:dam
+          label: Cantillana
+          icon: mdi:hydro-power
           color: &alert_color >
             {{ {'green': 'green', 'yellow': 'yellow', 'orange': 'orange', 'red': 'red'}
                .get(state_attr(entity, 'alert'), 'disabled') }}
@@ -49,15 +49,15 @@
             {% set eps = 1 if u == 'm³/s' else 0.01 %}
             {{ states(entity) }} {{ u }} {{ '▲' if t > eps else '▼' if t < -eps else '' }}
           tap_action: {action: more-info}
-          style: {left: 84%, top: 14%}
+          style: {left: 80%, top: 14%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h09_alcala_del_rio_dam
-          label: Alcalá del Río dam
-          icon: mdi:dam
+          label: Alcalá del Río
+          icon: mdi:hydro-power
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 80%, top: 27%}
+          style: {left: 78%, top: 27%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_a33_rivera_de_huelva_guillena
           label: Guillena
@@ -65,15 +65,15 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 18%, top: 8%}
+          style: {left: 18%, top: 8%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_m09_guadalquivir_sevilla
-          label: Sevilla
+          label: Guadalquivir
           icon: mdi:waves
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 18%, top: 48%}
+          style: {left: 18%, top: 48%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_a55_guadaira_sevilla
           label: Home
@@ -81,7 +81,7 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 18%, top: 64%}
+          style: {left: 18%, top: 64%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_a19_guadaira_alcala
           label: Alcalá
@@ -89,7 +89,7 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 78%, top: 60%}
+          style: {left: 76%, top: 60%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_m54_guadaira_alcala_2
           label: Alcalá (east)
@@ -97,7 +97,7 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 84%, top: 70%}
+          style: {left: 80%, top: 70%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_m07_guadaira_arahal
           label: Arahal
@@ -105,43 +105,37 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 62%, top: 93%}
+          style: {left: 62%, top: 93%, width: max-content}
         - type: state-label
           entity: sensor.saih_m25_rain_almaden_de_la_plata
           attribute: current_hour
-          prefix: "Almadén "
           suffix: " mm/h"
-          style: {left: 40%, top: 3%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 45%, top: 6%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_m09_rain_sevilla
           attribute: current_hour
-          prefix: "Sevilla "
           suffix: " mm/h"
-          style: {left: 10%, top: 40%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 48%, top: 48.5%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p28_rain_el_viso_del_alcor
           attribute: current_hour
-          prefix: "El Viso "
           suffix: " mm/h"
-          style: {left: 80%, top: 40%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 80%, top: 41%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p67_rain_marchena
           attribute: current_hour
-          prefix: "Marchena "
           suffix: " mm/h"
-          style: {left: 85%, top: 50%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 85%, top: 51.5%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p65_rain_utrera
           attribute: current_hour
-          prefix: "Utrera "
           suffix: " mm/h"
-          style: {left: 42%, top: 88%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 41.7%, top: 89%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p31_rain_moron
           attribute: current_hour
-          prefix: "Morón "
           suffix: " mm/h"
-          style: {left: 88%, top: 97%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 88.3%, top: 98%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
 
 # ── Rain: radar (what is coming) + SAIH gauges (what fell) ───────────────────
 # The radar is the AEMET integration's image entity. Enable it in

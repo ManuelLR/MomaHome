@@ -17,6 +17,7 @@
     .river { fill: #4fa3e0; font-size: 24px; font-weight: 600; font-style: italic; }
     .place { fill: #8a8f98; font-size: 20px; }
     .home  { fill: #e0a03a; }
+    .rain  { text-anchor: middle; }
     @keyframes flow { to { stroke-dashoffset: -18; } }
   </style>
 
@@ -45,13 +46,17 @@
   <line class="lead" x1="380" y1="620" x2="470" y2="560"/>  <circle class="node" cx="380" cy="620" r="8"/>  <!-- A19 -->
   <line class="lead" x1="270" y1="570" x2="200" y2="576"/>  <circle class="node" cx="270" cy="570" r="10"/> <!-- A55 home -->
 
-  <!-- Places -->
+  <!-- Places. Rain gauge towns are centred; the live "mm/h" label sits just below each. -->
   <text class="place" x="320" y="335">La Algaba</text>
   <text class="place" x="250" y="410">Sevilla</text>
+  <text class="place rain" x="270" y="30">Almadén</text>
+  <text class="place rain" x="480" y="345">El Viso</text>
+  <text class="place rain" x="510" y="440">Marchena</text>
+  <text class="place rain" x="250" y="775">Utrera</text>
+  <text class="place rain" x="530" y="860">Morón</text>
 
   <!-- Home: Jardines de Hércules, next to A55 -->
   <g class="home" transform="translate(222 596) scale(1.1)">
     <path d="M 20 0 L 40 16 L 34 16 L 34 34 L 6 34 L 6 16 L 0 16 Z"/>
   </g>
-  <text class="place" x="268" y="625">Casa</text>
 </svg>
