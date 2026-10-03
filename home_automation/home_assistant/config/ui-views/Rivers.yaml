@@ -32,12 +32,12 @@
     # Schematic, not to scale, portrait so it fits a phone. The SVG
     # (HA-custom-www/public/saih_rivers.svg) draws the rivers; on top:
     # - a badge per gauge: value, ▲/▼ rising/falling over the last hour, colour = alert
-    # - rain gauges: mm in the current hour, under the town name drawn in the SVG
+    # - rain gauges: mm today under the town name drawn in the SVG (🌧 = raining now)
     # - reservoirs upstream of La Algaba: fill % and release
     # Positions: left/top % = x/6, y/12.2 in the SVG viewBox (600 × 1220).
     - type: picture-elements
       # /local is cached by browsers for 31 days: bump ?v= whenever the SVG changes.
-      image: /local/public/saih_rivers.svg?v=4
+      image: /local/public/saih_rivers.svg?v=5
       elements:
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h08_cantillana_dam
@@ -165,36 +165,36 @@
           content: *reservoir_content
           tap_action: {action: more-info}
           style: {left: 82%, top: 13.1%, width: max-content}
+        # Rain gauges: mm today (🌧 while it rains this hour or the last one).
+        # The town name is drawn in the SVG; Aracena's sits by its reservoir.
         - type: state-label
           entity: sensor.saih_m25_rain_almaden_de_la_plata
-          attribute: current_hour
-          suffix: " mm/h"
-          style: {left: 55%, top: 3.7%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          attribute: map_label
+          style: {left: 56.7%, top: 7.5%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_m09_rain_sevilla
-          attribute: current_hour
-          suffix: " mm/h"
+          attribute: map_label
           style: {left: 48%, top: 62%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p28_rain_el_viso_del_alcor
-          attribute: current_hour
-          suffix: " mm/h"
+          attribute: map_label
           style: {left: 80%, top: 56.5%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p67_rain_marchena
-          attribute: current_hour
-          suffix: " mm/h"
+          attribute: map_label
           style: {left: 85%, top: 64.2%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p65_rain_utrera
-          attribute: current_hour
-          suffix: " mm/h"
+          attribute: map_label
           style: {left: 41.7%, top: 91.9%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p31_rain_moron
-          attribute: current_hour
-          suffix: " mm/h"
+          attribute: map_label
           style: {left: 88.3%, top: 98.5%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+        - type: state-label
+          entity: sensor.saih_e61_rain_aracena
+          attribute: map_label
+          style: {left: 43.7%, top: 3.3%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
 
 # ── Rain: radar (what is coming) + SAIH gauges (what fell) ───────────────────
 # The radar is the AEMET integration's image entity. Enable it in
@@ -256,6 +256,8 @@
       name: Cala
     - entity: sensor.saih_e63_rain_la_minilla
       name: La Minilla
+    - entity: sensor.saih_e61_rain_aracena
+      name: Aracena
 
 # ── Guadaíra, upstream → home: one chart per station, each with its own thresholds ──
 - type: vertical-stack
@@ -363,6 +365,7 @@
     - sensor.saih_m25_rain_almaden_de_la_plata
     - sensor.saih_e64_rain_cala
     - sensor.saih_e63_rain_la_minilla
+    - sensor.saih_e61_rain_aracena
 
 # ── Reservoirs supplying Sevilla ─────────────────────────────────────────────
 - type: vertical-stack
