@@ -41,12 +41,14 @@ So the least-bad option is reading the **public HTML tables** a citizen sees:
 |---|---|
 | `saih_guadalquivir.py` | Downloads one table and prints JSON. Standard library only. |
 | `command_line.yaml` | Runs the script → `sensor.saih_gauges_raw` and `sensor.saih_rain_raw` every 5 min, `sensor.saih_reservoirs_raw` every 10 min (state = SAIH update time, all data in the `data` attribute) |
-| `template.yaml` | One sensor per gauge / rain gauge / reservoir (with official coordinates for the map), plus `sensor.saih_worst_river_alert` |
+| `template.yaml` | One sensor per gauge / rain gauge / reservoir, plus `sensor.saih_worst_river_alert` |
+| `customize.yaml` | Official station coordinates, so the sensors show on the map card (as numbers: the map ignores string coordinates) |
 | `sensor.yaml` | `sensor.saih_*_trend`: rise/fall of each gauge over the last hour (core `derivative`) |
 
 Dashboard: the **Rivers** view, `ui-views/Rivers.yaml`. Its schematic background is
-`HA-custom-www/my_config/saih_rivers.svg` (served as `/local/my_config/saih_rivers.svg`);
-the live values are mushroom template badges placed on top of it.
+`HA-custom-www/my_config/saih_rivers.svg` (served as `/local/my_config/saih_rivers.svg`
+through the `HA-custom-www/my_config` volume in `docker-compose.yml`); the live values
+are mushroom template badges placed on top of it. It is portrait so it fits a phone.
 
 The radar is the AEMET integration's `image.aemet_weather_radar`. It only exists
 after enabling Settings → Devices & services → AEMET → Configure →
@@ -110,8 +112,8 @@ de la Plata, E64 Cala, E63 La Minilla.
 **To add a station:** find its code in the
 [list of control points](https://www.chguadalquivir.es/saih/Doc/Listado_puntos_de_control.pdf)
 (the code must appear on `AforosTabla.aspx` or `LluviaTabla.aspx`), add it to the
-command in `command_line.yaml`, and copy a sensor block in `template.yaml`, with
-its coordinates from the CHG catalogue:
+command in `command_line.yaml`, copy a sensor block in `template.yaml`, and add
+its coordinates in `customize.yaml`, from the CHG catalogue:
 `https://idechg.chguadalquivir.es/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ggiscloud_root:explotacion_saih`.
 
 ## Ideas for later

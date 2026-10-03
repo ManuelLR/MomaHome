@@ -28,16 +28,17 @@
       tap_action:
         action: more-info
 
-    # Schematic, not to scale. The SVG (HA-custom-www/my_config/saih_rivers.svg)
-    # draws the rivers; the badges on top are the live gauges (colour = alert,
-    # ▲/▼ = rising/falling over the last hour) and rain gauges (blue = raining now).
+    # Schematic, not to scale, portrait so it fits a phone. The SVG
+    # (HA-custom-www/my_config/saih_rivers.svg) draws the rivers; on top:
+    # - a badge per gauge: value, ▲/▼ rising/falling over the last hour, colour = alert
+    # - rain gauges as small labels: mm in the current hour
+    # Positions: left/top % here = x/6, y/9 in the SVG viewBox (600 × 900).
     - type: picture-elements
       image: /local/my_config/saih_rivers.svg
       elements:
-        # Guadalquivir and La Algaba
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h08_cantillana_dam
-          label: H08 Cantillana dam
+          label: Cantillana dam
           icon: mdi:dam
           color: &alert_color >
             {{ {'green': 'green', 'yellow': 'yellow', 'orange': 'orange', 'red': 'red'}
@@ -48,123 +49,114 @@
             {% set eps = 1 if u == 'm³/s' else 0.01 %}
             {{ states(entity) }} {{ u }} {{ '▲' if t > eps else '▼' if t < -eps else '' }}
           tap_action: {action: more-info}
-          style: {left: 85%, top: 8%}
+          style: {left: 84%, top: 14%}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h09_alcala_del_rio_dam
-          label: H09 Alcalá del Río dam
+          label: Alcalá del Río dam
           icon: mdi:dam
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 62%, top: 28%}
+          style: {left: 80%, top: 27%}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_a33_rivera_de_huelva_guillena
-          label: A33 Guillena
+          label: Guillena
           icon: mdi:waves
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 30%, top: 8%}
+          style: {left: 18%, top: 8%}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_m09_guadalquivir_sevilla
-          label: M09 Sevilla
+          label: Sevilla
           icon: mdi:waves
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 14%, top: 47%}
-        # Guadaíra, upstream → home
-        - type: custom:mushroom-template-badge
-          entity: sensor.saih_m07_guadaira_arahal
-          label: M07 Arahal
-          icon: mdi:waves
-          color: *alert_color
-          content: *gauge_content
-          tap_action: {action: more-info}
-          style: {left: 88%, top: 80%}
-        - type: custom:mushroom-template-badge
-          entity: sensor.saih_m54_guadaira_alcala_2
-          label: M54 Alcalá (upstream)
-          icon: mdi:waves
-          color: *alert_color
-          content: *gauge_content
-          tap_action: {action: more-info}
-          style: {left: 70%, top: 64%}
-        - type: custom:mushroom-template-badge
-          entity: sensor.saih_a19_guadaira_alcala
-          label: A19 Alcalá
-          icon: mdi:waves
-          color: *alert_color
-          content: *gauge_content
-          tap_action: {action: more-info}
-          style: {left: 52%, top: 80%}
+          style: {left: 18%, top: 48%}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_a55_guadaira_sevilla
-          label: A55 Home
+          label: Home
           icon: mdi:home-flood
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 34%, top: 64%}
-        # Rain gauges
+          style: {left: 18%, top: 64%}
         - type: custom:mushroom-template-badge
+          entity: sensor.saih_a19_guadaira_alcala
+          label: Alcalá
+          icon: mdi:waves
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 78%, top: 60%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_m54_guadaira_alcala_2
+          label: Alcalá (east)
+          icon: mdi:waves
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 84%, top: 70%}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_m07_guadaira_arahal
+          label: Arahal
+          icon: mdi:waves
+          color: *alert_color
+          content: *gauge_content
+          tap_action: {action: more-info}
+          style: {left: 62%, top: 93%}
+        - type: state-label
           entity: sensor.saih_m25_rain_almaden_de_la_plata
-          label: Almadén (rain)
-          icon: mdi:weather-pouring
-          color: &rain_color >
-            {{ 'blue' if state_attr(entity, 'current_hour') | float(0) > 0 else 'disabled' }}
-          content: &rain_content >
-            {{ state_attr(entity, 'current_hour') }} mm/h · {{ states(entity) }} today
-          tap_action: {action: more-info}
-          style: {left: 10%, top: 22%}
-        - type: custom:mushroom-template-badge
+          attribute: current_hour
+          prefix: "Almadén "
+          suffix: " mm/h"
+          style: {left: 40%, top: 3%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+        - type: state-label
           entity: sensor.saih_m09_rain_sevilla
-          label: Sevilla (rain)
-          icon: mdi:weather-pouring
-          color: *rain_color
-          content: *rain_content
-          tap_action: {action: more-info}
-          style: {left: 11%, top: 72%}
-        - type: custom:mushroom-template-badge
+          attribute: current_hour
+          prefix: "Sevilla "
+          suffix: " mm/h"
+          style: {left: 10%, top: 40%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+        - type: state-label
           entity: sensor.saih_p28_rain_el_viso_del_alcor
-          label: El Viso (rain)
-          icon: mdi:weather-pouring
-          color: *rain_color
-          content: *rain_content
-          tap_action: {action: more-info}
-          style: {left: 80%, top: 45%}
-        - type: custom:mushroom-template-badge
+          attribute: current_hour
+          prefix: "El Viso "
+          suffix: " mm/h"
+          style: {left: 80%, top: 40%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+        - type: state-label
           entity: sensor.saih_p67_rain_marchena
-          label: Marchena (rain)
-          icon: mdi:weather-pouring
-          color: *rain_color
-          content: *rain_content
-          tap_action: {action: more-info}
-          style: {left: 89%, top: 60%}
-        - type: custom:mushroom-template-badge
+          attribute: current_hour
+          prefix: "Marchena "
+          suffix: " mm/h"
+          style: {left: 85%, top: 50%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+        - type: state-label
           entity: sensor.saih_p65_rain_utrera
-          label: Utrera (rain)
-          icon: mdi:weather-pouring
-          color: *rain_color
-          content: *rain_content
-          tap_action: {action: more-info}
-          style: {left: 66%, top: 95%}
-        - type: custom:mushroom-template-badge
+          attribute: current_hour
+          prefix: "Utrera "
+          suffix: " mm/h"
+          style: {left: 42%, top: 88%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+        - type: state-label
           entity: sensor.saih_p31_rain_moron
-          label: Morón (rain)
-          icon: mdi:weather-pouring
-          color: *rain_color
-          content: *rain_content
-          tap_action: {action: more-info}
-          style: {left: 89%, top: 95%}
+          attribute: current_hour
+          prefix: "Morón "
+          suffix: " mm/h"
+          style: {left: 88%, top: 97%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
 
 # ── Rain: radar (what is coming) + SAIH gauges (what fell) ───────────────────
 # The radar is the AEMET integration's image entity. Enable it in
 # Settings → Devices & services → AEMET → Configure → "Gather data from AEMET weather radar".
-- type: picture-entity
-  entity: image.aemet_weather_radar
-  name: AEMET radar
-  show_state: false
+# Hidden (instead of "entity not found") until that option is enabled.
+- type: conditional
+  conditions:
+    - condition: state
+      entity: image.aemet_weather_radar
+      state_not: [unknown, unavailable]
+  card:
+    type: picture-entity
+    entity: image.aemet_weather_radar
+    name: AEMET radar
+    show_state: false
 
 - type: custom:apexcharts-card
   graph_span: 48h
@@ -174,6 +166,7 @@
   all_series_config:
     type: column
     attribute: current_hour
+    unit: mm/h
     group_by:
       func: max
       duration: 1h
@@ -199,6 +192,7 @@
   all_series_config:
     type: column
     attribute: current_hour
+    unit: mm/h
     group_by:
       func: max
       duration: 1h
@@ -215,7 +209,7 @@
   cards:
     - type: custom:apexcharts-card
       graph_span: 72h
-      header: {show: true, title: M07 Guadaíra · Arahal (m), show_states: true, colorize_states: true}
+      header: {show: true, title: "M07 Guadaíra · Arahal (m)", show_states: true, colorize_states: true}
       apex_config: {chart: {height: 170}}
       series:
         - {entity: sensor.saih_m07_guadaira_arahal, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
@@ -223,7 +217,7 @@
         - {entity: sensor.saih_m07_guadaira_arahal, attribute: threshold_red, name: Red, color: '#e53935', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
     - type: custom:apexcharts-card
       graph_span: 72h
-      header: {show: true, title: M54 Guadaíra · Alcalá upstream (m), show_states: true, colorize_states: true}
+      header: {show: true, title: "M54 Guadaíra · Alcalá upstream (m)", show_states: true, colorize_states: true}
       apex_config: {chart: {height: 170}}
       series:
         - {entity: sensor.saih_m54_guadaira_alcala_2, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
@@ -231,7 +225,7 @@
         - {entity: sensor.saih_m54_guadaira_alcala_2, attribute: threshold_red, name: Red, color: '#e53935', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
     - type: custom:apexcharts-card
       graph_span: 72h
-      header: {show: true, title: A19 Guadaíra · Alcalá (m), show_states: true, colorize_states: true}
+      header: {show: true, title: "A19 Guadaíra · Alcalá (m)", show_states: true, colorize_states: true}
       apex_config: {chart: {height: 170}}
       series:
         - {entity: sensor.saih_a19_guadaira_alcala, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
@@ -239,7 +233,7 @@
         - {entity: sensor.saih_a19_guadaira_alcala, attribute: threshold_red, name: Red, color: '#e53935', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
     - type: custom:apexcharts-card
       graph_span: 72h
-      header: {show: true, title: A55 Guadaíra · Sevilla, home (m), show_states: true, colorize_states: true}
+      header: {show: true, title: "A55 Guadaíra · Sevilla, home (m)", show_states: true, colorize_states: true}
       apex_config: {chart: {height: 170}}
       series:
         - {entity: sensor.saih_a55_guadaira_sevilla, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
@@ -258,15 +252,17 @@
   series:
     - entity: sensor.saih_a19_guadaira_alcala
       attribute: flow_m3s
+      unit: m³/s
       name: A19 Alcalá
     - entity: sensor.saih_a55_guadaira_sevilla
       attribute: flow_m3s
+      unit: m³/s
       name: A55 Home
 
 # ── Guadalquivir: Sevilla (tidal) and what comes down to La Algaba ───────────
 - type: custom:apexcharts-card
   graph_span: 48h
-  header: {show: true, title: M09 Guadalquivir · Sevilla (m above sea level), show_states: true, colorize_states: true}
+  header: {show: true, title: "M09 Guadalquivir · Sevilla (m above sea level)", show_states: true, colorize_states: true}
   series:
     - {entity: sensor.saih_m09_guadalquivir_sevilla, name: Level, color: '#1e88e5', type: area, opacity: 0.25}
     - {entity: sensor.saih_m09_guadalquivir_sevilla, attribute: threshold_yellow, name: Yellow, color: '#fbc02d', stroke_width: 1, stroke_dash: 4, curve: stepline, show: {in_header: false}}
@@ -288,6 +284,7 @@
       name: H09 Alcalá del Río
     - entity: sensor.saih_a33_rivera_de_huelva_guillena
       attribute: flow_m3s
+      unit: m³/s
       name: A33 Rivera de Huelva
 
 # ── Map (official CHG coordinates) ───────────────────────────────────────────

@@ -1,58 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" font-family="Roboto, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900" font-family="Roboto, Arial, sans-serif">
   <!--
-    Schematic of the rivers around home, used as the background of the
-    picture-elements card in ui-views/Rivers.yaml (packages/saih_guadalquivir).
-    Not to scale. 1 % of the card = 10 units horizontally, 6 units vertically:
-    a badge at left: 52%, top: 80% sits on x=520, y=480.
+    Schematic of the rivers around home, background of the picture-elements card
+    in ui-views/Rivers.yaml (packages/saih_guadalquivir). Not to scale.
+    Portrait, sized for a phone. A badge at left: L%, top: T% sits on
+    x = 6·L, y = 9·T (e.g. left 50%, top 50% → x 300, y 450).
     Transparent background and grey text so it works on light and dark themes.
   -->
   <style>
     .bed   { fill: none; stroke: #4fa3e0; stroke-opacity: .25; stroke-linecap: round; stroke-linejoin: round; }
     .flow  { fill: none; stroke: #4fa3e0; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 2 16;
              animation: flow 1.6s linear infinite; }
-    .trib  { stroke-width: 8; }
-    .main  { stroke-width: 14; }
+    .trib  { stroke-width: 9; }
+    .main  { stroke-width: 15; }
     .node  { fill: #4fa3e0; stroke: #fff; stroke-width: 2; }
     .lead  { stroke: #8a8f98; stroke-width: 1.5; stroke-dasharray: 3 3; }
-    .river { fill: #4fa3e0; font-size: 22px; font-weight: 600; font-style: italic; }
-    .place { fill: #8a8f98; font-size: 17px; }
+    .river { fill: #4fa3e0; font-size: 24px; font-weight: 600; font-style: italic; }
+    .place { fill: #8a8f98; font-size: 20px; }
     .home  { fill: #e0a03a; }
     @keyframes flow { to { stroke-dashoffset: -18; } }
   </style>
 
-  <!-- Guadalquivir: Cantillana (H08) → Alcalá del Río dam (H09) → La Algaba → Sevilla (M09) → sea -->
-  <path id="guadalquivir" class="bed main" d="M 1000 110 L 850 110 L 620 110 C 540 110 500 150 470 190 C 420 260 300 270 240 300 C 190 330 180 420 200 600"/>
-  <path class="flow" d="M 1000 110 L 850 110 L 620 110 C 540 110 500 150 470 190 C 420 260 300 270 240 300 C 190 330 180 420 200 600"/>
-  <text class="river" x="760" y="150">Guadalquivir</text>
+  <!-- Guadalquivir: Cantillana (H08) → Alcalá del Río (H09) → La Algaba → Sevilla (M09) → sea -->
+  <path class="bed main"  d="M 600 60 L 470 60 C 400 60 400 160 380 200 C 360 250 330 280 300 310 C 260 350 240 380 230 430 C 220 520 200 600 170 680 C 150 740 150 820 150 900"/>
+  <path class="flow"      d="M 600 60 L 470 60 C 400 60 400 160 380 200 C 360 250 330 280 300 310 C 260 350 240 380 230 430 C 220 520 200 600 170 680 C 150 740 150 820 150 900"/>
+  <text class="river" x="40" y="870">Guadalquivir</text>
 
   <!-- Rivera de Huelva: Guillena (A33) → joins near La Algaba -->
-  <path class="bed trib" d="M 350 0 L 350 60 C 350 120 400 160 455 195"/>
-  <path class="flow" d="M 350 0 L 350 60 C 350 120 400 160 455 195"/>
-  <text class="river" x="368" y="125" font-size="17">Rivera de Huelva</text>
+  <path class="bed trib" d="M 110 0 L 110 120 C 110 220 220 290 300 312"/>
+  <path class="flow"     d="M 110 0 L 110 120 C 110 220 220 290 300 312"/>
+  <text class="river" x="120" y="260" font-size="19">Rivera de Huelva</text>
 
-  <!-- Guadaíra: Arahal (M07) → Alcalá (M54, A19) → Sevilla / home (A55) → joins the Guadalquivir -->
-  <path class="bed main" d="M 1000 430 L 880 430 L 700 430 L 520 430 L 320 430 C 260 430 220 460 195 500"/>
-  <path class="flow" d="M 1000 430 L 880 430 L 700 430 L 520 430 L 320 430 C 260 430 220 460 195 500"/>
-  <text class="river" x="650" y="490">Guadaíra</text>
+  <!-- Guadaíra: Arahal (M07) → Alcalá (M54, A19) → home (A55) → joins the Guadalquivir -->
+  <path class="bed main" d="M 600 840 L 520 780 L 440 700 L 380 620 C 350 580 300 560 270 570 C 230 585 200 630 180 660"/>
+  <path class="flow"     d="M 600 840 L 520 780 L 440 700 L 380 620 C 350 580 300 560 270 570 C 230 585 200 630 180 660"/>
+  <text class="river" x="290" y="705" font-size="22">Guadaíra</text>
 
-  <!-- Gauge nodes on the rivers, with leader lines to their badges -->
-  <line class="lead" x1="850" y1="110" x2="850" y2="48"/>   <circle class="node" cx="850" cy="110" r="7"/>  <!-- H08 -->
-  <line class="lead" x1="620" y1="110" x2="620" y2="168"/>  <circle class="node" cx="620" cy="110" r="7"/>  <!-- H09 -->
-  <line class="lead" x1="350" y1="60"  x2="300" y2="48"/>   <circle class="node" cx="350" cy="60"  r="6"/>  <!-- A33 -->
-  <line class="lead" x1="240" y1="300" x2="140" y2="282"/>  <circle class="node" cx="240" cy="300" r="7"/>  <!-- M09 -->
-  <line class="lead" x1="880" y1="430" x2="880" y2="480"/>  <circle class="node" cx="880" cy="430" r="7"/>  <!-- M07 -->
-  <line class="lead" x1="700" y1="430" x2="700" y2="384"/>  <circle class="node" cx="700" cy="430" r="7"/>  <!-- M54 -->
-  <line class="lead" x1="520" y1="430" x2="520" y2="480"/>  <circle class="node" cx="520" cy="430" r="7"/>  <!-- A19 -->
-  <line class="lead" x1="320" y1="430" x2="340" y2="384"/>  <circle class="node" cx="320" cy="430" r="9"/>  <!-- A55 home -->
+  <!-- Gauge nodes, with leader lines to their badges -->
+  <line class="lead" x1="470" y1="60"  x2="504" y2="100"/>  <circle class="node" cx="470" cy="60"  r="8"/>  <!-- H08 -->
+  <line class="lead" x1="380" y1="200" x2="470" y2="230"/>  <circle class="node" cx="380" cy="200" r="8"/>  <!-- H09 -->
+  <line class="lead" x1="110" y1="120" x2="110" y2="80"/>   <circle class="node" cx="110" cy="120" r="7"/>  <!-- A33 -->
+  <line class="lead" x1="230" y1="430" x2="110" y2="430"/>  <circle class="node" cx="230" cy="430" r="8"/>  <!-- M09 -->
+  <line class="lead" x1="520" y1="780" x2="420" y2="830"/>  <circle class="node" cx="520" cy="780" r="8"/>  <!-- M07 -->
+  <line class="lead" x1="440" y1="700" x2="470" y2="650"/>  <circle class="node" cx="440" cy="700" r="8"/>  <!-- M54 -->
+  <line class="lead" x1="380" y1="620" x2="470" y2="560"/>  <circle class="node" cx="380" cy="620" r="8"/>  <!-- A19 -->
+  <line class="lead" x1="270" y1="570" x2="200" y2="576"/>  <circle class="node" cx="270" cy="570" r="10"/> <!-- A55 home -->
 
   <!-- Places -->
-  <text class="place" x="480" y="235">La Algaba</text>
-  <text class="place" x="250" y="250">Sevilla</text>
-  <text class="place" x="30"  y="590">→ Sanlúcar / mar</text>
+  <text class="place" x="320" y="335">La Algaba</text>
+  <text class="place" x="250" y="410">Sevilla</text>
 
   <!-- Home: Jardines de Hércules, next to A55 -->
-  <g class="home" transform="translate(300 450)">
+  <g class="home" transform="translate(222 596) scale(1.1)">
     <path d="M 20 0 L 40 16 L 34 16 L 34 34 L 6 34 L 6 16 L 0 16 Z"/>
   </g>
-  <text class="place" x="350" y="478">Casa</text>
+  <text class="place" x="268" y="625">Casa</text>
 </svg>

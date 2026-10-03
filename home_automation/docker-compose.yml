@@ -12,7 +12,8 @@ services:
         volumes:
             # Config files
             - ./home_assistant/config/:/config/
-            - ./home_assistant/HA-custom-www/my-config/:/HA-custom-www/my-config/
+            # Served as /local/my_config/ (config/www -> /HA-custom-www)
+            - ./home_assistant/HA-custom-www/my_config/:/HA-custom-www/my_config/:ro
             # /run/dbus was mounted here to reach BlueZ on the host. The local
             # adapter is gone: BLE goes through the bluetooth_proxy on
             # man-005--esphome over the network.
