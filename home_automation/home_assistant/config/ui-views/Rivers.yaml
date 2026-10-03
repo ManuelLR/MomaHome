@@ -21,7 +21,8 @@
         {% set st = state_attr('sensor.saih_worst_river_alert', 'stations') %}
         {{ 'Stations: ' ~ st if st else 'All gauges below the yellow threshold' }}
         · SAIH {{ states('sensor.saih_gauges_raw') | replace('T', ' ') }}
-      icon: mdi:alert-decagram
+      icon: >
+        {{ 'mdi:tsunami' if states('sensor.saih_worst_river_alert') == 'red' else 'mdi:alert-decagram' }}
       icon_color: >
         {{ {'green': 'green', 'yellow': 'yellow', 'orange': 'orange', 'red': 'red'}
            .get(states('sensor.saih_worst_river_alert'), 'disabled') }}
@@ -32,15 +33,16 @@
     # (HA-custom-www/public/saih_rivers.svg) draws the rivers; on top:
     # - a badge per gauge: value, ▲/▼ rising/falling over the last hour, colour = alert
     # - rain gauges: mm in the current hour, under the town name drawn in the SVG
-    # Positions: left/top % here = x/6, y/9 in the SVG viewBox (600 × 900).
+    # - reservoirs upstream of La Algaba: fill % and release
+    # Positions: left/top % = x/6, y/12.2 in the SVG viewBox (600 × 1220).
     - type: picture-elements
       # /local is cached by browsers for 31 days: bump ?v= whenever the SVG changes.
-      image: /local/public/saih_rivers.svg?v=3
+      image: /local/public/saih_rivers.svg?v=4
       elements:
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h08_cantillana_dam
           label: Cantillana
-          icon: mdi:waterfall
+          icon: mdi:pier
           color: &alert_color >
             {{ {'green': 'green', 'yellow': 'yellow', 'orange': 'orange', 'red': 'red'}
                .get(state_attr(entity, 'alert'), 'disabled') }}
@@ -50,15 +52,15 @@
             {% set eps = 1 if u == 'm³/s' else 0.01 %}
             {{ states(entity) }} {{ u }} {{ '▲' if t > eps else '▼' if t < -eps else '' }}
           tap_action: {action: more-info}
-          style: {left: 80%, top: 14%, width: max-content}
+          style: {left: 80%, top: 36.6%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h09_alcala_del_rio_dam
           label: Alcalá del Río
-          icon: mdi:waterfall
+          icon: mdi:pier
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 78%, top: 27%, width: max-content}
+          style: {left: 78%, top: 46.1%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_a33_rivera_de_huelva_guillena
           label: Guillena
@@ -66,7 +68,7 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 18%, top: 8%, width: max-content}
+          style: {left: 18%, top: 32.1%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_m09_guadalquivir_sevilla
           label: Guadalquivir
@@ -74,7 +76,7 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 18%, top: 48%, width: max-content}
+          style: {left: 18%, top: 61.6%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_a55_guadaira_sevilla
           label: Home
@@ -82,7 +84,7 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 18%, top: 64%, width: max-content}
+          style: {left: 18%, top: 73.4%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_a19_guadaira_alcala
           label: Alcalá
@@ -90,7 +92,7 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 76%, top: 60%, width: max-content}
+          style: {left: 76%, top: 70.5%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_m54_guadaira_alcala_2
           label: Alcalá (east)
@@ -98,7 +100,7 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 80%, top: 70%, width: max-content}
+          style: {left: 80%, top: 77.9%, width: max-content}
         - type: custom:mushroom-template-badge
           entity: sensor.saih_m07_guadaira_arahal
           label: Arahal
@@ -106,37 +108,93 @@
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
-          style: {left: 62%, top: 93%, width: max-content}
+          style: {left: 62%, top: 94.8%, width: max-content}
+        # Reservoirs upstream of La Algaba. Colour only flags two things:
+        # red = little water left (< 30 %), blue = releasing a lot (>= 10 m³/s);
+        # grey otherwise. Open boom gate = releasing a lot.
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_e61_aracena
+          label: Aracena
+          icon: &reservoir_icon >
+            {{ 'mdi:boom-gate-up' if states(entity ~ '_release') | float(0) >= 10 else 'mdi:boom-gate' }}
+          color: &reservoir_color >
+            {% set p = states(entity) | float(-1) %}
+            {% set r = states(entity ~ '_release') | float(0) %}
+            {{ 'blue' if r >= 10 else 'red' if 0 <= p < 30 else 'disabled' }}
+          content: &reservoir_content >
+            {{ states(entity) | float(0) | round(0) | int }} % · {{ states(entity ~ '_release') }} m³/s
+          tap_action: {action: more-info}
+          style: {left: 16%, top: 2.9%, width: max-content}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_e62_zufre
+          label: Zufre
+          icon: *reservoir_icon
+          color: *reservoir_color
+          content: *reservoir_content
+          tap_action: {action: more-info}
+          style: {left: 16%, top: 8.6%, width: max-content}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_e63_la_minilla
+          label: La Minilla
+          icon: *reservoir_icon
+          color: *reservoir_color
+          content: *reservoir_content
+          tap_action: {action: more-info}
+          style: {left: 16%, top: 14.3%, width: max-content}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_e65_el_gergal
+          label: El Gergal
+          icon: *reservoir_icon
+          color: *reservoir_color
+          content: *reservoir_content
+          tap_action: {action: more-info}
+          style: {left: 16%, top: 20.1%, width: max-content}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_e64_cala
+          label: Cala
+          icon: *reservoir_icon
+          color: *reservoir_color
+          content: *reservoir_content
+          tap_action: {action: more-info}
+          style: {left: 82%, top: 3.3%, width: max-content}
+        - type: custom:mushroom-template-badge
+          entity: sensor.saih_e58_melonares
+          label: Melonares
+          icon: *reservoir_icon
+          color: *reservoir_color
+          content: *reservoir_content
+          tap_action: {action: more-info}
+          style: {left: 82%, top: 13.1%, width: max-content}
         - type: state-label
           entity: sensor.saih_m25_rain_almaden_de_la_plata
           attribute: current_hour
           suffix: " mm/h"
-          style: {left: 45%, top: 6%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 55%, top: 3.7%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_m09_rain_sevilla
           attribute: current_hour
           suffix: " mm/h"
-          style: {left: 48%, top: 48.5%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 48%, top: 62%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p28_rain_el_viso_del_alcor
           attribute: current_hour
           suffix: " mm/h"
-          style: {left: 80%, top: 41%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 80%, top: 56.5%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p67_rain_marchena
           attribute: current_hour
           suffix: " mm/h"
-          style: {left: 85%, top: 51.5%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 85%, top: 64.2%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p65_rain_utrera
           attribute: current_hour
           suffix: " mm/h"
-          style: {left: 41.7%, top: 89%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 41.7%, top: 91.9%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
         - type: state-label
           entity: sensor.saih_p31_rain_moron
           attribute: current_hour
           suffix: " mm/h"
-          style: {left: 88.3%, top: 98%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
+          style: {left: 88.3%, top: 98.5%, font-size: 11px, color: '#4fa3e0', padding: 0, white-space: nowrap}
 
 # ── Rain: radar (what is coming) + SAIH gauges (what fell) ───────────────────
 # The radar is the AEMET integration's image entity. Enable it in
@@ -320,9 +378,7 @@
             {{ states(entity) | float(0) | round(1) }} %
             · releasing {{ states(entity ~ '_release') }} m³/s
           icon: mdi:waves-arrow-up
-          icon_color: &reservoir_color >
-            {% set p = states(entity) | float(-1) %}
-            {{ 'disabled' if p < 0 else 'red' if p < 30 else 'orange' if p < 50 else 'blue' }}
+          icon_color: *reservoir_color
           tap_action: {action: more-info}
         - type: custom:mushroom-template-card
           entity: sensor.saih_e62_zufre

@@ -49,8 +49,12 @@ Dashboard: the **Rivers** view, `ui-views/Rivers.yaml`. Its schematic background
 `HA-custom-www/public/saih_rivers.svg`, served as `/local/public/saih_rivers.svg`
 through the read-only `HA-custom-www/public` volume in `docker-compose.yml`.
 Anything under `/local/` is reachable **without login**, so that folder must only
-hold files that can be public. The live values
+hold files that can be public. Browsers cache `/local/` for 31 days, so bump
+the `?v=` in `Rivers.yaml` whenever the SVG changes. The live values
 are mushroom template badges placed on top of it. It is portrait so it fits a phone.
+The top band shows the reservoirs whose water reaches La Algaba (Rivera de Huelva
+chain, Cala, and Melonares on the Viar). Their colour flags only two things: red =
+little water left (< 30 %), blue + open boom gate = releasing a lot (≥ 10 m³/s).
 
 The radar is the AEMET integration's `image.aemet_weather_radar`. It only exists
 after enabling Settings → Devices & services → AEMET → Configure →
