@@ -34,12 +34,13 @@
     # - rain gauges: mm in the current hour, under the town name drawn in the SVG
     # Positions: left/top % here = x/6, y/9 in the SVG viewBox (600 × 900).
     - type: picture-elements
-      image: /local/public/saih_rivers.svg
+      # /local is cached by browsers for 31 days: bump ?v= whenever the SVG changes.
+      image: /local/public/saih_rivers.svg?v=3
       elements:
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h08_cantillana_dam
           label: Cantillana
-          icon: mdi:hydro-power
+          icon: mdi:waterfall
           color: &alert_color >
             {{ {'green': 'green', 'yellow': 'yellow', 'orange': 'orange', 'red': 'red'}
                .get(state_attr(entity, 'alert'), 'disabled') }}
@@ -53,7 +54,7 @@
         - type: custom:mushroom-template-badge
           entity: sensor.saih_h09_alcala_del_rio_dam
           label: Alcalá del Río
-          icon: mdi:hydro-power
+          icon: mdi:waterfall
           color: *alert_color
           content: *gauge_content
           tap_action: {action: more-info}
