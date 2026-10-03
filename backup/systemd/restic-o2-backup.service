@@ -1,0 +1,15 @@
+[Unit]
+Description=Off-site restic backup to O2 Cloud
+Wants=network-online.target
+After=network-online.target docker.service
+Requires=docker.service
+OnFailure=restic-o2-notify@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=@BACKUP_DIR@/backup.sh
+# Stay out of the way of the containers being backed up.
+Nice=10
+IOSchedulingClass=idle
+# The first upload can take days; later runs are incremental.
+TimeoutStartSec=infinity

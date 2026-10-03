@@ -1,0 +1,11 @@
+[Unit]
+Description=Nightly off-site restic backup to O2 Cloud
+
+[Timer]
+OnCalendar=*-*-* 03:30
+RandomizedDelaySec=15min
+# Run at boot if the server was off at the scheduled time.
+Persistent=true
+
+[Install]
+WantedBy=timers.target

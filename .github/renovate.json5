@@ -70,6 +70,19 @@
       enabled: false
     },
     {
+      // The off-site backup's rclone comes from an unreviewed PR branch, so
+      // each bump is code nobody upstream has approved yet.
+      matchDatasources: [
+        'git-refs'
+      ],
+      matchPackageNames: [
+        'fballiano/rclone'
+      ],
+      prBodyNotes: [
+        ':warning: This rclone is built from the unmerged Funambol backend (https://github.com/rclone/rclone/pull/9536). Read the new commits on the branch before merging, then rebuild the image on the server and run a manual backup.'
+      ]
+    },
+    {
       // Tracked through github-releases (see custom managers) so the PR carries
       // release notes and every image resolves to the same version. Drop the
       // duplicate deps the built-in docker manager finds on those lines.
@@ -147,6 +160,18 @@
       packageNameTemplate: '{{#if packageName}}{{{packageName}}}{{else}}{{{depName}}}{{/if}}',
       versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}',
       extractVersionTemplate: '{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}'
+    },
+    {
+      // rclone built from the unmerged Funambol / O2 Cloud backend (backup/).
+      // Follows the head of the PR branch, so a PR opens whenever it moves.
+      customType: 'regex',
+      managerFilePatterns: [
+        '/(^|/)backup/Dockerfile$/'
+      ],
+      matchStrings: [
+        '# renovate: datasource=git-refs depName=(?<depName>\\S+) packageName=(?<packageName>\\S+) branch=(?<currentValue>\\S+)\\s*\\nARG RCLONE_COMMIT=(?<currentDigest>[0-9a-f]{40})'
+      ],
+      datasourceTemplate: 'git-refs'
     },
     {
       // Custom regex for Traefik (using GitHub releases instead of Docker)

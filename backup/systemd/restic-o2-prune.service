@@ -1,0 +1,13 @@
+[Unit]
+Description=Prune and check the off-site restic repository in O2 Cloud
+Wants=network-online.target
+After=network-online.target docker.service
+Requires=docker.service
+OnFailure=restic-o2-notify@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=@BACKUP_DIR@/prune.sh
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=infinity
