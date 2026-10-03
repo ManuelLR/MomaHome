@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="1220" viewBox="0 0 600 1220" font-family="Roboto, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="1260" viewBox="0 0 600 1260" font-family="Roboto, Arial, sans-serif">
   <!--
     Schematic of the rivers around home, background of the picture-elements card
     in ui-views/Rivers.yaml (packages/saih_guadalquivir). Not to scale.
     Portrait, sized for a phone. A badge at left: L%, top: T% sits on
-    x = 6·L, y = 12.2·T (e.g. left 50%, top 50% → x 300, y 610).
+    x = 6·L, y = 12.6·T (e.g. left 50%, top 50% → x 300, y 630).
     Top band (y 0–320): reservoirs upstream of La Algaba. Below it, the rivers,
-    drawn on a 600 × 900 grid shifted down by 320.
+    drawn on a 600 × 900 grid shifted down by 320, with 40 spare at the bottom.
     Transparent background and grey text so it works on light and dark themes.
   -->
   <style>
@@ -40,10 +40,10 @@
   <line class="lead" x1="200" y1="105" x2="96"  y2="105"/>  <circle class="node" cx="200" cy="105" r="7"/>  <!-- E62 Zufre -->
   <line class="lead" x1="200" y1="175" x2="96"  y2="175"/>  <circle class="node" cx="200" cy="175" r="7"/>  <!-- E63 La Minilla -->
   <line class="lead" x1="200" y1="245" x2="96"  y2="245"/>  <circle class="node" cx="200" cy="245" r="7"/>  <!-- E65 El Gergal -->
-  <line class="lead" x1="420" y1="90"  x2="492" y2="40"/>   <circle class="node" cx="420" cy="90"  r="7"/>  <!-- E64 Cala -->
-  <line class="lead" x1="545" y1="230" x2="492" y2="160"/>  <circle class="node" cx="545" cy="230" r="7"/>  <!-- E58 Melonares -->
+  <line class="lead" x1="420" y1="90"  x2="400" y2="100"/>   <circle class="node" cx="420" cy="90"  r="7"/>  <!-- E64 Cala -->
+  <line class="lead" x1="545" y1="230" x2="492" y2="178"/>  <circle class="node" cx="545" cy="230" r="7"/>  <!-- E58 Melonares -->
 
-  <text class="place rain" x="340" y="70">Almadén</text>
+  <text class="place rain" x="500" y="22">Almadén</text>
 
   <!-- ── Rivers (600 × 900 grid, shifted down) ── -->
   <g transform="translate(0 320)">
