@@ -19,7 +19,8 @@ domain, with the admin UI and the legacy domain restricted to the home LAN.
    ```
 
 3. Copy the env template and set your domains (`GALLEY_EXTERNAL_DOMAIN` is the
-   live one, `GALLEY_LEGACY_DOMAIN` the old one being redirected):
+   live one, `GALLEY_LEGACY_DOMAIN` the old one being redirected) and the MCP
+   secret (`openssl rand -base64 48`):
 
    ```bash
    cp .env.example .env
@@ -42,6 +43,14 @@ domain, with the admin UI and the legacy domain restricted to the home LAN.
   PocketBase accepts collections by id as well as by name, so no path filter would
   close that off. What actually protects the data is PocketBase's own auth: keep a
   strong superuser password and scope the Home Assistant service token.
+- **MCP server (`galley-mcp`).** A second container, built from `src/mcp`, that
+  claude.ai uses as a custom connector (`https://<GALLEY_EXTERNAL_DOMAIN>/mcp`).
+  It owns `/mcp`, `/oauth/*` and `/.well-known/oauth-*` on the public domain
+  (the `galley` router excludes them) and is public on purpose, with its own
+  OAuth sign-in against the galley account. It has no volume and talks to
+  PocketBase at `http://galley:8090` as the signed-in user. Rotating
+  `GALLEY_MCP_SECRET` disconnects every client. Details in
+  [`src/docs/mcp.md`](src/docs/mcp.md).
 - **Domain move.** `GALLEY_LEGACY_DOMAIN` answers only on the LAN and 302s to
   `GALLEY_EXTERNAL_DOMAIN`, preserving path and query. It is meant for humans and
   bookmarks, not for the PWA: the service worker serves the shell from cache and
