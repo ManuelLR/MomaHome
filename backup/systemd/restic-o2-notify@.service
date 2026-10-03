@@ -1,0 +1,6 @@
+[Unit]
+Description=Mail the failure of %i
+
+[Service]
+Type=oneshot
+ExecStart=@BACKUP_DIR@/notify-failure.sh %i

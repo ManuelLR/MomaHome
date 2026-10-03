@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly prune and check of the off-site restic repository
+
+[Timer]
+# Sunday afternoon: hours away from the nightly backup (see prune.sh).
+OnCalendar=Sun *-*-* 15:00
+RandomizedDelaySec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,98 @@
+#!/usr/bin/perl
+# Logwatch service script for the off-site restic backup to O2 Cloud.
+# Install as /etc/logwatch/scripts/services/restic-o2 (see ../README.md).
+#
+# Reads the journal of restic-o2-backup.service and restic-o2-prune.service
+# (with --output=cat) on stdin and prints, per run: status, duration, the
+# snapshot saved, what was added, what prune removed, the check result, and
+# any error lines. Silent when there was no run in the report range.
+
+use strict;
+use warnings;
+
+my $Detail = $ENV{'LOGWATCH_DETAIL_LEVEL'} || 0;
+
+my @runs;      # { kind, status, duration, lines => [] }
+my $run;       # current run
+my %errors;    # error line => count
+my %other;     # unrecognised line => count (only shown at high detail)
+
+sub start_run {
+    my ($kind) = @_;
+    $run = { kind => $kind, status => 'unfinished', duration => '?', lines => [] };
+    push @runs, $run;
+}
+
+sub note {
+    my ($text) = @_;
+    start_run('unknown') unless $run;
+    push @{ $run->{lines} }, $text;
+}
+
+sub human_duration {
+    my ($s) = @_;
+    return sprintf('%dh%02dm', int($s / 3600), int($s % 3600 / 60)) if $s >= 3600;
+    return sprintf('%dm%02ds', int($s / 60), $s % 60) if $s >= 60;
+    return "${s}s";
+}
+
+while (defined(my $line = <STDIN>)) {
+    chomp $line;
+    $line =~ s/\s+$//;
+    next if $line eq '';
+
+    if ($line =~ /^restic-o2: (backup|prune) started/) {
+        start_run($1);
+    } elsif ($line =~ /^restic-o2: (backup|prune) finished status=(\S+) duration=(\d+)s/) {
+        start_run($1) unless $run && $run->{kind} eq $1;
+        $run->{status} = $2;
+        $run->{duration} = human_duration($3);
+        $errors{"$1 run finished with status $2"}++ if $2 ne 'OK';
+        undef $run;
+    } elsif ($line =~ /^restic-o2: (checking data subset \S+)/) {
+        note($1);
+    } elsif ($line =~ /^snapshot (\w+) saved/
+          || $line =~ /^(Files|Dirs):\s+/
+          || $line =~ /^Added to the repository:/
+          || $line =~ /^processed \d+ files/
+          || $line =~ /^(keep|remove) \d+ snapshots/
+          || $line =~ /^\d+ snapshots have been removed/
+          || $line =~ /^(this removes|total prune|remaining|unused size after prune):/
+          || $line =~ /^no errors were found/) {
+        $line =~ s/\s{2,}/ /g;
+        note($line);
+    } elsif ($line =~ /^(Fatal|error|ERROR)\b/i
+          || $line =~ /\b(ERROR|CRITICAL)\s*:/
+          || $line =~ /^(Warning|unable to|could not|failed)/i
+          || $line =~ /repository contains errors/
+          || $line =~ /does not exist, skipping$/) {
+        $errors{$line}++;
+    } else {
+        $other{$line}++;
+    }
+}
+
+exit 0 unless @runs || %errors;
+
+foreach my $r (@runs) {
+    printf "  %-7s %-12s %s\n", $r->{kind}, $r->{status}, $r->{duration};
+    print "      $_\n" foreach @{ $r->{lines} };
+}
+
+if (%errors) {
+    print "\n  Errors and warnings:\n";
+    foreach my $e (sort keys %errors) {
+        my $n = $errors{$e};
+        print "      $e" . ($n > 1 ? " ($n times)" : '') . "\n";
+    }
+}
+
+if ($Detail >= 10 && %other) {
+    print "\n  Other lines:\n";
+    foreach my $o (sort keys %other) {
+        my $n = $other{$o};
+        print "      $o" . ($n > 1 ? " ($n times)" : '') . "\n";
+    }
+}
+
+exit 0;
