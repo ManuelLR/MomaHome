@@ -1,0 +1,40 @@
+services:
+  restic:
+    # Off-site, encrypted, versioned copy in O2 Cloud. Not a daemon: backup.sh
+    # and prune.sh (driven by the systemd timers in systemd/) start it with
+    # `docker compose run --rm restic <restic args>`. The profile keeps a plain
+    # `docker compose up` from starting it by accident.
+    #
+    # Host-specific settings, including the source paths, live in .env (not
+    # versioned; see .env.example).
+    build: .
+    image: momahome/restic-o2:local
+    profiles:
+      - manual
+    # restic records the hostname in every snapshot and retention groups by it.
+    # A container gets a random one, so pin it.
+    hostname: ${RESTIC_HOST:?Define RESTIC_HOST in .env}
+    # Also hands any extra RCLONE_* / RESTIC_* setting in .env to the container.
+    env_file: .env
+    environment:
+      - TZ=${TZ:-UTC}
+      - RESTIC_HOST=${RESTIC_HOST}
+      - RESTIC_REPOSITORY=${RESTIC_REPOSITORY:?Define RESTIC_REPOSITORY in .env}
+      - RESTIC_PASSWORD_FILE=/secrets/restic-password
+      - RESTIC_CACHE_DIR=/cache
+      # Fewer, bigger objects: less API traffic against a slow backend, and far
+      # below the service's per-account folder limit and ~4 GB file limit.
+      - RESTIC_PACK_SIZE=64
+      - RCLONE_CONFIG=/secrets/rclone.conf
+    volumes:
+      # Read-write on purpose: the funambol backend saves its renewed session
+      # cookies back into rclone.conf (it rewrites the file through a temp file
+      # in the same directory). If it cannot, the session silently expires.
+      - ./secrets:/secrets
+      - ${CACHE_DIR:?Define CACHE_DIR in .env}:/cache
+      - ./excludes.txt:/etc/restic/excludes.txt:ro
+      # Sources, read-only and at their host paths so snapshots show real
+      # paths. backup.sh backs up exactly these three.
+      - ${BACKUP_SRC_DATA:?Define BACKUP_SRC_DATA in .env}:${BACKUP_SRC_DATA}:ro
+      - ${BACKUP_SRC_HOME:?Define BACKUP_SRC_HOME in .env}:${BACKUP_SRC_HOME}:ro
+      - ${BACKUP_SRC_DOCKER_VOLUMES:?Define BACKUP_SRC_DOCKER_VOLUMES in .env}:${BACKUP_SRC_DOCKER_VOLUMES}:ro
