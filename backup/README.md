@@ -102,8 +102,32 @@ If the session ever lapses: `docker compose run --rm --entrypoint rclone restic 
 
 ```bash
 docker compose run --rm restic init
-docker compose run --rm restic key add      # type the memorised passphrase
+```
+
+Add the memorised passphrase. A plain `restic key add` fails here: restic
+reads the new key back right after uploading it, before O2 lists it, decides
+it is broken and deletes it ("wrong password or no key found"). So add it to a
+local copy of `config` + `keys` and upload only the new key file:
+
+```bash
+docker compose run --rm -v /root/keymirror:/mirror --entrypoint sh restic -c '
+set -e
+R=${RESTIC_REPOSITORY#rclone:}
+rclone copy "$R" /mirror --include "/config" --include "/keys/**"
+ls /mirror/keys > /tmp/before
+restic -r /mirror key add                  # type the memorised passphrase
+new=$(ls /mirror/keys | grep -vxFf /tmp/before)
+rclone copy "/mirror/keys/$new" "$R/keys/"
+echo "uploaded key $new"'
+rm -rf /root/keymirror
+```
+
+A minute later, check both keys are there and that yours opens the repository:
+
+```bash
 docker compose run --rm restic key list     # two keys
+docker compose run --rm --entrypoint sh restic -c \
+    'unset RESTIC_PASSWORD_FILE; restic cat config >/dev/null && echo "passphrase OK"'
 ```
 
 ### 4. First run
