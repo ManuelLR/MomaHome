@@ -140,6 +140,14 @@
           previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P31'].previous_hour }}"
           last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['P31'].last_12h }}"
           yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['P31'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['P31'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
       - name: "SAIH P67 rain Marchena"
         unique_id: saih_p67_rain_marchena
         icon: mdi:weather-pouring
@@ -152,6 +160,14 @@
           previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P67'].previous_hour }}"
           last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['P67'].last_12h }}"
           yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['P67'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['P67'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
       - name: "SAIH M07 rain Arahal"
         unique_id: saih_m07_rain_arahal
         icon: mdi:weather-pouring
@@ -164,6 +180,14 @@
           previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['M07'].previous_hour }}"
           last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['M07'].last_12h }}"
           yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['M07'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['M07'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
       - name: "SAIH P65 rain Utrera"
         unique_id: saih_p65_rain_utrera
         icon: mdi:weather-pouring
@@ -176,6 +200,14 @@
           previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P65'].previous_hour }}"
           last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['P65'].last_12h }}"
           yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['P65'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['P65'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
       - name: "SAIH P28 rain El Viso del Alcor"
         unique_id: saih_p28_rain_el_viso_del_alcor
         icon: mdi:weather-pouring
@@ -188,6 +220,14 @@
           previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['P28'].previous_hour }}"
           last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['P28'].last_12h }}"
           yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['P28'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['P28'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
       - name: "SAIH M09 rain Sevilla"
         unique_id: saih_m09_rain_sevilla
         icon: mdi:weather-pouring
@@ -200,6 +240,14 @@
           previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['M09'].previous_hour }}"
           last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['M09'].last_12h }}"
           yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['M09'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['M09'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
       - name: "SAIH M25 rain Almadén de la Plata"
         unique_id: saih_m25_rain_almaden_de_la_plata
         icon: mdi:weather-pouring
@@ -212,6 +260,14 @@
           previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['M25'].previous_hour }}"
           last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['M25'].last_12h }}"
           yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['M25'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['M25'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
       - name: "SAIH E64 rain Cala"
         unique_id: saih_e64_rain_cala
         icon: mdi:weather-pouring
@@ -224,6 +280,14 @@
           previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['E64'].previous_hour }}"
           last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['E64'].last_12h }}"
           yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['E64'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['E64'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
       - name: "SAIH E63 rain La Minilla"
         unique_id: saih_e63_rain_la_minilla
         icon: mdi:weather-pouring
@@ -236,6 +300,34 @@
           previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['E63'].previous_hour }}"
           last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['E63'].last_12h }}"
           yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['E63'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['E63'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
+      - name: "SAIH E61 rain Aracena"
+        unique_id: saih_e61_rain_aracena
+        icon: mdi:weather-pouring
+        unit_of_measurement: "mm"
+        state_class: measurement
+        availability: "{{ 'E61' in (state_attr('sensor.saih_rain_raw', 'data') or {}) }}"
+        state: "{{ state_attr('sensor.saih_rain_raw', 'data')['E61'].today }}"
+        attributes:
+          current_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['E61'].current_hour }}"
+          previous_hour: "{{ state_attr('sensor.saih_rain_raw', 'data')['E61'].previous_hour }}"
+          last_12h: "{{ state_attr('sensor.saih_rain_raw', 'data')['E61'].last_12h }}"
+          yesterday: "{{ state_attr('sensor.saih_rain_raw', 'data')['E61'].yesterday }}"
+          # Two lines for the rivers schematic: rain in about the last hour
+          # (the SAIH "current hour" restarts at 0 every hour, so take the max
+          # with the previous one; 🌧 = raining in the current hour), then today.
+          map_label: |-
+            {%- set d = state_attr('sensor.saih_rain_raw', 'data')['E61'] -%}
+            {%- set last_hour = [d.current_hour | float(0), d.previous_hour | float(0)] | max -%}
+            {{ '🌧 ' if d.current_hour | float(0) > 0 else '' }}{{ last_hour }} mm/h
+            {{ d.today }} mm today
 
       # ── Reservoirs supplying Sevilla ──
       - name: "SAIH E58 Melonares"

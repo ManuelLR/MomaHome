@@ -38,9 +38,10 @@
       # Guadaíra basin: P31 Morón · P67 Marchena · M07 Arahal · P65 Utrera
       #   · P28 El Viso del Alcor · M09 Sevilla
       # Rivera de Huelva basin (La Algaba): M25 Almadén · E64 Cala · E63 La Minilla
+      #   · E61 Aracena
       command: >-
         python3 /config/packages/saih_guadalquivir/saih_guadalquivir.py rain
-        P31 P67 M07 P65 P28 M09 M25 E64 E63
+        P31 P67 M07 P65 P28 M09 M25 E64 E63 E61
       command_timeout: 60
       scan_interval: 300
       value_template: "{{ value_json.updated }}"
