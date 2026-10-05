@@ -37,6 +37,7 @@ summary() {
 fail() {
     summary "FAILED at $1 (log: $log)"
     {
+        echo "To: $MAIL_TO"
         echo "Subject: [restic-o2] backup FAILED at $1 on $(hostname)"
         echo
         echo "Log: $log"

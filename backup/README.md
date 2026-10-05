@@ -119,12 +119,15 @@ the cron entry and the logwatch files.
 
 ## Restore
 
+Restore into a scratch directory on the data disk, never under `/tmp`: on
+Debian trixie `/tmp` is a RAM-backed tmpfs.
+
 ```bash
 alias r='docker compose run --rm restic'
 r snapshots
 r ls latest /srv/data/apps/myapp
 r find 'some-file*'
-docker compose run --rm -v /tmp/restore:/restore restic \
+docker compose run --rm -v /srv/data/restore-tmp:/restore restic \
     restore latest --include /srv/data/apps/myapp --target /restore
 ```
 
@@ -132,7 +135,7 @@ Browse every snapshot as a directory tree (FUSE, inside the container):
 
 ```bash
 docker compose run --rm --cap-add SYS_ADMIN --device /dev/fuse \
-    -v /tmp/restore:/restore --entrypoint sh restic
+    -v /srv/data/restore-tmp:/restore --entrypoint sh restic
 mkdir /mnt/r && restic mount /mnt/r &     # then, inside
 ls /mnt/r/snapshots/latest/srv/data/
 ```
