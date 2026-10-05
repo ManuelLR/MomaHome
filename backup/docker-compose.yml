@@ -26,6 +26,9 @@ services:
       # below the service's per-account folder limit and ~4 GB file limit.
       - RESTIC_PACK_SIZE=64
       - RCLONE_CONFIG=/secrets/rclone.conf
+      # Without a terminal restic prints no progress at all until it ends;
+      # this writes a status line (percent, ETA) to the log every ~5 minutes.
+      - RESTIC_PROGRESS_FPS=0.0033
     volumes:
       # Read-write on purpose: the funambol backend saves its renewed session
       # cookies back into rclone.conf (it rewrites the file through a temp file
