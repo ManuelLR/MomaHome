@@ -20,7 +20,7 @@ It complements the local backup to an external disk, which it does not touch.
 | `docker-compose.yml` | the `restic` service: sources read-only, secrets, cache |
 | `.env.example`, `excludes.example.txt` | templates for the host settings |
 | `logwatch/` | logwatch service showing the summary lines of each run |
-| **not in git** | `.env`, `excludes.txt`, `secrets/` (`restic-password`, `rclone.conf`) |
+| **not in git** | `.env`, `excludes.txt`; the keys live in `SECRETS_DIR`, outside this checkout |
 
 ## What a run does
 
@@ -50,7 +50,7 @@ It complements the local backup to an external disk, which it does not touch.
 
 Two keys open the same repository:
 
-1. **Automation key**: random, in `secrets/restic-password`, used by cron.
+1. **Automation key**: random, in `$SECRETS_DIR/restic-password`, used by cron.
 2. **Recovery passphrase**: one you memorise, added with `restic key add`.
 
 Recovering after losing the server needs only the passphrase and the O2 login:
@@ -60,7 +60,7 @@ passphrase. No password is stored in this repo.
 ## Running as root
 
 The container runs as root to read every file whatever its owner. The sources
-are mounted read-only, there is no Docker socket, only `secrets/` and the cache
+are mounted read-only, there is no Docker socket, only `SECRETS_DIR` and the cache
 are writable, and the container only exists while a run lasts.
 
 ## Setup
@@ -78,7 +78,9 @@ cp excludes.example.txt excludes.txt  # what to leave out
 ### 2. Keys and O2 remote
 
 ```bash
-openssl rand -base64 48 > secrets/restic-password && chmod 600 secrets/restic-password
+set -a; . ./.env; set +a     # for $SECRETS_DIR below
+read -rs P && printf '%s\n' "$P" > "$SECRETS_DIR/restic-password" && unset P   # paste a long random password
+chmod 600 "$SECRETS_DIR/restic-password"
 
 docker compose run --rm --entrypoint rclone restic config
 #   n) New remote → name: o2 → storage: funambol
@@ -87,8 +89,8 @@ docker compose run --rm --entrypoint rclone restic config
 
 Log in with the O2 Cloud **email and password**, not the SMS login: only the
 password login keeps working unattended. The first login may ask for a
-verification code. The session is saved in `secrets/rclone.conf` and renewed on
-every use (~90-day rolling window), which is why `secrets/` is writable.
+verification code. The session is saved in `$SECRETS_DIR/rclone.conf` and renewed on
+every use (~90-day rolling window), which is why `SECRETS_DIR` is writable.
 
 ```bash
 docker compose run --rm --entrypoint rclone restic about o2:   # must show the quota

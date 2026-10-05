@@ -100,7 +100,7 @@ fi
 restic backup --retry-lock 2h --tag auto \
     --exclude-caches \
     --exclude-file /etc/restic/excludes.txt \
-    --exclude "$PWD/secrets" \
+    --exclude "$SECRETS_DIR" \
     "$BACKUP_SRC_DATA" "$BACKUP_SRC_HOME" "$BACKUP_SRC_DOCKER_VOLUMES" || fail "backup"
 
 grep -E '^(Added to the repository|snapshot \S+ saved)' "$log" | while read -r line; do

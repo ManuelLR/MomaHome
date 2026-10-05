@@ -3,7 +3,7 @@
 # directory. Safe to run again after every `git pull`. Run as root from here.
 #
 #   - checks .env and excludes.txt exist (copied from the *.example* files)
-#   - creates secrets/, the cache and the log directory
+#   - creates SECRETS_DIR, the cache and the log directory
 #   - builds the image
 #   - writes /etc/cron.d/restic-o2 and the logwatch service
 #
@@ -29,7 +29,7 @@ set -a
 . ./.env
 set +a
 
-install -d -m 700 secrets
+install -d -m 700 "$SECRETS_DIR"
 install -d "$CACHE_DIR" "$LOG_DIR"
 
 docker compose build --pull restic
@@ -45,6 +45,6 @@ install -D -m 755 logwatch/restic-o2 /etc/logwatch/scripts/services/restic-o2
 echo "Logwatch: restic-o2 service installed"
 
 echo
-[ -s secrets/restic-password ] || echo "Pending: create secrets/restic-password (README, step 2)"
-[ -s secrets/rclone.conf ] || echo "Pending: configure the O2 remote (README, step 2)"
+[ -s "$SECRETS_DIR/restic-password" ] || echo "Pending: create $SECRETS_DIR/restic-password (README, step 2)"
+[ -s "$SECRETS_DIR/rclone.conf" ] || echo "Pending: configure the O2 remote (README, step 2)"
 echo "Done."

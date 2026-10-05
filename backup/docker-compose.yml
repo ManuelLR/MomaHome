@@ -30,7 +30,7 @@ services:
       # Read-write on purpose: the funambol backend saves its renewed session
       # cookies back into rclone.conf (it rewrites the file through a temp file
       # in the same directory). If it cannot, the session silently expires.
-      - ./secrets:/secrets
+      - ${SECRETS_DIR:?Define SECRETS_DIR in .env}:/secrets
       - ${CACHE_DIR:?Define CACHE_DIR in .env}:/cache
       - ./excludes.txt:/etc/restic/excludes.txt:ro
       # Sources, read-only and at their host paths so snapshots show real
