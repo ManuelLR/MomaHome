@@ -17,12 +17,30 @@ set -a
 . ./.env || exit 1
 set +a
 
-# Cron starts a new run every night; the first full upload takes days.
-exec 9>/run/lock/restic-o2.lock
+# send_mail SUBJECT, body on stdin.
+send_mail() {
+    { echo "To: $MAIL_TO"; echo "Subject: [restic-o2] $1 on $(hostname)"; echo; cat; } |
+        msmtp "$MAIL_TO"
+}
+
+# One run at a time: cron starts a new run every night and the first full
+# upload takes days. The kernel drops the lock when the holder exits, even if
+# it is killed, so it cannot go stale. A run that hangs keeps it, though, and
+# every later night would skip silently: past STUCK_AFTER_HOURS, mail instead.
+# Opened with >> so a skipped run leaves the mtime alone: it marks when the
+# holder started.
+lock=/run/lock/restic-o2.lock
+exec 9>>"$lock"
 if ! flock -n 9; then
-    logger -t restic-o2 "skipped: previous run still going"
+    hours=$(( ($(date +%s) - $(stat -c %Y "$lock")) / 3600 ))
+    logger -t restic-o2 "skipped: previous run still going (${hours} h)"
+    if [ "$hours" -ge "${STUCK_AFTER_HOURS:-96}" ]; then
+        echo "The previous run started ${hours} h ago and still holds $lock." |
+            send_mail "backup STUCK for ${hours} h"
+    fi
     exit 0
 fi
+touch "$lock"
 
 mkdir -p "$LOG_DIR"
 log="$LOG_DIR/$(date +%F_%H%M).log"
@@ -36,14 +54,7 @@ summary() {
 
 fail() {
     summary "FAILED at $1 (log: $log)"
-    {
-        echo "To: $MAIL_TO"
-        echo "Subject: [restic-o2] backup FAILED at $1 on $(hostname)"
-        echo
-        echo "Log: $log"
-        echo
-        tail -n 60 "$log"
-    } | msmtp "$MAIL_TO"
+    { echo "Log: $log"; echo; tail -n 60 "$log"; } | send_mail "backup FAILED at $1"
     exit 1
 }
 

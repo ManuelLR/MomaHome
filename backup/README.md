@@ -26,7 +26,10 @@ It complements the local backup to an external disk, which it does not touch.
 
 `backup.sh`, started by `/etc/cron.d/restic-o2`:
 
-1. Skips if the previous run is still going (the first upload takes days).
+1. Skips if the previous run is still going (the first upload takes days). The
+   lock is released by the kernel when that run ends or dies, so it cannot go
+   stale; if a run hangs past `STUCK_AFTER_HOURS` (96 h), each skipped night
+   mails a warning.
 2. **Sundays:** `forget --prune` with the retention in `.env` (30 daily, 26
    weekly, 36 monthly, all yearly), then `check` of a different 1/52 of the data
    each week. It runs *before* the backup because O2 lists new uploads a few
