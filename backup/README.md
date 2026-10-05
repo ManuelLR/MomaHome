@@ -79,7 +79,7 @@ cp excludes.example.txt excludes.txt  # what to leave out
 
 ```bash
 set -a; . ./.env; set +a     # for $SECRETS_DIR below
-read -rs P && printf '%s\n' "$P" > "$SECRETS_DIR/restic-password" && unset P   # paste a long random password
+openssl rand -base64 48 > "$SECRETS_DIR/restic-password"   # random; you open the repo with your own key
 chmod 600 "$SECRETS_DIR/restic-password"
 
 docker compose run --rm --entrypoint rclone restic config
