@@ -1,0 +1,3 @@
+#!/bin/sh
+# Logwatch service script: prints the lines backup.sh logs with tag restic-o2.
+cat
