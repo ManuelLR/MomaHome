@@ -34,7 +34,11 @@ It complements the local backup to an external disk, which it does not touch.
    weekly, 36 monthly, all yearly), then `check` of a different 1/52 of the data
    each week. It runs *before* the backup because O2 lists new uploads a few
    seconds late, and a prune must not miss tonight's data.
-3. `restic backup` of the three `BACKUP_SRC_*` paths.
+3. `restic backup` of the three `BACKUP_SRC_*` paths and of the system
+   configuration: `/etc`, `/root`, `/usr/local`, `/opt`, `/var/spool/cron` and
+   `/boot/efi`. These are the files of the system itself, which are not under
+   the data paths. The container sees them under `/os`, so snapshots list them
+   as `/os/etc/…`. LVM metadata is in `/etc/lvm`.
 
 **Where to look:**
 
@@ -159,6 +163,10 @@ r find 'some-file*'
 docker compose run --rm -v /srv/data/restore-tmp:/restore restic \
     restore latest --include /srv/data/apps/myapp --target /restore
 ```
+
+The system configuration is under `/os`: `r ls latest /os/etc`, and
+`restore latest --include /os/etc/fstab --target /restore` puts the file at
+`/restore/os/etc/fstab`.
 
 Browse every snapshot as a directory tree (FUSE, inside the container):
 

@@ -3,7 +3,8 @@
 # (install.sh writes the cron entry). Reads it top to bottom:
 #
 #   1. Sundays only: apply the retention and verify part of the data.
-#   2. Back up the BACKUP_SRC_* paths from .env.
+#   2. Back up the BACKUP_SRC_* paths from .env and the system configuration
+#      (OS_PATHS, seen under /os in the container).
 #
 # Each run writes one log file to LOG_DIR. A failure mails MAIL_TO with the end
 # of that log. A few summary lines also go to syslog (tag restic-o2), which is
@@ -71,6 +72,17 @@ for src in "$BACKUP_SRC_DATA" "$BACKUP_SRC_HOME" "$BACKUP_SRC_DOCKER_VOLUMES"; d
     [ -n "$(ls -A "$src" 2>/dev/null)" ] || fail "source check: $src missing or empty"
 done
 
+# The operating system's own configuration, which lives on the system disk and
+# is not under a BACKUP_SRC_* path. docker-compose.yml mounts each of these
+# read-only under /os (the container needs its own /etc): keep the lists in
+# sync. Only checked to exist: /opt is empty on a fresh system.
+OS_PATHS="/etc /root /usr/local /opt /var/spool/cron /boot/efi"
+os_src=()
+for p in $OS_PATHS; do
+    [ -d "$p" ] || fail "source check: $p missing"
+    os_src+=("/os$p")
+done
+
 # TODO: dump every PostgreSQL server (home_automation, reading and immich) into
 # a directory under a BACKUP_SRC_* path before backing up. Until then their data
 # directories are copied hot, which a running server does not guarantee to be
@@ -100,7 +112,8 @@ fi
 restic backup --retry-lock 2h --tag auto \
     --exclude-caches \
     --exclude-file /etc/restic/excludes.txt \
-    "$BACKUP_SRC_DATA" "$BACKUP_SRC_HOME" "$BACKUP_SRC_DOCKER_VOLUMES" || fail "backup"
+    "$BACKUP_SRC_DATA" "$BACKUP_SRC_HOME" "$BACKUP_SRC_DOCKER_VOLUMES" \
+    "${os_src[@]}" || fail "backup"
 
 grep -E '^(Added to the repository|snapshot \S+ saved)' "$log" | while read -r line; do
     summary "$line"

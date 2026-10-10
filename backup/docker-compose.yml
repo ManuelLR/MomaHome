@@ -37,7 +37,16 @@ services:
       - ${CACHE_DIR:?Define CACHE_DIR in .env}:/cache
       - ./excludes.txt:/etc/restic/excludes.txt:ro
       # Sources, read-only and at their host paths so snapshots show real
-      # paths. backup.sh backs up exactly these three.
+      # paths. backup.sh backs up exactly these three, plus the /os paths below.
       - ${BACKUP_SRC_DATA:?Define BACKUP_SRC_DATA in .env}:${BACKUP_SRC_DATA}:ro
       - ${BACKUP_SRC_HOME:?Define BACKUP_SRC_HOME in .env}:${BACKUP_SRC_HOME}:ro
       - ${BACKUP_SRC_DOCKER_VOLUMES:?Define BACKUP_SRC_DOCKER_VOLUMES in .env}:${BACKUP_SRC_DOCKER_VOLUMES}:ro
+      # The operating system's own configuration: the disk the OS lives on is
+      # not backed up as a whole. Under /os because the container needs its
+      # own /etc. Keep in sync with OS_PATHS in backup.sh.
+      - /etc:/os/etc:ro
+      - /root:/os/root:ro
+      - /usr/local:/os/usr/local:ro
+      - /opt:/os/opt:ro
+      - /var/spool/cron:/os/var/spool/cron:ro
+      - /boot/efi:/os/boot/efi:ro
