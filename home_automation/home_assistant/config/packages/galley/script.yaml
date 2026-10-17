@@ -3,7 +3,7 @@
   # galley e-ink panel renderer.
   #
   # Composes the 400x300 BWR layout from sensor.galley_panel_meals /
-  # sensor.galley_panel_inventory and calls `gicisky.write_guarded`. The `dry_run`
+  # sensor.galley_panel_inventory and calls `ble_esl.write_guarded`. The `dry_run`
   # field defaults to true: running it by hand only renders to the integration's
   # PREVIEW camera (no BLE). The refresh automation (automation.yaml) calls it with
   # dry_run: false to push to the physical panel; write_guarded de-dupes so the
@@ -45,7 +45,7 @@
           # it with dry_run: false to actually push over BLE.
           m: "{{ state_attr('sensor.galley_panel_meals','data') or {} }}"
           i: "{{ state_attr('sensor.galley_panel_inventory','data') or {} }}"
-      - action: gicisky.write_guarded
+      - action: ble_esl.write_guarded
         data:
           # rotate 0 = landscape 400x300 (this panel). The other Gicisky here
           # (packages/gicisky) uses 270 because it's mounted portrait — confirm
