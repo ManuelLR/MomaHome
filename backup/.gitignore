@@ -1,0 +1,4 @@
+# Host-specific configuration; versioned templates are the *.example* files.
+.env
+excludes.txt
+secrets/
