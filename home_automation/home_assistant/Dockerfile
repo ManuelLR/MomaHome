@@ -1,4 +1,4 @@
-FROM ghcr.io/home-assistant/home-assistant:2026.9.4
+FROM ghcr.io/home-assistant/home-assistant:2026.10.2
 
 ##### Pending tasks
 # - Redo all scripts/automations with the news if/else/then, for each, continue on error, parallelize
@@ -13,9 +13,9 @@ FROM ghcr.io/home-assistant/home-assistant:2026.9.4
 ENV \
     ## DOCU: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture && https://docs.renovatebot.com/presets-regexManagers/
       # renovatebot: datasource=github-releases depName=thomasloven/hass-browser_mod versioning=semver
-    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v3.2.3 \
+    CUSTOM_COMPONENT_BROWSER_MOD_VERSION=v3.4.0 \
       # renovatebot: datasource=github-releases depName=leikoilja/ha-google-home
-    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.13.3 \
+    CUSTOM_COMPONENT_GOOGLE_HOME_VERSION=v1.14.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
     CUSTOM_COMPONENT_XIAOMI_CLOUD_MAP_EXTRACTOR_VERSION=v2.2.5 \
       # renovatebot: datasource=github-releases depName=libdyson-wg/ha-dyson
@@ -33,7 +33,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
     CUSTOM_COMPONENT_GICISKY_VERSION=5.5.0 \
       # renovatebot: datasource=github-releases depName=sca075/mqtt_vacuum_camera
-    CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.8.0 \
+    CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.10.0 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.4.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
@@ -49,7 +49,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=DurgNomis-drol/google_home_timers_card
     CUSTOM_CARD_GOOGLE_HOME_TIMERS_VERSION=v0.2.0 \
       # renovatebot: datasource=github-releases depName=piitaya/lovelace-mushroom
-    CUSTOM_CARD_MUSHROOM_VERSION=v5.2.2
+    CUSTOM_CARD_MUSHROOM_VERSION=v5.2.3
 
 ENV \
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_PATH=/local/external-cards/xiaomi-vacuum-map-card.js?version=${CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION} \
