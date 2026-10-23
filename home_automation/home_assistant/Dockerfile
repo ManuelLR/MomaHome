@@ -23,7 +23,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=chomupashchuk/delete-file-home-assistant versioning=pep440
     CUSTOM_COMPONENT_DELETE_FILE_VERSION=1.9 \
       # renovatebot: datasource=github-releases depName=uvejota/homeassistant-edata
-    CUSTOM_COMPONENT_EDATA_VERSION=2025.11.3 \
+    CUSTOM_COMPONENT_EDATA_VERSION=2026.10.4 \
       # renovatebot: datasource=github-releases depName=badbugssoftware/ha-emasesa versioning=semver
     CUSTOM_COMPONENT_EMASESA_VERSION=v0.8.3 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
