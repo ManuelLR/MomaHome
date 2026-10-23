@@ -6,7 +6,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.miscellaneous-ocrmypdf.loadbalancer.server.port=5000"
-      - "traefik.http.routers.miscellaneous-ocrmypdf.middlewares=miscellaneous-ocrmypdf-auth@docker"
+      # TEMPORARY: LAN/WireGuard only (global-lan-only@file). See reverse-proxy/file-dynamic-conf/lan-only.yaml
+      - "traefik.http.routers.miscellaneous-ocrmypdf.middlewares=global-lan-only@file,miscellaneous-ocrmypdf-auth@docker"
       - "traefik.http.routers.miscellaneous-ocrmypdf.rule=Host(`${EXTERNAL_DOMAIN}`)"
       - "traefik.http.routers.miscellaneous-ocrmypdf.entrypoints=websecure"
       - "traefik.http.routers.miscellaneous-ocrmypdf.tls.certresolver=principal"
