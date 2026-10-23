@@ -9,7 +9,7 @@
 # the official binary and reconfigure the remote; the restic repository itself
 # does not change.
 
-FROM golang:1.26-alpine AS rclone
+FROM golang:1.27-alpine AS rclone
 
 ARG RCLONE_REPO=https://github.com/fballiano/rclone.git
 # renovate: datasource=git-refs depName=fballiano/rclone packageName=https://github.com/fballiano/rclone branch=funambol-backend
