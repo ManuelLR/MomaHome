@@ -59,7 +59,7 @@ services:
         # Major bumps need a dump/restore: the data dir is tied to the major
         # version and a newer server refuses to start on it. Stay on 17 until
         # the volume is remounted at /var/lib/postgresql (18+ moved PGDATA).
-        image: postgres:17-alpine
+        image: postgres:18-alpine
         restart: unless-stopped
         ports:
             - 127.0.0.1:5432:5432
