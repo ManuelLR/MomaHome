@@ -150,9 +150,9 @@ services:
       # We need to support not most secured algorithms in order to sync with kobo devices
       - "traefik.http.routers.calibre-web.tls.options=mozilla-intermediate@file"
 
-      # Add X-Scheme header to the request to avoid problems with some features
       # TEMPORARY: LAN/WireGuard only (global-lan-only@file). See reverse-proxy/file-dynamic-conf/lan-only.yaml
-      - "traefik.http.routers.calibre-web.middlewares=global-lan-only@file,calibre-web-headers"
+      - "traefik.http.routers.calibre-web.middlewares=global-lan-only@file,calibre-web-headers@docker"
+      # Add X-Scheme header to the request to avoid problems with some features
       - "traefik.http.middlewares.calibre-web-headers.headers.customrequestheaders.X-Scheme=https"
 
 networks:

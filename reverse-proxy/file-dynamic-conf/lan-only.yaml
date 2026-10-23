@@ -1,9 +1,9 @@
 ## TEMPORARY hardening: the services published by Traefik only answer to the
 ## home network and WireGuard peers. Every router references these middlewares
-## through a label marked "TEMPORARY", except AdGuard's DNS-over-HTTPS router,
-## which stays public on purpose. It is per router, not on the websecure entrypoint,
-## because an entrypoint middleware cannot be skipped by a single router. So a
-## router added meanwhile is public unless it gets the label too.
+## through a label marked "TEMPORARY", except AdGuard (DNS over HTTPS and over
+## TLS), which stays public on purpose. It is per router, not on the websecure
+## entrypoint, because an entrypoint middleware cannot be skipped by a single
+## router. So a router added meanwhile is public unless it gets the label too.
 ## Routers that were already LAN-only (immich, trek, galley-admin,
 ## galley-legacy) keep their own stricter middleware and are untouched.
 ##
@@ -21,13 +21,7 @@ http:
   middlewares:
     global-lan-only:
       ipAllowList:
-        sourceRange: &lan-ranges
+        sourceRange:
           - "192.168.200.0/24"
           - "172.16.0.0/12"
           - "10.13.13.0/24"
-
-tcp:
-  middlewares:
-    global-lan-only-tcp:
-      ipAllowList:
-        sourceRange: *lan-ranges
