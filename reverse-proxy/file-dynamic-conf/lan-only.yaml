@@ -1,0 +1,27 @@
+## TEMPORARY hardening: the services published by Traefik only answer to the
+## home network and WireGuard peers. Every router references these middlewares
+## through a label marked "TEMPORARY", except AdGuard (DNS over HTTPS and over
+## TLS), which stays public on purpose. It is per router, not on the websecure
+## entrypoint, because an entrypoint middleware cannot be skipped by a single
+## router. So a router added meanwhile is public unless it gets the label too.
+## Routers that were already LAN-only (immich, trek, galley-admin,
+## galley-legacy) keep their own stricter middleware and are untouched.
+##
+## To lift it: remove the labels marked "TEMPORARY" (git grep "lan-only.yaml")
+## and this file, then recreate the affected containers.
+##
+## WireGuard (51820/udp) is published by its own container, not by Traefik, so
+## it stays reachable. Its container masquerades peer traffic, so VPN clients
+## reach Traefik from a Docker bridge address: that is why 172.16.0.0/12 is
+## allowed. This is safe only because Traefik sees the real client address on
+## the published ports (the per-service LAN-only routers already rely on it).
+## 10.13.13.0/24 (the WireGuard default peer subnet) covers the unmasqueraded case.
+
+http:
+  middlewares:
+    global-lan-only:
+      ipAllowList:
+        sourceRange:
+          - "192.168.200.0/24"
+          - "172.16.0.0/12"
+          - "10.13.13.0/24"
