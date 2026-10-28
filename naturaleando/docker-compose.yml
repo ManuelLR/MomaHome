@@ -1,0 +1,44 @@
+version: "2.4"
+services:
+  naturaleando:
+    # Naturaleando: static web (Vite + TypeScript). Nginx only serves the
+    # `dist/` folder built elsewhere and copied to the host (see README); neither
+    # the build nor the geodata live in this repo or in the image.
+    image: nginxinc/nginx-unprivileged:1.31.7-alpine
+    restart: unless-stopped
+    # Hardening: read-only root fs, no capabilities, non-root (listens on 8080).
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+    volumes:
+      # Built site (host path, like galley and trek). Read-only for the container.
+      - ${NATURALEANDO_DIST_PATH:-/data/naturaleando/dist}:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - reverse-proxy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.naturaleando.loadbalancer.server.port=8080"
+      - "traefik.http.routers.naturaleando.rule=Host(`${NATURALEANDO_EXTERNAL_DOMAIN}`)"
+      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/file-dynamic-conf/lan-only.yaml
+      - "traefik.http.routers.naturaleando.middlewares=global-lan-only@file"
+      - "traefik.http.routers.naturaleando.entrypoints=websecure"
+      - "traefik.http.routers.naturaleando.tls.certresolver=principal"
+      - "traefik.http.routers.naturaleando.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+
+networks:
+  reverse-proxy:
+    # External network created by reverse-proxy setup
+    external: true
