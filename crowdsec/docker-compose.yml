@@ -1,0 +1,45 @@
+version: "2.4"
+services:
+  crowdsec:
+    # Security engine + Local API (LAPI) + AppSec (WAF). Reads Traefik's access
+    # log from a tmpfs on the host and serves decisions to the Traefik bouncer
+    # plugin (reverse-proxy/file-dynamic-conf/crowdsec.yaml). See README.md.
+    image: crowdsecurity/crowdsec:v1.8.2
+    container_name: crowdsec
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=Europe/Madrid
+      # traefik = log parser + base HTTP scenarios (probing, crawling, bad user
+      # agents, path traversal, known-CVE probes...). The appsec-* ones are the
+      # WAF rules: virtual patching for known CVEs plus generic attack patterns.
+      - COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
+      # Used by config/notifications/http.yaml (CrowdSec expands env vars there).
+      - HA_CROWDSEC_WEBHOOK_URL=${HA_CROWDSEC_WEBHOOK_URL:?set HA_CROWDSEC_WEBHOOK_URL in .env}
+    volumes:
+      # Persistent state: LAPI database, hub, machine/CAPI credentials. The
+      # image seeds an empty /etc/crowdsec on first start.
+      - ./data/:/var/lib/crowdsec/data/
+      - ./etc/:/etc/crowdsec/
+      # Versioned config, mounted over the seeded one.
+      - ./acquis.d/:/etc/crowdsec/acquis.d/:ro
+      - ./config/profiles.yaml:/etc/crowdsec/profiles.yaml:ro
+      - ./config/notifications/http.yaml:/etc/crowdsec/notifications/http.yaml:ro
+      # Traefik access log (tmpfs on the host, written by reverse-proxy_traefik).
+      - /run/momahome/traefik-logs/:/var/log/traefik/:ro
+      # Registers the "traefik" bouncer with this key on first start. The same
+      # file is mounted into Traefik. Create it BEFORE the first `up` (README).
+      - ./secrets/bouncer_key_traefik:/run/secrets/bouncer_key_traefik:ro
+    extra_hosts:
+      # Home Assistant runs with network_mode: host (webhook notifications).
+      - host.docker.internal:host-gateway
+    networks:
+      # Reached by Traefik as crowdsec:8080 (LAPI) and crowdsec:7422 (AppSec).
+      # No published ports.
+      - reverse-proxy
+
+networks:
+  reverse-proxy:
+    # External network created by reverse-proxy setup
+    external: true

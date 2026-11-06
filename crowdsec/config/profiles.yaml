@@ -1,0 +1,24 @@
+# Same as the image default, plus the Home Assistant webhook notification
+# (config/notifications/http.yaml). Private ranges never get here: the
+# crowdsecurity/whitelists parser drops them before any scenario runs.
+name: default_ip_remediation
+filters:
+  - Alert.Remediation == true && Alert.GetScope() == "Ip"
+decisions:
+  - type: ban
+    duration: 4h
+# Repeat offenders get longer bans: 4h, 8h, 12h...
+duration_expr: Sprintf('%dh', (GetDecisionsCount(Alert.GetValue()) + 1) * 4)
+notifications:
+  - http_home_assistant
+on_success: break
+---
+name: default_range_remediation
+filters:
+  - Alert.Remediation == true && Alert.GetScope() == "Range"
+decisions:
+  - type: ban
+    duration: 4h
+notifications:
+  - http_home_assistant
+on_success: break

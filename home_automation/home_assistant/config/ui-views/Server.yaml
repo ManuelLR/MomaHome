@@ -16,6 +16,27 @@
     - sensor.server_load_1min
 
 - type: entities
+  title: 'CrowdSec'
+  entities:
+    - sensor.crowdsec_bans_today
+    - entity: sensor.crowdsec_last_ban
+      secondary_info: last-changed
+    - type: attribute
+      entity: sensor.crowdsec_last_ban
+      attribute: ip
+      name: 'Last banned IP'
+    - type: attribute
+      entity: sensor.crowdsec_last_ban
+      attribute: country
+      name: 'Country'
+
+- type: history-graph
+  title: 'CrowdSec bans'
+  hours_to_show: 168
+  entities:
+    - sensor.crowdsec_bans_today
+
+- type: entities
   title: 'UPS Server'
   entities:
     - sensor.ups_battery

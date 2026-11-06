@@ -187,6 +187,20 @@
       versioningTemplate: 'docker'
     },
     {
+      // Traefik plugins in the static config (experimental.plugins). Annotate
+      // the `version:` line with a comment on the line above, e.g.:
+      //   # renovate: datasource=github-releases depName=owner/repo
+      //   version: v1.2.3
+      customType: 'regex',
+      managerFilePatterns: [
+        '/(^|/)reverse-proxy/traefik\\.yml$/'
+      ],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s*\\n\\s*version: (?<currentValue>\\S+)'
+      ],
+      versioningTemplate: 'semver-coerced'
+    },
+    {
       // Custom regex for Calibre Web (not auto-detected)
       customType: 'regex',
       managerFilePatterns: [

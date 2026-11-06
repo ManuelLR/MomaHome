@@ -8,6 +8,7 @@ This repository contains information and settings used in a home.
 ```
 .
 ├── adguardhome        => Folder that contain the DNS used in home
+├── crowdsec           => Attack detection/blocking (IP reputation + WAF) for everything behind Traefik
 ├── home_automation    => Folder that contain home_automation devices, configuration and deploy tools
 │   └── *
 ├── immich             => Self-hosted photo & video management (LAN-only)
