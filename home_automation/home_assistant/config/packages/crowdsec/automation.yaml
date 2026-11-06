@@ -1,0 +1,28 @@
+# automation:
+  ##
+  # Telegram only for exploit attempts (WAF / known-CVE probes), not for the
+  # routine scanning bans: those are just counted in sensor.crowdsec_bans_today.
+  ##
+  - alias: AUT-CrowdSec exploit attempt banned
+    mode: queued
+    max: 5
+    triggers:
+      # No `to:`: also fires when only the attributes change (same scenario
+      # twice in a row).
+      - platform: state
+        entity_id: sensor.crowdsec_last_ban
+    conditions:
+      - condition: template
+        value_template: >
+          {{ trigger.to_state.attributes.batch | default([])
+             | select('search', 'appsec|vpatch|http-cve') | list | count > 0 }}
+    actions:
+      - service: script.telegram_notify
+        data:
+          target_person: manolo
+          title: 'CrowdSec: exploit attempt blocked'
+          message: >
+            Banned `{{ trigger.to_state.attributes.ip }}`
+            ({{ trigger.to_state.attributes.country }}, {{ trigger.to_state.attributes.as_name }}).
+
+            Scenarios: `{{ trigger.to_state.attributes.batch | join('`, `') }}`

@@ -1,0 +1,60 @@
+# template:
+  ##
+  # CrowdSec -> Home Assistant. CrowdSec (crowdsec/ at the repo root) POSTs every
+  # batch of local bans to this webhook (config/notifications/http.yaml):
+  #   [ {scenario, ip, country, as_name, events}, ... ]
+  # Only bans decided on this server; the community blocklist is not counted.
+  #
+  #   sensor.crowdsec_bans_today  bans since midnight (reset at 00:00)
+  #   sensor.crowdsec_last_ban    last scenario; ip/country/as_name/at in
+  #                               attributes, `batch` = scenarios of the last
+  #                               POST (used by automation.yaml)
+  #
+  # local_only: the webhook only answers private addresses (CrowdSec reaches
+  # it through the Docker bridge), and it is not routed by Traefik anyway.
+  ##
+
+  - trigger:
+      - platform: webhook
+        webhook_id: !secret crowdsec_webhook_id
+        allowed_methods:
+          - POST
+        local_only: true
+        id: ban
+      - platform: time
+        at: "00:00:00"
+        id: reset
+    sensor:
+      - name: "CrowdSec bans today"
+        unique_id: crowdsec_bans_today
+        icon: mdi:shield-alert
+        state_class: total_increasing
+        state: >
+          {% if trigger.id == 'reset' %}
+            0
+          {% else %}
+            {{ this.state | int(0) + (trigger.json | default([], true) | count) }}
+          {% endif %}
+
+      - name: "CrowdSec last ban"
+        unique_id: crowdsec_last_ban
+        icon: mdi:shield-lock
+        state: >
+          {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+          {{ bans[-1].scenario if bans | count > 0 else this.state }}
+        attributes:
+          ip: >
+            {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].ip if bans | count > 0 else this.attributes.get('ip') }}
+          country: >
+            {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].country if bans | count > 0 else this.attributes.get('country') }}
+          as_name: >
+            {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].as_name if bans | count > 0 else this.attributes.get('as_name') }}
+          at: >
+            {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+            {{ now().isoformat() if bans | count > 0 else this.attributes.get('at') }}
+          batch: >
+            {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+            {{ bans | map(attribute='scenario') | list if bans | count > 0 else this.attributes.get('batch', []) }}
