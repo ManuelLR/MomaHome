@@ -178,3 +178,53 @@
         value_template: "{{ value_json.data[0][1] | round(0) }}"
         unit_of_measurement: "connections"
         state_class: measurement
+
+  ### banIP (inbound IP reputation blocking, see router/README.md) ###
+  # Charts in packets/min:
+  #   banip.feeds       one dimension per Set (in_cinsscore_v4, in_blocklist_v4...)
+  #   banip.protection  flood / invalid-packet drops (syn, udp, icmp, ct, tcp, bcp38)
+  # "Today" totals: the average rate since midnight (one point per chart, all
+  # dimensions summed) times the minutes elapsed since midnight. Read from the
+  # Netdata parent, which keeps the router's history.
+
+  - resource_template: >-
+      http://localhost:19999/host/OpenWrt/api/v1/data?chart=banip.feeds&after={{ as_timestamp(today_at()) | int }}&before=0&points=1&group=average&format=json&options=unaligned
+    scan_interval: 300
+    sensor:
+      - name: "Router banIP Blocked Today"
+        value_template: >-
+          {% set per_min = value_json.data[0][1:] | map('float', 0) | sum %}
+          {{ (per_min * (now() - today_at()).total_seconds() / 60) | round(0) }}
+        unit_of_measurement: "packets"
+        icon: mdi:wall-fire
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=banip.feeds&after=-300&points=1&group=average&format=json&options=unaligned"
+    scan_interval: 60
+    sensor:
+      - name: "Router banIP Blocked Rate"
+        value_template: "{{ value_json.data[0][1:] | map('float', 0) | sum | round(1) }}"
+        unit_of_measurement: "packets/min"
+        icon: mdi:wall-fire
+        state_class: measurement
+
+  - resource_template: >-
+      http://localhost:19999/host/OpenWrt/api/v1/data?chart=banip.protection&after={{ as_timestamp(today_at()) | int }}&before=0&points=1&group=average&format=json&options=unaligned
+    scan_interval: 300
+    sensor:
+      - name: "Router banIP Protection Drops Today"
+        value_template: >-
+          {% set per_min = value_json.data[0][1:] | map('float', 0) | sum %}
+          {{ (per_min * (now() - today_at()).total_seconds() / 60) | round(0) }}
+        unit_of_measurement: "packets"
+        icon: mdi:shield-half-full
+        state_class: measurement
+
+  - resource: "http://localhost:19999/host/OpenWrt/api/v1/data?chart=banip.elements&dimensions=total&after=-1&points=1&format=json"
+    scan_interval: 600
+    sensor:
+      - name: "Router banIP Listed IPs"
+        value_template: "{{ value_json.data[0][1] | round(0) }}"
+        unit_of_measurement: "IPs"
+        icon: mdi:format-list-bulleted
+        state_class: measurement
