@@ -3,8 +3,9 @@
 Runs in the reverse-proxy stack and protects everything on Traefik's
 `websecure` entrypoint:
 
-- Bans IPs that scan, crawl, probe known CVEs or brute-force (reads the access
-  log), plus the community blocklist.
+- Bans IPs that scan, crawl, probe known CVEs or brute-force, plus the
+  community blocklist. It gets Traefik's access log from Docker's syslog
+  logging driver; `docker compose logs traefik` still works.
 - AppSec (WAF): blocks requests matching known exploits (virtual patching) or
   generic attack patterns, even if the service is not patched yet.
 
@@ -20,9 +21,9 @@ sharing altogether, losing the community blocklist.
 
 ## Setup
 
-1. Fill the CrowdSec and access-log variables in `reverse-proxy/.env`
-   (see `.env.example`). The bouncer key reaches both containers as a Compose
-   secret read from the environment, which needs a recent Docker Compose v2.
+1. Fill the CrowdSec variables in `reverse-proxy/.env` (see `.env.example`).
+   The bouncer key reaches both containers as a Compose secret read from the
+   environment, which needs a recent Docker Compose v2.
 2. Put the webhook id of `HA_CROWDSEC_WEBHOOK_URL` in Home Assistant's
    `secrets.yaml` as `crowdsec_webhook_id`.
 3. `docker compose up -d` in `reverse-proxy/`.
@@ -39,7 +40,6 @@ docker compose exec crowdsec cscli metrics show appsec  # requests seen by the W
 docker compose exec crowdsec cscli decisions list
 docker compose exec crowdsec cscli alerts list
 docker compose exec crowdsec cscli decisions delete --ip <ip>
-docker compose logs -f access-log                       # Traefik access log
 ```
 
 From outside (mobile data, not WireGuard), `https://<host>/.env` is blocked by

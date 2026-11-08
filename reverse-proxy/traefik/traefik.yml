@@ -7,9 +7,8 @@ global:
 # log:
 #   level: DEBUG
 
-## Printed and rotated by the access-log service (docker-compose.yml)
-accessLog:
-  filePath: /var/log/traefik/access.log
+## Stdout, sent to CrowdSec by the syslog logging driver (docker-compose.yml)
+accessLog: {}
 
 entryPoints:
   web:

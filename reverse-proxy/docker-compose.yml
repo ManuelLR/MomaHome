@@ -11,12 +11,21 @@ services:
       - "192.168.200.7:853:853"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./letsencrypt/:/letsencrypt/
-      - ./traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./file-dynamic-conf/:/etc/traefik/file-dynamic-conf/:ro
-      - ${TRAEFIK_ACCESS_LOG_DIR:?Define TRAEFIK_ACCESS_LOG_DIR in .env}:/var/log/traefik/
+      - ./traefik/letsencrypt/:/letsencrypt/
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/file-dynamic-conf/:/etc/traefik/file-dynamic-conf/:ro
     secrets:
       - crowdsec_bouncer_key
+    # Stdout (access log included) goes to CrowdSec over syslog. `docker logs`
+    # keeps working through Docker's local cache, rotated by the cache-* options.
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:5514"
+        syslog-format: rfc5424micro
+        tag: traefik
+        cache-max-size: "50m"
+        cache-max-file: "5"
     extra_hosts:
       - host.docker.internal:172.17.0.1
     networks:
@@ -31,34 +40,6 @@ services:
         # Looks like desec is having problems creating CNAME entries used to validate wildcard certs
       - LEGO_DISABLE_CNAME_SUPPORT=true
 
-  # Traefik writes the access log only to a file (no stdout copy, no rotation).
-  # This prints it to stdout and rotates it: past 50 MB, keeps 7 old files and
-  # sends USR1 to Traefik (PID 1 of the shared PID namespace) to reopen it.
-  access-log:
-    image: busybox:1.37.0
-    restart: always
-    pid: "service:traefik"
-    volumes:
-      - ${TRAEFIK_ACCESS_LOG_DIR}:/logs/
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
-    command:
-      - sh
-      - -c
-      - |
-        f=/logs/access.log
-        touch "$$f"
-        tail -n 0 -F "$$f" &
-        while sleep 600; do
-          [ "$$(stat -c %s "$$f")" -lt 52428800 ] && continue
-          for i in 6 5 4 3 2 1; do
-            [ -f "$$f.$$i" ] && mv "$$f.$$i" "$$f.$$((i + 1))"
-          done
-          mv "$$f" "$$f.1" && kill -USR1 1
-        done
-
   crowdsec:
     image: crowdsecurity/crowdsec:v1.8.2
     restart: unless-stopped
@@ -69,15 +50,14 @@ services:
       - COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
       - HA_CROWDSEC_WEBHOOK_URL=${HA_CROWDSEC_WEBHOOK_URL:?Define HA_CROWDSEC_WEBHOOK_URL in .env}
     ports:
-      # Prometheus metrics, scraped by Netdata
-      - "127.0.0.1:6060:6060"
+      # Syslog from Docker's logging driver (Traefik)
+      - "127.0.0.1:5514:5514/udp"
     volumes:
       - ${CROWDSEC_CONFIG_DIR:?Define CROWDSEC_CONFIG_DIR in .env}:/etc/crowdsec/
       - ${CROWDSEC_DATA_DIR:?Define CROWDSEC_DATA_DIR in .env}:/var/lib/crowdsec/data/
       - ./crowdsec/acquis.d/:/etc/crowdsec/acquis.d/:ro
       - ./crowdsec/profiles.yaml:/etc/crowdsec/profiles.yaml:ro
       - ./crowdsec/notifications/http.yaml:/etc/crowdsec/notifications/http.yaml:ro
-      - ${TRAEFIK_ACCESS_LOG_DIR}:/var/log/traefik/:ro
     secrets:
       # Registers the "traefik" bouncer with this key on first start
       - source: crowdsec_bouncer_key

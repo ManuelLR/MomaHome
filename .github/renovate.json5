@@ -190,7 +190,7 @@
       // Traefik plugins (experimental.plugins in traefik.yml)
       customType: 'regex',
       managerFilePatterns: [
-        '/(^|/)reverse-proxy/traefik\\.yml$/'
+        '/(^|/)reverse-proxy/traefik/traefik\\.yml$/'
       ],
       matchStrings: [
         '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s*\\n\\s*version: (?<currentValue>\\S+)'

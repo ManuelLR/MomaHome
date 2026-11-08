@@ -14,7 +14,6 @@ This repository contains information and settings used in a home.
 ├── monitoring         => [WIP] Basic monitoring for the server and other elements.
 ├── naturaleando       => Static web Naturaleando (nginx serving a `dist/` copied to the host; LAN-only)
 ├── reverse-proxy      => Proxy used to route all public incoming http/tcp/udp traffic to each container.
-├── router             => OpenWrt router (Belkin RT3200) config kept by hand (banIP)
 ├── samba              => LAN-only network drive to quickly drop phone photos for a temporary backup
 ├── syncthing          => Tool to sync folders and also create history of files
 ├── travel             => Self-hosted TREK collaborative travel planner (LAN-only)
