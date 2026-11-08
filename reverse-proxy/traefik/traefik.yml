@@ -7,8 +7,15 @@ global:
 # log:
 #   level: DEBUG
 
-## Stdout, sent to CrowdSec by the syslog logging driver (docker-compose.yml)
-accessLog: {}
+## Stdout, sent to CrowdSec by the syslog logging driver (docker-compose.yml).
+## JSON so CrowdSec gets the requested host (CLF has none).
+accessLog:
+  format: json
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep
 
 entryPoints:
   web:

@@ -44,6 +44,12 @@
           at: >
             {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
             {{ now().isoformat() if bans | count > 0 else this.attributes.get('at') }}
+          hosts: >
+            {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].hosts | default([]) if bans | count > 0 else this.attributes.get('hosts', []) }}
+          paths: >
+            {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].paths | default([]) if bans | count > 0 else this.attributes.get('paths', []) }}
           batch: >
             {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
             {{ bans | map(attribute='scenario') | list if bans | count > 0 else this.attributes.get('batch', []) }}

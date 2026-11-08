@@ -21,3 +21,13 @@
             ({{ trigger.to_state.attributes.country }}, {{ trigger.to_state.attributes.as_name }}).
 
             Scenarios: `{{ trigger.to_state.attributes.batch | join('`, `') }}`
+            {%- set hosts = trigger.to_state.attributes.hosts | default([]) %}
+            {%- set paths = trigger.to_state.attributes.paths | default([]) %}
+            {%- if hosts %}
+
+            Host: `{{ hosts | join('`, `') }}`
+            {%- endif %}
+            {%- if paths %}
+
+            Paths: `{{ paths[:5] | join('`, `') }}`
+            {%- endif %}

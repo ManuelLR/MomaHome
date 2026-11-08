@@ -62,6 +62,7 @@ services:
       - ./crowdsec/notifications/http.yaml:/etc/crowdsec/notifications/http.yaml:ro
       - ./crowdsec/config.yaml.local:/etc/crowdsec/config.yaml.local:ro
       - ./crowdsec/console.yaml:/etc/crowdsec/console.yaml:ro
+      - ./crowdsec/context.yaml:/etc/crowdsec/console/context.yaml:ro
     extra_hosts:
       - host.docker.internal:172.17.0.1
     networks:

@@ -26,7 +26,9 @@ so a change of upstream defaults does not change it:
 ## Data kept
 
 Log lines are parsed in memory and discarded, except the ones that triggered an
-alert, which are kept with it. Alerts and decisions are
+alert, which are kept with it, together with the alert context (host, path,
+user agent; `context.yaml` plus the hub's) that the Home Assistant
+notification shows. Alerts and decisions are
 stored, in the SQLite database under `CROWDSEC_DATA_DIR`, pruned after 60 days
 or 50000 alerts (`db_config.flush`).
 
