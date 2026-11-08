@@ -7,11 +7,7 @@ global:
 # log:
 #   level: DEBUG
 
-## Access log to a file on a host tmpfs (/run/momahome/traefik-logs, see
-## docker-compose.yml) so CrowdSec can read it without access to the Docker
-## socket. Traefik does not rotate access logs itself (only its own `log`):
-## logrotate on the host does, see logrotate/traefik-access. Common Log Format
-## (the default), which the crowdsecurity/traefik-logs parser understands.
+## Printed and rotated by the access-log service (docker-compose.yml)
 accessLog:
   filePath: /var/log/traefik/access.log
 
@@ -27,10 +23,7 @@ entryPoints:
   websecure:
     address: ":443"
     http:
-      ## CrowdSec bouncer for EVERY router on this entrypoint (AdGuard DoH
-      ## included), so a new router cannot be left out by mistake. Runs before
-      ## the router middlewares. LAN/WireGuard clients bypass it.
-      ## See file-dynamic-conf/crowdsec.yaml and ../crowdsec/README.md
+      ## Every router on this entrypoint, see file-dynamic-conf/crowdsec.yaml
       middlewares:
         - crowdsec@file
     # http:
@@ -39,7 +32,6 @@ entryPoints:
     address: ":853"
 
 
-## Plugins are downloaded from GitHub at startup (Traefik's plugin catalog).
 experimental:
   plugins:
     crowdsec-bouncer:

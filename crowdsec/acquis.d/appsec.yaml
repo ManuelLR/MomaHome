@@ -1,9 +1,0 @@
-# AppSec (WAF) endpoint the Traefik plugin forwards every public request to.
-# Only reachable inside the reverse-proxy Docker network.
-# appsec-default = virtual patching (known CVEs, blocks in-band) + generic rules.
-source: appsec
-name: traefik-appsec
-listen_addr: 0.0.0.0:7422
-appsec_config: crowdsecurity/appsec-default
-labels:
-  type: appsec

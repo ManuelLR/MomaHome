@@ -187,10 +187,7 @@
       versioningTemplate: 'docker'
     },
     {
-      // Traefik plugins in the static config (experimental.plugins). Annotate
-      // the `version:` line with a comment on the line above, e.g.:
-      //   # renovate: datasource=github-releases depName=owner/repo
-      //   version: v1.2.3
+      // Traefik plugins (experimental.plugins in traefik.yml)
       customType: 'regex',
       managerFilePatterns: [
         '/(^|/)reverse-proxy/traefik\\.yml$/'

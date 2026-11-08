@@ -1,20 +1,13 @@
-# Pushes every local ban to Home Assistant (packages/crowdsec). Stays on the
-# host: nothing here goes to CrowdSec's servers.
+# Local bans to Home Assistant (packages/crowdsec)
 type: http
 name: http_home_assistant
 log_level: info
-
-# Batch bursts (a scan usually trips several scenarios at once).
 group_wait: 30s
 group_threshold: 20
 max_retry: 3
 timeout: 10s
-
-# Receives a list of alerts. Only the fields the HA package uses are sent.
 format: |
   [{{ range $i, $a := . }}{{ if $i }},{{ end }}{"scenario": {{ $a.Scenario | toJson }}, "ip": {{ $a.Source.Value | toJson }}, "country": {{ $a.Source.Cn | toJson }}, "as_name": {{ $a.Source.AsName | toJson }}, "events": {{ $a.EventsCount | toJson }}}{{ end }}]
-
-# http://host.docker.internal:8123/api/webhook/<crowdsec_webhook_id>, set in .env
 url: ${HA_CROWDSEC_WEBHOOK_URL}
 method: POST
 headers:

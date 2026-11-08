@@ -1,13 +1,6 @@
-## CrowdSec bouncer (plugin declared in traefik.yml, engine in ../crowdsec).
-## Applied to the whole websecure entrypoint, so it runs for every router.
-##
-## - stream mode: the banned-IP list is pulled every 60 s and checked in memory,
-##   no call to CrowdSec per request for the IP part.
-## - AppSec (WAF): every non-trusted request is also sent to crowdsec:7422,
-##   which blocks known exploits (virtual patching) and generic attacks.
-## - Fail closed for the internet: if CrowdSec is down, AppSec is unreachable and
-##   public requests get 403. LAN and WireGuard (clientTrustedIPs) keep working,
-##   and Traefik still starts without CrowdSec (streamStartupBlock: false).
+## CrowdSec bouncer, applied to the whole websecure entrypoint (traefik.yml).
+## If CrowdSec is down, AppSec is unreachable and internet requests get a 403.
+## LAN/WireGuard (clientTrustedIPs, same ranges as lan-only.yaml) skip it.
 
 http:
   middlewares:
@@ -15,31 +8,18 @@ http:
       plugin:
         crowdsec-bouncer:
           enabled: true
-          logLevel: INFO
           crowdsecMode: stream
           updateIntervalSeconds: 60
-          # Consecutive failed list updates tolerated before blocking.
           updateMaxFailure: 2
           streamStartupBlock: false
-
           crowdsecLapiScheme: http
           crowdsecLapiHost: crowdsec:8080
           crowdsecLapiKeyFile: /run/secrets/crowdsec_bouncer_key
-
           crowdsecAppsecEnabled: true
           crowdsecAppsecHost: crowdsec:7422
           crowdsecAppsecFailureBlock: true
           crowdsecAppsecUnreachableBlock: true
-
-          # Plain 403 on ban: no captcha, the HA app and the reading APIs could
-          # not solve one.
           remediationStatusCode: 403
-
-          # Same ranges as lan-only.yaml (see the reasoning there): home network,
-          # Docker bridges (masqueraded WireGuard peers) and the WireGuard subnet.
-          # They skip every check. Traefik sees the real client address on the
-          # published ports and no proxy sits in front, so there is nothing to
-          # set in forwardedHeadersTrustedIPs.
           clientTrustedIPs:
             - "192.168.200.0/24"
             - "172.16.0.0/12"

@@ -179,13 +179,8 @@
         unit_of_measurement: "connections"
         state_class: measurement
 
-  ### banIP (inbound IP reputation blocking, see router/README.md) ###
-  # Charts in packets/min:
-  #   banip.feeds       one dimension per Set (in_cinsscore_v4, in_blocklist_v4...)
-  #   banip.protection  flood / invalid-packet drops (syn, udp, icmp, ct, tcp, bcp38)
-  # "Today" totals: the average rate since midnight (one point per chart, all
-  # dimensions summed) times the minutes elapsed since midnight. Read from the
-  # Netdata parent, which keeps the router's history.
+  ### banIP ###
+  # Charts in packets/min. "Today" = average rate since midnight x minutes elapsed.
 
   - resource_template: >-
       http://localhost:19999/host/OpenWrt/api/v1/data?chart=banip.feeds&after={{ as_timestamp(today_at()) | int }}&before=0&points=1&group=average&format=json&options=unaligned

@@ -1,17 +1,6 @@
 # template:
   ##
-  # CrowdSec -> Home Assistant. CrowdSec (crowdsec/ at the repo root) POSTs every
-  # batch of local bans to this webhook (config/notifications/http.yaml):
-  #   [ {scenario, ip, country, as_name, events}, ... ]
-  # Only bans decided on this server; the community blocklist is not counted.
-  #
-  #   sensor.crowdsec_bans_today  bans since midnight (reset at 00:00)
-  #   sensor.crowdsec_last_ban    last scenario; ip/country/as_name/at in
-  #                               attributes, `batch` = scenarios of the last
-  #                               POST (used by automation.yaml)
-  #
-  # local_only: the webhook only answers private addresses (CrowdSec reaches
-  # it through the Docker bridge), and it is not routed by Traefik anyway.
+  # Fed by CrowdSec's webhook notification (reverse-proxy/crowdsec/notifications/http.yaml)
   ##
 
   - trigger:

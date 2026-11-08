@@ -1,6 +1,0 @@
-# Traefik access log, Common Log Format (Traefik's default).
-# Rotated by logrotate on the host: reverse-proxy/logrotate/traefik-access
-filenames:
-  - /var/log/traefik/access.log
-labels:
-  type: traefik
