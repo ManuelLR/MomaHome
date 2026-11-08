@@ -14,7 +14,7 @@ http:
           streamStartupBlock: false
           crowdsecLapiScheme: http
           crowdsecLapiHost: crowdsec:8080
-          crowdsecLapiKeyFile: /run/secrets/crowdsec_bouncer_key
+          crowdsecLapiKey: '{{ env "CROWDSEC_BOUNCER_KEY" }}'
           crowdsecAppsecEnabled: true
           crowdsecAppsecHost: crowdsec:7422
           crowdsecAppsecFailureBlock: true

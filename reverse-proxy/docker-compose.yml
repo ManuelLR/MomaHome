@@ -14,8 +14,6 @@ services:
       - ./traefik/letsencrypt/:/letsencrypt/
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/file-dynamic-conf/:/etc/traefik/file-dynamic-conf/:ro
-    secrets:
-      - crowdsec_bouncer_key
     # Stdout (access log included) goes to CrowdSec over syslog. `docker logs`
     # keeps working through Docker's local cache, rotated by the cache-* options.
     logging:
@@ -39,6 +37,8 @@ services:
       - DESEC_PROPAGATION_TIMEOUT=660
         # Looks like desec is having problems creating CNAME entries used to validate wildcard certs
       - LEGO_DISABLE_CNAME_SUPPORT=true
+      # Read by traefik/file-dynamic-conf/crowdsec.yaml
+      - CROWDSEC_BOUNCER_KEY=${CROWDSEC_BOUNCER_KEY:?Define CROWDSEC_BOUNCER_KEY in .env}
 
   crowdsec:
     image: crowdsecurity/crowdsec:v1.8.2
@@ -49,6 +49,8 @@ services:
       - TZ=Europe/Madrid
       - COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
       - HA_CROWDSEC_WEBHOOK_URL=${HA_CROWDSEC_WEBHOOK_URL:?Define HA_CROWDSEC_WEBHOOK_URL in .env}
+      # Registers the "traefik" bouncer with this key on first start
+      - BOUNCER_KEY_traefik=${CROWDSEC_BOUNCER_KEY}
     ports:
       # Syslog from Docker's logging driver (Traefik)
       - "127.0.0.1:5514:5514/udp"
@@ -58,18 +60,12 @@ services:
       - ./crowdsec/acquis.d/:/etc/crowdsec/acquis.d/:ro
       - ./crowdsec/profiles.yaml:/etc/crowdsec/profiles.yaml:ro
       - ./crowdsec/notifications/http.yaml:/etc/crowdsec/notifications/http.yaml:ro
-    secrets:
-      # Registers the "traefik" bouncer with this key on first start
-      - source: crowdsec_bouncer_key
-        target: bouncer_key_traefik
+      - ./crowdsec/config.yaml.local:/etc/crowdsec/config.yaml.local:ro
+      - ./crowdsec/console.yaml:/etc/crowdsec/console.yaml:ro
     extra_hosts:
       - host.docker.internal:172.17.0.1
     networks:
       - net-reverse-proxy
-
-secrets:
-  crowdsec_bouncer_key:
-    environment: CROWDSEC_BOUNCER_KEY
 
 networks:
   net-reverse-proxy:

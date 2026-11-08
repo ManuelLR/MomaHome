@@ -13,17 +13,26 @@ LAN and WireGuard clients skip every check. Private addresses are never banned.
 
 ## What leaves the server
 
-For each local ban, CrowdSec's Central API receives the scenario, the
-timestamp, this machine's id and the attacker IP. No host names, URLs, headers
-or bodies; AppSec runs locally. The instance is not enrolled in the CrowdSec
-console, so alert context is never uploaded. `DISABLE_ONLINE_API=true` stops
-sharing altogether, losing the community blocklist.
+Set explicitly in `config.yaml.local` and `console.yaml` (mounted read-only),
+so a change of upstream defaults does not change it:
+
+- Sent: for each ban from a hub scenario, the scenario, timestamps, machine id,
+  the attacker IP (with its AS and country) and the decision. Also, periodically,
+  the CrowdSec and bouncer versions and names.
+- Not sent: alert context (host, URL, user agent), custom/tainted scenarios,
+  manual decisions, usage metrics. The instance is not enrolled in the console.
+- `DISABLE_ONLINE_API=true` would stop all of it, losing the community blocklist.
+
+## Data kept
+
+Log lines are parsed in memory and discarded, except the ones that triggered an
+alert, which are kept with it. Alerts and decisions are
+stored, in the SQLite database under `CROWDSEC_DATA_DIR`, pruned after 7 days
+or 5000 alerts (`db_config.flush`).
 
 ## Setup
 
 1. Fill the CrowdSec variables in `reverse-proxy/.env` (see `.env.example`).
-   The bouncer key reaches both containers as a Compose secret read from the
-   environment, which needs a recent Docker Compose v2.
 2. Put the webhook id of `HA_CROWDSEC_WEBHOOK_URL` in Home Assistant's
    `secrets.yaml` as `crowdsec_webhook_id`.
 3. `docker compose up -d` in `reverse-proxy/`.

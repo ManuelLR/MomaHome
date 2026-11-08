@@ -1,0 +1,10 @@
+# Merged over the image's config.yaml
+db_config:
+  flush:
+    max_items: 5000
+    max_age: 7d
+api:
+  server:
+    disable_usage_metrics_export: true
+prometheus:
+  enabled: false
