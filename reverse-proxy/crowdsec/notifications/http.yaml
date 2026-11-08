@@ -2,8 +2,6 @@
 type: http
 name: http_home_assistant
 log_level: info
-group_wait: 30s
-group_threshold: 20
 max_retry: 3
 timeout: 10s
 format: |
