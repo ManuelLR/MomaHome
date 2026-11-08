@@ -27,8 +27,8 @@ so a change of upstream defaults does not change it:
 
 Log lines are parsed in memory and discarded, except the ones that triggered an
 alert, which are kept with it. Alerts and decisions are
-stored, in the SQLite database under `CROWDSEC_DATA_DIR`, pruned after 7 days
-or 5000 alerts (`db_config.flush`).
+stored, in the SQLite database under `CROWDSEC_DATA_DIR`, pruned after 30 days
+or 20000 alerts (`db_config.flush`).
 
 ## Setup
 
