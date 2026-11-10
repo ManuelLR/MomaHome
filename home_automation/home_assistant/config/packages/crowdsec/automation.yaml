@@ -18,7 +18,7 @@
           title: 'CrowdSec: exploit attempt blocked'
           message: >
             Banned `{{ trigger.to_state.attributes.ip }}`
-            ({{ trigger.to_state.attributes.country }}, {{ trigger.to_state.attributes.as_name }}).
+            (`{{ trigger.to_state.attributes.country or '?' }}`, `{{ trigger.to_state.attributes.as_name or '?' }}`).
 
             Scenarios: `{{ trigger.to_state.attributes.batch | join('`, `') }}`
             {%- set hosts = trigger.to_state.attributes.hosts | default([]) %}
