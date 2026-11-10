@@ -1,0 +1,13 @@
+# Netdata auto-generated and runtime directories
+netdataconfig/netdata.conf
+netdataconfig/cloud.d/
+netdataconfig/go.d/
+netdataconfig/python.d/
+netdataconfig/charts.d/
+netdataconfig/node.d/
+netdataconfig/statsd.d/
+netdataconfig/ssl/
+
+# Runtime volumes (not config)
+netdatalib/
+netdatacache/

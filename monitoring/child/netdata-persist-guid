@@ -1,0 +1,39 @@
+#!/bin/sh /etc/rc.common
+#
+# Persist Netdata machine GUID across reboots on OpenWrt.
+#
+# On OpenWrt, /var/lib/netdata/ lives in tmpfs (RAM) and is wiped on every
+# reboot, causing Netdata to register as a brand-new node each time.
+# This script copies a saved GUID from /etc/netdata/ (persistent flash
+# storage) into the expected runtime location before Netdata starts.
+#
+# Setup (one-time, on the router):
+#   1. Let Netdata run at least once to generate its GUID:
+#        cat /var/lib/netdata/registry/netdata.public.unique.id
+#   2. Save it to persistent storage:
+#        cp /var/lib/netdata/registry/netdata.public.unique.id \
+#           /etc/netdata/machine_guid
+#   3. Install and enable this script:
+#        cp /path/to/netdata-persist-guid /etc/init.d/netdata-persist-guid
+#        chmod +x /etc/init.d/netdata-persist-guid
+#        /etc/init.d/netdata-persist-guid enable
+
+USE_PROCD=1
+START=19   # must run before netdata (typically START=20)
+STOP=89
+
+GUID_PERSISTENT="/etc/netdata/machine_guid"
+GUID_RUNTIME_DIR="/var/lib/netdata/registry"
+GUID_RUNTIME="$GUID_RUNTIME_DIR/netdata.public.unique.id"
+
+start_service() {
+    [ -f "$GUID_PERSISTENT" ] || {
+        logger -t netdata-persist-guid \
+            "No persistent GUID found at $GUID_PERSISTENT; Netdata will generate a new one"
+        return 0
+    }
+
+    mkdir -p "$GUID_RUNTIME_DIR"
+    cp "$GUID_PERSISTENT" "$GUID_RUNTIME"
+    logger -t netdata-persist-guid "Restored machine GUID from $GUID_PERSISTENT"
+}
