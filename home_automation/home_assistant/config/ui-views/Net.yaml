@@ -16,6 +16,20 @@
     - sensor.router_active_connections
 
 - type: entities
+  title: 'banIP (router)'
+  entities:
+    - sensor.router_banip_blocked_today
+    - sensor.router_banip_blocked_rate
+    - sensor.router_banip_protection_drops_today
+    - sensor.router_banip_listed_ips
+
+- type: history-graph
+  title: 'banIP blocked'
+  hours_to_show: 48
+  entities:
+    - sensor.router_banip_blocked_rate
+
+- type: entities
   title: 'Internet Latency (FPing)'
   entities:
     - sensor.router_ping_google_avg

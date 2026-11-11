@@ -29,3 +29,11 @@
       - sensor.router_wifi_5ghz_sent
       - sensor.router_wifi_2_4ghz_received
       - sensor.router_wifi_2_4ghz_sent
+
+  netdata_router_banip:
+    name: Router banIP
+    entities:
+      - sensor.router_banip_blocked_today
+      - sensor.router_banip_blocked_rate
+      - sensor.router_banip_protection_drops_today
+      - sensor.router_banip_listed_ips

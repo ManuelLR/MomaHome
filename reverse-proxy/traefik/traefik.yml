@@ -7,7 +7,15 @@ global:
 # log:
 #   level: DEBUG
 
-accessLog: {}
+## Stdout, sent to CrowdSec by the syslog logging driver (docker-compose.yml).
+## JSON so CrowdSec gets the requested host (CLF has none).
+accessLog:
+  format: json
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep
 
 entryPoints:
   web:
@@ -20,11 +28,22 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
+    http:
+      ## Every router on this entrypoint, see file-dynamic-conf/crowdsec.yaml
+      middlewares:
+        - crowdsec@file
     # http:
     #   maxHeaderBytes: 4194304
   dns-tls:
     address: ":853"
 
+
+experimental:
+  plugins:
+    crowdsec-bouncer:
+      moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
+      # renovate: datasource=github-releases depName=maxlerebourg/crowdsec-bouncer-traefik-plugin
+      version: v1.8.1
 
 # Docker configuration backend
 providers:

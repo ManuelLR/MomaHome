@@ -51,7 +51,7 @@ syncing; `--delete` removes whatever is not in `dist/`.
 
 - **LAN-only (temporary).** Like every other router, it carries the
   `global-lan-only@file` middleware (see
-  `reverse-proxy/file-dynamic-conf/lan-only.yaml`). `git grep lan-only.yaml`
+  `reverse-proxy/traefik/file-dynamic-conf/lan-only.yaml`). `git grep lan-only.yaml`
   lists it with the rest. To publish it to the internet, remove that label and
   recreate the container; consider first the pending points below.
 - **Caching.** `/assets/*` (hashed by Vite): 1 year, `immutable`.

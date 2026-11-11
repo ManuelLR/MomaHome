@@ -20,7 +20,7 @@ services:
       # are mutually exclusive on purpose, so matching never depends on
       # Traefik's rule-length priority heuristic.
       - "traefik.http.routers.galley.rule=Host(`${GALLEY_EXTERNAL_DOMAIN}`) && !PathPrefix(`/_/`) && !Path(`/mcp`) && !PathPrefix(`/oauth/`) && !PathPrefix(`/.well-known/oauth-`)"
-      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/file-dynamic-conf/lan-only.yaml
+      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/traefik/file-dynamic-conf/lan-only.yaml
       - "traefik.http.routers.galley.middlewares=global-lan-only@file"
       - "traefik.http.routers.galley.entrypoints=websecure"
       - "traefik.http.routers.galley.tls.certresolver=principal"
@@ -87,7 +87,7 @@ services:
       # login rate limit keys on X-Real-IP, which Traefik sets from the
       # connection (no trusted forwardedHeaders on websecure).
       - "traefik.http.routers.galley-mcp.rule=Host(`${GALLEY_EXTERNAL_DOMAIN}`) && (Path(`/mcp`) || PathPrefix(`/oauth/`) || PathPrefix(`/.well-known/oauth-`))"
-      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/file-dynamic-conf/lan-only.yaml
+      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/traefik/file-dynamic-conf/lan-only.yaml
       - "traefik.http.routers.galley-mcp.middlewares=global-lan-only@file"
       - "traefik.http.routers.galley-mcp.entrypoints=websecure"
       - "traefik.http.routers.galley-mcp.tls.certresolver=principal"

@@ -1,0 +1,5 @@
+# Alert context added to the hub's (http_base, appsec_base). Kept locally:
+# share_context is off in console.yaml.
+target_host:
+  - evt.Meta.target_fqdn
+  - evt.Meta.target_host

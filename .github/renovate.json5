@@ -187,6 +187,17 @@
       versioningTemplate: 'docker'
     },
     {
+      // Traefik plugins (experimental.plugins in traefik.yml)
+      customType: 'regex',
+      managerFilePatterns: [
+        '/(^|/)reverse-proxy/traefik/traefik\\.yml$/'
+      ],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s*\\n\\s*version: (?<currentValue>\\S+)'
+      ],
+      versioningTemplate: 'semver-coerced'
+    },
+    {
       // Custom regex for Calibre Web (not auto-detected)
       customType: 'regex',
       managerFilePatterns: [

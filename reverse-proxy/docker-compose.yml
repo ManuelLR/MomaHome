@@ -11,9 +11,19 @@ services:
       - "192.168.200.7:853:853"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./letsencrypt/:/letsencrypt/
-      - ./traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./file-dynamic-conf/:/etc/traefik/file-dynamic-conf/:ro
+      - ./traefik/letsencrypt/:/letsencrypt/
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/file-dynamic-conf/:/etc/traefik/file-dynamic-conf/:ro
+    # Stdout (access log included) goes to CrowdSec over syslog. `docker logs`
+    # keeps working through Docker's local cache, rotated by the cache-* options.
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:5514"
+        syslog-format: rfc5424micro
+        tag: traefik
+        cache-max-size: "50m"
+        cache-max-file: "5"
     extra_hosts:
       - host.docker.internal:172.17.0.1
     networks:
@@ -27,6 +37,36 @@ services:
       - DESEC_PROPAGATION_TIMEOUT=660
         # Looks like desec is having problems creating CNAME entries used to validate wildcard certs
       - LEGO_DISABLE_CNAME_SUPPORT=true
+      # Read by traefik/file-dynamic-conf/crowdsec.yaml
+      - CROWDSEC_BOUNCER_KEY=${CROWDSEC_BOUNCER_KEY:?Define CROWDSEC_BOUNCER_KEY in .env}
+
+  crowdsec:
+    image: crowdsecurity/crowdsec:v1.8.2
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=Europe/Madrid
+      - COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
+      - HA_CROWDSEC_WEBHOOK_URL=${HA_CROWDSEC_WEBHOOK_URL:?Define HA_CROWDSEC_WEBHOOK_URL in .env}
+      # Registers the "traefik" bouncer with this key on first start
+      - BOUNCER_KEY_traefik=${CROWDSEC_BOUNCER_KEY}
+    ports:
+      # Syslog from Docker's logging driver (Traefik)
+      - "127.0.0.1:5514:5514/udp"
+    volumes:
+      - ${CROWDSEC_CONFIG_DIR:?Define CROWDSEC_CONFIG_DIR in .env}:/etc/crowdsec/
+      - ${CROWDSEC_DATA_DIR:?Define CROWDSEC_DATA_DIR in .env}:/var/lib/crowdsec/data/
+      - ./crowdsec/acquis.d/:/etc/crowdsec/acquis.d/:ro
+      - ./crowdsec/profiles.yaml:/etc/crowdsec/profiles.yaml:ro
+      - ./crowdsec/notifications/http.yaml:/etc/crowdsec/notifications/http.yaml:ro
+      - ./crowdsec/config.yaml.local:/etc/crowdsec/config.yaml.local:ro
+      - ./crowdsec/console.yaml:/etc/crowdsec/console.yaml:ro
+      - ./crowdsec/context.yaml:/etc/crowdsec/console/context.yaml:ro
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
+    networks:
+      - net-reverse-proxy
 
 networks:
   net-reverse-proxy:

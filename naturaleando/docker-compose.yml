@@ -32,7 +32,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.naturaleando.loadbalancer.server.port=8080"
       - "traefik.http.routers.naturaleando.rule=Host(`${NATURALEANDO_EXTERNAL_DOMAIN}`)"
-      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/file-dynamic-conf/lan-only.yaml
+      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/traefik/file-dynamic-conf/lan-only.yaml
       - "traefik.http.routers.naturaleando.middlewares=global-lan-only@file"
       - "traefik.http.routers.naturaleando.entrypoints=websecure"
       - "traefik.http.routers.naturaleando.tls.certresolver=principal"
