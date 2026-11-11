@@ -1,0 +1,73 @@
+action: fire-dom-event
+browser_mod:
+  service: browser_mod.popup
+  style:
+    border-radius: 0px
+    '--ha-card-border-radius': 0px
+  data:
+    title: Limpieza
+    dismissable: true
+    content:
+      type: vertical-stack
+      cards:
+        # Live duration and amount (rendered by the backend, refreshed every minute)
+        - type: custom:mushroom-template-card
+          primary: "{{ states('input_select.cleaning_status') }}"
+          secondary: >
+            {% set s = states('input_select.cleaning_status') %}
+            {% set start = state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) %}
+            {% if s in ['En curso', 'Pagada'] and start > 0 %}
+              {% set secs = [as_timestamp(now()) - start, 0] | max %}
+              {% set price = states('input_number.cleaning_price_per_hour') | float(0) %}
+              Desde las {{ start | timestamp_custom('%H:%M') }} · {{ (secs // 3600) | int }}h{{ '%02d' % (((secs % 3600) // 60) | int) }} · {{ '%.2f' % (secs / 3600 * price) }} €
+              {%- if s == 'Pagada' %} · Pagado {{ '%.2f' % (states('input_number.cleaning_amount_paid') | float(0)) }} €{% endif %}
+            {% elif s == 'Esperada' %}Esperando a que llegue
+            {% elif s == 'Cancelada' %}Hoy no viene
+            {% else %}Sin limpieza
+            {% endif %}
+          icon: mdi:broom
+          icon_color: >
+            {% set s = states('input_select.cleaning_status') %}
+            {% if   s == 'En curso'  %}blue
+            {% elif s == 'Pagada'    %}green
+            {% elif s == 'Esperada'  %}orange
+            {% elif s == 'Cancelada' %}red
+            {% else %}disabled{% endif %}
+          tap_action:
+            action: none
+
+        - type: conditional
+          conditions:
+            - condition: state
+              entity: input_select.cleaning_status
+              state: En curso
+          card:
+            type: custom:mushroom-template-card
+            primary: Marcar como pagado
+            secondary: >
+              {% set start = state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) %}
+              {% set secs = [as_timestamp(now()) - start, 0] | max %}
+              Registra {{ '%.2f' % (secs / 3600 * states('input_number.cleaning_price_per_hour') | float(0)) }} € como pagado
+            icon: mdi:cash-check
+            icon_color: green
+            tap_action:
+              action: perform-action
+              perform_action: script.cleaning_mark_paid
+              confirmation:
+                text: ¿Registrar el pago de la limpieza?
+
+        - type: entities
+          entities:
+            - entity: input_datetime.cleaning_started_at
+              name: Entrada
+            - entity: input_datetime.cleaning_ended_at
+              name: Salida
+            - entity: input_number.cleaning_amount_paid
+              name: Importe pagado
+            - type: divider
+            - entity: input_number.cleaning_price_per_hour
+              name: Precio por hora
+            - entity: input_number.cleaning_ask_exit_after_hours
+              name: Sin pago, preguntar salida tras
+            - entity: input_select.cleaning_status
+              name: Estado (manual)

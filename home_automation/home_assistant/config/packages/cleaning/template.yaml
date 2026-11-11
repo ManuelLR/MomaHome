@@ -1,0 +1,19 @@
+# template:
+  # WARNING: state-based entities — briefly 'unknown' on restart and 'unavailable' on
+  # YAML reload. Automations triggering on them MUST use not_from: [unknown, unavailable].
+  - sensor:
+    # Mirror of the input_select so it can be shown as a plain row (with a popup)
+    # in the "Cosas encendidas" card, like the washing machine.
+    - name: Limpieza
+      unique_id: cleaning_status
+      default_entity_id: sensor.cleaning_status
+      icon: mdi:broom
+      state: "{{ states('input_select.cleaning_status') }}"
+  - binary_sensor:
+    # "Cleaning mode": use it as condition in any automation that should behave
+    # differently while the cleaner is (or is about to be) at home.
+    - name: Cleaning Mode
+      unique_id: cleaning_mode
+      default_entity_id: binary_sensor.cleaning_mode
+      icon: mdi:broom
+      state: "{{ states('input_select.cleaning_status') in ['Esperada', 'En curso', 'Pagada'] }}"

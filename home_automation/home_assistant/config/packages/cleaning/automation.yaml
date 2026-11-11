@@ -1,0 +1,399 @@
+# automation:
+  # Flow (see README.md):
+  #   Inactiva ──(calendar.limpieza start)──> Esperada ──(Telegram ✅ on a door opening)──> En curso
+  #   En curso ──(UI "Pagado")──> Pagada ──(next door opening + 10 min grace)──> cleaning_finalize ──> Inactiva
+  #   En curso ──(after X hours, Telegram 👋 on a door opening)──> cleaning_finalize ──> Inactiva
+  #   Inactiva/Esperada ──(Telegram "Hoy no viene")──> Cancelada ──(calendar end)──> Inactiva
+
+  ########################################
+  ## Calendar slot
+  ########################################
+  - alias: AUT-Cleaning reminder before slot
+    id: aut_cleaning_reminder_before_slot
+    initial_state: 'on'
+    triggers:
+      - trigger: calendar
+        event: start
+        offset: "-01:00:00"
+        entity_id: calendar.limpieza
+    conditions:
+      - condition: state
+        entity_id: input_select.cleaning_status
+        state: Inactiva
+    actions:
+      - service: script.telegram_notify
+        data:
+          title: '🧹 Hoy viene la limpieza'
+          message: >
+            Prevista de {{ as_timestamp(trigger.calendar_event.start) | timestamp_custom('%H:%M') }}
+            a {{ as_timestamp(trigger.calendar_event.end) | timestamp_custom('%H:%M') }}.
+            Si hoy no viene, cancélalo aquí.
+          inline_keyboard:
+            - '❌ Hoy no viene:/cleaning_cancel'
+
+  - alias: AUT-Cleaning slot start
+    id: aut_cleaning_slot_start
+    initial_state: 'on'
+    triggers:
+      - trigger: calendar
+        event: start
+        entity_id: calendar.limpieza
+    conditions:
+      - condition: state
+        entity_id: input_select.cleaning_status
+        state: Inactiva
+    actions:
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.cleaning_status
+        data:
+          option: Esperada
+
+  - alias: AUT-Cleaning slot end
+    id: aut_cleaning_slot_end
+    initial_state: 'on'
+    triggers:
+      - trigger: calendar
+        event: end
+        entity_id: calendar.limpieza
+    actions:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_select.cleaning_status
+                state:
+                  - Esperada
+                  - Cancelada
+            sequence:
+              - service: input_select.select_option
+                target:
+                  entity_id: input_select.cleaning_status
+                data:
+                  option: Inactiva
+          - conditions:
+              - condition: state
+                entity_id: input_select.cleaning_status
+                state: En curso
+            sequence:
+              - service: script.telegram_notify
+                data:
+                  title: '🧹 Limpieza aún en curso'
+                  message: >
+                    La franja del calendario ha terminado y la limpieza sigue en curso.
+                    Recuerda registrar el pago desde Home Assistant.
+
+  # Safety net: HA restarted during the slot end, or the event was deleted after
+  # being cancelled. Also reminds about sessions that were never closed.
+  - alias: AUT-Cleaning housekeeping
+    id: aut_cleaning_housekeeping
+    initial_state: 'on'
+    triggers:
+      - trigger: homeassistant
+        id: ha_start
+        event: start
+      - trigger: time
+        id: midnight
+        at: '00:00:00'
+    actions:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_select.cleaning_status
+                state:
+                  - Esperada
+                  - Cancelada
+              - condition: state
+                entity_id: calendar.limpieza
+                state: 'off'
+            sequence:
+              - service: input_select.select_option
+                target:
+                  entity_id: input_select.cleaning_status
+                data:
+                  option: Inactiva
+      - condition: template
+        value_template: "{{ trigger.id == 'midnight' and states('input_select.cleaning_status') in ['En curso', 'Pagada'] }}"
+      - variables:
+          last_door_ts: "{{ as_timestamp(states.binary_sensor.entrance_door_sensor_opened.last_changed) | int(0) }}"
+      - service: script.telegram_notify
+        data:
+          title: '🧹 Limpieza sin cerrar'
+          message: >
+            La limpieza sigue marcada como "{{ states('input_select.cleaning_status') }}".
+            La última apertura de la puerta fue a las {{ last_door_ts | timestamp_custom('%H:%M') }}.
+          inline_keyboard:
+            - '👋 Se fue a las {{ last_door_ts | timestamp_custom("%H:%M") }}:/cleaning_end {{ last_door_ts }}'
+
+  ########################################
+  ## Entrance door
+  ########################################
+  - alias: AUT-Cleaning door opened
+    id: aut_cleaning_door_opened
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.entrance_door_sensor_opened
+        from: 'off'
+        to: 'on'
+    variables:
+      status: "{{ states('input_select.cleaning_status') }}"
+      opened_ts: "{{ as_timestamp(trigger.to_state.last_changed) | int }}"
+      opened_hm: "{{ opened_ts | timestamp_custom('%H:%M') }}"
+      start_ts: "{{ state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) }}"
+      hours_in: "{{ (opened_ts - start_ts) / 3600 }}"
+      ask_exit_after: "{{ states('input_number.cleaning_ask_exit_after_hours') | float(4) }}"
+    actions:
+      - choose:
+          # Waiting for her: every opening asks, each message carries its own time.
+          - conditions: "{{ status == 'Esperada' }}"
+            sequence:
+              - service: script.telegram_notify
+                data:
+                  title: '🚪 Puerta abierta a las {{ opened_hm }}'
+                  message: '¿Es la limpieza entrando?'
+                  inline_keyboard:
+                    - '✅ Entró a las {{ opened_hm }}:/cleaning_start {{ opened_ts }}, ❌ No:/cleaning_ignore'
+
+          # Payment forgotten: after X hours every opening asks whether she left.
+          - conditions: "{{ status == 'En curso' and hours_in >= ask_exit_after }}"
+            sequence:
+              - service: script.telegram_notify
+                data:
+                  title: '🚪 Puerta abierta a las {{ opened_hm }}'
+                  message: >
+                    La limpieza lleva {{ (hours_in | int) }}h{{ '%02d' % (((hours_in % 1) * 60) | int) }} y no se ha registrado el pago.
+                    ¿Se ha ido?
+                  inline_keyboard:
+                    - '👋 Se fue a las {{ opened_hm }}:/cleaning_end {{ opened_ts }}, ❌ No:/cleaning_ignore'
+
+          # Already paid: this opening is her leaving. Close after a grace period
+          # (a later opening during it replaces the exit time).
+          - conditions: "{{ status == 'Pagada' }}"
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.cleaning_ended_at
+                data:
+                  timestamp: "{{ opened_ts }}"
+              - service: timer.start
+                target:
+                  entity_id: timer.cleaning_finalize_in
+              - service: script.telegram_notify
+                data:
+                  disable_notification: true
+                  title: '👋 Salida de la limpieza a las {{ opened_hm }}'
+                  message: >
+                    Se cerrará en 10 minutos. Si la puerta vuelve a abrirse antes, se tomará esa hora.
+                  inline_keyboard:
+                    - '↩️ No era ella:/cleaning_undo_end'
+
+  - alias: AUT-Cleaning finalize after grace period
+    id: aut_cleaning_finalize_after_grace_period
+    initial_state: 'on'
+    triggers:
+      - trigger: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.cleaning_finalize_in
+    actions:
+      - service: script.cleaning_finalize
+
+  ########################################
+  ## Telegram callbacks
+  ########################################
+  - alias: AUT-Cleaning Telegram cancel today
+    id: aut_cleaning_telegram_cancel_today
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/cleaning_cancel"
+    actions:
+      - if:
+          - condition: state
+            entity_id: input_select.cleaning_status
+            state:
+              - Inactiva
+              - Esperada
+        then:
+          - service: input_select.select_option
+            target:
+              entity_id: input_select.cleaning_status
+            data:
+              option: Cancelada
+          - service: script.cleaning_telegram_reply
+            data:
+              callback: "{{ trigger.event.data }}"
+              answer: 'Cancelada'
+              new_text: >
+                ❌ Limpieza cancelada para hoy.
+                El evento sigue en el calendario: bórralo desde Home Assistant si quieres
+                (las automatizaciones no pueden borrar eventos).
+        else:
+          - service: script.cleaning_telegram_reply
+            data:
+              callback: "{{ trigger.event.data }}"
+              answer: "No se puede cancelar: la limpieza está {{ states('input_select.cleaning_status') }}"
+
+  - alias: AUT-Cleaning Telegram start
+    id: aut_cleaning_telegram_start
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/cleaning_start"
+    variables:
+      start_ts: "{{ trigger.event.data.args[0] | int(0) }}"
+      start_hm: "{{ start_ts | timestamp_custom('%H:%M') }}"
+      status: "{{ states('input_select.cleaning_status') }}"
+    actions:
+      # Esperada/Cancelada: she arrived. En curso: correcting the entrance time.
+      - if: "{{ start_ts > 0 and status in ['Esperada', 'Cancelada', 'En curso'] }}"
+        then:
+          - service: input_datetime.set_datetime
+            target:
+              entity_id: input_datetime.cleaning_started_at
+            data:
+              timestamp: "{{ start_ts }}"
+          - if: "{{ status != 'En curso' }}"
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.cleaning_amount_paid
+                data:
+                  value: 0
+              - service: input_select.select_option
+                target:
+                  entity_id: input_select.cleaning_status
+                data:
+                  option: En curso
+          - service: script.cleaning_telegram_reply
+            data:
+              callback: "{{ trigger.event.data }}"
+              answer: "Entrada a las {{ start_hm }}"
+              new_text: >
+                {{ '✏️ Entrada corregida' if status == 'En curso' else '✅ Entrada de la limpieza registrada' }}
+                a las {{ start_hm }}.
+        else:
+          - service: script.cleaning_telegram_reply
+            data:
+              callback: "{{ trigger.event.data }}"
+              answer: "Ya no aplica: la limpieza está {{ status }}"
+
+  - alias: AUT-Cleaning Telegram end
+    id: aut_cleaning_telegram_end
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/cleaning_end"
+    variables:
+      end_ts: "{{ trigger.event.data.args[0] | int(0) }}"
+      end_hm: "{{ end_ts | timestamp_custom('%H:%M') }}"
+      status: "{{ states('input_select.cleaning_status') }}"
+    actions:
+      - if: "{{ end_ts > 0 and status in ['En curso', 'Pagada'] }}"
+        then:
+          - service: input_datetime.set_datetime
+            target:
+              entity_id: input_datetime.cleaning_ended_at
+            data:
+              timestamp: "{{ end_ts }}"
+          - service: script.cleaning_telegram_reply
+            data:
+              callback: "{{ trigger.event.data }}"
+              answer: "Salida a las {{ end_hm }}"
+              new_text: "👋 Salida de la limpieza registrada a las {{ end_hm }}."
+          - service: script.cleaning_finalize
+        else:
+          - service: script.cleaning_telegram_reply
+            data:
+              callback: "{{ trigger.event.data }}"
+              answer: "Ya no aplica: la limpieza está {{ status }}"
+
+  - alias: AUT-Cleaning Telegram undo end
+    id: aut_cleaning_telegram_undo_end
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/cleaning_undo_end"
+    actions:
+      - if:
+          - condition: state
+            entity_id: input_select.cleaning_status
+            state: Pagada
+          - condition: state
+            entity_id: timer.cleaning_finalize_in
+            state:
+              - active
+              - paused
+        then:
+          - service: timer.cancel
+            target:
+              entity_id: timer.cleaning_finalize_in
+          - service: script.cleaning_telegram_reply
+            data:
+              callback: "{{ trigger.event.data }}"
+              answer: 'Salida descartada'
+              new_text: '↩️ Salida descartada. La próxima apertura de la puerta se volverá a tomar como su salida.'
+        else:
+          - service: script.cleaning_telegram_reply
+            data:
+              callback: "{{ trigger.event.data }}"
+              answer: 'Ya no aplica: la limpieza ya se ha cerrado'
+
+  - alias: AUT-Cleaning Telegram ignore
+    id: aut_cleaning_telegram_ignore
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/cleaning_ignore"
+    actions:
+      - service: script.cleaning_telegram_reply
+        data:
+          callback: "{{ trigger.event.data }}"
+          answer: 'Ignorado'
+          new_text: "{{ (trigger.event.data.message.text if trigger.event.data.message else '') ~ '\n\n➖ Ignorado' }}"
+
+  ########################################
+  ## Other devices
+  ########################################
+  # When the cleaning mode starts, stop anything the vacuum was about to do.
+  - alias: AUT-Cleaning mode stops vacuum
+    id: aut_cleaning_mode_stops_vacuum
+    initial_state: 'on'
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.cleaning_mode
+        from: 'off'
+        to: 'on'
+    actions:
+      - service: timer.cancel
+        target:
+          entity_id: timer.vacuum_start_in
+      - if:
+          - condition: state
+            entity_id: vacuum.valetudo_roborocks5
+            state: cleaning
+        then:
+          - service: vacuum.return_to_base
+            target:
+              entity_id: vacuum.valetudo_roborocks5
+          - service: script.telegram_notify
+            data:
+              disable_notification: true
+              title: '🧹 Modo limpieza'
+              message: 'El aspirador estaba funcionando y lo he mandado a la base.'

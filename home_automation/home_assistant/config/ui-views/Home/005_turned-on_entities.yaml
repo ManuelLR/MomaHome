@@ -45,6 +45,16 @@ entities:
     tap_action: !include ../utils/tv-card.yaml
   - entity: media_player.mini
     name: Mini (cocina)
+  - entity: sensor.cleaning_status
+    name: Limpieza
+    icon: mdi:broom
+    tap_action: !include ../utils/cleaning-card.yaml
+    conditions:
+      - condition: state
+        state_not:
+          - Inactiva
+          - unknown
+          - unavailable
   - entity: sensor.dishwasher_common_status_operationstate
     name: Lavavajillas
     icon: mdi:dishwasher

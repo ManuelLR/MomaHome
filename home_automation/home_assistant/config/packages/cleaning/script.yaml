@@ -1,0 +1,131 @@
+# script:
+  # Pressed from the UI ("Pagado"): stores the amount due right now as paid. From
+  # here on, the next door opening is considered her leaving.
+  cleaning_mark_paid:
+    alias: "Limpieza - Marcar como pagado"
+    icon: mdi:cash-check
+    mode: single
+    variables:
+      start_ts: "{{ state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) }}"
+      secs: "{{ [as_timestamp(now()) - start_ts, 0] | max }}"
+      price: "{{ states('input_number.cleaning_price_per_hour') | float(0) }}"
+      amount: "{{ (secs / 3600 * price) | round(2) }}"
+      duration_text: "{{ (secs // 3600) | int }}h{{ '%02d' % (((secs % 3600) // 60) | int) }}"
+    sequence:
+      - condition: state
+        entity_id: input_select.cleaning_status
+        state: En curso
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.cleaning_amount_paid
+        data:
+          value: "{{ amount }}"
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.cleaning_status
+        data:
+          option: Pagada
+      - service: script.telegram_notify
+        data:
+          disable_notification: true
+          title: '💶 Pago de la limpieza registrado'
+          message: >
+            {{ duration_text }} → {{ '%.2f' % amount }} €.
+            La próxima apertura de la puerta se registrará como su salida.
+
+  # Closes the cleaning session: creates the record event in calendar.limpieza_registro,
+  # sends the summary and goes back to Inactiva.
+  cleaning_finalize:
+    alias: "Limpieza - Cerrar sesión"
+    icon: mdi:broom
+    mode: single
+    variables:
+      start_ts: "{{ state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) }}"
+      end_ts: "{{ state_attr('input_datetime.cleaning_ended_at', 'timestamp') | float(0) }}"
+      secs: "{{ [end_ts - start_ts, 0] | max }}"
+      price: "{{ states('input_number.cleaning_price_per_hour') | float(0) }}"
+      due: "{{ (secs / 3600 * price) | round(2) }}"
+      was_paid: "{{ is_state('input_select.cleaning_status', 'Pagada') }}"
+      paid: "{{ states('input_number.cleaning_amount_paid') | float(0) if was_paid else 0 }}"
+      duration_text: "{{ (secs // 3600) | int }}h{{ '%02d' % (((secs % 3600) // 60) | int) }}"
+    sequence:
+      - condition: state
+        entity_id: input_select.cleaning_status
+        state:
+          - En curso
+          - Pagada
+      - service: timer.cancel
+        target:
+          entity_id: timer.cleaning_finalize_in
+      - service: calendar.create_event
+        continue_on_error: true
+        target:
+          entity_id: calendar.limpieza_registro
+        data:
+          summary: >
+            🧹 Limpieza {{ duration_text }} · {{ '%.2f' % (paid if was_paid else due) }} €{{ '' if was_paid else ' (pendiente de pago)' }}
+          description: |
+            Entrada: {{ start_ts | timestamp_custom('%H:%M') }}
+            Salida: {{ end_ts | timestamp_custom('%H:%M') }}
+            Duración: {{ duration_text }}
+            Precio/hora: {{ '%.2f' % price }} €
+            Importe calculado a la salida: {{ '%.2f' % due }} €
+            Pagado: {{ ('%.2f €' % paid) if was_paid else 'pendiente' }}
+          start_date_time: "{{ start_ts | timestamp_local }}"
+          end_date_time: "{{ [end_ts, start_ts + 60] | max | timestamp_local }}"
+      # She has just cleaned the house: do not let the vacuum start right after.
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.vacuum_last_full_clean
+        data:
+          timestamp: "{{ as_timestamp(now()) }}"
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.cleaning_status
+        data:
+          option: Inactiva
+      - service: script.telegram_notify
+        data:
+          title: '👋 Limpieza terminada'
+          message: >
+            {{ start_ts | timestamp_custom('%H:%M') }}–{{ end_ts | timestamp_custom('%H:%M') }} ({{ duration_text }}).
+            {% if was_paid %}Pagado: {{ '%.2f' % paid }} €.
+            {% else %}⚠️ No se registró el pago: le corresponden {{ '%.2f' % due }} €.
+            {% endif %}
+            Registrado en el calendario "Limpieza registro".
+
+  # Helper for the Telegram callbacks: answers the callback (small toast) and replaces
+  # the pressed message text (which also removes its buttons).
+  cleaning_telegram_reply:
+    alias: "Limpieza - Responder callback Telegram"
+    mode: parallel
+    fields:
+      callback:
+        description: "trigger.event.data of the telegram_callback event"
+        required: true
+        selector:
+          object:
+      answer:
+        required: true
+        selector:
+          text:
+      new_text:
+        required: false
+        selector:
+          text:
+            multiline: true
+    sequence:
+      - service: telegram_bot.answer_callback_query
+        continue_on_error: true
+        data:
+          callback_query_id: "{{ callback.id }}"
+          message: "{{ answer }}"
+      - if: "{{ new_text is defined and new_text | length > 0 and callback.message is not none }}"
+        then:
+          - service: telegram_bot.edit_message
+            continue_on_error: true
+            data:
+              chat_id: "{{ callback.chat_id }}"
+              message_id: "{{ callback.message.message_id }}"
+              message: "{{ new_text }}"
+              parse_mode: plain_text
