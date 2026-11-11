@@ -116,7 +116,7 @@ RUN \
     && git clone https://github.com/sca075/mqtt_vacuum_camera.git /tmp/mqtt_vacuum_camera \
     && cd /tmp/mqtt_vacuum_camera && git checkout $CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION \
     && cd - && cp -r /tmp/mqtt_vacuum_camera/custom_components/mqtt_vacuum_camera /opt/HA/config/custom_components/ \
-    # Bermuda (BLE presence from every bluetooth scanner/proxy, no per-node config)
+    # bermuda
     && git clone https://github.com/agittins/bermuda.git /tmp/bermuda \
     && cd /tmp/bermuda && git checkout $CUSTOM_COMPONENT_BERMUDA_VERSION \
     && cd - && cp -r /tmp/bermuda/custom_components/bermuda /opt/HA/config/custom_components/ \
