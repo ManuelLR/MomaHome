@@ -73,12 +73,6 @@
             Pagado: {{ ('%.2f €' % paid) if was_paid else 'pendiente' }}
           start_date_time: "{{ start_ts | timestamp_local }}"
           end_date_time: "{{ [end_ts, start_ts + 60] | max | timestamp_local }}"
-      # She has just cleaned the house: do not let the vacuum start right after.
-      - service: input_datetime.set_datetime
-        target:
-          entity_id: input_datetime.vacuum_last_full_clean
-        data:
-          timestamp: "{{ as_timestamp(now()) }}"
       - service: input_select.select_option
         target:
           entity_id: input_select.cleaning_status

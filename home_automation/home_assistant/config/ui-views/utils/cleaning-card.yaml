@@ -22,7 +22,6 @@ browser_mod:
               Desde las {{ start | timestamp_custom('%H:%M') }} · {{ (secs // 3600) | int }}h{{ '%02d' % (((secs % 3600) // 60) | int) }} · {{ '%.2f' % (secs / 3600 * price) }} €
               {%- if s == 'Pagada' %} · Pagado {{ '%.2f' % (states('input_number.cleaning_amount_paid') | float(0)) }} €{% endif %}
             {% elif s == 'Esperada' %}Esperando a que llegue
-            {% elif s == 'Cancelada' %}Hoy no viene
             {% else %}Sin limpieza
             {% endif %}
           icon: mdi:broom
@@ -31,7 +30,6 @@ browser_mod:
             {% if   s == 'En curso'  %}blue
             {% elif s == 'Pagada'    %}green
             {% elif s == 'Esperada'  %}orange
-            {% elif s == 'Cancelada' %}red
             {% else %}disabled{% endif %}
           tap_action:
             action: none

@@ -7,8 +7,6 @@
       - Inactiva
       # calendar.limpieza event is active, waiting for the cleaner to arrive
       - Esperada
-      # Someone answered "today she does not come" from Telegram
-      - Cancelada
       # Entrance confirmed from Telegram, clock is running
       - En curso
       # Payment registered: the next door opening is her leaving
