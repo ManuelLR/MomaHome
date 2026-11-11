@@ -4,9 +4,11 @@
     user_id: !secret person_user_id_manolo
     device_trackers:
       - device_tracker.man_005_tile_llaves_manolo
+      - device_tracker.bermuda_tile_llaves_manolo
 
   - name: Monica
     id: person_monica
     user_id: !secret person_user_id_monica
     device_trackers:
       - device_tracker.man_005_tile_llaves_monica
+      - device_tracker.bermuda_tile_llaves_monica

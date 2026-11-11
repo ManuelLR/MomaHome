@@ -34,6 +34,8 @@ ENV \
     CUSTOM_COMPONENT_GICISKY_VERSION=5.5.0 \
       # renovatebot: datasource=github-releases depName=sca075/mqtt_vacuum_camera
     CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.10.0 \
+      # renovatebot: datasource=github-releases depName=agittins/bermuda versioning=semver
+    CUSTOM_COMPONENT_BERMUDA_VERSION=v0.8.7 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.4.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
@@ -114,6 +116,10 @@ RUN \
     && git clone https://github.com/sca075/mqtt_vacuum_camera.git /tmp/mqtt_vacuum_camera \
     && cd /tmp/mqtt_vacuum_camera && git checkout $CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION \
     && cd - && cp -r /tmp/mqtt_vacuum_camera/custom_components/mqtt_vacuum_camera /opt/HA/config/custom_components/ \
+    # bermuda
+    && git clone https://github.com/agittins/bermuda.git /tmp/bermuda \
+    && cd /tmp/bermuda && git checkout $CUSTOM_COMPONENT_BERMUDA_VERSION \
+    && cd - && cp -r /tmp/bermuda/custom_components/bermuda /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
