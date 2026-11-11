@@ -148,8 +148,12 @@ input_boolean: !include_dir_merge_named __auto_generated-config/input_boolean/
 
 template: !include_dir_merge_list __auto_generated-config/template/
 
-# Scanners are config entries, not YAML. The only one in use is the
-# bluetooth_proxy on man-005--esphome; the local hci0 adapter is disabled.
+# Scanners are config entries, not YAML: every ESPHome bluetooth_proxy (or any other
+# proxy/adapter) feeds the same stack. The local hci0 adapter is disabled.
+# Presence on top of it comes from Bermuda (custom component, configured from the UI):
+# it merges advertisements from all scanners, so no per-node BLE config is needed.
+# Set its "devtracker_nothome_timeout" to ~300 s: the 30 s default flaps with Tiles,
+# which advertise about once a minute.
 bluetooth:
 
 browser_mod:

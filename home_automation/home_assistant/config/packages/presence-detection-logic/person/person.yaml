@@ -1,12 +1,23 @@
 # person:
+  # Transition: Bermuda (device_tracker.tile_llaves_*) runs in parallel with the
+  # ESPHome ble_presence trackers (device_tracker.man_005_tile_llaves_*). With several
+  # stationary trackers, person is 'home' if ANY of them says home, so a missing or
+  # not-yet-configured Bermuda tracker cannot cause a false 'not_home'.
+  # Once Bermuda is validated, drop the man_005 trackers here together with the
+  # ble_presence sensors and the device_tracker.see automations (deprecated, removed in
+  # HA 2027.5).
+  # The Bermuda entity ids are renamed by hand in the UI after adding each Tile in
+  # Bermuda (it names them after the BLE name, "Tile ... Bermuda Tracker").
   - name: Manolo
     id: person_manolo
     user_id: !secret person_user_id_manolo
     device_trackers:
       - device_tracker.man_005_tile_llaves_manolo
+      - device_tracker.tile_llaves_manolo
 
   - name: Monica
     id: person_monica
     user_id: !secret person_user_id_monica
     device_trackers:
       - device_tracker.man_005_tile_llaves_monica
+      - device_tracker.tile_llaves_monica
