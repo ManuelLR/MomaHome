@@ -45,6 +45,18 @@ entities:
     tap_action: !include ../utils/tv-card.yaml
   - entity: media_player.mini
     name: Mini (cocina)
+  - entity: input_select.cleaning_status
+    # simple-entity: show the state as text (not a dropdown) and open the popup
+    type: simple-entity
+    name: Cleaning
+    icon: mdi:broom
+    tap_action: !include ../utils/cleaning-card.yaml
+    conditions:
+      - condition: state
+        state_not:
+          - Idle
+          - unknown
+          - unavailable
   - entity: sensor.dishwasher_common_status_operationstate
     name: Lavavajillas
     icon: mdi:dishwasher

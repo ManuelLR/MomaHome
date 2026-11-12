@@ -91,6 +91,9 @@
       # Not cleaning just now
           - condition: template
             value_template: '{{ states("vacuum.valetudo_roborocks5") == "docked" }}'
+      # Not during a cleaning visit (packages/cleaning)
+          - condition: template
+            value_template: '{{ states("input_select.cleaning_status") not in ["Expected", "In progress", "Paid"] }}'
       # Someone in house in past 24 hours
           - condition: template
             value_template: '{{ states("sensor.home_occupancy_status") != "Extended Away" }}'
@@ -142,6 +145,13 @@
       - platform: event
         event_type: telegram_callback
         event_data: *telegram_vacuum_start
+    conditions:
+      # The automatic start (timer) is skipped during a cleaning visit
+      # (packages/cleaning); a manual start from Telegram is still allowed.
+      - condition: template
+        value_template: >
+          {{ trigger.event.event_type != 'timer.finished'
+             or states('input_select.cleaning_status') not in ['Expected', 'In progress', 'Paid'] }}
     actions:
       - service: vacuum.set_fan_speed
         entity_id: vacuum.valetudo_roborocks5
