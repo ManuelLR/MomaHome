@@ -29,7 +29,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
     CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.5.0 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
-    CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
+    CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.2 \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
     CUSTOM_COMPONENT_GICISKY_VERSION=5.5.0 \
       # renovatebot: datasource=github-releases depName=sca075/mqtt_vacuum_camera
