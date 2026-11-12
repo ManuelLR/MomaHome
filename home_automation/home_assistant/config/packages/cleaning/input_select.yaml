@@ -1,14 +1,16 @@
 # input_select:
+  # Single source of truth for the cleaning visit. Other automations should use it
+  # as condition (anything but Idle means someone is, or is about to be, cleaning).
   cleaning_status:
-    name: Cleaning Status
+    name: Cleaning
     icon: mdi:broom
     options:
-      # No cleaning today (or outside the calendar slot)
-      - Inactiva
-      # calendar.limpieza event is active, waiting for the cleaner to arrive
-      - Esperada
-      # Entrance confirmed from Telegram, clock is running
-      - En curso
-      # Payment registered: the next door opening is her leaving
-      - Pagada
-    # initial: Inactiva
+      # No visit now (or outside the calendar slot)
+      - Idle
+      # calendar.cleaning event is active, waiting for the arrival
+      - Expected
+      # Arrival confirmed from Telegram, clock is running
+      - In progress
+      # Payment registered: the next door opening is the departure
+      - Paid
+    # initial: Idle

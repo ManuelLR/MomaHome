@@ -1,7 +1,7 @@
 # timer:
-  # After the payment, the exit is registered on a door opening and closed after this
-  # grace period (gives time to press "No era ella" and takes the last opening).
+  # After the payment, the departure is registered on a door opening and the visit is
+  # closed after this grace period (gives time to undo and takes the last opening).
   cleaning_finalize_in:
-    name: Limpieza - Cierre en...
+    name: Cleaning - Closing in...
     duration: "00:10:00"
     restore: true

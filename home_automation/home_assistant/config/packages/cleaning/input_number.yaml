@@ -1,16 +1,16 @@
 # input_number:
-  # Filled by hand from the UI (it is restored on restart, no initial value on purpose)
+  # Filled by hand from the UI (restored on restart, no initial value on purpose)
   cleaning_price_per_hour:
-    name: Limpieza - Precio por hora
+    name: Cleaning - Price per hour
     icon: mdi:cash-clock
     min: 0
     max: 100
     step: 0.5
     unit_of_measurement: "€/h"
     mode: box
-  # Set when pressing "Pagado" (editable afterwards from the UI)
+  # Set when pressing "Mark as paid" (editable afterwards from the UI)
   cleaning_amount_paid:
-    name: Limpieza - Importe pagado
+    name: Cleaning - Amount paid
     icon: mdi:cash-check
     min: 0
     max: 1000
@@ -18,9 +18,9 @@
     unit_of_measurement: "€"
     mode: box
   # If the payment was not registered, after these hours every door opening asks
-  # whether she has just left.
+  # whether the visit has finished.
   cleaning_ask_exit_after_hours:
-    name: Limpieza - Preguntar salida tras (h)
+    name: Cleaning - Ask for departure after (h)
     icon: mdi:timer-alert-outline
     min: 1
     max: 12
