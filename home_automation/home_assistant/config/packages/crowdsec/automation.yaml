@@ -16,7 +16,8 @@
       - condition: template
         value_template: >
           {{ trigger.to_state.attributes.batch | default([])
-             | select('search', 'appsec|vpatch|http-cve') | list | count > 0 }}
+             | select('search', 'appsec|vpatch|cve|[/_-]rce|sqli|xss|traversal|log4j|spring4shell', true)
+             | list | count > 0 }}
     actions:
       - service: script.telegram_notify
         data:
@@ -29,9 +30,14 @@
             Scenarios: `{{ trigger.to_state.attributes.batch | join('`, `') }}`
             {%- set hosts = trigger.to_state.attributes.hosts | default([]) %}
             {%- set paths = trigger.to_state.attributes.paths | default([]) %}
-            {%- if hosts %}
+            {%- set domains = hosts | reject('match', '^[0-9.]+$|^[0-9a-fA-F:]+$') | list %}
 
-            Host: `{{ hosts | join('`, `') }}`
+            {% if domains -%}
+            Host: `{{ domains | join('`, `') }}`
+            {%- elif hosts -%}
+            Host: none, sent to the IP (`{{ hosts | join('`, `') }}`)
+            {%- else -%}
+            Host: none, request without a Host header
             {%- endif %}
             {%- if paths %}
 
