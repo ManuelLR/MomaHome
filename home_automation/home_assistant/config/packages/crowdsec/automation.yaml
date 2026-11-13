@@ -1,62 +1,81 @@
 # automation:
-  # Only bans that hit a service configured in Traefik (sensor.crowdsec_last_targeted_ban)
-  - alias: AUT-CrowdSec targeted ban
-    mode: queued
+  ##
+  # CrowdSec POSTs a list of bans to this webhook (reverse-proxy/crowdsec/notifications/http.yaml).
+  # Each ban is fired as a `crowdsec_ban` event (feeds template.yaml) and, when
+  # targeted (it hit a service configured in Traefik), sent to Telegram.
+  ##
+  - alias: AUT-CrowdSec ban received
+    mode: parallel
     max: 20
     triggers:
-      - platform: state
-        entity_id: sensor.crowdsec_last_targeted_ban
-    conditions:
-      # Only a new ban (new `at`), not the restored state on HA restart/reload
-      - condition: template
-        value_template: >
-          {{ trigger.from_state is not none
-             and trigger.from_state.state != 'unavailable'
-             and trigger.to_state.attributes.at != trigger.from_state.attributes.at }}
+      - platform: webhook
+        webhook_id: !secret crowdsec_webhook_id
+        allowed_methods:
+          - POST
+        local_only: true
     actions:
-      - service: script.telegram_notify
-        data:
-          target_person: manolo
-          title: 'CrowdSec: IP banned'
-          message: >
-            Banned `{{ trigger.to_state.attributes.ip }}`
-            (`{{ trigger.to_state.attributes.country or '?' }}`, `{{ trigger.to_state.attributes.as_name or '?' }}`).
+      - repeat:
+          for_each: "{{ trigger.json | default([], true) }}"
+          sequence:
+            - variables:
+                b: "{{ repeat.item }}"
+            - event: crowdsec_ban
+              event_data:
+                scenario: "{{ b.scenario }}"
+                ip: "{{ b.ip }}"
+                country: "{{ b.country }}"
+                as_name: "{{ b.as_name }}"
+                hosts: "{{ b.hosts | default([]) }}"
+                paths: "{{ b.paths | default([]) }}"
+                routers: "{{ b.routers | default([]) }}"
+                statuses: "{{ b.statuses | default([]) }}"
+                targeted: "{{ b.targeted | default(false) }}"
+            - if:
+                - condition: template
+                  value_template: "{{ b.targeted | default(false) | bool(false) }}"
+              then:
+                - service: script.telegram_notify
+                  data:
+                    target_person: manolo
+                    title: 'CrowdSec: IP banned'
+                    message: >
+                      Banned `{{ b.ip }}`
+                      (`{{ b.country or '?' }}`, `{{ b.as_name or '?' }}`).
 
-            Scenarios: `{{ trigger.to_state.attributes.batch | join('`, `') }}`
-            {%- set hosts = trigger.to_state.attributes.hosts | default([]) %}
-            {%- set paths = trigger.to_state.attributes.paths | default([]) %}
-            {%- set domains = hosts | reject('match', '^[0-9.]+$|^[0-9a-fA-F:]+$') | list %}
+                      Scenario: `{{ b.scenario }}`
+                      {%- set hosts = b.hosts | default([]) %}
+                      {%- set domains = hosts | reject('match', '^[0-9.]+$|^[0-9a-fA-F:]+$') | list %}
+                      {%- set paths = b.paths | default([]) %}
+                      {%- set routers = b.routers | default([]) | reject('search', '@internal$') | list %}
+                      {%- set statuses = b.statuses | default([]) | map('int', 0) | list %}
 
-            {% if domains -%}
-            Host: `{{ domains | join('`, `') }}`
-            {%- elif hosts -%}
-            Host: none, sent to the IP (`{{ hosts | join('`, `') }}`)
-            {%- else -%}
-            Host: none, request without a Host header
-            {%- endif %}
-            {%- if paths %}
+                      {% if domains -%}
+                      Host: `{{ domains | join('`, `') }}`
+                      {%- elif hosts -%}
+                      Host: none, sent to the IP (`{{ hosts | join('`, `') }}`)
+                      {%- else -%}
+                      Host: none, request without a Host header
+                      {%- endif %}
+                      {%- if paths %}
 
-            Paths: `{{ paths[:5] | join('`, `') }}`
-            {%- endif %}
-            {%- set a = trigger.to_state.attributes %}
-            {%- set routers = a.routers | default([]) | reject('search', '@internal$') | list %}
-            {%- set statuses = a.statuses | default([]) | map('int', 0) | list %}
-            {%- if routers %}
+                      Paths: `{{ paths[:5] | join('`, `') }}`
+                      {%- endif %}
+                      {%- if routers %}
 
-            Router: `{{ routers | join('`, `') }}`
-            {%- endif %}
-            {%- if statuses %}
+                      Router: `{{ routers | join('`, `') }}`
+                      {%- endif %}
+                      {%- if statuses %}
 
-            Status: `{{ statuses | join('`, `') }}`
-            {%- endif %}
+                      Status: `{{ statuses | join('`, `') }}`
+                      {%- endif %}
 
-            {% if a.batch | default([]) | select('search', 'appsec|vpatch') | list -%}
-            Blocked by AppSec (WAF) before reaching the service.
-            {%- elif not statuses -%}
-            {%- elif statuses and statuses | select('ge', 200) | select('lt', 400) | list -%}
-            Some requests got a 2xx/3xx answer: they reached the service.
-            {%- elif statuses and statuses | reject('eq', 403) | list | count == 0 -%}
-            Every request got a 403 before the service (CrowdSec/AppSec, or the LAN-only allowlist on that router), so it may not have reached it.
-            {%- else -%}
-            The service answered with an error, so the request reached it.
-            {%- endif %}
+                      {% if b.scenario is search('appsec|vpatch') -%}
+                      Blocked by AppSec (WAF) before reaching the service.
+                      {%- elif not statuses -%}
+                      {%- elif statuses | select('ge', 200) | select('lt', 400) | list -%}
+                      Some requests got a 2xx/3xx answer: they reached the service.
+                      {%- elif statuses | reject('eq', 403) | list | count == 0 -%}
+                      Every request got a 403 before the service (CrowdSec/AppSec, or the LAN-only allowlist on that router), so it may not have reached it.
+                      {%- else -%}
+                      The service answered with an error, so the request reached it.
+                      {%- endif %}
