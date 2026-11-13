@@ -6,7 +6,8 @@
   # - The targeted ones (they hit a service configured in Traefik) go into one
   #   message per POST, grouped by IP. Plain text, so attacker-controlled hosts
   #   and paths can never break the formatting, and length-capped. It is also
-  #   left as a persistent notification in HA in case Telegram fails.
+  #   left as a persistent notification in HA, and if Telegram does not confirm
+  #   it, a generic message (no attacker data) is sent instead.
   ##
   - alias: AUT-CrowdSec ban received
     mode: queued
@@ -84,9 +85,34 @@
           title: CrowdSec
           # Code block: the HA UI renders Markdown, and hosts/paths come from the attacker
           message: "{{ '```\n' ~ ((message | trim)[:3900] | replace('`', \"'\")) ~ '\n```' }}"
-      - service: script.telegram_notify
-        continue_on_error: true
+      # Detailed message; if it is not confirmed within 60 s, send a generic one
+      # with no attacker data in it.
+      - variables:
+          token: "crowdsec-{{ now().timestamp() }}"
+      - service: script.turn_on
+        target:
+          entity_id: script.crowdsec_telegram_send
         data:
-          target_person: manolo
-          parse_mode: plain_text
-          message: "{{ (message | trim)[:3900] }}"
+          variables:
+            message: "{{ (message | trim)[:3900] }}"
+            token: "{{ token }}"
+      - wait_for_trigger:
+          - platform: event
+            event_type: crowdsec_telegram_sent
+            event_data:
+              token: "{{ token }}"
+        timeout: "00:01:00"
+        continue_on_timeout: true
+      - if:
+          - condition: template
+            value_template: "{{ wait.trigger is none }}"
+        then:
+          - service: script.telegram_notify
+            continue_on_error: true
+            data:
+              target_person: manolo
+              parse_mode: plain_text
+              message: >-
+                CrowdSec banned {{ targeted | map(attribute='ip') | unique | list | count }} IP(s)
+                on your services, but the detailed message could not be sent.
+                See the CrowdSec notification in Home Assistant or `cscli alerts list`.
