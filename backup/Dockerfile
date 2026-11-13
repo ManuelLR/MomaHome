@@ -13,7 +13,7 @@ FROM golang:1.27-alpine AS rclone
 
 ARG RCLONE_REPO=https://github.com/fballiano/rclone.git
 # renovate: datasource=git-refs depName=fballiano/rclone packageName=https://github.com/fballiano/rclone branch=funambol-backend
-ARG RCLONE_COMMIT=20bc34eaacb8d682c41b2b85df44179541928a8b
+ARG RCLONE_COMMIT=2070d4faa35a280b5f1ef8306d75ad68aaa13848
 
 RUN apk add --no-cache git
 
