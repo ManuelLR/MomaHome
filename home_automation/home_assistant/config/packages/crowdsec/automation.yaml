@@ -1,5 +1,6 @@
 # automation:
-  # Every local ban. Community list updates and unbans never reach the webhook.
+  # Local bans aimed at one of our domains, or at Traefik/Go itself (no domain
+  # needed for those). Community list updates and unbans never reach the webhook.
   - alias: AUT-CrowdSec IP banned
     mode: queued
     max: 20
@@ -13,6 +14,13 @@
           {{ trigger.from_state is not none
              and trigger.from_state.state != 'unavailable'
              and trigger.to_state.attributes.at != trigger.from_state.attributes.at }}
+      - condition: template
+        value_template: >
+          {% set a = trigger.to_state.attributes %}
+          {% set domains = a.hosts | default([]) | reject('match', '^[0-9.]+$|^[0-9a-fA-F:]+$') | list %}
+          {% set traefik_go = (a.batch | default([]) | select('search', 'traefik', true) | list)
+             or (a.paths | default([]) | select('search', '^/(debug/(pprof|vars)|dashboard/?$|api/(rawdata|overview|version|entrypoints|http|tcp|udp))', true) | list) %}
+          {{ domains | count > 0 or traefik_go | count > 0 }}
     actions:
       - service: script.telegram_notify
         data:
