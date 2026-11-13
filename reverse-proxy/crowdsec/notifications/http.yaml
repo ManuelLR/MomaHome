@@ -4,6 +4,9 @@
 type: http
 name: http_home_assistant
 log_level: info
+# Bans within 5 s go in one POST. `cscli notifications test` exits before
+# that, so test with a real ban.
+group_wait: 5s
 max_retry: 3
 timeout: 10s
 format: |
