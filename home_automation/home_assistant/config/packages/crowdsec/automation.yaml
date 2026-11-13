@@ -1,8 +1,8 @@
 # automation:
-  # Only exploit attempts; routine scanning bans are just counted
-  - alias: AUT-CrowdSec exploit attempt banned
+  # Every local ban. Community list updates and unbans never reach the webhook.
+  - alias: AUT-CrowdSec IP banned
     mode: queued
-    max: 5
+    max: 20
     triggers:
       - platform: state
         entity_id: sensor.crowdsec_last_ban
@@ -13,16 +13,11 @@
           {{ trigger.from_state is not none
              and trigger.from_state.state != 'unavailable'
              and trigger.to_state.attributes.at != trigger.from_state.attributes.at }}
-      - condition: template
-        value_template: >
-          {{ trigger.to_state.attributes.batch | default([])
-             | select('search', 'appsec|vpatch|cve|[/_-]rce|sqli|xss|traversal|log4j|spring4shell', true)
-             | list | count > 0 }}
     actions:
       - service: script.telegram_notify
         data:
           target_person: manolo
-          title: 'CrowdSec: exploit attempt blocked'
+          title: 'CrowdSec: IP banned'
           message: >
             Banned `{{ trigger.to_state.attributes.ip }}`
             (`{{ trigger.to_state.attributes.country or '?' }}`, `{{ trigger.to_state.attributes.as_name or '?' }}`).
