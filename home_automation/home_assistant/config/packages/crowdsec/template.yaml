@@ -63,6 +63,12 @@
           paths: >
             {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
             {{ bans[-1].paths | default([]) if bans | count > 0 else this.attributes.get('paths', []) }}
+          routers: >
+            {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].routers | default([]) if bans | count > 0 else this.attributes.get('routers', []) }}
+          statuses: >
+            {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].statuses | default([]) if bans | count > 0 else this.attributes.get('statuses', []) }}
           batch: >
             {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
             {{ bans | map(attribute='scenario') | list if bans | count > 0 else this.attributes.get('batch', []) }}
@@ -92,6 +98,12 @@
           paths: >
             {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
             {{ bans[-1].paths | default([]) if bans | count > 0 else this.attributes.get('paths', []) }}
+          routers: >
+            {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].routers | default([]) if bans | count > 0 else this.attributes.get('routers', []) }}
+          statuses: >
+            {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].statuses | default([]) if bans | count > 0 else this.attributes.get('statuses', []) }}
           batch: >
             {% set bans = trigger.json | default([], true) if trigger.id == 'ban' else [] %}
             {{ bans | map(attribute='scenario') | list if bans | count > 0 else this.attributes.get('batch', []) }}

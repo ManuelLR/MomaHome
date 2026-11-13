@@ -38,3 +38,25 @@
 
             Paths: `{{ paths[:5] | join('`, `') }}`
             {%- endif %}
+            {%- set a = trigger.to_state.attributes %}
+            {%- set routers = a.routers | default([]) | reject('search', '@internal$') | list %}
+            {%- set statuses = a.statuses | default([]) | map('int', 0) | list %}
+            {%- if routers %}
+
+            Router: `{{ routers | join('`, `') }}`
+            {%- endif %}
+            {%- if statuses %}
+
+            Status: `{{ statuses | join('`, `') }}`
+            {%- endif %}
+
+            {% if a.batch | default([]) | select('search', 'appsec|vpatch') | list -%}
+            Blocked by AppSec (WAF) before reaching the service.
+            {%- elif not statuses -%}
+            {%- elif statuses and statuses | select('ge', 200) | select('lt', 400) | list -%}
+            Some requests got a 2xx/3xx answer: they reached the service.
+            {%- elif statuses and statuses | reject('eq', 403) | list | count == 0 -%}
+            Every request got a 403 before the service (CrowdSec/AppSec, or the LAN-only allowlist on that router), so it may not have reached it.
+            {%- else -%}
+            The service answered with an error, so the request reached it.
+            {%- endif %}
