@@ -18,7 +18,10 @@
 - type: entities
   title: 'CrowdSec'
   entities:
+    - sensor.crowdsec_targeted_bans_today
     - sensor.crowdsec_bans_today
+    - entity: sensor.crowdsec_last_targeted_ban
+      secondary_info: last-changed
     - entity: sensor.crowdsec_last_ban
       secondary_info: last-changed
     - type: attribute
@@ -34,6 +37,7 @@
   title: 'CrowdSec bans'
   hours_to_show: 168
   entities:
+    - sensor.crowdsec_targeted_bans_today
     - sensor.crowdsec_bans_today
 
 - type: entities

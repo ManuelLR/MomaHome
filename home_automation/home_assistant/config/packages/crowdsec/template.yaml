@@ -1,6 +1,7 @@
 # template:
   ##
-  # Fed by CrowdSec's webhook notification (reverse-proxy/crowdsec/notifications/http.yaml)
+  # Fed by CrowdSec's webhook notification (reverse-proxy/crowdsec/notifications/http.yaml).
+  # "bans" = every local ban; "targeted" = only those that hit a Traefik service.
   ##
 
   - trigger:
@@ -24,6 +25,47 @@
           {% else %}
             {{ this.state | int(0) + (trigger.json | default([], true) | count) }}
           {% endif %}
+
+      # Only bans that hit a service configured in Traefik ("targeted")
+      - name: "CrowdSec targeted bans today"
+        unique_id: crowdsec_targeted_bans_today
+        icon: mdi:shield-alert-outline
+        state_class: total_increasing
+        state: >
+          {% if trigger.id == 'reset' %}
+            0
+          {% else %}
+            {{ this.state | int(0) + (trigger.json | default([], true) | selectattr('targeted') | list | count) }}
+          {% endif %}
+
+      - name: "CrowdSec last targeted ban"
+        unique_id: crowdsec_last_targeted_ban
+        icon: mdi:shield-lock-outline
+        state: >
+          {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+          {{ bans[-1].scenario if bans | count > 0 else this.state }}
+        attributes:
+          ip: >
+            {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].ip if bans | count > 0 else this.attributes.get('ip') }}
+          country: >
+            {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].country if bans | count > 0 else this.attributes.get('country') }}
+          as_name: >
+            {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].as_name if bans | count > 0 else this.attributes.get('as_name') }}
+          at: >
+            {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+            {{ now().isoformat() if bans | count > 0 else this.attributes.get('at') }}
+          hosts: >
+            {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].hosts | default([]) if bans | count > 0 else this.attributes.get('hosts', []) }}
+          paths: >
+            {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+            {{ bans[-1].paths | default([]) if bans | count > 0 else this.attributes.get('paths', []) }}
+          batch: >
+            {% set bans = (trigger.json | default([], true) | selectattr('targeted') | list) if trigger.id == 'ban' else [] %}
+            {{ bans | map(attribute='scenario') | list if bans | count > 0 else this.attributes.get('batch', []) }}
 
       - name: "CrowdSec last ban"
         unique_id: crowdsec_last_ban

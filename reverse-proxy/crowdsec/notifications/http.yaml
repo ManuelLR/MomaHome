@@ -1,11 +1,13 @@
-# Local bans to Home Assistant (packages/crowdsec)
+# Local bans to Home Assistant (packages/crowdsec). "targeted": the attack hit
+# a router configured in Traefik (not @internal, i.e. not the http->https
+# redirect), or came through AppSec, which only sees routed requests.
 type: http
 name: http_home_assistant
 log_level: info
 max_retry: 3
 timeout: 10s
 format: |
-  [{{ range $i, $a := . }}{{ if $i }},{{ end }}{{ $hosts := "[]" }}{{ $paths := "[]" }}{{ range $a.Meta }}{{ if eq .Key "target_host" }}{{ $hosts = .Value }}{{ end }}{{ if eq .Key "target_uri" }}{{ $paths = .Value }}{{ end }}{{ end }}{"scenario": {{ $a.Scenario | toJson }}, "ip": {{ $a.Source.Value | toJson }}, "country": {{ $a.Source.Cn | toJson }}, "as_name": {{ $a.Source.AsName | toJson }}, "events": {{ $a.EventsCount | toJson }}, "hosts": {{ $hosts }}, "paths": {{ $paths }}}{{ end }}]
+  [{{ range $i, $a := . }}{{ if $i }},{{ end }}{{ $hosts := "[]" }}{{ $paths := "[]" }}{{ $targeted := regexMatch "appsec|vpatch" $a.GetScenario }}{{ range $a.Meta }}{{ if eq .Key "target_host" }}{{ $hosts = .Value }}{{ end }}{{ if eq .Key "target_uri" }}{{ $paths = .Value }}{{ end }}{{ if and (eq .Key "traefik_router") (regexMatch "@(docker|file)" .Value) }}{{ $targeted = true }}{{ end }}{{ end }}{"scenario": {{ $a.Scenario | toJson }}, "ip": {{ $a.Source.Value | toJson }}, "country": {{ $a.Source.Cn | toJson }}, "as_name": {{ $a.Source.AsName | toJson }}, "events": {{ $a.EventsCount | toJson }}, "hosts": {{ $hosts }}, "paths": {{ $paths }}, "targeted": {{ $targeted }}}{{ end }}]
 url: ${HA_CROWDSEC_WEBHOOK_URL}
 method: POST
 headers:
