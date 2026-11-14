@@ -101,6 +101,9 @@ services:
       - CONFIG_INSTANCE_LAPI_URL=http://crowdsec:8080
       - CONFIG_INSTANCE_LAPI_AUTH_USERNAME=crowdsec-web-ui
       - CONFIG_INSTANCE_LAPI_AUTH_PASSWORD=${CROWDSEC_UI_MACHINE_PASSWORD:?Define CROWDSEC_UI_MACHINE_PASSWORD in .env}
+      # Login always required (the default `auto` keeps whatever state an old
+      # database had). The first visit creates the administrator account.
+      - CONFIG_AUTH_ENABLED=true
       # No calls to GitHub/ghcr.io for its own updates (Renovate handles them)
       - CONFIG_UPDATES_ENABLED=false
       - CONFIG_UI_TIME_ZONE=Europe/Madrid
