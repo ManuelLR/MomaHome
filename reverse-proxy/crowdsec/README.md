@@ -11,6 +11,15 @@ Runs in the reverse-proxy stack and protects everything on Traefik's
 
 LAN and WireGuard clients skip every check. Private addresses are never banned.
 
+## Rule updates
+
+New hub rules (CVE scenarios, virtual patching) are installed every 12 h
+(04:17 and 16:17) by busybox crond inside the container (`crontab`), which
+reloads CrowdSec only if something changed. Starts never upgrade
+(`NO_HUB_UPGRADE=true`) and only re-download the index if it is older than
+24 h, so a restart loop does not hit the hub. The community
+blocklist is pulled continuously by CrowdSec itself.
+
 ## What leaves the server
 
 Set explicitly in `config.yaml.local` and `console.yaml` (mounted read-only),
@@ -41,6 +50,25 @@ or 50000 alerts (`db_config.flush`).
 
 If the bouncer key changes later: `docker compose exec crowdsec cscli bouncers delete traefik`
 and restart crowdsec so it registers the new one.
+
+## Web UI (crowdsec-ui)
+
+[crowdsec-web-ui](https://github.com/TheDuffman85/crowdsec-web-ui) at
+`CROWDSEC_UI_EXTERNAL_DOMAIN`, to review alerts and remove decisions. The
+Telegram alert links to the decisions of each banned IP.
+
+- **LAN/WireGuard only, permanently.** It can unban, so its router has its own
+  `crowdsec-ui-lan-only` middleware. Keep it when the TEMPORARY
+  `global-lan-only` is lifted.
+- **Outbound calls.** Its own update check is off (`CONFIG_UPDATES_ENABLED=false`).
+  Some optional features reach the internet if you enable them: notification
+  channels, "Recent CVE" rules (NVD) and "CrowdSec update" rules (GitHub).
+
+First setup: fill `CROWDSEC_UI_*` and `EXTERNAL_WILDCARD_DOMAIN` in
+`reverse-proxy/.env`, `docker compose up -d`, and open the UI right away: the
+first visitor creates the administrator account. CrowdSec registers the
+`crowdsec-web-ui` machine itself (`AGENT_USERNAME`/`AGENT_PASSWORD`). Then put
+the UI base URL in Home Assistant's `secrets.yaml` as `crowdsec_ui_url`.
 
 ## Checks
 

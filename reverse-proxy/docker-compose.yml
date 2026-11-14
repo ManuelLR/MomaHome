@@ -43,14 +43,25 @@ services:
   crowdsec:
     image: crowdsecurity/crowdsec:v1.8.2
     restart: unless-stopped
+    # Image entrypoint plus busybox crond for the hub update every 12 h
+    # (crowdsec/crontab). docker_start.sh still execs crowdsec as PID 1.
+    entrypoint: ["/bin/bash", "-c", "crond -b -l 8 -c /etc/crontabs && exec /bin/bash /docker_start.sh"]
     security_opt:
       - no-new-privileges:true
     environment:
       - TZ=Europe/Madrid
+      # Hub upgrades only from crowdsec/crontab, never on start: a restart loop
+      # must not hammer the hub (it can ban the IP). The index is only
+      # re-downloaded on start when it is older than 24 h, and the cron keeps it
+      # fresher than that.
+      - NO_HUB_UPGRADE=true
       - COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
       - HA_CROWDSEC_WEBHOOK_URL=${HA_CROWDSEC_WEBHOOK_URL:?Define HA_CROWDSEC_WEBHOOK_URL in .env}
       # Registers the "traefik" bouncer with this key on first start
       - BOUNCER_KEY_traefik=${CROWDSEC_BOUNCER_KEY}
+      # Registers (on every start) the machine crowdsec-ui logs in with
+      - AGENT_USERNAME=crowdsec-web-ui
+      - AGENT_PASSWORD=${CROWDSEC_UI_MACHINE_PASSWORD:?Define CROWDSEC_UI_MACHINE_PASSWORD in .env}
     ports:
       # Syslog from Docker's logging driver (Traefik)
       - "127.0.0.1:5514:5514/udp"
@@ -63,10 +74,60 @@ services:
       - ./crowdsec/config.yaml.local:/etc/crowdsec/config.yaml.local:ro
       - ./crowdsec/console.yaml:/etc/crowdsec/console.yaml:ro
       - ./crowdsec/context.yaml:/etc/crowdsec/console/context.yaml:ro
+      - ./crowdsec/crontab:/etc/crontabs/root:ro
     extra_hosts:
       - host.docker.internal:172.17.0.1
     networks:
       - net-reverse-proxy
+
+  crowdsec-ui:
+    # Web UI to review alerts and remove decisions. Logs in to LAPI as the
+    # crowdsec-web-ui machine, registered by the crowdsec service.
+    image: ghcr.io/theduffman85/crowdsec-web-ui:2026.11.11
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    # The entrypoint starts as root to chown /app/data, then drops to `node`
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
+    environment:
+      - CONFIG_INSTANCE_LAPI_URL=http://crowdsec:8080
+      - CONFIG_INSTANCE_LAPI_AUTH_USERNAME=crowdsec-web-ui
+      - CONFIG_INSTANCE_LAPI_AUTH_PASSWORD=${CROWDSEC_UI_MACHINE_PASSWORD:?Define CROWDSEC_UI_MACHINE_PASSWORD in .env}
+      # Login always required (the default `auto` keeps whatever state an old
+      # database had). The first visit creates the administrator account.
+      - CONFIG_AUTH_ENABLED=true
+      # No calls to GitHub/ghcr.io for its own updates (Renovate handles them)
+      - CONFIG_UPDATES_ENABLED=false
+      - CONFIG_UI_TIME_ZONE=Europe/Madrid
+      - CONFIG_UI_DATE_FORMAT=yyyy/mm/dd
+      - CONFIG_UI_TIME_FORMAT=24h
+    volumes:
+      - ${CROWDSEC_UI_DATA_DIR:?Define CROWDSEC_UI_DATA_DIR in .env}:/app/data/
+    depends_on:
+      - crowdsec
+    networks:
+      - net-reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.crowdsec-ui.loadbalancer.server.port=3000"
+      - "traefik.http.routers.crowdsec-ui.rule=Host(`${CROWDSEC_UI_EXTERNAL_DOMAIN:?Define CROWDSEC_UI_EXTERNAL_DOMAIN in .env}`)"
+      - "traefik.http.routers.crowdsec-ui.entrypoints=websecure"
+      - "traefik.http.routers.crowdsec-ui.tls.certresolver=principal"
+      - "traefik.http.routers.crowdsec-ui.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN:?Define EXTERNAL_WILDCARD_DOMAIN in .env}"
+      # PERMANENT LAN/WireGuard only. It can remove bans, so it must NEVER be
+      # published, not even when the TEMPORARY global-lan-only is lifted: this
+      # router uses its own middleware, not global-lan-only@file. Same ranges,
+      # see traefik/file-dynamic-conf/lan-only.yaml for why each one is safe.
+      - "traefik.http.middlewares.crowdsec-ui-lan-only.ipallowlist.sourcerange=192.168.200.0/24,172.16.0.0/12,10.13.13.0/24"
+      - "traefik.http.routers.crowdsec-ui.middlewares=crowdsec-ui-lan-only"
 
 networks:
   net-reverse-proxy:
