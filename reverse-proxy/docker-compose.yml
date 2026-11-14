@@ -43,13 +43,18 @@ services:
   crowdsec:
     image: crowdsecurity/crowdsec:v1.8.2
     restart: unless-stopped
-    # Image entrypoint plus busybox crond for the daily hub update
+    # Image entrypoint plus busybox crond for the hub update every 12 h
     # (crowdsec/crontab). docker_start.sh still execs crowdsec as PID 1.
     entrypoint: ["/bin/bash", "-c", "crond -b -l 8 -c /etc/crontabs && exec /bin/bash /docker_start.sh"]
     security_opt:
       - no-new-privileges:true
     environment:
       - TZ=Europe/Madrid
+      # Hub upgrades only from crowdsec/crontab, never on start: a restart loop
+      # must not hammer the hub (it can ban the IP). The index is only
+      # re-downloaded on start when it is older than 24 h, and the cron keeps it
+      # fresher than that.
+      - NO_HUB_UPGRADE=true
       - COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
       - HA_CROWDSEC_WEBHOOK_URL=${HA_CROWDSEC_WEBHOOK_URL:?Define HA_CROWDSEC_WEBHOOK_URL in .env}
       # Registers the "traefik" bouncer with this key on first start

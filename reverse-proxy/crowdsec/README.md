@@ -13,9 +13,11 @@ LAN and WireGuard clients skip every check. Private addresses are never banned.
 
 ## Rule updates
 
-New hub rules (CVE scenarios, virtual patching) are installed when the container
-starts and every day at 04:17 by busybox crond inside the container
-(`crontab`), which reloads CrowdSec only if something changed. The community
+New hub rules (CVE scenarios, virtual patching) are installed every 12 h
+(04:17 and 16:17) by busybox crond inside the container (`crontab`), which
+reloads CrowdSec only if something changed. Starts never upgrade
+(`NO_HUB_UPGRADE=true`) and only re-download the index if it is older than
+24 h, so a restart loop does not hit the hub. The community
 blocklist is pulled continuously by CrowdSec itself.
 
 ## What leaves the server
