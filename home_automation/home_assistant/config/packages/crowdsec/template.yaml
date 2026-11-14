@@ -36,6 +36,8 @@
         state: >
           {{ trigger.event.data.scenario if trigger.id == 'ban' else this.state }}
         attributes:
+          # crowdsec-ui base URL, for the links in the Server view
+          ui_url: !secret crowdsec_ui_url
           ip: "{{ trigger.event.data.ip if trigger.id == 'ban' else this.attributes.get('ip') }}"
           country: "{{ trigger.event.data.country if trigger.id == 'ban' else this.attributes.get('country') }}"
           as_name: "{{ trigger.event.data.as_name if trigger.id == 'ban' else this.attributes.get('as_name') }}"

@@ -33,6 +33,19 @@
       attribute: country
       name: 'Country'
 
+- type: markdown
+  content: >-
+    {% set ui = state_attr('sensor.crowdsec_last_ban', 'ui_url') %}
+    {% set t_ip = state_attr('sensor.crowdsec_last_targeted_ban', 'ip') %}
+    {% set ip = state_attr('sensor.crowdsec_last_ban', 'ip') %}
+    {% if ui %}
+    [CrowdSec UI]({{ ui }})
+    {%- if t_ip %} · [Last targeted ban]({{ ui }}/decisions?q={{ ('ip="' ~ t_ip ~ '"') | urlencode }}){% endif %}
+    {%- if ip %} · [Last ban]({{ ui }}/decisions?q={{ ('ip="' ~ ip ~ '"') | urlencode }}){% endif %}
+    {% else %}
+    CrowdSec UI link appears after the next ban (or midnight).
+    {% endif %}
+
 - type: history-graph
   title: 'CrowdSec bans'
   hours_to_show: 168
