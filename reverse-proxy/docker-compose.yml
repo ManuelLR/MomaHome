@@ -51,6 +51,9 @@ services:
       - HA_CROWDSEC_WEBHOOK_URL=${HA_CROWDSEC_WEBHOOK_URL:?Define HA_CROWDSEC_WEBHOOK_URL in .env}
       # Registers the "traefik" bouncer with this key on first start
       - BOUNCER_KEY_traefik=${CROWDSEC_BOUNCER_KEY}
+      # Registers (on every start) the machine crowdsec-ui logs in with
+      - AGENT_USERNAME=crowdsec-web-ui
+      - AGENT_PASSWORD=${CROWDSEC_UI_MACHINE_PASSWORD:?Define CROWDSEC_UI_MACHINE_PASSWORD in .env}
     ports:
       # Syslog from Docker's logging driver (Traefik)
       - "127.0.0.1:5514:5514/udp"
@@ -69,8 +72,8 @@ services:
       - net-reverse-proxy
 
   crowdsec-ui:
-    # Web UI to review alerts and remove decisions. Logs in to LAPI as a
-    # CrowdSec machine (see crowdsec/README.md).
+    # Web UI to review alerts and remove decisions. Logs in to LAPI as the
+    # crowdsec-web-ui machine, registered by the crowdsec service.
     image: ghcr.io/theduffman85/crowdsec-web-ui:2026.11.11
     restart: unless-stopped
     read_only: true
@@ -92,7 +95,7 @@ services:
       # No calls to GitHub/ghcr.io for its own updates (Renovate handles them)
       - CONFIG_UPDATES_ENABLED=false
       - CONFIG_UI_TIME_ZONE=Europe/Madrid
-      - CONFIG_UI_DATE_FORMAT=dd/mm/yyyy
+      - CONFIG_UI_DATE_FORMAT=yyyy/mm/dd
       - CONFIG_UI_TIME_FORMAT=24h
     volumes:
       - ${CROWDSEC_UI_DATA_DIR:?Define CROWDSEC_UI_DATA_DIR in .env}:/app/data/

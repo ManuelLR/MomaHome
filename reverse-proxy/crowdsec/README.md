@@ -51,18 +51,15 @@ Telegram alert links to the decisions of each banned IP.
 - **LAN/WireGuard only, permanently.** It can unban, so its router has its own
   `crowdsec-ui-lan-only` middleware. Keep it when the TEMPORARY
   `global-lan-only` is lifted.
-- **No outbound calls by default.** The update check is off
-  (`CONFIG_UPDATES_ENABLED=false`). Do not add notification channels, "Recent
-  CVE" rules (they query NVD) or "CrowdSec update" rules (GitHub).
+- **Outbound calls.** Its own update check is off (`CONFIG_UPDATES_ENABLED=false`).
+  Some optional features reach the internet if you enable them: notification
+  channels, "Recent CVE" rules (NVD) and "CrowdSec update" rules (GitHub).
 
-First setup:
-
-1. Fill `CROWDSEC_UI_*` and `EXTERNAL_WILDCARD_DOMAIN` in `reverse-proxy/.env`.
-2. Create the machine it logs in with, using the same password:
-   `docker compose exec crowdsec cscli machines add crowdsec-web-ui --password '<CROWDSEC_UI_MACHINE_PASSWORD>' -f /dev/null`
-3. `docker compose up -d crowdsec-ui` and open the UI right away: the first
-   visitor creates the administrator account.
-4. Put the UI base URL in Home Assistant's `secrets.yaml` as `crowdsec_ui_url`.
+First setup: fill `CROWDSEC_UI_*` and `EXTERNAL_WILDCARD_DOMAIN` in
+`reverse-proxy/.env`, `docker compose up -d`, and open the UI right away: the
+first visitor creates the administrator account. CrowdSec registers the
+`crowdsec-web-ui` machine itself (`AGENT_USERNAME`/`AGENT_PASSWORD`). Then put
+the UI base URL in Home Assistant's `secrets.yaml` as `crowdsec_ui_url`.
 
 ## Checks
 
