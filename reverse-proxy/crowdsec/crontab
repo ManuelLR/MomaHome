@@ -1,0 +1,4 @@
+# Daily hub update, like the cron job of CrowdSec's Linux packages: new rules
+# (CVE scenarios, virtual patching) are installed and CrowdSec reloads (SIGHUP
+# to PID 1) only if something changed. Run by busybox crond, see docker-compose.yml.
+17 4 * * * cscli --error hub update && u="$(cscli --error hub upgrade)" && [ -n "$u" ] && echo "hub upgraded: $u" > /proc/1/fd/1 && kill -HUP 1

@@ -43,6 +43,9 @@ services:
   crowdsec:
     image: crowdsecurity/crowdsec:v1.8.2
     restart: unless-stopped
+    # Image entrypoint plus busybox crond for the daily hub update
+    # (crowdsec/crontab). docker_start.sh still execs crowdsec as PID 1.
+    entrypoint: ["/bin/bash", "-c", "crond -b -l 8 -c /etc/crontabs && exec /bin/bash /docker_start.sh"]
     security_opt:
       - no-new-privileges:true
     environment:
@@ -66,6 +69,7 @@ services:
       - ./crowdsec/config.yaml.local:/etc/crowdsec/config.yaml.local:ro
       - ./crowdsec/console.yaml:/etc/crowdsec/console.yaml:ro
       - ./crowdsec/context.yaml:/etc/crowdsec/console/context.yaml:ro
+      - ./crowdsec/crontab:/etc/crontabs/root:ro
     extra_hosts:
       - host.docker.internal:172.17.0.1
     networks:
