@@ -42,6 +42,28 @@ or 50000 alerts (`db_config.flush`).
 If the bouncer key changes later: `docker compose exec crowdsec cscli bouncers delete traefik`
 and restart crowdsec so it registers the new one.
 
+## Web UI (crowdsec-ui)
+
+[crowdsec-web-ui](https://github.com/TheDuffman85/crowdsec-web-ui) at
+`CROWDSEC_UI_EXTERNAL_DOMAIN`, to review alerts and remove decisions. The
+Telegram alert links to the decisions of each banned IP.
+
+- **LAN/WireGuard only, permanently.** It can unban, so its router has its own
+  `crowdsec-ui-lan-only` middleware. Keep it when the TEMPORARY
+  `global-lan-only` is lifted.
+- **No outbound calls by default.** The update check is off
+  (`CONFIG_UPDATES_ENABLED=false`). Do not add notification channels, "Recent
+  CVE" rules (they query NVD) or "CrowdSec update" rules (GitHub).
+
+First setup:
+
+1. Fill `CROWDSEC_UI_*` and `EXTERNAL_WILDCARD_DOMAIN` in `reverse-proxy/.env`.
+2. Create the machine it logs in with, using the same password:
+   `docker compose exec crowdsec cscli machines add crowdsec-web-ui --password '<CROWDSEC_UI_MACHINE_PASSWORD>' -f /dev/null`
+3. `docker compose up -d crowdsec-ui` and open the UI right away: the first
+   visitor creates the administrator account.
+4. Put the UI base URL in Home Assistant's `secrets.yaml` as `crowdsec_ui_url`.
+
 ## Checks
 
 ```bash

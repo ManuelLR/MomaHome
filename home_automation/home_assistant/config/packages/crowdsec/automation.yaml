@@ -20,6 +20,8 @@
     actions:
       - variables:
           bans: "{{ trigger.json if trigger.json is list else [] }}"
+          # crowdsec-ui (reverse-proxy), LAN/WireGuard only
+          ui_url: !secret crowdsec_ui_url
       - repeat:
           for_each: "{{ bans }}"
           sequence:
@@ -71,6 +73,7 @@
             {%- else %}
             → The service answered with an error, so the request reached it.
             {%- endif %}
+            Details: {{ ui_url }}/decisions?q={{ ('ip="' ~ ip ~ '"') | urlencode }}
             {%- endfor %}
             {%- if ips | count > 10 %}
 

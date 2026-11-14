@@ -5,7 +5,9 @@
 ## entrypoint, because an entrypoint middleware cannot be skipped by a single
 ## router. So a router added meanwhile is public unless it gets the label too.
 ## Routers that were already LAN-only (immich, trek, galley-admin,
-## galley-legacy) keep their own stricter middleware and are untouched.
+## galley-legacy) keep their own stricter middleware and are untouched, and
+## crowdsec-ui (reverse-proxy) is LAN/WireGuard only for good with its own
+## middleware: lifting this file must not touch it.
 ##
 ## To lift it: remove the labels marked "TEMPORARY" (git grep "lan-only.yaml")
 ## and this file, then recreate the affected containers.
