@@ -1,39 +1,95 @@
 # automation:
-  # Only exploit attempts; routine scanning bans are just counted
-  - alias: AUT-CrowdSec exploit attempt banned
+  ##
+  # CrowdSec POSTs the bans of the last 5 s to this webhook
+  # (reverse-proxy/crowdsec/notifications/http.yaml).
+  # - Every ban is fired as a `crowdsec_ban` event (feeds template.yaml).
+  # - The targeted ones (they hit a service configured in Traefik) go into one
+  #   message per POST, grouped by IP. Plain text, so attacker-controlled hosts
+  #   and paths can never break the formatting, and length-capped. It is also
+  #   left as a persistent notification in HA in case Telegram fails.
+  ##
+  - alias: AUT-CrowdSec ban received
     mode: queued
-    max: 5
+    max: 10
     triggers:
-      - platform: state
-        entity_id: sensor.crowdsec_last_ban
-    conditions:
-      # Only a new ban (new `at`), not the restored state on HA restart/reload
-      - condition: template
-        value_template: >
-          {{ trigger.from_state is not none
-             and trigger.from_state.state != 'unavailable'
-             and trigger.to_state.attributes.at != trigger.from_state.attributes.at }}
-      - condition: template
-        value_template: >
-          {{ trigger.to_state.attributes.batch | default([])
-             | select('search', 'appsec|vpatch|http-cve') | list | count > 0 }}
+      - platform: webhook
+        webhook_id: !secret crowdsec_webhook_id
+        allowed_methods:
+          - POST
+        local_only: true
     actions:
-      - service: script.telegram_notify
-        data:
-          target_person: manolo
-          title: 'CrowdSec: exploit attempt blocked'
-          message: >
-            Banned `{{ trigger.to_state.attributes.ip }}`
-            (`{{ trigger.to_state.attributes.country or '?' }}`, `{{ trigger.to_state.attributes.as_name or '?' }}`).
+      - variables:
+          bans: "{{ trigger.json if trigger.json is list else [] }}"
+          # crowdsec-ui (reverse-proxy), LAN/WireGuard only
+          ui_url: !secret crowdsec_ui_url
+      - repeat:
+          for_each: "{{ bans }}"
+          sequence:
+            - event: crowdsec_ban
+              event_data:
+                scenario: "{{ repeat.item.scenario }}"
+                ip: "{{ repeat.item.ip }}"
+                country: "{{ repeat.item.country }}"
+                as_name: "{{ repeat.item.as_name }}"
+                hosts: "{{ repeat.item.hosts | default([]) }}"
+                paths: "{{ repeat.item.paths | default([]) }}"
+                routers: "{{ repeat.item.routers | default([]) }}"
+                statuses: "{{ repeat.item.statuses | default([]) }}"
+                targeted: "{{ repeat.item.targeted | default(false) | bool(false) }}"
+      - variables:
+          targeted: "{{ bans | selectattr('targeted') | list }}"
+          message: |-
+            {%- macro clip(s, n) %}{{ (s | string)[:n] }}{{ '…' if (s | string) | length > n }}{% endmacro %}
+            {%- set ips = targeted | map(attribute='ip') | unique | list -%}
+            CrowdSec: {{ ips | count }} IP{{ 's' if ips | count != 1 }} banned on your services
+            {%- for ip in ips[:10] %}
+            {%- set b = targeted | selectattr('ip', 'eq', ip) | list %}
+            {%- set scenarios = b | map(attribute='scenario') | unique | list %}
+            {%- set hosts = b | map(attribute='hosts') | sum(start=[]) | unique | list %}
+            {%- set domains = hosts | reject('match', '^[0-9.]+$|^[0-9a-fA-F:]+$') | list %}
+            {%- set paths = b | map(attribute='paths') | sum(start=[]) | unique | list %}
+            {%- set routers = b | map(attribute='routers') | sum(start=[]) | unique | reject('search', '@internal$') | list %}
+            {%- set statuses = b | map(attribute='statuses') | sum(start=[]) | map('int', 0) | unique | list %}
 
-            Scenarios: `{{ trigger.to_state.attributes.batch | join('`, `') }}`
-            {%- set hosts = trigger.to_state.attributes.hosts | default([]) %}
-            {%- set paths = trigger.to_state.attributes.paths | default([]) %}
-            {%- if hosts %}
-
-            Host: `{{ hosts | join('`, `') }}`
+            {{ loop.index }}) {{ ip }} · {{ b[0].country or '?' }} · {{ clip(b[0].as_name or '?', 40) }}
+            Scenario{{ 's' if scenarios | count > 1 }}: {{ scenarios | join(', ') }}
+            Host: {{ clip(domains | join(', '), 120) if domains else 'none (sent to the IP or without a Host header)' }}
+            {%- if routers %}
+            Router: {{ routers | join(', ') }}
+            {%- endif %}
+            {%- if statuses %}
+            Status: {{ statuses | join(', ') }}
             {%- endif %}
             {%- if paths %}
-
-            Paths: `{{ paths[:5] | join('`, `') }}`
+            Paths: {% for p in paths[:5] %}{{ clip(p, 80) }}{{ ', ' if not loop.last }}{% endfor %}{{ ' (+' ~ (paths | count - 5) ~ ' more)' if paths | count > 5 }}
             {%- endif %}
+            {%- if scenarios | select('search', 'appsec|vpatch') | list %}
+            → Blocked by AppSec (WAF) before reaching the service.
+            {%- elif not statuses %}
+            {%- elif statuses | select('ge', 200) | select('lt', 400) | list %}
+            → Some requests got a 2xx/3xx answer: they reached the service.
+            {%- elif statuses | reject('eq', 403) | list | count == 0 %}
+            → Every request got a 403 before the service (CrowdSec/AppSec, or the LAN-only allowlist on that router), so it may not have reached it.
+            {%- else %}
+            → The service answered with an error, so the request reached it.
+            {%- endif %}
+            Details: {{ ui_url }}/decisions?q={{ ('ip="' ~ ip ~ '"') | urlencode }}
+            {%- endfor %}
+            {%- if ips | count > 10 %}
+
+            … and {{ ips | count - 10 }} more IPs (cscli alerts list).
+            {%- endif %}
+      - condition: template
+        value_template: "{{ targeted | count > 0 }}"
+      - service: persistent_notification.create
+        data:
+          notification_id: crowdsec_targeted_ban
+          title: CrowdSec
+          # Code block: the HA UI renders Markdown, and hosts/paths come from the attacker
+          message: "{{ '```\n' ~ ((message | trim)[:3900] | replace('`', \"'\")) ~ '\n```' }}"
+      - service: script.telegram_notify
+        continue_on_error: true
+        data:
+          target_person: manolo
+          parse_mode: plain_text
+          message: "{{ (message | trim)[:3900] }}"
