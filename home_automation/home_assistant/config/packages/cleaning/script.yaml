@@ -1,8 +1,9 @@
 # script:
-  # Pressed from the UI ("Mark as paid"): stores the amount due right now as paid.
-  # From here on, the next door opening is considered the departure.
+  # Pressed from the UI ("Pay X €"): stores the amount due right now as paid. The switch
+  # to Paid and the notification are done by "AUT-Cleaning amount paid", the same as
+  # when the amount is typed by hand.
   cleaning_mark_paid:
-    alias: "Cleaning - Mark as paid"
+    alias: "Cleaning - Pay amount due"
     icon: mdi:cash-check
     mode: single
     variables:
@@ -10,7 +11,6 @@
       secs: "{{ [as_timestamp(now()) - start_ts, 0] | max }}"
       price: "{{ states('input_number.cleaning_price_per_hour') | float(0) }}"
       amount: "{{ (secs / 3600 * price) | round(2) }}"
-      duration_text: "{{ (secs // 3600) | int }}h{{ '%02d' % (((secs % 3600) // 60) | int) }}"
     sequence:
       - condition: state
         entity_id: input_select.cleaning_status
@@ -20,18 +20,6 @@
           entity_id: input_number.cleaning_amount_paid
         data:
           value: "{{ amount }}"
-      - service: input_select.select_option
-        target:
-          entity_id: input_select.cleaning_status
-        data:
-          option: Paid
-      - service: script.telegram_notify
-        data:
-          disable_notification: true
-          title: '💶 Cleaning visit paid'
-          message: >
-            {{ duration_text }} → {{ '%.2f' % amount }} €.
-            The next door opening will be registered as the departure.
 
   # Closes the cleaning visit: creates the record event in calendar.cleaning_log,
   # sends the summary and goes back to Idle.

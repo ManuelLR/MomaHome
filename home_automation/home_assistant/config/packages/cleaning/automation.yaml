@@ -1,7 +1,7 @@
 # automation:
   # Flow (see README.md):
   #   Idle ──(calendar.cleaning start)──> Expected ──(Telegram ✅ on a door opening)──> In progress
-  #   In progress ──(UI "Mark as paid")──> Paid ──(next door opening + 10 min grace)──> cleaning_finalize ──> Idle
+  #   In progress ──(UI: amount paid typed, or "Pay X €")──> Paid ──(next door opening + 10 min grace)──> cleaning_finalize ──> Idle
   #   In progress ──(after X hours, Telegram 👋 on a door opening)──> cleaning_finalize ──> Idle
   #   Expected ──(calendar end, or today's event deleted)──> Idle
 
@@ -201,6 +201,47 @@
           entity_id: timer.cleaning_finalize_in
     actions:
       - service: script.cleaning_finalize
+
+  ########################################
+  ## Payment
+  ########################################
+  # Amount paid set while In progress (typed in the popup, or "Pay X €" button):
+  # the visit is paid and the next door opening is the departure. Later edits while
+  # Paid only correct the amount.
+  - alias: AUT-Cleaning amount paid
+    id: aut_cleaning_amount_paid
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: input_number.cleaning_amount_paid
+        not_from:
+          - unknown
+          - unavailable
+    conditions:
+      - condition: state
+        entity_id: input_select.cleaning_status
+        state: In progress
+      - condition: numeric_state
+        entity_id: input_number.cleaning_amount_paid
+        above: 0
+    variables:
+      amount: "{{ states('input_number.cleaning_amount_paid') | float(0) }}"
+      secs: "{{ [as_timestamp(now()) - state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0), 0] | max }}"
+      duration_text: "{{ (secs // 3600) | int }}h{{ '%02d' % (((secs % 3600) // 60) | int) }}"
+    actions:
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.cleaning_status
+        data:
+          option: Paid
+      - service: script.telegram_notify
+        data:
+          disable_notification: true
+          title: '💶 Cleaning visit paid'
+          message: >
+            {{ duration_text }} → {{ '%.2f' % amount }} €.
+            The next door opening will be registered as the departure.
 
   ########################################
   ## Telegram callbacks

@@ -18,9 +18,12 @@ browser_mod:
             {% set start = state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) %}
             {% if s in ['In progress', 'Paid'] and start > 0 %}
               {% set secs = [as_timestamp(now()) - start, 0] | max %}
-              {% set price = states('input_number.cleaning_price_per_hour') | float(0) %}
-              Since {{ start | timestamp_custom('%H:%M') }} · {{ (secs // 3600) | int }}h{{ '%02d' % (((secs % 3600) // 60) | int) }} · {{ '%.2f' % (secs / 3600 * price) }} €
-              {%- if s == 'Paid' %} · Paid {{ '%.2f' % (states('input_number.cleaning_amount_paid') | float(0)) }} €{% endif %}
+              {% set duration = (secs // 3600) | int ~ 'h' ~ '%02d' % (((secs % 3600) // 60) | int) %}
+              {% if s == 'Paid' %}
+                Paid {{ '%.2f' % (states('input_number.cleaning_amount_paid') | float(0)) }} € · since {{ start | timestamp_custom('%H:%M') }} · {{ duration }}
+              {% else %}
+                Since {{ start | timestamp_custom('%H:%M') }} · {{ duration }} · {{ '%.2f' % (secs / 3600 * states('input_number.cleaning_price_per_hour') | float(0)) }} €
+              {% endif %}
             {% elif s == 'Expected' %}Waiting for the visit to start
             {% else %}No cleaning visit
             {% endif %}
@@ -34,6 +37,22 @@ browser_mod:
           tap_action:
             action: none
 
+        # The field normally edited: typing the amount while In progress marks the
+        # visit as Paid (AUT-Cleaning amount paid); while Paid it just corrects it.
+        - type: conditional
+          conditions:
+            - condition: state
+              entity: input_select.cleaning_status
+              state:
+                - In progress
+                - Paid
+          card:
+            type: entities
+            entities:
+              - entity: input_number.cleaning_amount_paid
+                name: Amount paid
+
+        # Shortcut to pay exactly the amount due right now
         - type: conditional
           conditions:
             - condition: state
@@ -41,27 +60,26 @@ browser_mod:
               state: In progress
           card:
             type: custom:mushroom-template-card
-            primary: Mark as paid
-            secondary: >
+            primary: >
               {% set start = state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) %}
               {% set secs = [as_timestamp(now()) - start, 0] | max %}
-              Registers {{ '%.2f' % (secs / 3600 * states('input_number.cleaning_price_per_hour') | float(0)) }} € as paid
+              Pay {{ '%.2f' % (secs / 3600 * states('input_number.cleaning_price_per_hour') | float(0)) }} €
+            secondary: Register the amount due right now as paid
             icon: mdi:cash-check
             icon_color: green
             tap_action:
               action: perform-action
               perform_action: script.cleaning_mark_paid
               confirmation:
-                text: Register the payment of the cleaning visit?
+                text: Register the amount due as paid?
 
+        # Rarely needed: fix times or the status by hand
         - type: entities
+          title: Corrections
           entities:
             - entity: input_datetime.cleaning_started_at
               name: Started at
             - entity: input_datetime.cleaning_ended_at
               name: Ended at
-            - entity: input_number.cleaning_amount_paid
-              name: Amount paid
-            - type: divider
             - entity: input_select.cleaning_status
-              name: Status (manual)
+              name: Status

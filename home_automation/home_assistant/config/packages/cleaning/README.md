@@ -25,7 +25,7 @@ amount to pay in the dashboard and keeps a record of every visit in a calendar.
 |---|---|---|
 | `Idle` | No visit now | slot start → `Expected` |
 | `Expected` | Slot active, waiting for the visit to start | each door opening asks *"Is the cleaning visit starting?"* with its own time → `In progress`; slot end or event deleted → `Idle` |
-| `In progress` | Clock running | UI "Mark as paid" → `Paid`; after X h, door openings ask *"Has it finished?"* |
+| `In progress` | Clock running | amount paid typed in the popup, or "Pay X €" button → `Paid`; after X h, door openings ask *"Has it finished?"* |
 | `Paid` | Paid amount frozen | next door opening = departure, closed after 10 min (`↩️ Not the departure` to undo; a later opening replaces the time) |
 
 On close (`script.cleaning_finalize`) the visit is written to `calendar.cleaning_log`
@@ -45,9 +45,13 @@ It is never turned on automatically.
 
 `input_select.cleaning_status` appears in *Cosas encendidas* (as a `simple-entity` row,
 so it shows text instead of a dropdown) when not `Idle`; tapping it opens a popup
-(`ui-views/utils/cleaning-card.yaml`) with the live duration/amount (computed in the
-card template, refreshed every minute), the pay button and the helpers to fix times,
-the paid amount or the status by hand.
+(`ui-views/utils/cleaning-card.yaml`):
+- header with the live duration/amount (computed in the card template, refreshed every
+  minute);
+- **Amount paid**, the field normally edited: typing it while `In progress` marks the
+  visit as `Paid`; while `Paid` it just corrects the amount;
+- **Pay X €** button (`In progress` only) to pay exactly the amount due;
+- *Corrections* at the bottom: start/end times and status, to fix by hand.
 
 ## Limitations
 
