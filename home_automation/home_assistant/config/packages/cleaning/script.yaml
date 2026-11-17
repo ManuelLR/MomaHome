@@ -61,6 +61,11 @@
             Paid: {{ ('%.2f €' % paid) if was_paid else 'pending' }}
           start_date_time: "{{ start_ts | timestamp_local }}"
           end_date_time: "{{ [end_ts, start_ts + 60] | max | timestamp_local }}"
+      # Reminder to wash the cleaning rags (turned off by hand, not when the washing
+      # machine starts: another load may go first).
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.cleaning_rags_laundry_reminder
       - service: input_select.select_option
         target:
           entity_id: input_select.cleaning_status
@@ -75,6 +80,7 @@
             {% else %}⚠️ No payment registered: {{ '%.2f' % due }} € are due.
             {% endif %}
             Saved in the "Cleaning log" calendar.
+            🧺 Remember the rags laundry.
 
   # Helper for the Telegram callbacks: answers the callback (small toast) and replaces
   # the pressed message text (which also removes its buttons).

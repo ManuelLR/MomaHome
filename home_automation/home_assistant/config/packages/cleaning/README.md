@@ -28,8 +28,11 @@ amount to pay in the dashboard and keeps a record of every visit in a calendar.
 | `In progress` | Clock running | amount paid typed in the popup, or "Pay X €" button → `Paid`; after X h, door openings ask *"Has it finished?"* |
 | `Paid` | Paid amount frozen | next door opening = departure, closed after 10 min (`↩️ Not the departure` to undo; a later opening replaces the time) |
 
-On close (`script.cleaning_finalize`) the visit is written to `calendar.cleaning_log`
-and a summary is sent. Telegram messages use `target_person: auto` (whoever is at home).
+On close (`script.cleaning_finalize`) the visit is written to `calendar.cleaning_log`,
+`input_boolean.cleaning_rags_laundry_reminder` (packages/reminders) is turned on and a
+summary is sent. The reminder is shown in *Cosas encendidas* and on the entrance e-ink
+label, and is turned off by hand (not when the washing machine starts, since another
+load may go first). Telegram messages use `target_person: auto` (whoever is at home).
 
 `input_select.cleaning_status` is the single source of truth: any state other than `Idle`
 means a visit is expected or in progress. Use it as condition in any automation that must

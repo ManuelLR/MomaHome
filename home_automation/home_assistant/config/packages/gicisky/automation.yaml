@@ -46,6 +46,7 @@
           - input_boolean.pick_up_bags_reminder
           - input_boolean.pick_up_package_reminder
           - input_boolean.go_shopping_reminder
+          - input_boolean.cleaning_rags_laundry_reminder
         id: "trigger_reminders"
       ## Check if we should update the display hourly 
       - trigger: time_pattern
@@ -142,6 +143,11 @@
             {{ state_attr('input_boolean.go_shopping_reminder', 'icon') }}
           enabled: >
             {{ states('input_boolean.go_shopping_reminder') == 'on' }}
+        # Cleaning rags laundry (after a cleaning visit)
+        - icon: >
+            {{ state_attr('input_boolean.cleaning_rags_laundry_reminder', 'icon') }}
+          enabled: >
+            {{ states('input_boolean.cleaning_rags_laundry_reminder') == 'on' }}
 
     actions:
       - action: weather.get_forecasts

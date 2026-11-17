@@ -96,6 +96,8 @@ entities:
   - entity: input_boolean.pick_up_package_reminder
   - entity: input_boolean.go_shopping_reminder
   - entity: input_boolean.withdraw_money_reminder
+  - entity: input_boolean.cleaning_rags_laundry_reminder
+    name: Lavadora de trapos pendiente
 conditions:
   - condition: or
     conditions:

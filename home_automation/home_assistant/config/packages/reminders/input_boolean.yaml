@@ -20,3 +20,8 @@
   withdraw_money_reminder:
     name: Withdraw Money Reminder
     icon: mdi:cash-multiple
+  # Turned on automatically when a cleaning visit is closed (packages/cleaning);
+  # turned off by hand once the rags laundry is done.
+  cleaning_rags_laundry_reminder:
+    name: Cleaning Rags Laundry Reminder
+    icon: mdi:washing-machine-alert
