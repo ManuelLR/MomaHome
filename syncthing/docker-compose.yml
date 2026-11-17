@@ -18,5 +18,13 @@ services:
             # id $USER
             - PUID=1000
             - PGID=1000
+            # Soft target for the Go heap: GC works harder past this. It does not
+            # cover SQLite's own memory, hence well below mem_limit.
+            - GOMEMLIMIT=768MiB
+        # Hard cap so a DB scan/GC on a big folder can't push the whole host
+        # (Home Assistant, AdGuard, Immich...) into swap. Observed peaks were
+        # ~600-900 MiB with block indexing on; revisit after a few days.
+        mem_limit: 1536m
+        memswap_limit: 2g
         restart: unless-stopped
         # network_mode: "host"
