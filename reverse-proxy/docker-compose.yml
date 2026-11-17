@@ -83,7 +83,7 @@ services:
   crowdsec-ui:
     # Web UI to review alerts and remove decisions. Logs in to LAPI as the
     # crowdsec-web-ui machine, registered by the crowdsec service.
-    image: ghcr.io/theduffman85/crowdsec-web-ui:2026.11.11
+    image: ghcr.io/theduffman85/crowdsec-web-ui:2026.11.12
     restart: unless-stopped
     read_only: true
     security_opt:
