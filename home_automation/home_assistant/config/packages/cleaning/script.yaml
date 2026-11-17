@@ -84,15 +84,28 @@
 
   # Helper for the Telegram callbacks: answers the callback (small toast) and replaces
   # the pressed message text (which also removes its buttons).
+  # Pass plain fields, never the whole trigger.event.data: the real event contains
+  # python-telegram-bot enums (e.g. MessageEntityType.BOLD) and is rendered as a string.
+  # Always call it as the last step: a Telegram failure must not block anything.
   cleaning_telegram_reply:
     alias: "Cleaning - Reply Telegram callback"
     mode: parallel
     fields:
-      callback:
-        description: "trigger.event.data of the telegram_callback event"
+      callback_id:
+        description: "trigger.event.data.id"
         required: true
         selector:
-          object:
+          text:
+      chat_id:
+        description: "trigger.event.data.chat_id"
+        required: true
+        selector:
+          text:
+      message_id:
+        description: "trigger.event.data.message.message_id (0 if unknown)"
+        required: false
+        selector:
+          text:
       answer:
         required: true
         selector:
@@ -106,14 +119,14 @@
       - service: telegram_bot.answer_callback_query
         continue_on_error: true
         data:
-          callback_query_id: "{{ callback.id }}"
+          callback_query_id: "{{ callback_id }}"
           message: "{{ answer }}"
-      - if: "{{ new_text is defined and new_text | length > 0 and callback.message is not none }}"
+      - if: "{{ new_text is defined and new_text | length > 0 and (message_id | int(0)) > 0 }}"
         then:
           - service: telegram_bot.edit_message
             continue_on_error: true
             data:
-              chat_id: "{{ callback.chat_id }}"
-              message_id: "{{ callback.message.message_id }}"
+              chat_id: "{{ chat_id }}"
+              message_id: "{{ message_id | int }}"
               message: "{{ new_text }}"
               parse_mode: plain_text

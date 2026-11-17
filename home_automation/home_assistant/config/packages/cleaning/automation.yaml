@@ -205,6 +205,27 @@
   ########################################
   ## Payment
   ########################################
+  # New visit (In progress set from Telegram or by hand): start with no payment, so
+  # typing any amount (even the same as last visit) registers it. Not when going back
+  # from Paid (manual correction).
+  - alias: AUT-Cleaning reset amount paid
+    id: aut_cleaning_reset_amount_paid
+    initial_state: 'on'
+    triggers:
+      - trigger: state
+        entity_id: input_select.cleaning_status
+        to: In progress
+        not_from:
+          - Paid
+          - unknown
+          - unavailable
+    actions:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.cleaning_amount_paid
+        data:
+          value: 0
+
   # Amount paid set while In progress (typed in the popup, or "Pay X €" button):
   # the visit is paid and the next door opening is the departure. Later edits while
   # Paid only correct the amount.
@@ -229,6 +250,11 @@
       amount: "{{ states('input_number.cleaning_amount_paid') | float(0) }}"
       secs: "{{ [as_timestamp(now()) - state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0), 0] | max }}"
       duration_text: "{{ (secs // 3600) | int }}h{{ '%02d' % (((secs % 3600) // 60) | int) }}"
+      # If paid after leaving, the "next door opening" would be someone else: offer to
+      # close the visit at the last door opening (if any after the start).
+      last_door_ts: "{{ as_timestamp(states.binary_sensor.entrance_door_sensor_opened.last_changed, 0) | int }}"
+      start_ts: "{{ state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) }}"
+      offer_left: "{{ last_door_ts > start_ts + 900 }}"
     actions:
       - service: input_select.select_option
         target:
@@ -242,6 +268,9 @@
           message: >
             {{ duration_text }} → {{ '%.2f' % amount }} €.
             The next door opening will be registered as the departure.
+            {%- if offer_left %} If the visit already finished, close it at the last door opening.{% endif %}
+          inline_keyboard: >
+            {{ ['👋 Already left at ' ~ (last_door_ts | timestamp_custom('%H:%M')) ~ ':/cleaning_end ' ~ last_door_ts] if offer_left else [] }}
 
   ########################################
   ## Telegram callbacks
@@ -268,13 +297,9 @@
               entity_id: input_datetime.cleaning_started_at
             data:
               timestamp: "{{ start_ts }}"
+          # (amount paid is reset by "AUT-Cleaning reset amount paid")
           - if: "{{ status != 'In progress' }}"
             then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.cleaning_amount_paid
-                data:
-                  value: 0
               - service: input_select.select_option
                 target:
                   entity_id: input_select.cleaning_status
@@ -282,7 +307,9 @@
                   option: In progress
           - service: script.cleaning_telegram_reply
             data:
-              callback: "{{ trigger.event.data }}"
+              callback_id: "{{ trigger.event.data.id }}"
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message_id: "{{ trigger.event.data.message.message_id if trigger.event.data.message else 0 }}"
               answer: "Started at {{ start_hm }}"
               new_text: >
                 {{ '✏️ Cleaning visit start corrected' if status == 'In progress' else '✅ Cleaning visit started' }}
@@ -290,7 +317,9 @@
         else:
           - service: script.cleaning_telegram_reply
             data:
-              callback: "{{ trigger.event.data }}"
+              callback_id: "{{ trigger.event.data.id }}"
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message_id: "{{ trigger.event.data.message.message_id if trigger.event.data.message else 0 }}"
               answer: "No longer applies: the cleaning visit is {{ status }}"
 
   - alias: AUT-Cleaning Telegram end
@@ -314,16 +343,21 @@
               entity_id: input_datetime.cleaning_ended_at
             data:
               timestamp: "{{ end_ts }}"
+          # Close first: replying to Telegram must never block it
+          - service: script.cleaning_finalize
           - service: script.cleaning_telegram_reply
             data:
-              callback: "{{ trigger.event.data }}"
+              callback_id: "{{ trigger.event.data.id }}"
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message_id: "{{ trigger.event.data.message.message_id if trigger.event.data.message else 0 }}"
               answer: "Finished at {{ end_hm }}"
               new_text: "👋 Cleaning visit finished at {{ end_hm }}."
-          - service: script.cleaning_finalize
         else:
           - service: script.cleaning_telegram_reply
             data:
-              callback: "{{ trigger.event.data }}"
+              callback_id: "{{ trigger.event.data.id }}"
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message_id: "{{ trigger.event.data.message.message_id if trigger.event.data.message else 0 }}"
               answer: "No longer applies: the cleaning visit is {{ status }}"
 
   - alias: AUT-Cleaning Telegram undo end
@@ -351,13 +385,17 @@
               entity_id: timer.cleaning_finalize_in
           - service: script.cleaning_telegram_reply
             data:
-              callback: "{{ trigger.event.data }}"
+              callback_id: "{{ trigger.event.data.id }}"
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message_id: "{{ trigger.event.data.message.message_id if trigger.event.data.message else 0 }}"
               answer: 'Departure discarded'
               new_text: '↩️ Departure discarded. The next door opening will be taken as the departure again.'
         else:
           - service: script.cleaning_telegram_reply
             data:
-              callback: "{{ trigger.event.data }}"
+              callback_id: "{{ trigger.event.data.id }}"
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message_id: "{{ trigger.event.data.message.message_id if trigger.event.data.message else 0 }}"
               answer: 'No longer applies: the cleaning visit is already closed'
 
   - alias: AUT-Cleaning Telegram ignore
@@ -372,7 +410,9 @@
     actions:
       - service: script.cleaning_telegram_reply
         data:
-          callback: "{{ trigger.event.data }}"
+          callback_id: "{{ trigger.event.data.id }}"
+          chat_id: "{{ trigger.event.data.chat_id }}"
+          message_id: "{{ trigger.event.data.message.message_id if trigger.event.data.message else 0 }}"
           answer: 'Ignored'
           new_text: "{{ (trigger.event.data.message.text if trigger.event.data.message else '') ~ '\n\n➖ Ignored' }}"
 
