@@ -1,28 +1,21 @@
 # automation:
   # Flow (see README.md):
-  #   Idle ──(calendar.cleaning on)──> Expected ──(Telegram ✅ on a door opening)──> In progress
+  #   Idle ──(calendar.cleaning start)──> Expected ──(Telegram ✅ on a door opening)──> In progress
   #   In progress ──(UI "Mark as paid")──> Paid ──(next door opening + 10 min grace)──> cleaning_finalize ──> Idle
   #   In progress ──(after X hours, Telegram 👋 on a door opening)──> cleaning_finalize ──> Idle
-  #   Expected ──(calendar.cleaning off: slot end or today's event deleted)──> Idle
+  #   Expected ──(calendar end, or today's event deleted)──> Idle
 
   ########################################
   ## Calendar slot
   ########################################
-  # NOTE: no `calendar` triggers on purpose. They look up calendar.cleaning only when
-  # automations are loaded and never retry, so they silently stay broken if the
-  # calendar is created (or not loaded yet) at that moment. The calendar entity state
-  # ('on' while an event is active) and its attributes (current/next event) are used
-  # instead, which keep working whenever the entity appears.
   - alias: AUT-Cleaning reminder before slot
     id: aut_cleaning_reminder_before_slot
     initial_state: 'on'
     triggers:
-      # Next event starts in one hour or less (re-rendered every minute)
-      - trigger: template
-        value_template: >
-          {% set start = as_timestamp(state_attr('calendar.cleaning', 'start_time'), 0) %}
-          {{ is_state('calendar.cleaning', 'off') and start > 0
-             and 0 < start - as_timestamp(now()) <= 3600 }}
+      - trigger: calendar
+        event: start
+        offset: "-01:00:00"
+        entity_id: calendar.cleaning
     conditions:
       - condition: state
         entity_id: input_select.cleaning_status
@@ -32,8 +25,8 @@
         data:
           title: '🧹 Cleaning visit today'
           message: >
-            Planned from {{ as_timestamp(state_attr('calendar.cleaning', 'start_time')) | timestamp_custom('%H:%M') }}
-            to {{ as_timestamp(state_attr('calendar.cleaning', 'end_time')) | timestamp_custom('%H:%M') }}.
+            Planned from {{ as_timestamp(trigger.calendar_event.start) | timestamp_custom('%H:%M') }}
+            to {{ as_timestamp(trigger.calendar_event.end) | timestamp_custom('%H:%M') }}.
             If the visit is finally cancelled, delete today's occurrence from the
             "Cleaning" calendar (only this event).
 
@@ -41,39 +34,29 @@
     id: aut_cleaning_slot_start
     initial_state: 'on'
     triggers:
-      - trigger: state
-        entity_id: calendar.cleaning
-        to: 'on'
-      # HA restarted (or automations reloaded) while the slot is active
-      - trigger: homeassistant
+      - trigger: calendar
         event: start
+        entity_id: calendar.cleaning
     conditions:
       - condition: state
         entity_id: input_select.cleaning_status
         state: Idle
     actions:
-      - wait_template: "{{ states('calendar.cleaning') not in ['unknown', 'unavailable'] }}"
-        timeout: '00:02:00'
-        continue_on_timeout: false
-      - condition: state
-        entity_id: calendar.cleaning
-        state: 'on'
-      # Do not re-arm a visit that was already closed during this same slot
-      - condition: template
-        value_template: >
-          {{ state_attr('input_datetime.cleaning_ended_at', 'timestamp') | float(0)
-             < as_timestamp(state_attr('calendar.cleaning', 'start_time'), 0) }}
       - service: input_select.select_option
         target:
           entity_id: input_select.cleaning_status
         data:
           option: Expected
 
-  # Slot finished, or today's event deleted while the slot was active
   - alias: AUT-Cleaning slot end
     id: aut_cleaning_slot_end
     initial_state: 'on'
     triggers:
+      - trigger: calendar
+        id: slot_end
+        event: end
+        entity_id: calendar.cleaning
+      # Today's event deleted from the calendar while the slot was active
       - trigger: state
         entity_id: calendar.cleaning
         from: 'on'
@@ -91,6 +74,8 @@
                 data:
                   option: Idle
           - conditions:
+              - condition: trigger
+                id: slot_end
               - condition: state
                 entity_id: input_select.cleaning_status
                 state: In progress
