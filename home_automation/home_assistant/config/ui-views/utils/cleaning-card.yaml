@@ -63,9 +63,5 @@ browser_mod:
             - entity: input_number.cleaning_amount_paid
               name: Amount paid
             - type: divider
-            - entity: input_number.cleaning_price_per_hour
-              name: Price per hour
-            - entity: input_number.cleaning_ask_exit_after_hours
-              name: Without payment, ask for departure after
             - entity: input_select.cleaning_status
               name: Status (manual)

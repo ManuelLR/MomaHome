@@ -13,7 +13,8 @@ amount to pay in the dashboard and keeps a record of every visit in a calendar.
      reminds you to do it.
    - `Cleaning log` → `calendar.cleaning_log`: filled automatically with the real visits
      (`🧹 Cleaning 3h08 · 37.60 €`). Separate so it never triggers the flow.
-2. Fill the helpers (they keep their value across restarts):
+2. Fill the helpers from **Settings → Entities** (they are not in the dashboard and keep
+   their value across restarts):
    - `input_number.cleaning_price_per_hour` (€/h).
    - `input_number.cleaning_ask_exit_after_hours`: if the payment was not registered,
      after these hours every door opening asks whether the visit has finished.
@@ -41,8 +42,8 @@ start from Telegram still works, and a vacuum already running is not touched).
 `input_select.cleaning_status` appears in *Cosas encendidas* (as a `simple-entity` row,
 so it shows text instead of a dropdown) when not `Idle`; tapping it opens a popup
 (`ui-views/utils/cleaning-card.yaml`) with the live duration/amount (computed in the
-card template, refreshed every minute), the pay button and the helpers to fix times or
-amounts by hand.
+card template, refreshed every minute), the pay button and the helpers to fix times,
+the paid amount or the status by hand.
 
 ## Limitations
 
