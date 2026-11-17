@@ -13,7 +13,8 @@ amount to pay in the dashboard and keeps a record of every visit in a calendar.
      reminds you to do it.
    - `Cleaning log` → `calendar.cleaning_log`: filled automatically with the real visits
      (`🧹 Cleaning 3h08 · 37.60 €`). Separate so it never triggers the flow.
-2. Fill the helpers (they keep their value across restarts):
+2. Fill the helpers from **Settings → Entities** (they are not in the dashboard and keep
+   their value across restarts):
    - `input_number.cleaning_price_per_hour` (€/h).
    - `input_number.cleaning_ask_exit_after_hours`: if the payment was not registered,
      after these hours every door opening asks whether the visit has finished.
@@ -24,11 +25,14 @@ amount to pay in the dashboard and keeps a record of every visit in a calendar.
 |---|---|---|
 | `Idle` | No visit now | slot start → `Expected` |
 | `Expected` | Slot active, waiting for the visit to start | each door opening asks *"Is the cleaning visit starting?"* with its own time → `In progress`; slot end or event deleted → `Idle` |
-| `In progress` | Clock running | UI "Mark as paid" → `Paid`; after X h, door openings ask *"Has it finished?"* |
+| `In progress` | Clock running | amount paid typed in the popup, or "Pay X €" button → `Paid`; after X h, door openings ask *"Has it finished?"* |
 | `Paid` | Paid amount frozen | next door opening = departure, closed after 10 min (`↩️ Not the departure` to undo; a later opening replaces the time) |
 
-On close (`script.cleaning_finalize`) the visit is written to `calendar.cleaning_log`
-and a summary is sent. Telegram messages use `target_person: auto` (whoever is at home).
+On close (`script.cleaning_finalize`) the visit is written to `calendar.cleaning_log`,
+`input_boolean.cleaning_rags_laundry_reminder` (packages/reminders) is turned on and a
+summary is sent. The reminder is shown in *Cosas encendidas* and on the entrance e-ink
+label, and is turned off by hand (not when the washing machine starts, since another
+load may go first). Telegram messages use `target_person: auto` (whoever is at home).
 
 `input_select.cleaning_status` is the single source of truth: any state other than `Idle`
 means a visit is expected or in progress. Use it as condition in any automation that must
@@ -36,13 +40,21 @@ behave differently. Currently used by `AUT-Vacuum` / `AUT-Vacuum start`
 (packages/vacuum): the vacuum is never started automatically during a visit (a manual
 start from Telegram still works, and a vacuum already running is not touched).
 
+During the visit (`In progress` / `Paid`), `light.bombilla_despacho_manolo_luz` is set to
+100% brightness whenever it is turned on (or if it is already on when the visit starts).
+It is never turned on automatically.
+
 ## UI
 
 `input_select.cleaning_status` appears in *Cosas encendidas* (as a `simple-entity` row,
 so it shows text instead of a dropdown) when not `Idle`; tapping it opens a popup
-(`ui-views/utils/cleaning-card.yaml`) with the live duration/amount (computed in the
-card template, refreshed every minute), the pay button and the helpers to fix times or
-amounts by hand.
+(`ui-views/utils/cleaning-card.yaml`):
+- header with the live duration/amount (computed in the card template, refreshed every
+  minute);
+- **Amount paid**, the field normally edited: typing it while `In progress` marks the
+  visit as `Paid`; while `Paid` it just corrects the amount;
+- **Pay X €** button (`In progress` only) to pay exactly the amount due;
+- *Corrections* at the bottom: start/end times and status, to fix by hand.
 
 ## Limitations
 

@@ -46,3 +46,10 @@
         - Recordatorio de sacar dinero
         - Sacar dinero
         - Dinero
+    input_boolean.cleaning_rags_laundry_reminder:
+      expose: true
+      aliases:
+        - Cleaning Rags Laundry Reminder
+        - Recordatorio de lavadora de trapos
+        - Lavadora de trapos
+        - Trapos
