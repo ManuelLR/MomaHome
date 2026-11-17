@@ -3,3 +3,5 @@
 target_host:
   - evt.Meta.target_fqdn
   - evt.Meta.target_host
+traefik_router:
+  - evt.Parsed.traefik_router_name

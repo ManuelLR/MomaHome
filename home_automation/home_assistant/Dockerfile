@@ -36,6 +36,8 @@ ENV \
     CUSTOM_COMPONENT_MQTT_VACUUM_CAMERA_VERSION=2026.10.0 \
       # renovatebot: datasource=github-releases depName=agittins/bermuda versioning=semver
     CUSTOM_COMPONENT_BERMUDA_VERSION=v0.8.7 \
+      # renovatebot: datasource=github-tags depName=SnarfNL/HA_MistralAI versioning=loose
+    CUSTOM_COMPONENT_MISTRAL_CONVERSATION_VERSION=2026.09.04 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.4.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
@@ -120,6 +122,10 @@ RUN \
     && git clone https://github.com/agittins/bermuda.git /tmp/bermuda \
     && cd /tmp/bermuda && git checkout $CUSTOM_COMPONENT_BERMUDA_VERSION \
     && cd - && cp -r /tmp/bermuda/custom_components/bermuda /opt/HA/config/custom_components/ \
+    # Mistral AI Conversation (Assist agent + Voxtral STT + Mistral TTS). Configured from the UI.
+    && git clone https://github.com/SnarfNL/HA_MistralAI.git /tmp/ha-mistralai \
+    && cd /tmp/ha-mistralai && git checkout $CUSTOM_COMPONENT_MISTRAL_CONVERSATION_VERSION \
+    && cd - && cp -r /tmp/ha-mistralai/custom_components/mistral_conversation /opt/HA/config/custom_components/ \
     ## ----------  Cards  ----------
     && mkdir -p /HA-custom-www/external-cards/ \
     # Xiaomi vacuum map card
