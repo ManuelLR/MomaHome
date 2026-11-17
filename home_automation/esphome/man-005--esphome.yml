@@ -12,8 +12,13 @@ esp32:
       CONFIG_COMPILER_OPTIMIZATION_SIZE: y
 
 
-# # Enable logging
-# logger:
+# Enable logging. This was off for years to save flash, which is exactly why the
+# BLE degradation on 2026.7.2 had to be diagnosed from the Home Assistant side
+# alone: the board could not say a word about why it stopped hearing advertisements.
+# baud_rate: 0 drops the UART (nothing is plugged into it) and keeps the log stream
+# on the native API, which is the one we actually read.
+logger:
+  baud_rate: 0
 
 # Enable Home Assistant API
 api:
@@ -42,6 +47,26 @@ esp32_ble_tracker:
 # Enable bluetooth proxy to use directly on Home Assistant
 bluetooth_proxy:
   active: true
+
+# Restarting the proxy is the only known way to restore BLE reception once it has
+# degraded, so it needs to be reachable without walking up to the board. No
+# entity_category here on purpose: it is meant to sit on a dashboard, not be buried
+# in the device's config section.
+button:
+  - platform: restart
+    id: man_005__restart
+    icon: "mdi:restart"
+    name: "man_005 Reiniciar"
+
+sensor:
+  # The variable that actually predicts the failure. Degradation tracked uptime almost
+  # exactly: first blips around 53 h, Tiles flapping in earnest at ~100 h, the kitchen
+  # Gicisky label unheard at ~118 h. Without this we were reading it off HA restarts.
+  - platform: uptime
+    id: man_005__uptime
+    name: "man_005 Uptime"
+    update_interval: 60s
+    entity_category: diagnostic
 
 binary_sensor:
   - platform: ble_presence

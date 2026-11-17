@@ -1,0 +1,3 @@
+[submodule "galley/src"]
+	path = galley/src
+	url = git@github.com:ManuelLR/galley.git

@@ -28,7 +28,7 @@
             scene_data:
               state: "on"
               brightness: 3
-              color_temp: 454
+              color_temp_kelvin: 2203
         tmp_trigger_nightstand_pulsation_and_scene__double_press_01: &trigger_nightstand_double_press_01
           type: remote_button_double_press
           subtype: button_1
@@ -37,7 +37,7 @@
             scene_data:
               state: "on"
               brightness: 180
-              color_temp: 285
+              color_temp_kelvin: 3509
         tmp_trigger_nightstand_pulsation_and_scene__long_press_01: &trigger_nightstand_long_press_01
           type: remote_button_long_press
           subtype: button_1
@@ -46,7 +46,7 @@
             scene_data:
               state: "on"
               brightness: 255
-              color_temp: 250
+              color_temp_kelvin: 4000
         tmp_trigger_nightstand_pulsation_and_scene__single_press_02: &trigger_nightstand_single_press_02
           type: remote_button_short_press
           subtype: button_2

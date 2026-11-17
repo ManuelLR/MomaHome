@@ -34,6 +34,89 @@
         'docker'
       ],
       enabled: false
+    },
+    {
+      // Immich ships as a single release and running mixed versions is
+      // unsupported, so everything under immich/ lands in one PR merged as a
+      // unit. separateMajorMinor stays at its default (true) on purpose: a
+      // major goes to renovate_cron/major-immich and does not block the
+      // minor/patch PRs for the current major.
+      matchFileNames: [
+        'immich/**'
+      ],
+      groupName: 'immich stack',
+      groupSlug: 'immich',
+      // Immich ships hotfixes quickly; wait before proposing a release.
+      minimumReleaseAge: '3 days',
+      prBodyNotes: [
+        ':warning: Read the Immich release notes before merging: releases can ship breaking changes and database migrations, and downgrading is not supported. Merge the PR whole or not at all — server and machine-learning must run the same version.'
+      ]
+    },
+    {
+      // Postgres/Valkey digests are copied from the Immich release compose, so a
+      // standalone digest refresh carries no compatibility guarantee and is not
+      // worth a PR. Tag changes still open one. Sync digests by hand from
+      // https://github.com/immich-app/immich/blob/main/docker/docker-compose.yml
+      matchFileNames: [
+        'immich/**'
+      ],
+      matchPackageNames: [
+        'ghcr.io/immich-app/postgres',
+        'ghcr.io/valkey-io/valkey'
+      ],
+      matchUpdateTypes: [
+        'digest'
+      ],
+      enabled: false
+    },
+    {
+      // The off-site backup's rclone comes from an unreviewed PR branch, so
+      // each bump is code nobody upstream has approved yet.
+      matchDatasources: [
+        'git-refs'
+      ],
+      matchPackageNames: [
+        'fballiano/rclone'
+      ],
+      prBodyNotes: [
+        ':warning: This rclone is built from the Funambol backend (rclone pull request 9536, still unmerged). Read the new commits on the branch before merging, then rebuild the image on the server and run a manual backup.'
+      ]
+    },
+    {
+      // Tracked through github-releases (see custom managers) so the PR carries
+      // release notes and every image resolves to the same version. Drop the
+      // duplicate deps the built-in docker manager finds on those lines.
+      matchDatasources: [
+        'docker'
+      ],
+      matchPackageNames: [
+        'ghcr.io/immich-app/immich-server',
+        'ghcr.io/immich-app/immich-machine-learning'
+      ],
+      enabled: false
+    },
+    {
+      // These images are tracked via a github/gitea-releases custom manager so
+      // their PRs carry release notes. The built-in docker manager fires on the
+      // same image line with a DIFFERENT depName, so Renovate can't dedupe them
+      // and opens a second, changelog-less PR for every bump. Disable that
+      // docker duplicate here (same as immich/traefik above). This bites when
+      // the docker depName can't match the custom depName:
+      //   - registry host baked into the name: codeberg.org/readeck/readeck
+      //     vs depName readeck/readeck, and the same for ghcr.io images:
+      //     ghcr.io/crocodilestick/calibre-web-automated vs depName
+      //     crocodilestick/calibre-web-automated (#551/#552).
+      //   - image published under a different org than the source repo:
+      //     mauriceboe/trek (Docker Hub) vs depName liketrek/TREK (source).
+      matchDatasources: [
+        'docker'
+      ],
+      matchPackageNames: [
+        'codeberg.org/readeck/readeck',
+        'ghcr.io/crocodilestick/calibre-web-automated',
+        'mauriceboe/trek'
+      ],
+      enabled: false
     }
   ],
   
@@ -52,6 +135,45 @@
       versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}loose{{/if}}'
     },
     {
+      // Generic comment-based manager for docker-compose images that Renovate
+      // can't auto-resolve to a source repo (so PRs get changelog/release notes).
+      // Annotate the image with a comment on the line above, e.g.:
+      //   # renovatebot: datasource=github-releases depName=owner/Repo [packageName=...] [registryUrl=https://codeberg.org] [versioning=semver] [extractVersion=^v(?<version>.+)$]
+      //   image: owner/image:1.2.3
+      // Keep the fields in that order. registryUrl is needed e.g. for gitea-releases (Codeberg).
+      // Defaults: versioning=semver-coerced, extractVersion strips an optional leading 'v'.
+      // Renovate only dedupes against the built-in docker manager when both end
+      // up with the same depName. If the image carries a registry host the
+      // custom depName omits (codeberg.org/..., ghcr.io/...) or lives under a
+      // different org, the names differ and you get two PRs per bump. For those,
+      // disable the docker manager per-package in packageRules above
+      // (see readeck/calibre/trek/immich).
+      customType: 'regex',
+      managerFilePatterns: [
+        '/(^|/)docker-compose\\.ya?ml$/'
+      ],
+      matchStrings: [
+        '# renovate(?:bot)?: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+?)(?: (?:packageName|lookupName)=(?<packageName>\\S+?))?(?: registryUrl=(?<registryUrl>\\S+?))?(?: versioning=(?<versioning>\\S+?))?(?: extractVersion=(?<extractVersion>\\S+?))?\\s*?\\n\\s*image: [^\\s:]+:(?<currentValue>[^\\s@]+)'
+      ],
+      datasourceTemplate: '{{{datasource}}}',
+      depNameTemplate: '{{{depName}}}',
+      packageNameTemplate: '{{#if packageName}}{{{packageName}}}{{else}}{{{depName}}}{{/if}}',
+      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}',
+      extractVersionTemplate: '{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}'
+    },
+    {
+      // rclone built from the unmerged Funambol / O2 Cloud backend (backup/).
+      // Follows the head of the PR branch, so a PR opens whenever it moves.
+      customType: 'regex',
+      managerFilePatterns: [
+        '/(^|/)backup/Dockerfile$/'
+      ],
+      matchStrings: [
+        '# renovate: datasource=git-refs depName=(?<depName>\\S+) packageName=(?<packageName>\\S+) branch=(?<currentValue>\\S+)\\s*\\nARG RCLONE_COMMIT=(?<currentDigest>[0-9a-f]{40})'
+      ],
+      datasourceTemplate: 'git-refs'
+    },
+    {
       // Custom regex for Traefik (using GitHub releases instead of Docker)
       customType: 'regex',
       managerFilePatterns: [
@@ -65,6 +187,17 @@
       versioningTemplate: 'docker'
     },
     {
+      // Traefik plugins (experimental.plugins in traefik.yml)
+      customType: 'regex',
+      managerFilePatterns: [
+        '/(^|/)reverse-proxy/traefik/traefik\\.yml$/'
+      ],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s*\\n\\s*version: (?<currentValue>\\S+)'
+      ],
+      versioningTemplate: 'semver-coerced'
+    },
+    {
       // Custom regex for Calibre Web (not auto-detected)
       customType: 'regex',
       managerFilePatterns: [
@@ -74,6 +207,21 @@
         'image: ghcr.io/crocodilestick/calibre-web-automated:(?<currentValue>[^ ]*)\\n'
       ],
       depNameTemplate: 'crocodilestick/calibre-web-automated',
+      datasourceTemplate: 'github-releases',
+      versioningTemplate: 'semver-coerced'
+    },
+    {
+      // Remote ROCm image: same github-releases entry as immich-server. The
+      // generic manager above can't be used because it would capture "-rocm" as
+      // part of the version; here only the version part is captured.
+      customType: 'regex',
+      managerFilePatterns: [
+        '/immich/remote-ml/docker-compose.yml/'
+      ],
+      matchStrings: [
+        'image: ghcr\\.io/immich-app/immich-machine-learning:(?<currentValue>[^\\s@-]+)-rocm'
+      ],
+      depNameTemplate: 'immich-app/immich',
       datasourceTemplate: 'github-releases',
       versioningTemplate: 'semver-coerced'
     },

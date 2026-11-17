@@ -1,0 +1,10 @@
+# Copy to excludes.txt and adjust. restic --exclude-file syntax; paths are host
+# paths (the container mounts the sources at the same paths).
+#
+# backup.sh already excludes this directory's own secrets/.
+
+# A shared scratch area that is not worth keeping.
+/srv/data/shared
+
+# Rebuildable caches, downloads, etc.
+# /srv/data/media/cache

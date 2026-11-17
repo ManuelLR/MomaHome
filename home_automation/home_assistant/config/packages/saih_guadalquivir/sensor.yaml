@@ -1,0 +1,73 @@
+# sensor:
+  ##
+  # SAIH Guadalquivir - trend of each gauge over the last hour (see ./README.md)
+  #
+  # Levels are not comparable between stations (each point has its own channel
+  # and its own thresholds), but each station's trend is: if the upstream
+  # gauges are rising fast, a flood wave is on its way down, whatever their
+  # absolute value. Units: m/h for levels, m³/s per hour for the dams.
+  ##
+
+  - platform: derivative
+    name: "SAIH A55 trend"
+    unique_id: saih_a55_trend
+    source: sensor.saih_a55_guadaira_sevilla
+    unit_time: h
+    time_window: "01:00:00"
+    round: 2
+
+  - platform: derivative
+    name: "SAIH A19 trend"
+    unique_id: saih_a19_trend
+    source: sensor.saih_a19_guadaira_alcala
+    unit_time: h
+    time_window: "01:00:00"
+    round: 2
+
+  - platform: derivative
+    name: "SAIH M54 trend"
+    unique_id: saih_m54_trend
+    source: sensor.saih_m54_guadaira_alcala_2
+    unit_time: h
+    time_window: "01:00:00"
+    round: 2
+
+  - platform: derivative
+    name: "SAIH M07 trend"
+    unique_id: saih_m07_trend
+    source: sensor.saih_m07_guadaira_arahal
+    unit_time: h
+    time_window: "01:00:00"
+    round: 2
+
+  - platform: derivative
+    name: "SAIH M09 trend"
+    unique_id: saih_m09_trend
+    source: sensor.saih_m09_guadalquivir_sevilla
+    unit_time: h
+    time_window: "01:00:00"
+    round: 2
+
+  - platform: derivative
+    name: "SAIH H09 trend"
+    unique_id: saih_h09_trend
+    source: sensor.saih_h09_alcala_del_rio_dam
+    unit_time: h
+    time_window: "01:00:00"
+    round: 2
+
+  - platform: derivative
+    name: "SAIH H08 trend"
+    unique_id: saih_h08_trend
+    source: sensor.saih_h08_cantillana_dam
+    unit_time: h
+    time_window: "01:00:00"
+    round: 2
+
+  - platform: derivative
+    name: "SAIH A33 trend"
+    unique_id: saih_a33_trend
+    source: sensor.saih_a33_rivera_de_huelva_guillena
+    unit_time: h
+    time_window: "01:00:00"
+    round: 2

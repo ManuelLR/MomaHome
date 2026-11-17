@@ -1,0 +1,21 @@
+# Image default plus the Home Assistant notification
+name: default_ip_remediation
+filters:
+  - Alert.Remediation == true && Alert.GetScope() == "Ip"
+decisions:
+  - type: ban
+    duration: 4h
+duration_expr: Sprintf('%dh', (GetDecisionsCount(Alert.GetValue()) + 1) * 4)
+notifications:
+  - http_home_assistant
+on_success: break
+---
+name: default_range_remediation
+filters:
+  - Alert.Remediation == true && Alert.GetScope() == "Range"
+decisions:
+  - type: ban
+    duration: 4h
+notifications:
+  - http_home_assistant
+on_success: break

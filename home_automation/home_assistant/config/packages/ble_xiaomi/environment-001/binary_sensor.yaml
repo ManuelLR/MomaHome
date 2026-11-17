@@ -1,8 +1,12 @@
 # binary_sensor:
+  # environment-001 was a BLE thermometer (A4:C1:38:5C:C1:2A) read through
+  # xiaomi_ble. It has been migrated to Zigbee, so the trend sensors now follow
+  # the ZHA entity. The binary_sensor names are kept as-is because
+  # packages/windows/automation.yaml consumes them.
   - platform: trend
     sensors:
       'environment_001_temperature_falling':
-        entity_id: sensor.ble_environment_001_temperature
+        entity_id: sensor.xiaomi_lywsd03mmc_z_01_temperatura
         sample_duration: 7200
         max_samples: 120
         invert: true
@@ -10,7 +14,7 @@
         device_class: cold
 
       'environment_001_temperature_rising':
-        entity_id: sensor.ble_environment_001_temperature
+        entity_id: sensor.xiaomi_lywsd03mmc_z_01_temperatura
         sample_duration: 7200
         max_samples: 120
         # min_gradient: 0.0008

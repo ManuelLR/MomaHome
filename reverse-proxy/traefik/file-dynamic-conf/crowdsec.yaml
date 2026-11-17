@@ -1,0 +1,26 @@
+## CrowdSec bouncer, applied to the whole websecure entrypoint (traefik.yml).
+## If CrowdSec is down, AppSec is unreachable and internet requests get a 403.
+## LAN/WireGuard (clientTrustedIPs, same ranges as lan-only.yaml) skip it.
+
+http:
+  middlewares:
+    crowdsec:
+      plugin:
+        crowdsec-bouncer:
+          enabled: true
+          crowdsecMode: stream
+          updateIntervalSeconds: 60
+          updateMaxFailure: 2
+          streamStartupBlock: false
+          crowdsecLapiScheme: http
+          crowdsecLapiHost: crowdsec:8080
+          crowdsecLapiKey: '{{ env "CROWDSEC_BOUNCER_KEY" }}'
+          crowdsecAppsecEnabled: true
+          crowdsecAppsecHost: crowdsec:7422
+          crowdsecAppsecFailureBlock: true
+          crowdsecAppsecUnreachableBlock: true
+          remediationStatusCode: 403
+          clientTrustedIPs:
+            - "192.168.200.0/24"
+            - "172.16.0.0/12"
+            - "10.13.13.0/24"

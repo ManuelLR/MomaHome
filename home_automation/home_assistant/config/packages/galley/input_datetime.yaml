@@ -1,0 +1,32 @@
+# input_datetime:
+  ##
+  # galley panel - meal-slot cut-off times.
+  # For TODAY only: once the current local time passes a slot's cut-off, that
+  # slot is hidden from the panel to free space (see template.yaml). Applies to
+  # ALL slots including lunch/dinner. Tomorrow is never time-hidden.
+  # Editable from the HA UI (time-only helpers). "Dinner = end of day" -> 23:59.
+  ##
+  galley_cutoff_breakfast:
+    name: "Galley · ocultar desayuno tras"
+    icon: mdi:coffee
+    has_date: false
+    has_time: true
+    initial: "11:30:00"
+  galley_cutoff_lunch:
+    name: "Galley · ocultar comida tras"
+    icon: mdi:silverware-fork-knife
+    has_date: false
+    has_time: true
+    initial: "16:30:00"
+  galley_cutoff_snack:
+    name: "Galley · ocultar merienda tras"
+    icon: mdi:food-apple
+    has_date: false
+    has_time: true
+    initial: "19:00:00"
+  galley_cutoff_dinner:
+    name: "Galley · ocultar cena tras"
+    icon: mdi:weather-night
+    has_date: false
+    has_time: true
+    initial: "23:59:00"

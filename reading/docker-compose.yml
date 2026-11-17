@@ -19,14 +19,14 @@ services:
     networks:
       - internal
   wallabag:
-    image: wallabag/wallabag:2.6.14
+    image: wallabag/wallabag:2.6.17
     restart: unless-stopped
     # 1. Run the container
     # 2. Install wallabag: docker-compose exec wallabag bin/console --env=prod wallabag:install -n
     # 3. Fix permissions: docker-compose exec wallabag chown -R nobody:nobody /var/www/wallabag
     environment:
       - SYMFONY__ENV__DOMAIN_NAME=https://${WALLABAG_EXTERNAL_DOMAIN}
-      - SYMFONY__ENV__SERVER_NAME="MoMa's Wallabag"
+      - SYMFONY__ENV__SERVER_NAME=MoMa's Wallabag
       - SYMFONY__ENV__FOSUSER_REGISTRATION=false
       - SYMFONY__ENV__FOSUSER_CONFIRMATION=false
       - POPULATE_DATABASE=false
@@ -55,6 +55,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.wallabag.loadbalancer.server.port=80"
       - "traefik.http.routers.wallabag.rule=Host(`${WALLABAG_EXTERNAL_DOMAIN}`)"
+      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/traefik/file-dynamic-conf/lan-only.yaml
+      - "traefik.http.routers.wallabag.middlewares=global-lan-only@file"
       - "traefik.http.routers.wallabag.entrypoints=websecure"
       - "traefik.http.routers.wallabag.tls.certresolver=principal"
       - "traefik.http.routers.wallabag.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
@@ -69,7 +71,8 @@ services:
       # - "traefik.http.routers.wallabag.middlewares=wallabag-security-headers"
 
   readeck:
-    image: codeberg.org/readeck/readeck:0.22.2
+    # renovatebot: datasource=gitea-releases depName=readeck/readeck registryUrl=https://codeberg.org
+    image: codeberg.org/readeck/readeck:0.23.5
     restart: unless-stopped
     environment:
       # # Defines the application log level. Can be error, warn, info, debug.
@@ -87,6 +90,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.readeck.loadbalancer.server.port=8000"
       - "traefik.http.routers.readeck.rule=Host(`${READECK_EXTERNAL_DOMAIN}`)"
+      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/traefik/file-dynamic-conf/lan-only.yaml
+      - "traefik.http.routers.readeck.middlewares=global-lan-only@file"
       - "traefik.http.routers.readeck.entrypoints=websecure"
       - "traefik.http.routers.readeck.tls.certresolver=principal"
       - "traefik.http.routers.readeck.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
@@ -98,7 +103,7 @@ services:
       retries: 3
 
   miniflux:
-    image: ghcr.io/miniflux/miniflux:2.2.19
+    image: ghcr.io/miniflux/miniflux:2.3.5
     restart: unless-stopped
     environment:
       - DATABASE_URL=postgres://${MINIFLUX_DB_USER}:${MINIFLUX_DB_PASSWORD}@common_db:5432/${MINIFLUX_DB_NAME}?sslmode=disable
@@ -115,12 +120,14 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
       - "traefik.http.routers.miniflux.rule=Host(`${MINIFLUX_EXTERNAL_DOMAIN}`)"
+      # TEMPORARY: LAN/WireGuard only. See reverse-proxy/traefik/file-dynamic-conf/lan-only.yaml
+      - "traefik.http.routers.miniflux.middlewares=global-lan-only@file"
       - "traefik.http.routers.miniflux.entrypoints=websecure"
       - "traefik.http.routers.miniflux.tls.certresolver=principal"
       - "traefik.http.routers.miniflux.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
 
   calibre-web:
-    image: ghcr.io/crocodilestick/calibre-web-automated:v4.0.6
+    image: ghcr.io/crocodilestick/calibre-web-automated:v4.0.8
     restart: unless-stopped
     environment:
       - PUID=1000
@@ -143,8 +150,9 @@ services:
       # We need to support not most secured algorithms in order to sync with kobo devices
       - "traefik.http.routers.calibre-web.tls.options=mozilla-intermediate@file"
 
+      # TEMPORARY: LAN/WireGuard only (global-lan-only@file). See reverse-proxy/traefik/file-dynamic-conf/lan-only.yaml
+      - "traefik.http.routers.calibre-web.middlewares=global-lan-only@file,calibre-web-headers@docker"
       # Add X-Scheme header to the request to avoid problems with some features
-      - "traefik.http.routers.calibre-web.middlewares=calibre-web-headers"
       - "traefik.http.middlewares.calibre-web-headers.headers.customrequestheaders.X-Scheme=https"
 
 networks:

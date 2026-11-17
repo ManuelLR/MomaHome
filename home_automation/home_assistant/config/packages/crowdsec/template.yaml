@@ -1,0 +1,63 @@
+# template:
+  ##
+  # Fed by the `crowdsec_ban` events fired by automation.yaml, one per ban.
+  # "bans" = every local ban; "targeted" = only those that hit a Traefik service.
+  ##
+
+  - trigger:
+      - platform: event
+        event_type: crowdsec_ban
+        id: ban
+      - platform: time
+        at: "00:00:00"
+        id: reset
+    sensor:
+      - name: "CrowdSec bans today"
+        unique_id: crowdsec_bans_today
+        icon: mdi:shield-alert
+        state_class: total_increasing
+        state: >
+          {{ 0 if trigger.id == 'reset' else this.state | int(0) + 1 }}
+
+      - name: "CrowdSec targeted bans today"
+        unique_id: crowdsec_targeted_bans_today
+        icon: mdi:shield-alert-outline
+        state_class: total_increasing
+        state: >
+          {% if trigger.id == 'reset' %}
+            0
+          {% else %}
+            {{ this.state | int(0) + (1 if (trigger.event.data.targeted | bool(false)) else 0) }}
+          {% endif %}
+
+      - name: "CrowdSec last ban"
+        unique_id: crowdsec_last_ban
+        icon: mdi:shield-lock
+        state: >
+          {{ trigger.event.data.scenario if trigger.id == 'ban' else this.state }}
+        attributes:
+          # crowdsec-ui base URL, for the links in the Server view
+          ui_url: !secret crowdsec_ui_url
+          ip: "{{ trigger.event.data.ip if trigger.id == 'ban' else this.attributes.get('ip') }}"
+          country: "{{ trigger.event.data.country if trigger.id == 'ban' else this.attributes.get('country') }}"
+          as_name: "{{ trigger.event.data.as_name if trigger.id == 'ban' else this.attributes.get('as_name') }}"
+          hosts: "{{ trigger.event.data.hosts if trigger.id == 'ban' else this.attributes.get('hosts', []) }}"
+          paths: "{{ trigger.event.data.paths if trigger.id == 'ban' else this.attributes.get('paths', []) }}"
+          routers: "{{ trigger.event.data.routers if trigger.id == 'ban' else this.attributes.get('routers', []) }}"
+          statuses: "{{ trigger.event.data.statuses if trigger.id == 'ban' else this.attributes.get('statuses', []) }}"
+          at: "{{ now().isoformat() if trigger.id == 'ban' else this.attributes.get('at') }}"
+
+      - name: "CrowdSec last targeted ban"
+        unique_id: crowdsec_last_targeted_ban
+        icon: mdi:shield-lock-outline
+        state: >
+          {{ trigger.event.data.scenario if trigger.id == 'ban' and (trigger.event.data.targeted | bool(false)) else this.state }}
+        attributes:
+          ip: "{{ trigger.event.data.ip if trigger.id == 'ban' and (trigger.event.data.targeted | bool(false)) else this.attributes.get('ip') }}"
+          country: "{{ trigger.event.data.country if trigger.id == 'ban' and (trigger.event.data.targeted | bool(false)) else this.attributes.get('country') }}"
+          as_name: "{{ trigger.event.data.as_name if trigger.id == 'ban' and (trigger.event.data.targeted | bool(false)) else this.attributes.get('as_name') }}"
+          hosts: "{{ trigger.event.data.hosts if trigger.id == 'ban' and (trigger.event.data.targeted | bool(false)) else this.attributes.get('hosts', []) }}"
+          paths: "{{ trigger.event.data.paths if trigger.id == 'ban' and (trigger.event.data.targeted | bool(false)) else this.attributes.get('paths', []) }}"
+          routers: "{{ trigger.event.data.routers if trigger.id == 'ban' and (trigger.event.data.targeted | bool(false)) else this.attributes.get('routers', []) }}"
+          statuses: "{{ trigger.event.data.statuses if trigger.id == 'ban' and (trigger.event.data.targeted | bool(false)) else this.attributes.get('statuses', []) }}"
+          at: "{{ now().isoformat() if trigger.id == 'ban' and (trigger.event.data.targeted | bool(false)) else this.attributes.get('at') }}"

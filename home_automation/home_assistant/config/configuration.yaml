@@ -35,17 +35,16 @@ logger:
     homeassistant.components.shell_command: debug
 
 lovelace:
-  mode: yaml
+  # Keeps loading the resources below from YAML instead of the UI
+  resource_mode: yaml
   # Add more dashboards
-  ### Default continue in ui-lovelace.yaml
   dashboards:
-    # lovelace-overview: # Needs to contain a hyphen (-)
-    #   mode: yaml
-    #   filename: ui-lovelace.yaml
-    #   title: Overview
-    #   icon: mdi:tools
-    #   show_in_sidebar: true
-    #   require_admin: true
+    lovelace: # The default dashboard, the only key exempt from the hyphen (-)
+      mode: yaml
+      filename: ui-lovelace.yaml
+      title: Overview
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
     lovelace-generated: # Needs to contain a hyphen (-)
       mode: yaml
       filename: notexist.yaml
@@ -92,15 +91,9 @@ default_config:
 # updater:
 #   include_used_components: true
 
-http:
-  server_port: 8123
-  ## Configuration to use behind a proxy
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 172.0.0.0/8
-  ## Auto ban IPs based in failed logins attemps
-  ip_ban_enabled: true
-  login_attempts_threshold: 10
+# http: migrated to the UI (Settings > System > Network) in 2026.x; the core
+# ignores this block and stops accepting it in 2027.2. Proxy (x-forwarded-for,
+# trusted_proxies 172.0.0.0/8) and IP ban (threshold 10) live there now.
 
 mqtt:
   ## Deprecated in 2022.3.xx
@@ -128,9 +121,13 @@ zha:
 # Netdata monitoring (server + router)
 rest: !include_dir_merge_list __auto_generated-config/rest/
 
+# SAIH Guadalquivir river levels and reservoirs
+command_line: !include_dir_merge_list __auto_generated-config/command_line/
+
 # Server
 # pi_hole: !include_dir_merge_named __auto_generated-config/pi_hole/
-duckdns: !include_dir_merge_named __auto_generated-config/duckdns/
+# Now forced to be managed from UI. Release 2026.6
+# duckdns: !include_dir_merge_named __auto_generated-config/duckdns/
 
 # Now forced to be managed from UI. Release 2023.6
 # speedtestdotnet: !include_dir_merge_named __auto_generated-config/speedtestdotnet/
@@ -138,7 +135,10 @@ binary_sensor: !include_dir_merge_list __auto_generated-config/binary_sensor/
 
 google_assistant: !include_dir_merge_named __auto_generated-config/google_assistant/
 
-device_tracker: !include_dir_merge_list __auto_generated-config/device_tracker/
+# Dropped along with the last YAML platform (bluetooth_le_tracker). Presence now
+# comes from the ESPHome ble_presence sensors on man-005--esphome, which feed
+# device_tracker.see from packages/esphome/automation.yaml.
+# device_tracker: !include_dir_merge_list __auto_generated-config/device_tracker/
 
 input_select: !include_dir_merge_named __auto_generated-config/input_select/
 
@@ -148,14 +148,8 @@ input_boolean: !include_dir_merge_named __auto_generated-config/input_boolean/
 
 template: !include_dir_merge_list __auto_generated-config/template/
 
+# Scanners are config entries, not YAML. The local hci0 adapter is disabled.
 bluetooth:
-# ble_monitor:
-#   # https://github.com/custom-components/ble_monitor
-#   ## Hey ! If a error occur don't worry, HA needs disable that component and restart
-#   discovery: False
-#   restore_state: True
-#   active_scan: False
-#   devices: !include_dir_merge_list __auto_generated-config/ble_monitor_device/
 
 browser_mod:
   # https://github.com/thomasloven/hass-browser_mod

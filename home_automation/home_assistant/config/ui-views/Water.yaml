@@ -1,0 +1,112 @@
+# NOTE: entity IDs follow the confirmed pattern sensor.emasesa_consumo_medio_diario.
+# Adjust them if your installation generates different IDs (depends on the HA device name).
+
+- type: vertical-stack
+  cards:
+    # ── Quick summary ────────────────────────────────────────────────────────
+    - type: horizontal-stack
+      cards:
+        - type: custom:mushroom-entity-card
+          entity: sensor.emasesa_consumo_del_dia
+          name: Today's consumption
+          icon: mdi:water
+          primary_info: state
+          secondary_info: last-updated
+          tap_action:
+            action: more-info
+        - type: custom:mushroom-entity-card
+          entity: sensor.emasesa_consumo_medio_diario
+          name: Daily average
+          icon: mdi:chart-line
+          primary_info: state
+          secondary_info: attribute
+          attribute: valoracion_texto
+          tap_action:
+            action: more-info
+        - type: custom:mushroom-entity-card
+          entity: sensor.emasesa_coste_del_periodo
+          name: Period cost
+          icon: mdi:cash
+          primary_info: state
+          secondary_info: attribute
+          attribute: periodo_desde
+          tap_action:
+            action: more-info
+
+    # ── Billing ──────────────────────────────────────────────────────────────
+    - type: horizontal-stack
+      cards:
+        - type: entity
+          entity: sensor.emasesa_ultima_factura
+          name: Last invoice
+        - type: entity
+          entity: sensor.emasesa_importe_pendiente
+          name: Outstanding amount
+        - type: entity
+          entity: sensor.emasesa_dias_para_la_proxima_factura
+          name: Next invoice in
+
+    # ── Daily consumption — last 30 days ─────────────────────────────────────
+    - type: custom:mini-graph-card
+      name: Daily consumption (30 days)
+      entities:
+        - entity: sensor.emasesa_consumo_del_dia
+          name: Litres
+      hours_to_show: 720
+      group_by: date
+      aggregate_func: max
+      line_color: '#2196F3'
+      bar_chart: true
+      show:
+        extrema: true
+        legend: false
+        state: true
+
+    # ── Weekly accumulated consumption (HA statistics) ───────────────────────
+    - type: statistics-graph
+      title: Weekly consumption (m³)
+      entities:
+        - entity: sensor.emasesa_indice_del_contador
+          name: Meter
+      days_to_show: 90
+      period: week
+      stat_types:
+        - change
+
+    # ── Reservoirs ───────────────────────────────────────────────────────────
+    - type: entity
+      entity: sensor.emasesa_embalses
+      name: Reservoir level (Seville)
+      icon: mdi:waves
+    - type: custom:mini-graph-card
+      name: Reservoir level history
+      entities:
+        - entity: sensor.emasesa_embalses
+          name: Level (%)
+      hours_to_show: 8760
+      group_by: week
+      aggregate_func: last
+      line_color: '#03A9F4'
+      show:
+        extrema: true
+        fill: true
+
+    # ── Alerts / status ──────────────────────────────────────────────────────
+    - type: entities
+      title: Status & alerts
+      entities:
+        - entity: binary_sensor.emasesa_posible_fuga
+          name: Possible leak
+          icon: mdi:water-alert
+        - entity: binary_sensor.emasesa_incidencia_de_red_cercana
+          name: Nearby network incident
+          icon: mdi:pipe-leak
+        - entity: binary_sensor.emasesa_averia_del_contador
+          name: Meter fault
+          icon: mdi:counter
+        - entity: binary_sensor.emasesa_incidencia_pendiente
+          name: Pending incident
+          icon: mdi:wrench-clock
+        - entity: sensor.emasesa_precio_del_agua
+          name: Water price (€/m³)
+          icon: mdi:cash-multiple

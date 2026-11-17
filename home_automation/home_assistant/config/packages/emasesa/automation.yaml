@@ -1,0 +1,18 @@
+# automation:
+
+  - alias: AUT-EMASESA Possible leak detected
+    id: aut_emasesa_posible_fuga
+    initial_state: 'on'
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.emasesa_posible_fuga
+        to: 'on'
+    actions:
+      - action: script.telegram_notify
+        data:
+          target_person: all
+          title: "🚰 Possible water leak"
+          message: >
+            Continuous water usage detected during the early hours over several nights.
+            Check the meter and plumbing.
+            Minimum overnight consumption: {{ state_attr('binary_sensor.emasesa_posible_fuga', 'consumo_minimo_nocturno_l') | round(1) }} L/h.

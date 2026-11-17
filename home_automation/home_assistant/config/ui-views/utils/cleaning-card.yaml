@@ -1,0 +1,71 @@
+action: fire-dom-event
+browser_mod:
+  service: browser_mod.popup
+  style:
+    border-radius: 0px
+    '--ha-card-border-radius': 0px
+  data:
+    title: Cleaning
+    dismissable: true
+    content:
+      type: vertical-stack
+      cards:
+        # Live duration and amount (rendered by the backend, refreshed every minute)
+        - type: custom:mushroom-template-card
+          primary: "{{ states('input_select.cleaning_status') }}"
+          secondary: >
+            {% set s = states('input_select.cleaning_status') %}
+            {% set start = state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) %}
+            {% if s in ['In progress', 'Paid'] and start > 0 %}
+              {% set secs = [as_timestamp(now()) - start, 0] | max %}
+              {% set price = states('input_number.cleaning_price_per_hour') | float(0) %}
+              Since {{ start | timestamp_custom('%H:%M') }} · {{ (secs // 3600) | int }}h{{ '%02d' % (((secs % 3600) // 60) | int) }} · {{ '%.2f' % (secs / 3600 * price) }} €
+              {%- if s == 'Paid' %} · Paid {{ '%.2f' % (states('input_number.cleaning_amount_paid') | float(0)) }} €{% endif %}
+            {% elif s == 'Expected' %}Waiting for the visit to start
+            {% else %}No cleaning visit
+            {% endif %}
+          icon: mdi:broom
+          icon_color: >
+            {% set s = states('input_select.cleaning_status') %}
+            {% if   s == 'In progress' %}blue
+            {% elif s == 'Paid'        %}green
+            {% elif s == 'Expected'    %}orange
+            {% else %}disabled{% endif %}
+          tap_action:
+            action: none
+
+        - type: conditional
+          conditions:
+            - condition: state
+              entity: input_select.cleaning_status
+              state: In progress
+          card:
+            type: custom:mushroom-template-card
+            primary: Mark as paid
+            secondary: >
+              {% set start = state_attr('input_datetime.cleaning_started_at', 'timestamp') | float(0) %}
+              {% set secs = [as_timestamp(now()) - start, 0] | max %}
+              Registers {{ '%.2f' % (secs / 3600 * states('input_number.cleaning_price_per_hour') | float(0)) }} € as paid
+            icon: mdi:cash-check
+            icon_color: green
+            tap_action:
+              action: perform-action
+              perform_action: script.cleaning_mark_paid
+              confirmation:
+                text: Register the payment of the cleaning visit?
+
+        - type: entities
+          entities:
+            - entity: input_datetime.cleaning_started_at
+              name: Started at
+            - entity: input_datetime.cleaning_ended_at
+              name: Ended at
+            - entity: input_number.cleaning_amount_paid
+              name: Amount paid
+            - type: divider
+            - entity: input_number.cleaning_price_per_hour
+              name: Price per hour
+            - entity: input_number.cleaning_ask_exit_after_hours
+              name: Without payment, ask for departure after
+            - entity: input_select.cleaning_status
+              name: Status (manual)

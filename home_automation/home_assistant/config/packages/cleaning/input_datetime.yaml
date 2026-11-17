@@ -1,0 +1,11 @@
+# input_datetime:
+  cleaning_started_at:
+    name: Cleaning - Started at
+    icon: mdi:door-open
+    has_date: true
+    has_time: true
+  cleaning_ended_at:
+    name: Cleaning - Ended at
+    icon: mdi:door-closed
+    has_date: true
+    has_time: true

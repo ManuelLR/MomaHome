@@ -1,0 +1,4 @@
+share_manual_decisions: false
+share_custom: false
+share_tainted: false
+share_context: false

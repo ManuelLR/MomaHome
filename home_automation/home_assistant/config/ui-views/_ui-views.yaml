@@ -11,6 +11,9 @@
 - title: Energy
   icon: mdi:home-lightning-bolt-outline
   cards: !include Energy.yaml
+- title: Water
+  icon: mdi:water
+  cards: !include Water.yaml
 - title: Environment
   icon: mdi:thermometer-water
   cards: !include Environment.yaml
@@ -22,6 +25,9 @@
 - title: Server
   icon: mdi:server
   cards: !include Server.yaml
+- title: Rivers
+  icon: mdi:waves
+  cards: !include Rivers.yaml
 # - title: Flora
 #   icon: mdi:flower
 #   cards: !include Flora.yaml
