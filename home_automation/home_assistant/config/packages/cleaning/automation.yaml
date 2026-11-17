@@ -361,9 +361,10 @@
     initial_state: 'on'
     mode: restart
     triggers:
+      # Any state -> on: a Zigbee bulb switched off at the wall comes back from
+      # unavailable. Brightness (attribute) changes while on do not trigger.
       - trigger: state
         entity_id: light.bombilla_despacho_manolo_luz
-        from: 'off'
         to: 'on'
       - trigger: state
         entity_id: input_select.cleaning_status
