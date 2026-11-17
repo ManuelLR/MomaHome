@@ -37,6 +37,10 @@ behave differently. Currently used by `AUT-Vacuum` / `AUT-Vacuum start`
 (packages/vacuum): the vacuum is never started automatically during a visit (a manual
 start from Telegram still works, and a vacuum already running is not touched).
 
+During the visit (`In progress` / `Paid`), `light.bombilla_despacho_manolo_luz` is set to
+100% brightness whenever it is turned on (or if it is already on when the visit starts).
+It is never turned on automatically.
+
 ## UI
 
 `input_select.cleaning_status` appears in *Cosas encendidas* (as a `simple-entity` row,

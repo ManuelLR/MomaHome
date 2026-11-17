@@ -149,9 +149,10 @@
     initial_state: 'on'
     mode: queued
     triggers:
+      # No `from: 'off'`: the (battery) door sensor is often marked unavailable after a
+      # while without activity, so the first opening of the day comes from unavailable.
       - trigger: state
         entity_id: binary_sensor.entrance_door_sensor_opened
-        from: 'off'
         to: 'on'
     variables:
       status: "{{ states('input_select.cleaning_status') }}"
@@ -348,3 +349,37 @@
           callback: "{{ trigger.event.data }}"
           answer: 'Ignored'
           new_text: "{{ (trigger.event.data.message.text if trigger.event.data.message else '') ~ '\n\n➖ Ignored' }}"
+
+  ########################################
+  ## Devices during the visit
+  ########################################
+  # Office light at 100% while the visit is in progress. It is not turned on: only set
+  # to full brightness when it is turned on during the visit (or already on when the
+  # visit starts).
+  - alias: AUT-Cleaning office light full brightness
+    id: aut_cleaning_office_light_full_brightness
+    initial_state: 'on'
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: light.bombilla_despacho_manolo_luz
+        from: 'off'
+        to: 'on'
+      - trigger: state
+        entity_id: input_select.cleaning_status
+        to: In progress
+    conditions:
+      - condition: state
+        entity_id: input_select.cleaning_status
+        state:
+          - In progress
+          - Paid
+      - condition: state
+        entity_id: light.bombilla_despacho_manolo_luz
+        state: 'on'
+    actions:
+      - service: light.turn_on
+        target:
+          entity_id: light.bombilla_despacho_manolo_luz
+        data:
+          brightness_pct: 100
