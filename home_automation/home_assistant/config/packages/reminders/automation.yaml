@@ -1,0 +1,92 @@
+# automation:
+  # Clothes hanging out to dry (input_boolean.clothes_drying_reminder): Telegram alerts
+  # before sunset, when the house is left and when someone arrives. Every message has
+  # a button to mark them as collected (generic /turn_off, packages/telegram).
+  - alias: AUT-Clothes drying alerts
+    id: aut_clothes_drying_alerts
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: sun
+        id: sunset
+        event: sunset
+        offset: "-00:30:00"
+      - trigger: state
+        id: left
+        entity_id: sensor.home_occupancy_status
+        to: Just Left
+        not_from:
+          - unknown
+          - unavailable
+      - trigger: state
+        id: arrived
+        entity_id: sensor.home_occupancy_status
+        to: Just Arrived
+        not_from:
+          - unknown
+          - unavailable
+    conditions:
+      - condition: state
+        entity_id: input_boolean.clothes_drying_reminder
+        state: 'on'
+    actions:
+      - service: script.telegram_notify
+        data:
+          title: '👕 Clothes hanging out'
+          message: >
+            {% if trigger.id == 'sunset' %}The sun sets in 30 minutes and the clothes are still hanging out.
+            {% elif trigger.id == 'left' %}Nobody is home and the clothes are still hanging out.
+            {% else %}Welcome home! The clothes are still hanging out.
+            {% endif %}
+          inline_keyboard:
+            - '✅ Already collected:/turn_off input_boolean.clothes_drying_reminder'
+
+  # Rain expected in the next 3 hours while the clothes are hanging out. Checked every
+  # hour; after an alert it waits up to 3 hours (mode single) so it is not repeated,
+  # unless the clothes are collected before.
+  - alias: AUT-Clothes drying rain alert
+    id: aut_clothes_drying_rain_alert
+    initial_state: 'on'
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: time_pattern
+        minutes: 7
+      - trigger: state
+        entity_id: input_boolean.clothes_drying_reminder
+        to: 'on'
+    conditions:
+      - condition: state
+        entity_id: input_boolean.clothes_drying_reminder
+        state: 'on'
+    variables:
+      # Same weather entity as the entrance e-ink label (packages/gicisky)
+      weather_entity: weather.climacell_daily
+    actions:
+      - service: weather.get_forecasts
+        target:
+          entity_id: "{{ weather_entity }}"
+        data:
+          type: hourly
+        response_variable: forecasts
+      - variables:
+          next_3h: "{{ forecasts[weather_entity].forecast[0:3] }}"
+          rainy_hours: >
+            {{ next_3h | selectattr('precipitation', 'defined') | rejectattr('precipitation', 'none') | selectattr('precipitation', '>', 0.1) | list
+               + next_3h | selectattr('precipitation_probability', 'defined') | rejectattr('precipitation_probability', 'none') | selectattr('precipitation_probability', '>=', 60) | list }}
+          first_rain: "{{ (rainy_hours | map(attribute='datetime') | sort | first) if rainy_hours else '' }}"
+      - condition: template
+        value_template: "{{ first_rain != '' }}"
+      - service: script.telegram_notify
+        data:
+          title: '🌧️ Rain expected'
+          message: >
+            Rain is expected around {{ as_timestamp(first_rain) | timestamp_custom('%H:%M') }}
+            and the clothes are still hanging out.
+          inline_keyboard:
+            - '✅ Already collected:/turn_off input_boolean.clothes_drying_reminder'
+      - wait_for_trigger:
+          - trigger: state
+            entity_id: input_boolean.clothes_drying_reminder
+            to: 'off'
+        timeout: '03:00:00'
