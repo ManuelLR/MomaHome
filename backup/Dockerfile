@@ -29,7 +29,7 @@ RUN CGO_ENABLED=0 go build -trimpath \
     && /out/rclone version
 
 # Alpine-based; ENTRYPOINT is restic. Ships ca-certificates and fuse already.
-FROM restic/restic:0.19.1
+FROM restic/restic:0.20.0
 
 RUN apk add --no-cache bash tzdata
 
