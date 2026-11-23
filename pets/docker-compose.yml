@@ -1,0 +1,62 @@
+version: "2.4"
+services:
+  einvault:
+    # EinVault: self-hosted health and care tracker for pets (SQLite, single container).
+    # Published image, pinned so Renovate can track new releases.
+    # This "pets" folder groups pet-related services; add more as siblings.
+    # renovatebot: datasource=github-releases depName=davefatkin/EinVault
+    image: ghcr.io/davefatkin/einvault:1.12.1
+    restart: unless-stopped
+    # Hardening recommended by upstream (docker-compose.prod.yml).
+    user: "1000:1000"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:mode=1777,size=64m
+    environment:
+      - NODE_ENV=production
+      # Must match the URL used in the browser (CSRF protection, password reset links).
+      - ORIGIN=https://${EINVAULT_EXTERNAL_DOMAIN}
+      - DATABASE_URL=/data/einvault.db
+      - TZ=${TZ:-Europe/Madrid}
+      # Behind Traefik: take the client IP from X-Forwarded-For (one proxy hop), so
+      # the API rate limit is per client and not shared by everyone.
+      - ADDRESS_HEADER=X-Forwarded-For
+      - XFF_DEPTH=1
+      - UPLOAD_MAX_MB=${EINVAULT_UPLOAD_MAX_MB:-10}
+      # Optional: pick journal photos and avatars from Immich (reference only, never
+      # uploads or deletes). Leave empty to disable.
+      - IMMICH_URL=${EINVAULT_IMMICH_URL:-}
+      - IMMICH_API_KEY=${EINVAULT_IMMICH_API_KEY:-}
+      # Optional: ntfy push for reminders (each user sets their topic in the app).
+      - NTFY_URL=${EINVAULT_NTFY_URL:-}
+      - NTFY_TOKEN=${EINVAULT_NTFY_TOKEN:-}
+    volumes:
+      # Persistent app data (SQLite + uploads), host path like the other services.
+      - /data/pets/einvault:/data
+    networks:
+      - reverse-proxy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.einvault.loadbalancer.server.port=3000"
+      - "traefik.http.routers.einvault.rule=Host(`${EINVAULT_EXTERNAL_DOMAIN}`)"
+      - "traefik.http.routers.einvault.entrypoints=websecure"
+      - "traefik.http.routers.einvault.tls.certresolver=principal"
+      - "traefik.http.routers.einvault.tls.domains[0].sans=${EXTERNAL_WILDCARD_DOMAIN}"
+      # LAN-only: reachable only from the home network (from outside use WireGuard).
+      - "traefik.http.middlewares.einvault-lan-only.ipallowlist.sourcerange=192.168.200.0/24"
+      - "traefik.http.routers.einvault.middlewares=einvault-lan-only"
+
+networks:
+  reverse-proxy:
+    # External network created by reverse-proxy setup
+    external: true

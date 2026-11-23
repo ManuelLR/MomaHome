@@ -105,7 +105,8 @@
       //   - registry host baked into the name: codeberg.org/readeck/readeck
       //     vs depName readeck/readeck, and the same for ghcr.io images:
       //     ghcr.io/crocodilestick/calibre-web-automated vs depName
-      //     crocodilestick/calibre-web-automated (#551/#552).
+      //     crocodilestick/calibre-web-automated (#551/#552), and
+      //     ghcr.io/davefatkin/einvault vs depName davefatkin/EinVault (pets/).
       //   - image published under a different org than the source repo:
       //     mauriceboe/trek (Docker Hub) vs depName liketrek/TREK (source).
       matchDatasources: [
@@ -114,6 +115,7 @@
       matchPackageNames: [
         'codeberg.org/readeck/readeck',
         'ghcr.io/crocodilestick/calibre-web-automated',
+        'ghcr.io/davefatkin/einvault',
         'mauriceboe/trek'
       ],
       enabled: false
