@@ -60,6 +60,9 @@ Each service namespaces its env vars (`EINVAULT_*`, ...) and its data under
     `subtypes` (`pee` / `poop`) and `loggedAt` (past events). Docs at `/api/docs`.
   - Planned once the dog wears a tracker: log walks automatically from its
     presence.
+- **Resources.** Capped at 0.5 CPU and 256 MB RAM (64 MB reserved), the values
+  upstream recommends for the app; it is a small Node.js + SQLite app and idles
+  well below that. Only video transcoding (off by default) needs more.
 - **Backups.** Everything is in `/data/pets/einvault` (`einvault.db` and
   uploads). Stop the container before copying it so SQLite is not mid-write.
 - **Updating.** Image tags are pinned; Renovate opens PRs for new versions.

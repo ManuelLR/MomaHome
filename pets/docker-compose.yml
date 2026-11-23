@@ -16,6 +16,11 @@ services:
       - ALL
     tmpfs:
       - /tmp:mode=1777,size=64m
+    # Upstream limits ("plenty for the app itself"). Raise them only if video
+    # transcoding (VIDEO_TRANSCODE, off by default) is ever enabled.
+    cpus: 0.5
+    mem_limit: 256m
+    mem_reservation: 64m
     environment:
       - NODE_ENV=production
       # Must match the URL used in the browser (CSRF protection, password reset links).
