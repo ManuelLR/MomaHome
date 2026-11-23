@@ -21,7 +21,7 @@ pees, poops and accidents at home.
    | Max hours without going out / peeing / pooping | 3 h / 3 h / 6 h |
    | Breakfast / dinner | 07:30 / 19:30 |
    | Walk reminder after a meal | 20 min |
-   | Night (no reminders, not counted) | 23:30 → 07:30 |
+   | Earliest / latest wake-up, fallback bedtime (see "Night") | 05:30 / 09:00 / 23:30 |
 
 ## Flow (`input_boolean.dog_out` + `input_select.dog_walker`)
 
@@ -51,11 +51,26 @@ generic "answer callback + replace message text" helper.
 
 ### Night
 
-The hours between `input_datetime.dog_quiet_start` and `dog_quiet_end` do not count as
-"time without going out / peeing / pooping" (`custom_templates/dog.jinja`), and no
-reminder is sent during them. So a pee at 22:00 is ~1.5 h awake at 08:00 (not 10 h),
-and the reminder comes later in the morning only if it still has not peed. If nobody is
-home when a limit is reached, the reminder is sent to whoever arrives.
+While `input_boolean.dog_night` is on (everybody asleep) no reminder is sent, and that
+time does not count as "time without going out / peeing / pooping"
+(`custom_templates/dog.jinja`, using the last 7 nights recorded in
+`sensor.dog_last_night`). So a pee at 22:00 is ~1.5 h awake at 08:00, not 10 h.
+
+- **Bedtime**: the nightstand lights (`light.bedroom_nightstand_lights`, both) go from
+  on to off and stay off 10 min, between 21:00 and 04:00, with someone at home. The night
+  starts when they were turned off. Fallbacks: at the *fallback bedtime* if the lights
+  are not on; at 04:00 if nothing happened (lights left on), backdated to the fallback
+  bedtime.
+- **Night interruptions**: before the *earliest wake-up*, turning a light on, taking
+  the dog out or logging anything does not end the night (a pee at 3:00 is logged and
+  resets its counter; the night goes on).
+- **Wake-up**: the first sign of life after the *earliest wake-up*: a nightstand light
+  turned on, someone leaving home, or any dog activity (walk, meal, accident). Mornings
+  without lights still work. Fallback: the *latest wake-up* (and 14:00 as a safety net).
+- `sensor.dog_last_night`: hours slept last night, with `started`, `ended` and `woke_by`
+  (lights / left_home / dog_activity / fallback) to check the detection.
+
+If nobody is home when a limit is reached, the reminder is sent to whoever arrives.
 
 ## Data
 
@@ -85,6 +100,8 @@ and the settings. While the dog is out, *Cosas encendidas* shows "Dog out on a w
 
 - Home Assistant cannot edit or delete calendar events: wrong entries are fixed by hand
   from the Calendar panel (the daily counters are not recalculated).
+- A light turned on after the earliest wake-up ends the night even if you go back to
+  sleep (only that part of the night is lost).
 - The reminders fire when a limit is crossed, once; after a restart with a limit
   already exceeded they wait for the next arrival home (or the next crossing).
 - Presence comes from the keys trackers (`person.*`): leaving or arriving without them

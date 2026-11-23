@@ -22,15 +22,27 @@
     icon: mdi:food-drumstick
     has_date: false
     has_time: true
-  # Night: no reminders, and these hours do not count as "time without peeing / pooping /
-  # going out" (custom_templates/dog.jinja)
+  # Night (packages/dog README "Night"): detected from the nightstand lights; these are
+  # the fallbacks when nothing is detected, and the earliest wake-up time (before it a
+  # light turned on is a night interruption, not the wake-up).
   dog_quiet_start:
-    name: Dog night start
+    name: Dog fallback bedtime
     icon: mdi:weather-night
     has_date: false
     has_time: true
   dog_quiet_end:
-    name: Dog night end
+    name: Dog latest wake-up
     icon: mdi:weather-sunny
     has_date: false
+    has_time: true
+  dog_earliest_wake:
+    name: Dog earliest wake-up
+    icon: mdi:weather-sunset-up
+    has_date: false
+    has_time: true
+  # Current / last night (input_boolean.dog_night)
+  dog_night_started_at:
+    name: Dog night started at
+    icon: mdi:sleep
+    has_date: true
     has_time: true

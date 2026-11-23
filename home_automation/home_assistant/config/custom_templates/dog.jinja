@@ -1,27 +1,21 @@
-{#- Hours between `since` (UNIX timestamp) and now, NOT counting the dog's quiet (night)
-    hours: input_datetime.dog_quiet_start → input_datetime.dog_quiet_end (time-only
-    helpers, the window may cross midnight). Used by packages/dog so a pee at 22:00 is
-    not "10 hours ago" at 08:00. Returns 0 if `since` is not valid. -#}
+{#- Hours between `since` (UNIX timestamp) and now, NOT counting the nights (everybody
+    asleep, packages/dog README "Night"): the recorded nights in sensor.dog_last_night
+    (attribute `nights`: [[start_ts, end_ts], ...]) plus the current one if
+    input_boolean.dog_night is on. So a pee at 22:00 is not "10 hours ago" at 08:00.
+    Returns 0 if `since` is not valid. -#}
 {%- macro dog_awake_hours(since) -%}
 {%- set t0 = since | float(0) -%}
 {%- set t1 = as_timestamp(now()) -%}
 {%- if t0 <= 0 or t0 >= t1 -%}0
 {%- else -%}
-{#- time-only input_datetime: `timestamp` = seconds since midnight -#}
-{%- set qs = state_attr('input_datetime.dog_quiet_start', 'timestamp') | int(0) -%}
-{%- set qe = state_attr('input_datetime.dog_quiet_end', 'timestamp') | int(0) -%}
-{%- set ns = namespace(quiet=0) -%}
-{%- if qs != qe -%}
-{%- set dur = (qe - qs) % 86400 -%}
-{#- local midnight of the day before `since`: its night may still be running -#}
-{%- set mid0 = as_timestamp((t0 | as_datetime | as_local).replace(hour=0, minute=0, second=0, microsecond=0)) - 86400 -%}
-{%- set days = [((t1 - mid0) / 86400) | int + 1, 15] | min -%}
-{%- for d in range(days) -%}
-{%- set q0 = mid0 + d * 86400 + qs -%}
-{%- set q1 = q0 + dur -%}
-{%- set ns.quiet = ns.quiet + ([[q1, t1] | min - [q0, t0] | max, 0] | max) -%}
-{%- endfor -%}
+{%- set nights = state_attr('sensor.dog_last_night', 'nights') or [] -%}
+{%- if is_state('input_boolean.dog_night', 'on') -%}
+{%- set nights = nights + [[state_attr('input_datetime.dog_night_started_at', 'timestamp') | float(t1), t1]] -%}
 {%- endif -%}
+{%- set ns = namespace(quiet=0) -%}
+{%- for n in nights -%}
+{%- set ns.quiet = ns.quiet + ([[n[1] | float(0), t1] | min - [n[0] | float(0), t0] | max, 0] | max) -%}
+{%- endfor -%}
 {{- (([t1 - t0 - ns.quiet, 0] | max) / 3600) | round(2) -}}
 {%- endif -%}
 {%- endmacro -%}

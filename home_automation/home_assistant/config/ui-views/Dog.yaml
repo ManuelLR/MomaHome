@@ -179,6 +179,12 @@
     - input_datetime.dog_meal_evening
     - input_number.dog_after_meal_walk_minutes
     - type: section
-      label: Night (no reminders, not counted)
-    - input_datetime.dog_quiet_start
+      label: Night (nightstand lights; no reminders, not counted)
+    - entity: input_boolean.dog_night
+      name: Night now
+    - entity: sensor.dog_last_night
+      name: Last night
+      secondary_info: last-changed
+    - input_datetime.dog_earliest_wake
     - input_datetime.dog_quiet_end
+    - input_datetime.dog_quiet_start
