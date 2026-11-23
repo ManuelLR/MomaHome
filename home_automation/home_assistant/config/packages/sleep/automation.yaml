@@ -1,0 +1,123 @@
+# automation:
+  # See README.md
+  # Bedtime = the nightstand lights (both, it is a group) go from on to off and stay off,
+  # between 21:00 and 04:00. Fallbacks: at the fallback bedtime if the lights are not on
+  # (not used tonight); at 04:00 if nothing happened (e.g. lights left on), backdated to
+  # the fallback bedtime.
+  - alias: AUT-Sleep night start
+    id: aut_sleep_night_start
+    initial_state: 'on'
+    mode: single
+    triggers:
+      - trigger: state
+        id: lights
+        entity_id: &nightstand_lights light.bedroom_nightstand_lights
+        from: 'on'
+        to: 'off'
+        for: '00:10:00'
+      - trigger: time
+        id: fallback
+        at: input_datetime.sleep_fallback_bedtime
+      - trigger: time
+        id: late_fallback
+        at: '04:00:00'
+    conditions:
+      - condition: state
+        entity_id: input_boolean.sleep_night
+        state: 'off'
+      - condition: time
+        after: '21:00:00'
+        before: '04:05:00'
+      - condition: state
+        entity_id: sensor.home_occupancy_status
+        state:
+          - Home
+          - Just Arrived
+      # Lights on at the fallback bedtime: still awake, wait for them to be turned off
+      - condition: template
+        value_template: "{{ trigger.id != 'fallback' or not is_state('light.bedroom_nightstand_lights', 'on') }}"
+    variables:
+      fallback_ts: >
+        {% set t = as_timestamp(today_at(states('input_datetime.sleep_fallback_bedtime'))) %}
+        {{ (t - 86400 if t > as_timestamp(now()) else t) | int }}
+      start_ts: >
+        {% if trigger.id == 'lights' %}{{ as_timestamp(trigger.to_state.last_changed) | int }}
+        {% elif trigger.id == 'late_fallback' %}{{ fallback_ts }}
+        {% else %}{{ as_timestamp(now()) | int }}{% endif %}
+    actions:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.sleep_started_at
+        data:
+          timestamp: "{{ start_ts }}"
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.sleep_night
+
+  # Wake-up = the first sign of life after the earliest wake-up time
+  # (script.sleep_wake_up): a nightstand light turned on or someone leaving home. Other
+  # packages add their own signals (packages/dog: walk, meal, accident). Before that time
+  # they are night interruptions. Fallback: the latest wake-up time (and 14:00 as a
+  # safety net if HA was down).
+  - alias: AUT-Sleep wake-up
+    id: aut_sleep_wake_up
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: state
+        id: lights
+        entity_id: *nightstand_lights
+        to: 'on'
+      - trigger: state
+        id: left_home
+        entity_id:
+          - person.manolo
+          - person.monica
+        from: home
+        to: not_home
+      - trigger: time
+        id: fallback
+        at:
+          - input_datetime.sleep_latest_wake
+          - '14:00:00'
+    conditions:
+      - condition: state
+        entity_id: input_boolean.sleep_night
+        state: 'on'
+    actions:
+      - service: script.sleep_wake_up
+        data:
+          woke_by: "{{ trigger.id }}"
+
+  # Default settings, applied once (the helpers have no `initial`, so values changed
+  # from the UI are kept). Turn input_boolean.sleep_defaults_applied off to restore them.
+  - alias: AUT-Sleep default settings
+    id: aut_sleep_default_settings
+    initial_state: 'on'
+    triggers:
+      - trigger: homeassistant
+        event: start
+      - trigger: event
+        event_type: automation_reloaded
+      - trigger: state
+        entity_id: input_boolean.sleep_defaults_applied
+        to: 'off'
+    conditions:
+      - condition: state
+        entity_id: input_boolean.sleep_defaults_applied
+        state: 'off'
+    actions:
+      - repeat:
+          for_each:
+            - {entity: input_datetime.sleep_earliest_wake, value: '06:30:00'}
+            - {entity: input_datetime.sleep_latest_wake, value: '09:00:00'}
+            - {entity: input_datetime.sleep_fallback_bedtime, value: '23:30:00'}
+          sequence:
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: "{{ repeat.item.entity }}"
+              data:
+                time: "{{ repeat.item.value }}"
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.sleep_defaults_applied

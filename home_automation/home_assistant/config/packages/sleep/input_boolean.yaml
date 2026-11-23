@@ -1,0 +1,11 @@
+# input_boolean:
+  # Everybody at home asleep (see README.md). Single source of truth for "night":
+  # other packages use it (e.g. packages/dog: no reminders, night not counted).
+  sleep_night:
+    name: Home asleep
+    icon: mdi:sleep
+  # On once the default settings have been applied (AUT-Sleep default settings). Turn it
+  # off to restore the defaults.
+  sleep_defaults_applied:
+    name: Sleep default settings applied
+    icon: mdi:cog-refresh

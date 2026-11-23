@@ -1,0 +1,27 @@
+# input_datetime:
+  # Time-only settings. No `initial` (they keep the value set from the UI); the defaults
+  # are set once by "AUT-Sleep default settings".
+  # Before it, a light turned on (or any activity) is a night interruption, not the wake-up
+  sleep_earliest_wake:
+    name: Earliest wake-up
+    icon: mdi:weather-sunset-up
+    has_date: false
+    has_time: true
+  # Fallback wake-up when nothing is detected in the morning
+  sleep_latest_wake:
+    name: Latest wake-up
+    icon: mdi:weather-sunny
+    has_date: false
+    has_time: true
+  # Fallback bedtime when the nightstand lights are not used
+  sleep_fallback_bedtime:
+    name: Fallback bedtime
+    icon: mdi:weather-night
+    has_date: false
+    has_time: true
+  # Current / last night
+  sleep_started_at:
+    name: Asleep since
+    icon: mdi:sleep
+    has_date: true
+    has_time: true

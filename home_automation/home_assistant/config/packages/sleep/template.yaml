@@ -1,0 +1,24 @@
+# template:
+  # Last nights (fed by script.sleep_wake_up): state = hours slept last night
+  # (state_class: measurement → one value per day in the long-term statistics); attribute
+  # `nights` = the last 7 nights as [start_ts, end_ts], used by
+  # custom_templates/sleep.jinja (awake_hours).
+  - triggers:
+      - trigger: event
+        event_type: sleep_night_ended
+    sensor:
+      - name: Sleep last night
+        unique_id: sleep_last_night
+        default_entity_id: sensor.sleep_last_night
+        icon: mdi:sleep
+        unit_of_measurement: h
+        state_class: measurement
+        state: "{{ ((trigger.event.data.end | float(0) - trigger.event.data.start | float(0)) / 3600) | round(1) }}"
+        attributes:
+          started: "{{ trigger.event.data.start | float(0) | timestamp_local }}"
+          ended: "{{ trigger.event.data.end | float(0) | timestamp_local }}"
+          # What ended it: lights / left_home / fallback, or what another package passed
+          # to script.sleep_wake_up (e.g. dog_activity)
+          woke_by: "{{ trigger.event.data.woke_by }}"
+          nights: >
+            {{ ((this.attributes.nights | default([], true)) + [[trigger.event.data.start | float(0), trigger.event.data.end | float(0)]])[-7:] }}

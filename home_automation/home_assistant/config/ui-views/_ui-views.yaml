@@ -6,6 +6,10 @@
   path: dog
   icon: mdi:dog
   cards: !include Dog.yaml
+- title: Sleep
+  path: sleep
+  icon: mdi:sleep
+  cards: !include Sleep.yaml
 - title: Vacuum
   icon: mdi:vacuum
   cards: !include Vacuum.yaml

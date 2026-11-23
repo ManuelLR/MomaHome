@@ -97,7 +97,7 @@
           back_ts: "{{ back_ts }}"
 
   # Too long without going out / peeing / pooping. Hours are counted without the nights
-  # (input_boolean.dog_night, custom_templates/dog.jinja), so the night does not set them
+  # (input_boolean.sleep_night, packages/sleep), so the night does not set them
   # off in the morning. Never at night, and only with someone at home; if nobody is home
   # it is sent to whoever arrives.
   - alias: AUT-Dog overdue reminders
@@ -130,7 +130,7 @@
         entity_id: input_boolean.dog_out
         state: 'off'
       - condition: state
-        entity_id: input_boolean.dog_night
+        entity_id: input_boolean.sleep_night
         state: 'off'
       - condition: state
         entity_id: sensor.home_occupancy_status
@@ -178,114 +178,30 @@
             - '💧 Pee at home:/dog_accident pee, 💩 Poop at home:/dog_accident poop'
 
   ########################################
-  ## Night (everybody asleep)
+  ## Night (packages/sleep)
   ########################################
-  # Bedtime = the nightstand lights (both, it is a group) go from on to off and stay off,
-  # between 21:00 and 04:00. Fallbacks: at the fallback bedtime if the lights are not on
-  # (not used tonight); at 04:00 if nothing happened (e.g. lights left on), backdated to
-  # the fallback bedtime.
-  - alias: AUT-Dog night start
-    id: aut_dog_night_start
+  # Dog activity in the morning is a sign of life for packages/sleep (it ignores it
+  # before the earliest wake-up time: a pee at 3:00 is a night interruption).
+  - alias: AUT-Dog activity wakes up the house
+    id: aut_dog_activity_wakes_up_the_house
     initial_state: 'on'
-    mode: single
+    mode: queued
     triggers:
       - trigger: state
-        id: lights
-        entity_id: &dog_nightstand_lights light.bedroom_nightstand_lights
-        from: 'on'
-        to: 'off'
-        for: '00:10:00'
-      - trigger: time
-        id: fallback
-        at: input_datetime.dog_quiet_start
-      - trigger: time
-        id: late_fallback
-        at: '04:00:00'
-    conditions:
-      - condition: state
-        entity_id: input_boolean.dog_night
-        state: 'off'
-      - condition: time
-        after: '21:00:00'
-        before: '04:05:00'
-      - condition: state
-        entity_id: sensor.home_occupancy_status
-        state:
-          - Home
-          - Just Arrived
-      # Lights on at the fallback bedtime: still awake, wait for them to be turned off
-      - condition: template
-        value_template: "{{ trigger.id != 'fallback' or not is_state('light.bedroom_nightstand_lights', 'on') }}"
-    variables:
-      fallback_ts: >
-        {% set t = as_timestamp(today_at(states('input_datetime.dog_quiet_start'))) %}
-        {{ (t - 86400 if t > as_timestamp(now()) else t) | int }}
-      start_ts: >
-        {% if trigger.id == 'lights' %}{{ as_timestamp(trigger.to_state.last_changed) | int }}
-        {% elif trigger.id == 'late_fallback' %}{{ fallback_ts }}
-        {% else %}{{ as_timestamp(now()) | int }}{% endif %}
-    actions:
-      - service: input_datetime.set_datetime
-        target:
-          entity_id: input_datetime.dog_night_started_at
-        data:
-          timestamp: "{{ start_ts }}"
-      - service: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.dog_night
-
-  # Wake-up = the first sign of life after the earliest wake-up time: a nightstand light
-  # turned on, someone leaving home, or any dog activity (walk, meal, accident). Before
-  # that time they are night interruptions (e.g. taking the puppy out at 3:00: its pee is
-  # logged, the night goes on). Fallback: the latest wake-up time (and 14:00 as a safety
-  # net if HA was down).
-  - alias: AUT-Dog night end
-    id: aut_dog_night_end
-    initial_state: 'on'
-    mode: single
-    triggers:
-      - trigger: state
-        id: lights
-        entity_id: *dog_nightstand_lights
-        to: 'on'
-      - trigger: state
-        id: left_home
-        entity_id:
-          - person.manolo
-          - person.monica
-        from: home
-        to: not_home
-      - trigger: state
-        id: dog_activity
         entity_id: input_boolean.dog_out
         to: 'on'
       - trigger: event
-        id: dog_activity
         event_type: dog_meal_logged
       - trigger: event
-        id: dog_activity
         event_type: dog_accident_logged
-      - trigger: time
-        id: fallback
-        at:
-          - input_datetime.dog_quiet_end
-          - '14:00:00'
     conditions:
       - condition: state
-        entity_id: input_boolean.dog_night
+        entity_id: input_boolean.sleep_night
         state: 'on'
-      - condition: time
-        after: input_datetime.dog_earliest_wake
-        before: '21:00:00'
     actions:
-      - event: dog_night_ended
-        event_data:
-          start: "{{ state_attr('input_datetime.dog_night_started_at', 'timestamp') | float(0) }}"
-          end: "{{ as_timestamp(now()) }}"
-          woke_by: "{{ trigger.id }}"
-      - service: input_boolean.turn_off
-        target:
-          entity_id: input_boolean.dog_night
+      - service: script.sleep_wake_up
+        data:
+          woke_by: dog_activity
 
   ########################################
   ## Meals
@@ -397,9 +313,6 @@
           for_each:
             - {entity: input_datetime.dog_meal_morning, value: '07:30:00'}
             - {entity: input_datetime.dog_meal_evening, value: '19:30:00'}
-            - {entity: input_datetime.dog_quiet_start, value: '23:30:00'}
-            - {entity: input_datetime.dog_quiet_end, value: '09:00:00'}
-            - {entity: input_datetime.dog_earliest_wake, value: '05:30:00'}
           sequence:
             - service: input_datetime.set_datetime
               target:

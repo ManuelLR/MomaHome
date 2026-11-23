@@ -122,7 +122,7 @@
         attributes:
           by: "{{ trigger.event.data.by | default('Someone') }}"
 
-  # Awake hours (night excluded, custom_templates/dog.jinja) since the last pee / poop /
+  # Awake hours (nights excluded, packages/sleep + custom_templates/sleep.jinja) since the last pee / poop /
   # walk. Re-evaluated every minute (now()); the reminders trigger when they go above
   # the input_number limits.
   - sensor:
@@ -132,16 +132,16 @@
         icon: mdi:water-alert
         unit_of_measurement: h
         state: >
-          {% from 'dog.jinja' import dog_awake_hours %}
-          {{ dog_awake_hours(as_timestamp(states('sensor.dog_last_pee'), 0)) | float if has_value('sensor.dog_last_pee') else none }}
+          {% from 'sleep.jinja' import awake_hours %}
+          {{ awake_hours(as_timestamp(states('sensor.dog_last_pee'), 0)) | float if has_value('sensor.dog_last_pee') else none }}
       - name: Dog awake hours since last poop
         unique_id: dog_awake_hours_since_last_poop
         default_entity_id: sensor.dog_awake_hours_since_last_poop
         icon: mdi:emoticon-poop
         unit_of_measurement: h
         state: >
-          {% from 'dog.jinja' import dog_awake_hours %}
-          {{ dog_awake_hours(as_timestamp(states('sensor.dog_last_poop'), 0)) | float if has_value('sensor.dog_last_poop') else none }}
+          {% from 'sleep.jinja' import awake_hours %}
+          {{ awake_hours(as_timestamp(states('sensor.dog_last_poop'), 0)) | float if has_value('sensor.dog_last_poop') else none }}
       - name: Dog awake hours since last walk
         unique_id: dog_awake_hours_since_last_walk
         default_entity_id: sensor.dog_awake_hours_since_last_walk
@@ -149,26 +149,7 @@
         unit_of_measurement: h
         # 0 while out on a walk
         state: >
-          {% from 'dog.jinja' import dog_awake_hours %}
+          {% from 'sleep.jinja' import awake_hours %}
           {% set ended = state_attr('input_datetime.dog_walk_ended_at', 'timestamp') | float(0) %}
-          {{ 0 if is_state('input_boolean.dog_out', 'on') else (dog_awake_hours(ended) | float if ended > 0 else none) }}
+          {{ 0 if is_state('input_boolean.dog_out', 'on') else (awake_hours(ended) | float if ended > 0 else none) }}
 
-  # Last nights (fed by "AUT-Dog night end"): state = hours slept last night; attribute
-  # `nights` = the last 7 nights as [start_ts, end_ts], used by custom_templates/dog.jinja
-  - triggers:
-      - trigger: event
-        event_type: dog_night_ended
-    sensor:
-      - name: Dog last night
-        unique_id: dog_last_night
-        default_entity_id: sensor.dog_last_night
-        icon: mdi:sleep
-        unit_of_measurement: h
-        state: "{{ ((trigger.event.data.end | float(0) - trigger.event.data.start | float(0)) / 3600) | round(1) }}"
-        attributes:
-          started: "{{ trigger.event.data.start | float(0) | timestamp_local }}"
-          ended: "{{ trigger.event.data.end | float(0) | timestamp_local }}"
-          # What ended it: lights / left_home / dog_activity / fallback
-          woke_by: "{{ trigger.event.data.woke_by }}"
-          nights: >
-            {{ ((this.attributes.nights | default([], true)) + [[trigger.event.data.start | float(0), trigger.event.data.end | float(0)]])[-7:] }}

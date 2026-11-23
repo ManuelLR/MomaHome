@@ -8,8 +8,3 @@
   dog_defaults_applied:
     name: Dog default settings applied
     icon: mdi:cog-refresh
-  # Everybody asleep (see README "Night"): no reminders, and this time does not count
-  # as "time without going out / peeing / pooping"
-  dog_night:
-    name: Dog night
-    icon: mdi:sleep

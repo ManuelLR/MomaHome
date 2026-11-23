@@ -1,0 +1,51 @@
+# Sleep (packages/sleep)
+- type: entities
+  title: 😴 Sleep
+  entities:
+    - entity: input_boolean.sleep_night
+      name: Asleep now
+    - entity: input_datetime.sleep_started_at
+      name: Asleep since (last night)
+    - entity: sensor.sleep_last_night
+      name: Last night
+    - type: attribute
+      entity: sensor.sleep_last_night
+      attribute: started
+      name: Went to bed
+      format: time
+    - type: attribute
+      entity: sensor.sleep_last_night
+      attribute: ended
+      name: Woke up
+      format: time
+    - type: attribute
+      entity: sensor.sleep_last_night
+      attribute: woke_by
+      name: Woke up by
+      icon: mdi:alarm
+
+- type: statistics-graph
+  title: Hours slept per night
+  chart_type: bar
+  period: day
+  days_to_show: 30
+  stat_types:
+    - max
+  entities:
+    - entity: sensor.sleep_last_night
+      name: Hours
+
+# Bedtimes and wake-ups
+- type: history-graph
+  title: Nights (last 7 days)
+  hours_to_show: 168
+  entities:
+    - entity: input_boolean.sleep_night
+      name: Asleep
+
+- type: entities
+  title: Settings
+  entities:
+    - input_datetime.sleep_earliest_wake
+    - input_datetime.sleep_latest_wake
+    - input_datetime.sleep_fallback_bedtime
