@@ -10,3 +10,27 @@
     icon: mdi:home-import-outline
     has_date: true
     has_time: true
+  # Time-only helpers. No `initial` (they keep the value set from the UI); the defaults
+  # are set once by "AUT-Dog default settings".
+  dog_meal_morning:
+    name: Dog breakfast
+    icon: mdi:food-drumstick
+    has_date: false
+    has_time: true
+  dog_meal_evening:
+    name: Dog dinner
+    icon: mdi:food-drumstick
+    has_date: false
+    has_time: true
+  # Night: no reminders, and these hours do not count as "time without peeing / pooping /
+  # going out" (custom_templates/dog.jinja)
+  dog_quiet_start:
+    name: Dog night start
+    icon: mdi:weather-night
+    has_date: false
+    has_time: true
+  dog_quiet_end:
+    name: Dog night end
+    icon: mdi:weather-sunny
+    has_date: false
+    has_time: true

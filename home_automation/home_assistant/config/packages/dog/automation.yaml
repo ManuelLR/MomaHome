@@ -96,43 +96,208 @@
             {% if back_ts > 0 %}If it came back with you at {{ back_ts | timestamp_custom('%H:%M') }}{% else %}If it is already back (time = now){% endif %}, what did it do?
           back_ts: "{{ back_ts }}"
 
-  # Too long without going out, during the day and with someone at home.
-  - alias: AUT-Dog long time without going out
-    id: aut_dog_long_time_without_going_out
+  # Too long without going out / peeing / pooping. Hours are counted without the night
+  # (input_datetime.dog_quiet_start → dog_quiet_end, custom_templates/dog.jinja), so the
+  # night does not set them off in the morning. Only outside the night and with someone
+  # at home; if nobody is home it is sent to whoever arrives.
+  - alias: AUT-Dog overdue reminders
+    id: aut_dog_overdue_reminders
     initial_state: 'on'
-    mode: single
+    mode: queued
+    max: 3
     triggers:
-      - trigger: template
-        value_template: &dog_overdue >
-          {{ is_state('input_boolean.dog_out', 'off')
-             and as_timestamp(now()) - (state_attr('input_datetime.dog_walk_ended_at', 'timestamp') | float(0))
-                 > (states('input_number.dog_walk_reminder_hours') | float(3)) * 3600 }}
-      # The template may become true during the night: check again in the morning
-      - trigger: time
-        at: '08:30:00'
+      - trigger: numeric_state
+        id: walk
+        entity_id: sensor.dog_awake_hours_since_last_walk
+        above: input_number.dog_walk_reminder_hours
+      - trigger: numeric_state
+        id: pee
+        entity_id: sensor.dog_awake_hours_since_last_pee
+        above: input_number.dog_pee_reminder_hours
+      - trigger: numeric_state
+        id: poop
+        entity_id: sensor.dog_awake_hours_since_last_poop
+        above: input_number.dog_poop_reminder_hours
+      - trigger: state
+        id: arrived
+        entity_id: sensor.home_occupancy_status
+        to: Just Arrived
+        not_from:
+          - unknown
+          - unavailable
     conditions:
+      - condition: state
+        entity_id: input_boolean.dog_out
+        state: 'off'
       - condition: time
-        after: '08:00:00'
-        before: '23:00:00'
-      - condition: template
-        value_template: *dog_overdue
+        after: input_datetime.dog_quiet_end
+        before: input_datetime.dog_quiet_start
       - condition: state
         entity_id: sensor.home_occupancy_status
         state:
           - Home
           - Just Arrived
     variables:
-      since_ts: "{{ state_attr('input_datetime.dog_walk_ended_at', 'timestamp') | float(0) }}"
+      checks:
+        - key: walk
+          text: '🚶 Not out'
+          sensor: sensor.dog_awake_hours_since_last_walk
+          limit: input_number.dog_walk_reminder_hours
+          last: input_datetime.dog_walk_ended_at
+        - key: pee
+          text: '💧 No pee'
+          sensor: sensor.dog_awake_hours_since_last_pee
+          limit: input_number.dog_pee_reminder_hours
+          last: sensor.dog_last_pee
+        - key: poop
+          text: '💩 No poop'
+          sensor: sensor.dog_awake_hours_since_last_poop
+          limit: input_number.dog_poop_reminder_hours
+          last: sensor.dog_last_poop
+      # On arrival: everything overdue. Otherwise: only what crossed the limit now.
+      lines: >
+        {% set ns = namespace(lines=[]) %}
+        {% for c in checks if (trigger.id == 'arrived' or trigger.id == c.key)
+             and states(c.sensor) | float(0) > states(c.limit) | float(999) %}
+          {% set last_ts = as_timestamp(states(c.last), 0) %}
+          {% set ns.lines = ns.lines + [c.text ~ ' for ' ~ states(c.sensor) | float | round(1) ~ ' h (since '
+               ~ (last_ts | timestamp_custom('%a %H:%M') if last_ts > 0 else '?') ~ ')'] %}
+        {% endfor %}
+        {{ ns.lines }}
     actions:
+      - condition: template
+        value_template: "{{ lines | count > 0 }}"
       - service: script.telegram_notify
         data:
-          title: '🐶 Time for a walk?'
-          message: >
-            The dog has not been out since {{ since_ts | timestamp_custom('%H:%M') }}
-            ({{ ((as_timestamp(now()) - since_ts) / 3600) | round(1) }} h).
+          title: "{{ '🏠 Welcome! The dog needs to go out' if trigger.id == 'arrived' else '🐶 Time for a walk?' }}"
+          message: |
+            {{ lines | join('\n') }}
+            (hours awake, the night is not counted)
           inline_keyboard:
             - '🚶 Going out now:/dog_out 0'
             - '💧 Pee at home:/dog_accident pee, 💩 Poop at home:/dog_accident poop'
+
+  ########################################
+  ## Meals
+  ########################################
+  - alias: AUT-Dog meal reminder
+    id: aut_dog_meal_reminder
+    initial_state: 'on'
+    mode: single
+    triggers:
+      - trigger: time
+        at:
+          - input_datetime.dog_meal_morning
+          - input_datetime.dog_meal_evening
+    conditions:
+      # Not if it was already fed (early) in the last 2 hours
+      - condition: template
+        value_template: >
+          {{ not has_value('sensor.dog_last_meal')
+             or as_timestamp(now()) - as_timestamp(states('sensor.dog_last_meal'), 0) > 7200 }}
+    variables:
+      meal: "{{ 'Breakfast' if now().hour < 14 else 'Dinner' }}"
+    actions:
+      - &dog_meal_notify
+        service: script.telegram_notify
+        data:
+          title: "🍽️ {{ meal }} time for the dog"
+          message: "Press the button once it has eaten, so nobody feeds it twice."
+          inline_keyboard:
+            - '✅ Fed:/dog_fed 0'
+      # Once more if nobody marks it as fed
+      - wait_for_trigger:
+          - trigger: event
+            event_type: dog_meal_logged
+        timeout: '00:45:00'
+        continue_on_timeout: true
+      - condition: template
+        value_template: "{{ wait.trigger is none }}"
+      - <<: *dog_meal_notify
+        data:
+          title: "🍽️ Has the dog had its {{ meal | lower }}?"
+          message: "Nobody has marked it as fed yet."
+          inline_keyboard:
+            - '✅ Fed:/dog_fed 0'
+
+  # Puppies usually need to go out a while after eating: reminder if it has not gone out
+  - alias: AUT-Dog walk after meal
+    id: aut_dog_walk_after_meal
+    initial_state: 'on'
+    mode: restart
+    triggers:
+      - trigger: event
+        event_type: dog_meal_logged
+    variables:
+      meal_hm: "{{ trigger.event.data.ts | float(0) | timestamp_custom('%H:%M') }}"
+      wait_minutes: "{{ states('input_number.dog_after_meal_walk_minutes') | int(20) }}"
+    actions:
+      - wait_for_trigger:
+          - trigger: state
+            entity_id: input_boolean.dog_out
+            to: 'on'
+        timeout:
+          minutes: "{{ wait_minutes }}"
+        continue_on_timeout: true
+      - condition: template
+        value_template: "{{ wait.trigger is none and is_state('input_boolean.dog_out', 'off') }}"
+      - service: script.telegram_notify
+        data:
+          title: '🍽️ → 🚶 Walk after the meal?'
+          message: "It ate at {{ meal_hm }} ({{ wait_minutes }} min ago): it usually needs to poop now."
+          inline_keyboard:
+            - '🚶 Going out now:/dog_out 0'
+            - '💧 Pee at home:/dog_accident pee, 💩 Poop at home:/dog_accident poop'
+
+  ########################################
+  ## Settings
+  ########################################
+  # Default settings, applied once (the helpers have no `initial`, so values changed
+  # from the UI are kept). Turn input_boolean.dog_defaults_applied off to restore them.
+  - alias: AUT-Dog default settings
+    id: aut_dog_default_settings
+    initial_state: 'on'
+    triggers:
+      - trigger: homeassistant
+        event: start
+      - trigger: event
+        event_type: automation_reloaded
+      - trigger: state
+        entity_id: input_boolean.dog_defaults_applied
+        to: 'off'
+    conditions:
+      - condition: state
+        entity_id: input_boolean.dog_defaults_applied
+        state: 'off'
+    actions:
+      - repeat:
+          for_each:
+            - {entity: input_number.dog_walk_daily_goal_minutes, value: 60}
+            - {entity: input_number.dog_walk_reminder_hours, value: 3}
+            - {entity: input_number.dog_pee_reminder_hours, value: 3}
+            - {entity: input_number.dog_poop_reminder_hours, value: 6}
+            - {entity: input_number.dog_after_meal_walk_minutes, value: 20}
+          sequence:
+            - service: input_number.set_value
+              target:
+                entity_id: "{{ repeat.item.entity }}"
+              data:
+                value: "{{ repeat.item.value }}"
+      - repeat:
+          for_each:
+            - {entity: input_datetime.dog_meal_morning, value: '07:30:00'}
+            - {entity: input_datetime.dog_meal_evening, value: '19:30:00'}
+            - {entity: input_datetime.dog_quiet_start, value: '23:30:00'}
+            - {entity: input_datetime.dog_quiet_end, value: '07:30:00'}
+          sequence:
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: "{{ repeat.item.entity }}"
+              data:
+                time: "{{ repeat.item.value }}"
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.dog_defaults_applied
 
   # Evening check of the daily goal, while there is still time for a walk
   - alias: AUT-Dog daily goal check
@@ -177,6 +342,7 @@
                 · 💧{{ states('sensor.dog_pees_today') | int(0) }}
                 💩{{ states('sensor.dog_poops_today') | int(0) }}
                 {%- if states('sensor.dog_accidents_today') | int(0) > 0 %} · ⚠️{{ states('sensor.dog_accidents_today') | int(0) }}{% endif %}
+                · 🍽️{{ states('sensor.dog_meals_today') | int(0) }}
               description: >
                 Goal: {{ states('input_number.dog_walk_daily_goal_minutes') | int(0) }} min
               start_date: "{{ now().date() }}"
@@ -349,6 +515,40 @@
           callback_query_id: "{{ trigger.event.data.id }}"
           message: "Saved: {{ '💧 pee' if kind == 'pee' else '💩 poop' }} at home"
 
+  # /dog_fed <ts> (0 = now). Refused if it already ate in the last hour (no double meals).
+  - alias: AUT-Dog Telegram fed
+    id: aut_dog_telegram_fed
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/dog_fed"
+    variables:
+      <<: *dog_telegram_vars
+      last_meal_ts: "{{ as_timestamp(states('sensor.dog_last_meal'), 0) }}"
+    actions:
+      - if: "{{ at_ts - last_meal_ts > 3600 }}"
+        then:
+          - service: script.dog_log_meal
+            data:
+              ts: "{{ at_ts }}"
+              by: "{{ who }}"
+          - service: script.cleaning_telegram_reply
+            data:
+              <<: *dog_reply
+              answer: "Fed at {{ at_hm }}"
+              new_text: "🍽️ Fed at {{ at_hm }} ({{ who }})."
+        else:
+          - service: script.cleaning_telegram_reply
+            data:
+              <<: *dog_reply
+              answer: "⚠️ It already ate at {{ last_meal_ts | timestamp_custom('%H:%M') }}"
+              new_text: >
+                ⚠️ It already ate at {{ last_meal_ts | timestamp_custom('%H:%M') }}
+                ({{ state_attr('sensor.dog_last_meal', 'by') }}). Not saved again.
+
   # /dog typed in the bot chat: today's summary plus the buttons that apply now
   - alias: AUT-Dog Telegram menu
     id: aut_dog_telegram_menu
@@ -371,7 +571,8 @@
         💧{{ states('sensor.dog_pees_today') | int(0) }} 💩{{ states('sensor.dog_poops_today') | int(0) }}
         {%- if states('sensor.dog_accidents_today') | int(0) > 0 %} · ⚠️{{ states('sensor.dog_accidents_today') | int(0) }} at home{% endif %}.
         Last pee: {{ as_timestamp(states('sensor.dog_last_pee'), 0) | timestamp_custom('%a %H:%M') if has_value('sensor.dog_last_pee') else '-' }} ·
-        last poop: {{ as_timestamp(states('sensor.dog_last_poop'), 0) | timestamp_custom('%a %H:%M') if has_value('sensor.dog_last_poop') else '-' }}.
+        last poop: {{ as_timestamp(states('sensor.dog_last_poop'), 0) | timestamp_custom('%a %H:%M') if has_value('sensor.dog_last_poop') else '-' }} ·
+        last meal: {{ as_timestamp(states('sensor.dog_last_meal'), 0) | timestamp_custom('%a %H:%M') if has_value('sensor.dog_last_meal') else '-' }}.
     conditions:
       - condition: template
         value_template: "{{ who != '' }}"
@@ -394,5 +595,5 @@
               title: '🐶 Dog at home'
               message: "{{ summary }}"
               inline_keyboard:
-                - '🚶 Going out now:/dog_out 0'
+                - '🚶 Going out now:/dog_out 0, 🍽️ Fed now:/dog_fed 0'
                 - '💧 Pee at home:/dog_accident pee, 💩 Poop at home:/dog_accident poop'

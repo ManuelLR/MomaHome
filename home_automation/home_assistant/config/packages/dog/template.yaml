@@ -13,6 +13,9 @@
       - trigger: event
         id: accident
         event_type: dog_accident_logged
+      - trigger: event
+        id: meal
+        event_type: dog_meal_logged
       - trigger: time
         id: midnight
         at: '00:00:00'
@@ -69,6 +72,16 @@
           {% if trigger.id == 'midnight' %}0
           {% elif trigger.id == 'accident' %}{{ current + 1 }}
           {% else %}{{ current }}{% endif %}
+      - name: Dog meals today
+        unique_id: dog_meals_today
+        default_entity_id: sensor.dog_meals_today
+        icon: mdi:food-drumstick
+        state_class: measurement
+        state: >
+          {% set current = this.state | int(0) %}
+          {% if trigger.id == 'midnight' %}0
+          {% elif trigger.id == 'meal' %}{{ current + 1 }}
+          {% else %}{{ current }}{% endif %}
 
   # Last pee / poop (outside or at home), to know how long it has been
   - triggers:
@@ -95,3 +108,47 @@
           {% if trigger.event.data.poop | bool(false) %}{{ (trigger.event.data.ts | float) | as_datetime | as_local }}
           {% elif this.state not in ['unknown', 'unavailable', 'None'] %}{{ this.state }}
           {% else %}None{% endif %}
+
+  - triggers:
+      - trigger: event
+        event_type: dog_meal_logged
+    sensor:
+      - name: Dog last meal
+        unique_id: dog_last_meal
+        default_entity_id: sensor.dog_last_meal
+        icon: mdi:food-drumstick
+        device_class: timestamp
+        state: "{{ (trigger.event.data.ts | float) | as_datetime | as_local }}"
+        attributes:
+          by: "{{ trigger.event.data.by | default('Someone') }}"
+
+  # Awake hours (night excluded, custom_templates/dog.jinja) since the last pee / poop /
+  # walk. Re-evaluated every minute (now()); the reminders trigger when they go above
+  # the input_number limits.
+  - sensor:
+      - name: Dog awake hours since last pee
+        unique_id: dog_awake_hours_since_last_pee
+        default_entity_id: sensor.dog_awake_hours_since_last_pee
+        icon: mdi:water-alert
+        unit_of_measurement: h
+        state: >
+          {% from 'dog.jinja' import dog_awake_hours %}
+          {{ dog_awake_hours(as_timestamp(states('sensor.dog_last_pee'), 0)) | float if has_value('sensor.dog_last_pee') else none }}
+      - name: Dog awake hours since last poop
+        unique_id: dog_awake_hours_since_last_poop
+        default_entity_id: sensor.dog_awake_hours_since_last_poop
+        icon: mdi:emoticon-poop
+        unit_of_measurement: h
+        state: >
+          {% from 'dog.jinja' import dog_awake_hours %}
+          {{ dog_awake_hours(as_timestamp(states('sensor.dog_last_poop'), 0)) | float if has_value('sensor.dog_last_poop') else none }}
+      - name: Dog awake hours since last walk
+        unique_id: dog_awake_hours_since_last_walk
+        default_entity_id: sensor.dog_awake_hours_since_last_walk
+        icon: mdi:dog-side
+        unit_of_measurement: h
+        # 0 while out on a walk
+        state: >
+          {% from 'dog.jinja' import dog_awake_hours %}
+          {% set ended = state_attr('input_datetime.dog_walk_ended_at', 'timestamp') | float(0) %}
+          {{ 0 if is_state('input_boolean.dog_out', 'on') else (dog_awake_hours(ended) | float if ended > 0 else none) }}

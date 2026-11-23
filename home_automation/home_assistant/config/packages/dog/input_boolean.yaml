@@ -3,3 +3,8 @@
   dog_out:
     name: Dog out
     icon: mdi:dog-side
+  # On once the default settings have been applied (AUT-Dog default settings). Turn it
+  # off to restore the defaults.
+  dog_defaults_applied:
+    name: Dog default settings applied
+    icon: mdi:cog-refresh

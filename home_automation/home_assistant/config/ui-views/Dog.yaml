@@ -6,7 +6,7 @@
   card:
     type: grid
     title: 🐶 At home
-    columns: 3
+    columns: 4
     square: false
     cards:
       - type: button
@@ -15,6 +15,14 @@
         tap_action:
           action: perform-action
           perform_action: script.dog_walk_start_now
+      - type: button
+        name: Fed now
+        icon: mdi:food-drumstick
+        tap_action:
+          action: perform-action
+          perform_action: script.dog_log_meal
+          confirmation:
+            text: Mark the dog as fed now?
       - type: button
         name: Pee at home
         icon: mdi:water-alert
@@ -110,6 +118,15 @@
       format: relative
     - entity: input_datetime.dog_walk_ended_at
       name: Last walk
+    - entity: sensor.dog_meals_today
+      name: Meals
+    - entity: sensor.dog_last_meal
+      name: Last meal
+      format: relative
+    - entity: sensor.dog_awake_hours_since_last_pee
+      name: No pee (awake)
+    - entity: sensor.dog_awake_hours_since_last_poop
+      name: No poop (awake)
 
 # "Screen time", dog version: one bar per day
 - type: statistics-graph
@@ -156,3 +173,12 @@
   entities:
     - input_number.dog_walk_daily_goal_minutes
     - input_number.dog_walk_reminder_hours
+    - input_number.dog_pee_reminder_hours
+    - input_number.dog_poop_reminder_hours
+    - input_datetime.dog_meal_morning
+    - input_datetime.dog_meal_evening
+    - input_number.dog_after_meal_walk_minutes
+    - type: section
+      label: Night (no reminders, not counted)
+    - input_datetime.dog_quiet_start
+    - input_datetime.dog_quiet_end

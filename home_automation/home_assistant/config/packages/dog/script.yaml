@@ -95,6 +95,43 @@
               start_date_time: "{{ at_ts | timestamp_local }}"
               end_date_time: "{{ (at_ts + 60) | timestamp_local }}"
 
+  # Dog fed. ts: 0 = now. by: who fed it (shown when someone tries to feed it again).
+  dog_log_meal:
+    alias: "Dog - Log meal"
+    icon: mdi:food-drumstick
+    mode: queued
+    fields:
+      ts:
+        required: false
+        selector:
+          number:
+            min: 0
+            max: 9999999999
+            mode: box
+      by:
+        required: false
+        selector:
+          text:
+    variables:
+      at_ts: "{{ (ts | int(0)) if (ts | default(0) | int(0)) > 0 else as_timestamp(now()) | int }}"
+      who: "{{ by | default('Someone', true) }}"
+    sequence:
+      - event: dog_meal_logged
+        event_data:
+          ts: "{{ at_ts }}"
+          by: "{{ who }}"
+      # Only if the Local Calendar exists (README.md): a missing action would abort the caller
+      - if: "{{ has_value('calendar.dog_log') }}"
+        then:
+          - service: calendar.create_event
+            continue_on_error: true
+            target:
+              entity_id: calendar.dog_log
+            data:
+              summary: "🍽️ Meal{{ '' if who == 'Someone' else ' · ' ~ who }}"
+              start_date_time: "{{ at_ts | timestamp_local }}"
+              end_date_time: "{{ (at_ts + 60) | timestamp_local }}"
+
   ########################################
   ## Dashboard buttons (always "now")
   ########################################
