@@ -1,0 +1,195 @@
+# script:
+  # Closes the walk in progress (input_datetime.dog_walk_ended_at must be set before):
+  # writes it to calendar.dog_log, fires dog_walk_logged (daily counters, template.yaml)
+  # and marks the dog as home.
+  dog_walk_finalize:
+    alias: "Dog - Close walk"
+    icon: mdi:home-import-outline
+    mode: single
+    fields:
+      pee:
+        required: true
+        selector:
+          boolean:
+      poop:
+        required: true
+        selector:
+          boolean:
+    variables:
+      start_ts: "{{ state_attr('input_datetime.dog_walk_started_at', 'timestamp') | float(0) }}"
+      end_ts: "{{ state_attr('input_datetime.dog_walk_ended_at', 'timestamp') | float(0) }}"
+      minutes: "{{ ([end_ts - start_ts, 0] | max / 60) | round(0) | int }}"
+      walker: "{{ states('input_select.dog_walker') }}"
+      did: >
+        {{ ('💧' if pee else '') ~ ('💩' if poop else '') or '🚫' }}
+    sequence:
+      - condition: state
+        entity_id: input_boolean.dog_out
+        state: 'on'
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.dog_out
+      - event: dog_walk_logged
+        event_data:
+          minutes: "{{ minutes }}"
+          pee: "{{ pee | bool }}"
+          poop: "{{ poop | bool }}"
+          walker: "{{ walker }}"
+          ts: "{{ end_ts }}"
+      # Only if the Local Calendar exists (README.md): a missing action would abort the caller
+      - if: "{{ has_value('calendar.dog_log') }}"
+        then:
+          - service: calendar.create_event
+            continue_on_error: true
+            target:
+              entity_id: calendar.dog_log
+            data:
+              summary: "🐶 {{ minutes }} min · {{ did }}{{ '' if walker == 'Someone' else ' · ' ~ walker }}"
+              description: |
+                With: {{ walker }}
+                Out: {{ start_ts | timestamp_custom('%H:%M') }}
+                Back: {{ end_ts | timestamp_custom('%H:%M') }}
+                Duration: {{ minutes }} min
+                Pee: {{ 'yes' if pee else 'no' }}
+                Poop: {{ 'yes' if poop else 'no' }}
+              start_date_time: "{{ start_ts | timestamp_local }}"
+              end_date_time: "{{ [end_ts, start_ts + 60] | max | timestamp_local }}"
+
+  # Pee/poop at home. ts: 0 = now.
+  dog_log_accident:
+    alias: "Dog - Log accident at home"
+    icon: mdi:alert-circle-outline
+    mode: queued
+    fields:
+      kind:
+        required: true
+        selector:
+          select:
+            options:
+              - pee
+              - poop
+      ts:
+        required: false
+        selector:
+          number:
+            min: 0
+            max: 9999999999
+            mode: box
+    variables:
+      at_ts: "{{ (ts | int(0)) if (ts | default(0) | int(0)) > 0 else as_timestamp(now()) | int }}"
+    sequence:
+      - event: dog_accident_logged
+        event_data:
+          pee: "{{ kind == 'pee' }}"
+          poop: "{{ kind == 'poop' }}"
+          ts: "{{ at_ts }}"
+      # Only if the Local Calendar exists (README.md): a missing action would abort the caller
+      - if: "{{ has_value('calendar.dog_log') }}"
+        then:
+          - service: calendar.create_event
+            continue_on_error: true
+            target:
+              entity_id: calendar.dog_log
+            data:
+              summary: "⚠️ {{ '💧 Pee' if kind == 'pee' else '💩 Poop' }} at home"
+              start_date_time: "{{ at_ts | timestamp_local }}"
+              end_date_time: "{{ (at_ts + 60) | timestamp_local }}"
+
+  ########################################
+  ## Dashboard buttons (always "now")
+  ########################################
+  dog_walk_start_now:
+    alias: "Dog - Going out now"
+    icon: mdi:dog-side
+    mode: single
+    sequence:
+      - condition: state
+        entity_id: input_boolean.dog_out
+        state: 'off'
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.dog_walk_started_at
+        data:
+          timestamp: "{{ as_timestamp(now()) | int }}"
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.dog_walker
+        data:
+          option: Someone
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.dog_out
+
+  dog_walk_end_now:
+    alias: "Dog - Back home now"
+    icon: mdi:home-import-outline
+    mode: single
+    fields:
+      pee:
+        required: true
+        selector:
+          boolean:
+      poop:
+        required: true
+        selector:
+          boolean:
+    sequence:
+      - condition: state
+        entity_id: input_boolean.dog_out
+        state: 'on'
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.dog_walk_ended_at
+        data:
+          timestamp: "{{ as_timestamp(now()) | int }}"
+      - service: script.dog_walk_finalize
+        data:
+          pee: "{{ pee | bool }}"
+          poop: "{{ poop | bool }}"
+
+  ########################################
+  ## Telegram
+  ########################################
+  # Sends the "what did the dog do?" question. back_ts: time the dog came back
+  # (0 = the moment the button is pressed).
+  dog_ask_walk_result:
+    alias: "Dog - Ask walk result (Telegram)"
+    mode: queued
+    fields:
+      target_person:
+        required: false
+        default: auto
+        selector:
+          text:
+      title:
+        required: true
+        selector:
+          text:
+      message:
+        required: true
+        selector:
+          text:
+            multiline: true
+      back_ts:
+        required: false
+        default: 0
+        selector:
+          number:
+            min: 0
+            max: 9999999999
+            mode: box
+      not_back_label:
+        required: false
+        default: '⏳ Still out'
+        selector:
+          text:
+    sequence:
+      - service: script.telegram_notify
+        data:
+          target_person: "{{ target_person | default('auto') }}"
+          title: "{{ title }}"
+          message: "{{ message }}"
+          inline_keyboard:
+            - '💧 Pee:/dog_back {{ back_ts | int(0) }} p, 💩 Poop:/dog_back {{ back_ts | int(0) }} c'
+            - '💧💩 Both:/dog_back {{ back_ts | int(0) }} pc, 🚫 Nothing:/dog_back {{ back_ts | int(0) }} n'
+            - '{{ not_back_label | default("⏳ Still out") }}:/dog_ignore, 🗑️ Not a walk:/dog_cancel'

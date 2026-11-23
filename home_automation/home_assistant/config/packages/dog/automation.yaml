@@ -1,0 +1,398 @@
+# automation:
+  # Flow (see README.md):
+  #   person leaves ──(Telegram "Is the dog with you?" ✅)──> dog_out on (start = time they left)
+  #   walker arrives ──(Telegram 💧/💩/💧💩/🚫)──> dog_walk_finalize (end = time they arrived) ──> dog_out off
+  # Everything can also be done by hand with the Telegram /dog command or the "Dog" view.
+
+  ########################################
+  ## Presence
+  ########################################
+  - alias: AUT-Dog ask on leaving
+    id: aut_dog_ask_on_leaving
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id:
+          - person.manolo
+          - person.monica
+        from: home
+        to: not_home
+    conditions:
+      - condition: state
+        entity_id: input_boolean.dog_out
+        state: 'off'
+    variables:
+      left_ts: "{{ as_timestamp(trigger.to_state.last_changed) | int }}"
+      left_hm: "{{ left_ts | timestamp_custom('%H:%M') }}"
+    actions:
+      - service: script.telegram_notify
+        data:
+          target_person: "{{ trigger.entity_id.split('.')[1] }}"
+          title: '🐶 You left home at {{ left_hm }}'
+          message: 'Is the dog with you?'
+          inline_keyboard:
+            - '✅ Yes (since {{ left_hm }}):/dog_out {{ left_ts }}, ❌ No:/dog_ignore'
+
+  # Only the walker is asked (or anyone arriving if the walk was started by hand).
+  - alias: AUT-Dog ask on arrival
+    id: aut_dog_ask_on_arrival
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id:
+          - person.manolo
+          - person.monica
+        from: not_home
+        to: home
+    conditions:
+      - condition: state
+        entity_id: input_boolean.dog_out
+        state: 'on'
+      - condition: template
+        value_template: "{{ states('input_select.dog_walker') in [trigger.to_state.name, 'Someone'] }}"
+    variables:
+      back_ts: "{{ as_timestamp(trigger.to_state.last_changed) | int }}"
+      start_ts: "{{ state_attr('input_datetime.dog_walk_started_at', 'timestamp') | float(0) }}"
+    actions:
+      - service: script.dog_ask_walk_result
+        data:
+          target_person: "{{ trigger.entity_id.split('.')[1] }}"
+          title: "🏠 Back home at {{ back_ts | timestamp_custom('%H:%M') }}"
+          message: >
+            {{ ((back_ts - start_ts) / 60) | round(0) | int }} min walk. What did the dog do?
+          back_ts: "{{ back_ts }}"
+          not_back_label: '❌ The dog is not with me'
+
+  ########################################
+  ## Reminders
+  ########################################
+  # Walk open for too long: the arrival was missed (no keys/tracker) or not answered.
+  # Offers to close it at the walker's last arrival home, if any after the start.
+  - alias: AUT-Dog walk too long
+    id: aut_dog_walk_too_long
+    initial_state: 'on'
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.dog_out
+        to: 'on'
+        for: '02:00:00'
+    variables:
+      walker: "{{ states('input_select.dog_walker') }}"
+      walker_entity: "person.{{ walker | lower }}"
+      start_ts: "{{ state_attr('input_datetime.dog_walk_started_at', 'timestamp') | float(0) }}"
+      arrived_ts: >
+        {% if walker != 'Someone' and is_state(walker_entity, 'home') %}{{ as_timestamp(states[walker_entity].last_changed) | int }}{% else %}0{% endif %}
+      back_ts: "{{ arrived_ts if arrived_ts > start_ts else 0 }}"
+    actions:
+      - service: script.dog_ask_walk_result
+        data:
+          target_person: "{{ 'auto' if walker == 'Someone' else walker | lower }}"
+          title: '🐶 Is the dog still out?'
+          message: >
+            The walk started at {{ start_ts | timestamp_custom('%H:%M') }}.
+            {% if back_ts > 0 %}If it came back with you at {{ back_ts | timestamp_custom('%H:%M') }}{% else %}If it is already back (time = now){% endif %}, what did it do?
+          back_ts: "{{ back_ts }}"
+
+  # Too long without going out, during the day and with someone at home.
+  - alias: AUT-Dog long time without going out
+    id: aut_dog_long_time_without_going_out
+    initial_state: 'on'
+    mode: single
+    triggers:
+      - trigger: template
+        value_template: &dog_overdue >
+          {{ is_state('input_boolean.dog_out', 'off')
+             and as_timestamp(now()) - (state_attr('input_datetime.dog_walk_ended_at', 'timestamp') | float(0))
+                 > (states('input_number.dog_walk_reminder_hours') | float(3)) * 3600 }}
+      # The template may become true during the night: check again in the morning
+      - trigger: time
+        at: '08:30:00'
+    conditions:
+      - condition: time
+        after: '08:00:00'
+        before: '23:00:00'
+      - condition: template
+        value_template: *dog_overdue
+      - condition: state
+        entity_id: sensor.home_occupancy_status
+        state:
+          - Home
+          - Just Arrived
+    variables:
+      since_ts: "{{ state_attr('input_datetime.dog_walk_ended_at', 'timestamp') | float(0) }}"
+    actions:
+      - service: script.telegram_notify
+        data:
+          title: '🐶 Time for a walk?'
+          message: >
+            The dog has not been out since {{ since_ts | timestamp_custom('%H:%M') }}
+            ({{ ((as_timestamp(now()) - since_ts) / 3600) | round(1) }} h).
+          inline_keyboard:
+            - '🚶 Going out now:/dog_out 0'
+            - '💧 Pee at home:/dog_accident pee, 💩 Poop at home:/dog_accident poop'
+
+  # Evening check of the daily goal, while there is still time for a walk
+  - alias: AUT-Dog daily goal check
+    id: aut_dog_daily_goal_check
+    initial_state: 'on'
+    triggers:
+      - trigger: time
+        at: '20:30:00'
+    variables:
+      minutes: "{{ states('sensor.dog_walk_minutes_today') | int(0) }}"
+      goal: "{{ states('input_number.dog_walk_daily_goal_minutes') | int(0) }}"
+    conditions:
+      - condition: template
+        value_template: "{{ goal > 0 and minutes < goal }}"
+    actions:
+      - service: script.telegram_notify
+        data:
+          title: '🐶 Daily walk goal not reached'
+          message: >
+            Today: {{ minutes }} of {{ goal }} min ({{ states('sensor.dog_walks_today') | int(0) }} walks).
+            {{ goal - minutes }} min left.
+
+  # One all-day event per day in calendar.dog_log with the totals (the diary)
+  - alias: AUT-Dog daily summary
+    id: aut_dog_daily_summary
+    initial_state: 'on'
+    triggers:
+      - trigger: time
+        at: '23:58:00'
+    actions:
+      # Only if the Local Calendar exists (README.md): a missing action would abort the caller
+      - if: "{{ has_value('calendar.dog_log') }}"
+        then:
+          - service: calendar.create_event
+            continue_on_error: true
+            target:
+              entity_id: calendar.dog_log
+            data:
+              summary: >
+                📊 {{ states('sensor.dog_walk_minutes_today') | int(0) }} min
+                · {{ states('sensor.dog_walks_today') | int(0) }} walks
+                · 💧{{ states('sensor.dog_pees_today') | int(0) }}
+                💩{{ states('sensor.dog_poops_today') | int(0) }}
+                {%- if states('sensor.dog_accidents_today') | int(0) > 0 %} · ⚠️{{ states('sensor.dog_accidents_today') | int(0) }}{% endif %}
+              description: >
+                Goal: {{ states('input_number.dog_walk_daily_goal_minutes') | int(0) }} min
+              start_date: "{{ now().date() }}"
+              end_date: "{{ (now() + timedelta(days=1)).date() }}"
+
+  ########################################
+  ## Telegram
+  ########################################
+  # /dog_out <ts> (0 = now). The walker is whoever pressed the button.
+  - alias: AUT-Dog Telegram out
+    id: aut_dog_telegram_out
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/dog_out"
+    variables: &dog_telegram_vars
+      chat_ids: &dog_chat_ids
+        Manolo: !secret telegram_userid_manolo
+        Monica: !secret telegram_userid_monica
+      who: >
+        {% set ns = namespace(name='Someone') %}
+        {% for name, chat in chat_ids.items() if (chat | string) == (trigger.event.data.chat_id | string) %}{% set ns.name = name %}{% endfor %}
+        {{ ns.name }}
+      arg_ts: "{{ (trigger.event.data.args or ['0'])[0] | int(0) }}"
+      at_ts: "{{ arg_ts if arg_ts > 0 else as_timestamp(now()) | int }}"
+      at_hm: "{{ at_ts | timestamp_custom('%H:%M') }}"
+      reply: &dog_reply
+        callback_id: "{{ trigger.event.data.id }}"
+        chat_id: "{{ trigger.event.data.chat_id }}"
+        message_id: "{{ trigger.event.data.message.message_id if trigger.event.data.message else 0 }}"
+    actions:
+      - if:
+          - condition: state
+            entity_id: input_boolean.dog_out
+            state: 'off'
+        then:
+          - service: input_datetime.set_datetime
+            target:
+              entity_id: input_datetime.dog_walk_started_at
+            data:
+              timestamp: "{{ at_ts }}"
+          - service: input_select.select_option
+            target:
+              entity_id: input_select.dog_walker
+            data:
+              option: "{{ who }}"
+          - service: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.dog_out
+          # (script.cleaning_telegram_reply is a generic callback reply, packages/cleaning)
+          - service: script.cleaning_telegram_reply
+            data:
+              <<: *dog_reply
+              answer: "Walk started at {{ at_hm }}"
+              new_text: "🚶 Walk started at {{ at_hm }} ({{ who }}). I will ask when you are back."
+        else:
+          - service: script.cleaning_telegram_reply
+            data:
+              <<: *dog_reply
+              answer: "The dog is already out with {{ states('input_select.dog_walker') }}"
+              new_text: "🐶 The dog was already out with {{ states('input_select.dog_walker') }}."
+
+  # /dog_back <ts> <p|c|pc|n> (ts 0 = now)
+  - alias: AUT-Dog Telegram back
+    id: aut_dog_telegram_back
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/dog_back"
+    variables:
+      <<: *dog_telegram_vars
+      code: "{{ (trigger.event.data.args or ['0', 'n'])[1] | default('n') }}"
+      pee: "{{ 'p' in code }}"
+      poop: "{{ 'c' in code }}"
+      start_ts: "{{ state_attr('input_datetime.dog_walk_started_at', 'timestamp') | float(0) }}"
+      did: "{{ ('💧' if pee else '') ~ ('💩' if poop else '') or '🚫 nothing' }}"
+    actions:
+      - if:
+          - condition: state
+            entity_id: input_boolean.dog_out
+            state: 'on'
+        then:
+          - service: input_datetime.set_datetime
+            target:
+              entity_id: input_datetime.dog_walk_ended_at
+            data:
+              timestamp: "{{ [at_ts, start_ts + 60] | max | int }}"
+          # Close first: replying to Telegram must never block it
+          - service: script.dog_walk_finalize
+            data:
+              pee: "{{ pee }}"
+              poop: "{{ poop }}"
+          - service: script.cleaning_telegram_reply
+            data:
+              <<: *dog_reply
+              answer: "Saved: {{ did }}"
+              new_text: >
+                🏠 Back at {{ at_hm }} after {{ (([at_ts - start_ts, 0] | max) / 60) | round(0) | int }} min · {{ did }}. Saved.
+        else:
+          - service: script.cleaning_telegram_reply
+            data:
+              <<: *dog_reply
+              answer: "No longer applies: the walk is already closed"
+              new_text: "🐶 That walk was already closed."
+
+  - alias: AUT-Dog Telegram cancel walk
+    id: aut_dog_telegram_cancel_walk
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/dog_cancel"
+    actions:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.dog_out
+      - service: script.cleaning_telegram_reply
+        data:
+          <<: *dog_reply
+          answer: "Walk discarded"
+          new_text: "🗑️ Walk discarded (not saved)."
+
+  - alias: AUT-Dog Telegram ignore
+    id: aut_dog_telegram_ignore
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/dog_ignore"
+    actions:
+      - service: script.cleaning_telegram_reply
+        data:
+          <<: *dog_reply
+          answer: "OK"
+          new_text: "{{ trigger.event.data.message.text if trigger.event.data.message else '' }}\n\n👍 OK"
+
+  # /dog_accident <pee|poop>
+  - alias: AUT-Dog Telegram accident
+    id: aut_dog_telegram_accident
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_callback
+        event_data:
+          command: "/dog_accident"
+    variables:
+      kind: "{{ (trigger.event.data.args or ['pee'])[0] }}"
+    conditions:
+      - condition: template
+        value_template: "{{ kind in ['pee', 'poop'] }}"
+    actions:
+      - service: script.dog_log_accident
+        data:
+          kind: "{{ kind }}"
+      # Answer only (keep the buttons: there may be more than one accident)
+      - service: telegram_bot.answer_callback_query
+        continue_on_error: true
+        data:
+          callback_query_id: "{{ trigger.event.data.id }}"
+          message: "Saved: {{ '💧 pee' if kind == 'pee' else '💩 poop' }} at home"
+
+  # /dog typed in the bot chat: today's summary plus the buttons that apply now
+  - alias: AUT-Dog Telegram menu
+    id: aut_dog_telegram_menu
+    initial_state: 'on'
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: telegram_command
+        event_data:
+          command: "/dog"
+    variables:
+      chat_ids: *dog_chat_ids
+      who: >
+        {% set ns = namespace(name='') %}
+        {% for name, chat in chat_ids.items() if (chat | string) == (trigger.event.data.chat_id | string) %}{% set ns.name = name %}{% endfor %}
+        {{ ns.name }}
+      summary: >
+        Today: {{ states('sensor.dog_walks_today') | int(0) }} walks · {{ states('sensor.dog_walk_minutes_today') | int(0) }}
+        of {{ states('input_number.dog_walk_daily_goal_minutes') | int(0) }} min ·
+        💧{{ states('sensor.dog_pees_today') | int(0) }} 💩{{ states('sensor.dog_poops_today') | int(0) }}
+        {%- if states('sensor.dog_accidents_today') | int(0) > 0 %} · ⚠️{{ states('sensor.dog_accidents_today') | int(0) }} at home{% endif %}.
+        Last pee: {{ as_timestamp(states('sensor.dog_last_pee'), 0) | timestamp_custom('%a %H:%M') if has_value('sensor.dog_last_pee') else '-' }} ·
+        last poop: {{ as_timestamp(states('sensor.dog_last_poop'), 0) | timestamp_custom('%a %H:%M') if has_value('sensor.dog_last_poop') else '-' }}.
+    conditions:
+      - condition: template
+        value_template: "{{ who != '' }}"
+    actions:
+      - if:
+          - condition: state
+            entity_id: input_boolean.dog_out
+            state: 'on'
+        then:
+          - service: script.dog_ask_walk_result
+            data:
+              target_person: "{{ who | lower }}"
+              title: "🐶 Out with {{ states('input_select.dog_walker') }} since {{ state_attr('input_datetime.dog_walk_started_at', 'timestamp') | float(0) | timestamp_custom('%H:%M') }}"
+              message: "{{ summary }}\nBack now? What did it do?"
+              back_ts: 0
+        else:
+          - service: script.telegram_notify
+            data:
+              target_person: "{{ who | lower }}"
+              title: '🐶 Dog at home'
+              message: "{{ summary }}"
+              inline_keyboard:
+                - '🚶 Going out now:/dog_out 0'
+                - '💧 Pee at home:/dog_accident pee, 💩 Poop at home:/dog_accident poop'

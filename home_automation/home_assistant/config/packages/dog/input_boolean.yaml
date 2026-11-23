@@ -1,0 +1,5 @@
+# input_boolean:
+  # Single source of truth for "the dog is out on a walk" (see README.md)
+  dog_out:
+    name: Dog out
+    icon: mdi:dog-side

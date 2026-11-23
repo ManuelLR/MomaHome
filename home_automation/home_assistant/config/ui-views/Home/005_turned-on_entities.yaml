@@ -57,6 +57,17 @@ entities:
           - Idle
           - unknown
           - unavailable
+  - entity: input_boolean.dog_out
+    # simple-entity: show it as text (not a toggle); tap → Dog view
+    type: simple-entity
+    name: Dog out on a walk
+    icon: mdi:dog-side
+    tap_action:
+      action: navigate
+      navigation_path: /lovelace/dog
+    conditions:
+      - condition: state
+        state: 'on'
   - entity: sensor.dishwasher_common_status_operationstate
     name: Lavavajillas
     icon: mdi:dishwasher

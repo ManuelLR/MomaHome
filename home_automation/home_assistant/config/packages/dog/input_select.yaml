@@ -1,0 +1,10 @@
+# input_select:
+  # Who took the dog out (set together with input_boolean.dog_out). "Someone" = started
+  # by hand from the UI: then any arrival home asks whether the dog is back.
+  dog_walker:
+    name: Dog walker
+    icon: mdi:account-arrow-right
+    options:
+      - Manolo
+      - Monica
+      - Someone

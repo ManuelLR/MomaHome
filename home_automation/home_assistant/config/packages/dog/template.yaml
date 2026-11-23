@@ -1,0 +1,97 @@
+# template:
+  # Daily counters, fed by the events fired by script.dog_walk_finalize (dog_walk_logged)
+  # and script.dog_log_accident (dog_accident_logged), reset at midnight. They are
+  # computed from the logged walks (real start/end times carried by the Telegram
+  # buttons), not from the history of input_boolean.dog_out, so answering late does not
+  # change the figures. state_class: measurement → long-term statistics, so the
+  # dashboard can show one bar per day ("screen time", dog version) beyond the recorder
+  # purge_keep_days.
+  - triggers:
+      - trigger: event
+        id: walk
+        event_type: dog_walk_logged
+      - trigger: event
+        id: accident
+        event_type: dog_accident_logged
+      - trigger: time
+        id: midnight
+        at: '00:00:00'
+    sensor:
+      - name: Dog walk minutes today
+        unique_id: dog_walk_minutes_today
+        default_entity_id: sensor.dog_walk_minutes_today
+        icon: mdi:dog-side
+        unit_of_measurement: min
+        state_class: measurement
+        state: >
+          {% set current = this.state | int(0) %}
+          {% if trigger.id == 'midnight' %}0
+          {% elif trigger.id == 'walk' %}{{ current + (trigger.event.data.minutes | int(0)) }}
+          {% else %}{{ current }}{% endif %}
+      - name: Dog walks today
+        unique_id: dog_walks_today
+        default_entity_id: sensor.dog_walks_today
+        icon: mdi:counter
+        state_class: measurement
+        state: >
+          {% set current = this.state | int(0) %}
+          {% if trigger.id == 'midnight' %}0
+          {% elif trigger.id == 'walk' %}{{ current + 1 }}
+          {% else %}{{ current }}{% endif %}
+      - name: Dog pees today
+        unique_id: dog_pees_today
+        default_entity_id: sensor.dog_pees_today
+        icon: mdi:water
+        state_class: measurement
+        state: >
+          {% set current = this.state | int(0) %}
+          {% if trigger.id == 'midnight' %}0
+          {% elif trigger.id == 'walk' and trigger.event.data.pee | bool(false) %}{{ current + 1 }}
+          {% else %}{{ current }}{% endif %}
+      - name: Dog poops today
+        unique_id: dog_poops_today
+        default_entity_id: sensor.dog_poops_today
+        icon: mdi:emoticon-poop
+        state_class: measurement
+        state: >
+          {% set current = this.state | int(0) %}
+          {% if trigger.id == 'midnight' %}0
+          {% elif trigger.id == 'walk' and trigger.event.data.poop | bool(false) %}{{ current + 1 }}
+          {% else %}{{ current }}{% endif %}
+      # Pees/poops at home (logged by hand from Telegram /dog or the dashboard)
+      - name: Dog accidents today
+        unique_id: dog_accidents_today
+        default_entity_id: sensor.dog_accidents_today
+        icon: mdi:alert-circle-outline
+        state_class: measurement
+        state: >
+          {% set current = this.state | int(0) %}
+          {% if trigger.id == 'midnight' %}0
+          {% elif trigger.id == 'accident' %}{{ current + 1 }}
+          {% else %}{{ current }}{% endif %}
+
+  # Last pee / poop (outside or at home), to know how long it has been
+  - triggers:
+      - trigger: event
+        event_type: dog_walk_logged
+      - trigger: event
+        event_type: dog_accident_logged
+    sensor:
+      - name: Dog last pee
+        unique_id: dog_last_pee
+        default_entity_id: sensor.dog_last_pee
+        icon: mdi:water
+        device_class: timestamp
+        state: >
+          {% if trigger.event.data.pee | bool(false) %}{{ (trigger.event.data.ts | float) | as_datetime | as_local }}
+          {% elif this.state not in ['unknown', 'unavailable', 'None'] %}{{ this.state }}
+          {% else %}None{% endif %}
+      - name: Dog last poop
+        unique_id: dog_last_poop
+        default_entity_id: sensor.dog_last_poop
+        icon: mdi:emoticon-poop
+        device_class: timestamp
+        state: >
+          {% if trigger.event.data.poop | bool(false) %}{{ (trigger.event.data.ts | float) | as_datetime | as_local }}
+          {% elif this.state not in ['unknown', 'unavailable', 'None'] %}{{ this.state }}
+          {% else %}None{% endif %}

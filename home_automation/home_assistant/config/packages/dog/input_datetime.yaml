@@ -1,0 +1,12 @@
+# input_datetime:
+  dog_walk_started_at:
+    name: Dog walk started at
+    icon: mdi:door-open
+    has_date: true
+    has_time: true
+  # End of the last finished walk: used by the "long time without going out" reminder
+  dog_walk_ended_at:
+    name: Dog walk ended at
+    icon: mdi:home-import-outline
+    has_date: true
+    has_time: true

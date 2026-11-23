@@ -2,6 +2,10 @@
 - title: Home
   icon: mdi:home
   cards: !include_dir_list Home/
+- title: Dog
+  path: dog
+  icon: mdi:dog
+  cards: !include Dog.yaml
 - title: Vacuum
   icon: mdi:vacuum
   cards: !include Vacuum.yaml
