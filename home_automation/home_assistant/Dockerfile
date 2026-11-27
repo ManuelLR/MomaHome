@@ -37,7 +37,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=agittins/bermuda versioning=semver
     CUSTOM_COMPONENT_BERMUDA_VERSION=v0.8.7 \
       # renovatebot: datasource=github-tags depName=SnarfNL/HA_MistralAI versioning=loose
-    CUSTOM_COMPONENT_MISTRAL_CONVERSATION_VERSION=2026.10.01 \
+    CUSTOM_COMPONENT_MISTRAL_CONVERSATION_VERSION=2026.11.01 \
       # renovatebot: datasource=github-releases depName=PiotrMachowski/lovelace-xiaomi-vacuum-map-card
     CUSTOM_CARD_XIAOMI_VACUUM_MAP_VERSION=v2.4.1 \
       # renovatebot: datasource=github-releases depName=Hypfer/lovelace-valetudo-map-card
