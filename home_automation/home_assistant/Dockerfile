@@ -27,7 +27,7 @@ ENV \
       # renovatebot: datasource=github-releases depName=badbugssoftware/ha-emasesa versioning=semver
     CUSTOM_COMPONENT_EMASESA_VERSION=v0.8.4 \
       # renovatebot: datasource=github-releases depName=ekutner/home-connect-hass
-    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.5.0 \
+    CUSTOM_COMPONENT_HOME_CONNECT_VERSION=1.5.1 \
       # renovatebot: datasource=github-releases depName=smartHomeHub/SmartIR
     CUSTOM_COMPONENT_SMARTIR_VERSION=1.18.1 \
       # renovatebot: datasource=github-releases depName=eigger/hass-gicisky
