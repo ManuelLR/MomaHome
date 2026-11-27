@@ -1,7 +1,7 @@
 services:
   restic:
     # Off-site, encrypted, versioned copy in O2 Cloud. Not a daemon: backup.sh
-    # and prune.sh (driven by the systemd timers in systemd/) start it with
+    # (run nightly by cron, see install.sh) starts it with
     # `docker compose run --rm restic <restic args>`. The profile keeps a plain
     # `docker compose up` from starting it by accident.
     #
