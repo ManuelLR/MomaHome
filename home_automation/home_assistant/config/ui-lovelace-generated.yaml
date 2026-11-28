@@ -1,0 +1,4 @@
+# Built-in strategy that lists every entity, grouped by area and domain.
+# A missing file no longer does this: the frontend shows an empty default view.
+strategy:
+  type: original-states

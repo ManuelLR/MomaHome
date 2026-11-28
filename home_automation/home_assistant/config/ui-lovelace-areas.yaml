@@ -1,0 +1,4 @@
+# Built-in strategy: one view per area with its devices. Entities without an area
+# do not show up here (they do in ui-lovelace-generated.yaml).
+strategy:
+  type: areas

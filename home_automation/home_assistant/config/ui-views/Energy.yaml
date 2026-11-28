@@ -31,14 +31,10 @@
           type: column
           data_generator: |
             return hass.connection.sendMessagePromise({
-            type: 'edata/consumptions/daily',
-            scups: 'mp0f'}).then(
-                (resp) => {
-                    return resp.map((data, index) => {
-                      return [new Date(data['datetime']).getTime(), data['value_kWh']];
-                    });
-                }
-            );
+            type: 'edata/ws/consumptions',
+            scups: 'mp0f',
+            aggr: 'day',
+            records: 30});
           show:
             in_chart: false
             in_brush: true
@@ -46,38 +42,29 @@
           name: Punta
           data_generator: |
             return hass.connection.sendMessagePromise({
-            type: 'edata/consumptions/daily',
-            scups: 'mp0f'}).then(
-                (resp) => {
-                    return resp.map((data, index) => {
-                      return [new Date(data['datetime']).getTime(), data['value_p1_kWh']];
-                    });
-                }
-            );
+            type: 'edata/ws/consumptions',
+            scups: 'mp0f',
+            aggr: 'day',
+            tariff: 1,
+            records: 30});
         - entity: sensor.edata_mp0f
           name: Llano
           data_generator: |
             return hass.connection.sendMessagePromise({
-            type: 'edata/consumptions/daily',
-            scups: 'mp0f'}).then(
-                (resp) => {
-                    return resp.map((data, index) => {
-                      return [new Date(data['datetime']).getTime(), data['value_p2_kWh']];
-                    });
-                }
-            );
+            type: 'edata/ws/consumptions',
+            scups: 'mp0f',
+            aggr: 'day',
+            tariff: 2,
+            records: 30});
         - entity: sensor.edata_mp0f
           name: Valle
           data_generator: |
             return hass.connection.sendMessagePromise({
-            type: 'edata/consumptions/daily',
-            scups: 'mp0f'}).then(
-                (resp) => {
-                    return resp.map((data, index) => {
-                      return [new Date(data['datetime']).getTime(), data['value_p3_kWh']];
-                    });
-                }
-            );
+            type: 'edata/ws/consumptions',
+            scups: 'mp0f',
+            aggr: 'day',
+            tariff: 3,
+            records: 30});
     - type: custom:edata-card
       entity: sensor.edata_mp0f
       chart: summary-month
@@ -201,52 +188,39 @@
           name: Total
           data_generator: |
             return hass.connection.sendMessagePromise({
-            type: 'edata/consumptions/monthly',
-            scups: 'mp0f'}).then(
-                (resp) => {
-                    return resp.map((data, index) => {
-                      return [new Date(data['datetime']).getTime(), data['value_kWh']];
-                    });
-                }
-            );
+            type: 'edata/ws/consumptions',
+            scups: 'mp0f',
+            aggr: 'month',
+            records: 13});
           show:
             in_chart: true
         - entity: sensor.edata_mp0f
           name: Punta
           data_generator: |
             return hass.connection.sendMessagePromise({
-            type: 'edata/consumptions/monthly',
-            scups: 'mp0f'}).then(
-                (resp) => {
-                    return resp.map((data, index) => {
-                      return [new Date(data['datetime']).getTime(), data['value_p1_kWh']];
-                    });
-                }
-            );
+            type: 'edata/ws/consumptions',
+            scups: 'mp0f',
+            aggr: 'month',
+            tariff: 1,
+            records: 13});
         - entity: sensor.edata_mp0f
           name: Llano
           data_generator: |
             return hass.connection.sendMessagePromise({
-            type: 'edata/consumptions/monthly',
-            scups: 'mp0f'}).then(
-                (resp) => {
-                    return resp.map((data, index) => {
-                      return [new Date(data['datetime']).getTime(), data['value_p2_kWh']];
-                    });
-                }
-            );
+            type: 'edata/ws/consumptions',
+            scups: 'mp0f',
+            aggr: 'month',
+            tariff: 2,
+            records: 13});
         - entity: sensor.edata_mp0f
           name: Valle
           data_generator: |
             return hass.connection.sendMessagePromise({
-            type: 'edata/consumptions/monthly',
-            scups: 'mp0f'}).then(
-                (resp) => {
-                    return resp.map((data, index) => {
-                      return [new Date(data['datetime']).getTime(), data['value_p3_kWh']];
-                    });
-                }
-            );
+            type: 'edata/ws/consumptions',
+            scups: 'mp0f',
+            aggr: 'month',
+            tariff: 3,
+            records: 13});
     - type: custom:apexcharts-card
       graph_span: 1y
       span:
@@ -268,11 +242,5 @@
             datalabels: false
           data_generator: |
             return hass.connection.sendMessagePromise({
-            type: 'edata/maximeter',
-            scups: 'mp0f'}).then(
-                (resp) => {
-                    return resp.map((data, index) => {
-                      return [new Date(data['datetime']).getTime(), data['value_kW']];
-                    });
-                }
-            );
+            type: 'edata/ws/maximeter',
+            scups: 'mp0f'});
