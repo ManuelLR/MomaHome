@@ -7,7 +7,7 @@
   # plus once on HA start. The panel sensors (template.yaml) re-render on a 5-min
   # tick for the time-of-day rules, but HA only emits a state_changed event when
   # the rendered content is genuinely different, so this stays quiet while nothing
-  # changes instead of pushing on a blind timer. gicisky.write_guarded de-dupes
+  # changes instead of pushing on a blind timer. ble_esl.write_guarded de-dupes
   # downstream as a second safety net. The condition skips pushing an empty panel
   # while the source sensors are still unavailable (e.g. right after a restart).
   #
